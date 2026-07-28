@@ -1,0 +1,35 @@
+{
+  "awards": {
+    "eusic_title": "Prémio Europeu de Inovação Social (EUSIC)",
+    "eusic_description": "Estrutura tecnológica transfronteiriça para monitorização do impacto social e conformidade regulamentar.",
+    "portugal_2030_title": "Avisos Portugal 2030",
+    "portugal_2030_description": "Logs de auditoria e rastreabilidade regional em conformidade com as regras nacionais de coesão social.",
+    "eic_accelerator_title": "EIC Accelerator",
+    "eic_accelerator_description": "Tracção de utilizadores activos e taxas de resolução blindadas por inteligência artificial."
+  },
+  "telemetry": {
+    "regional_traceability": "Rastreabilidade Regional",
+    "regional_distribution": "Distribuição Regional de Acessos",
+    "language_distribution": "Distribuição de Idiomas",
+    "average_response_time": "Tempo Médio de Resposta (ms)",
+    "rag_success_rate": "Taxa de Sucesso do RAG Shielded",
+    "total_logs": "Total de Pedidos Auditados",
+    "compliance_status": "Estado de Conformidade Técnica"
+  },
+  "regions": {
+    "north": "Norte",
+    "center": "Centro",
+    "lisbon": "Área Metropolitana de Lisboa",
+    "alentejo": "Alentejo",
+    "algarve": "Algarve",
+    "azores": "Região Autónoma dos Açores",
+    "madeira": "Região Autónoma da Madeira",
+    "general": "Geral"
+  },
+  "languages": {
+    "pt": "Português",
+    "en": "Inglês",
+    "es": "Espanhol",
+    "fr": "Francês"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "framework": "vite",
+  "name": "dsmt-nexus",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}

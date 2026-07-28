@@ -1,0 +1,53 @@
+🚀 MIRA TRIBO: Reconstrução Total (Auth + Public)...
+
+Verificando 23 usuários Auth...
+Auth [55899731-e7c2-41d0-a557-f7a7b15d914d] já existe.
+Auth [28ffc4e6-eb39-49e3-b6e7-620c55729d78] já existe.
+Auth [ba510ec2-9537-4517-874c-50473bb9d172] já existe.
+Auth [6749fa1e-427f-4aaa-b67a-a21a61c37476] já existe.
+Auth [b46071af-c60c-4ab8-9798-c4d08a855c98] já existe.
+Auth [7a1f3d4a-0564-49e7-8ff2-670399764bb6] já existe.
+Auth [f6c18bc1-23c0-43d5-b3f2-903dcc469dcc] já existe.
+Auth [8471032e-7b3f-42c2-b9ae-86e6af724a96] já existe.
+Auth [4cd49f5e-1789-4ea5-b813-5e50b33bcb93] já existe.
+Auth [79f7e641-5968-42a5-9509-24ae0879f26b] já existe.
+Auth [380e95ae-bbe1-4c9d-8c1d-982272a2c481] já existe.
+Auth [15e1c1d7-fc61-41df-bc8c-a0a91e9e3f45] já existe.
+Auth Email [amandajhonnes@yahoo.com.br] já existe com outro ID.
+Auth [30276e52-77e3-4eb5-b2e1-7836902e34dc] já existe.
+Auth [17abca20-fe58-40d9-aca5-6e02a1c4e7ae] já existe.
+Auth [40256a5d-2696-4c0d-8348-cbc9d9789c04] já existe.
+Auth [860cca5a-3350-4829-a480-00d0397603ae] já existe.
+Auth [17e3a09f-6bac-4684-a465-ef7a6842f887] já existe.
+Auth [9bc3fd71-812f-4372-a1f0-469b90fcdcf7] já existe.
+Auth [9359d464-8bab-4e9e-8d7f-d57a00508db4] já existe.
+Auth [4a187d26-3544-4138-89f6-fc7fe8ba0715] já existe.
+Auth [304e8f5a-3e2d-4474-84cf-78987e5e2ab2] já existe.
+Auth [d00a3864-b54e-4644-821d-0d9766add1bd] já existe.
+
+Sincronizando Perfis...
+❌ Profile Error [490249e1-0f3d-474c-9c06-fa5c8376d3ac]: insert or update on table "profiles" violates foreign key constraint "profiles_id_fkey"
+✅ Perfis sincronizados.
+
+Restaurando 13 Posts...
+❌ Post Error [c58dd194-8467-4b08-8bb3-7b37c7fa5c02]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [440e5619-0d8b-4a00-8b1b-bee5e3837a91]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [6497cb9c-bfee-46d3-8fa9-866443be98a2]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [feec93ec-e76d-4a61-b562-95e1631bb382]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [dd0a5559-bdb5-4879-8cd1-0485586642ed]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [4a6aa773-a485-40a9-adc7-48dee5f0f50a]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [036a9d27-c8e7-42cf-96ca-7482e3b468b3]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [454bc156-afdb-4239-8f99-24a997cd787e]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [df5e5ccc-716d-4c4f-bd0e-e08657da5c34]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [8df2598b-42db-441f-b097-0954857c0b7d]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [6a595cad-e5bb-46df-bf65-3689fd726d65]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [d8e0512f-dfad-4df5-a0d1-54d0a8aad936]: Could not find the 'embedding' column of 'posts' in the schema cache
+❌ Post Error [798e7507-d551-4f57-8a46-32130a839cc3]: Could not find the 'embedding' column of 'posts' in the schema cache
+✅ Posts restaurados.
+
+Restaurando 11 Comentários...
+❌ Comment Error [303373b5-4d79-412b-80f5-1cf3f62efcaf]: column "comment_count" does not exist
+❌ Comment Error [87598753-805f-47d7-905a-ad20fa7079e8]: column "comment_count" does not exist
+✅ Comentários restaurados.
+
+✨ Missão Cumprida: Tribo MIRA totalizada!

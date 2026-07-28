@@ -1,0 +1,8 @@
+# Excluir scripts de debug e temporários para respeitar o limite de 12 Serverless Functions do Vercel Hobby Plan
+api/debug_sql.js
+api/marretada.js
+api/nuclear-fix.js
+api/admin-export-impact.js
+api/admin.js
+api/sync-jobs.js
+api/admin/

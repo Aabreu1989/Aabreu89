@@ -1,0 +1,125 @@
+﻿
+MARRETADA_V123.sql:35:    
+    CREATE TABLE 
+public.saber_ia (
+MARRETADA_V123.sql:55:    
+    CREATE TABLE 
+public.ai_semantic_cache (
+MIRA_DNA_MASTER_NUCLEAR_V7
+1.sql:33:CREATE TABLE IF 
+NOT EXISTS 
+public.ai_semantic_cache (
+MIRA_DNA_MASTER_NUCLEAR_V7
+1.sql:46:CREATE TABLE IF 
+NOT EXISTS public.mira_gro
+unding_audit (
+MIRA_DNA_MASTER_NUCLEAR_V7
+1.sql:56:CREATE TABLE IF 
+NOT EXISTS 
+public.denied_emails (
+MIRA_DNA_MASTER_NUCLEAR_V7
+1.sql:64:CREATE TABLE IF 
+NOT EXISTS 
+public.saber_ia (
+MIRA_DNA_MASTER_NUCLEAR_V7
+1.sql:76:CREATE TABLE IF 
+NOT EXISTS 
+public.mira_system_config 
+(
+mira_master_dna_v77.1.sql:
+15:CREATE TABLE IF NOT 
+EXISTS public.mira_system_
+prompts (
+mira_master_dna_v77.1.sql:
+32:CREATE TABLE IF NOT 
+EXISTS public.saber_ia (
+mira_master_dna_v77.1.sql:
+46:CREATE TABLE IF NOT 
+EXISTS public.mira_groundi
+ng_audit (
+mira_sovereign_v23_core.sq
+l:15:CREATE TABLE IF NOT 
+EXISTS 
+public.user_follows (
+V10000_MASTER_COMMUNITY.sq
+l:10:CREATE TABLE IF NOT 
+EXISTS public.post_votes (
+V10000_MASTER_COMMUNITY.sq
+l:20:CREATE TABLE IF NOT 
+EXISTS public.saved_posts 
+(
+V10000_MASTER_COMMUNITY.sq
+l:29:CREATE TABLE IF NOT 
+EXISTS public.reports (
+V10101_FIX_BIGINT.sql:15:C
+REATE TABLE IF NOT EXISTS 
+public.post_votes (
+V10101_FIX_BIGINT.sql:25:C
+REATE TABLE IF NOT EXISTS 
+public.saved_posts (
+V10101_FIX_BIGINT.sql:34:C
+REATE TABLE IF NOT EXISTS 
+public.reports (
+V10200_TRIBO_SOBERANA.sql:
+14:CREATE TABLE IF NOT 
+EXISTS public.follows (
+V10200_TRIBO_SOBERANA.sql:
+43:CREATE TABLE IF NOT 
+EXISTS public.post_votes (
+V10500_SOBERANIA_TOTAL.sql
+:14:CREATE TABLE IF NOT 
+EXISTS public.follows (
+V10500_SOBERANIA_TOTAL.sql
+:43:CREATE TABLE IF NOT 
+EXISTS public.post_votes (
+V10500_SOBERANIA_TOTAL.sql
+:53:CREATE TABLE IF NOT 
+EXISTS public.saved_posts 
+(
+V10500_SOBERANIA_TOTAL.sql
+:62:CREATE TABLE IF NOT 
+EXISTS public.reports (
+V10600_LANCAMENTO_BLINDADO
+.sql:11:CREATE TABLE IF 
+NOT EXISTS 
+public.knowledge_store (
+V10600_LANCAMENTO_BLINDADO
+.sql:34:CREATE TABLE IF 
+NOT EXISTS public.follows 
+(
+V10600_LANCAMENTO_BLINDADO
+.sql:66:CREATE TABLE IF 
+NOT EXISTS 
+public.post_votes (
+V10600_LANCAMENTO_BLINDADO
+.sql:79:CREATE TABLE IF 
+NOT EXISTS 
+public.saved_posts (
+V10600_LANCAMENTO_BLINDADO
+.sql:90:CREATE TABLE IF 
+NOT EXISTS public.reports 
+(
+V11200_SOBERANIA_ADMINISTR
+ATIVA.sql:28:CREATE TABLE 
+IF NOT EXISTS 
+public.follows (
+V11200_SOBERANIA_ADMINISTR
+ATIVA.sql:54:CREATE TABLE 
+IF NOT EXISTS 
+public.reports (
+V11600_SUGESTOES_SOBERANAS
+.sql:10:CREATE TABLE 
+public.app_suggestions (
+V11900_MASTER_SUGESTOES.sq
+l:15:CREATE TABLE 
+public.app_suggestions (
+V12000_MASTER_SINDICAL.sql
+:14:CREATE TABLE IF NOT 
+EXISTS 
+public.app_suggestions (
+V12902_STABILIZACAO_TOTAL.
+sql:52:CREATE TABLE IF 
+NOT EXISTS 
+public.saved_posts (
+
+

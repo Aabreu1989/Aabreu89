@@ -1,0 +1,38 @@
+node_modules
+.env*
+dist
+
+# ─── DADOS DE DIAGNÓSTICO E LOGS LOCAIS (NUNCA NO GITHUB) ───────────────────
+scratch/
+*.json.bak
+refactor*
+update_websites*
+check_empty*
+cleanIrs*
+
+# ─── MIRA SOVEREIGN VAULT (PROIBIDO NO GITHUB) ──────────────────────
+# ESTES FICHEIROS NUNCA PODEM SUBIR PARA O GITHUB
+# Violação = risco de suspensão da conta
+scripts/vault/*.ps1
+scripts/vault/*.sh
+scripts/vault/*.bat
+*.ps1
+*.sh
+
+# Credenciais e segredos locais
+secrets/
+*.key
+*.pem
+*.secret
+
+# Backups locais (MIRA_VAULT)
+MIRA_VAULT/
+backups/
+*.dump
+*.sql.gz
+
+# Logs de backup
+backup_log.txt
+schema_log.txt
+
+.vercel

@@ -1,0 +1,35 @@
+{
+  "awards": {
+    "eusic_title": "European Social Innovation Competition (EUSIC)",
+    "eusic_description": "Trans-border technological framework for social impact monitoring and regulatory compliance.",
+    "portugal_2030_title": "Portugal 2030 Funding",
+    "portugal_2030_description": "Audit logs and regional traceability in compliance with national social cohesion policies.",
+    "eic_accelerator_title": "EIC Accelerator",
+    "eic_accelerator_description": "Active user traction and resolution rates shielded by artificial intelligence."
+  },
+  "telemetry": {
+    "regional_traceability": "Regional Traceability",
+    "regional_distribution": "Regional Access Distribution",
+    "language_distribution": "Language Distribution",
+    "average_response_time": "Average Response Time (ms)",
+    "rag_success_rate": "Shielded RAG Success Rate",
+    "total_logs": "Total Audited Requests",
+    "compliance_status": "Technical Compliance Status"
+  },
+  "regions": {
+    "north": "North",
+    "center": "Center",
+    "lisbon": "Lisbon Metropolitan Area",
+    "alentejo": "Alentejo",
+    "algarve": "Algarve",
+    "azores": "Autonomous Region of Azores",
+    "madeira": "Autonomous Region of Madeira",
+    "general": "General"
+  },
+  "languages": {
+    "pt": "Portuguese",
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French"
+  }
+}

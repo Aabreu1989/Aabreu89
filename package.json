@@ -1,0 +1,60 @@
+{
+  "name": "mira-app",
+  "private": true,
+  "version": "2026.GOLD",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev-launcher.mjs",
+    "dev:vite": "vite",
+    "dev:api": "node api-dev-server.js",
+    "dev:all": "concurrently \"npm run dev:vite\" \"npm run dev:api\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "restore:gold": "node scripts/restore_mira_gold.mjs"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.97.0",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dompurify": "^3.3.2",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "idb": "^8.0.3",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.574.0",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.20.0",
+    "puppeteer": "^24.38.0",
+    "rate-limit": "^0.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-leaflet": "^5.0.0",
+    "recharts": "^2.15.1",
+    "resend": "^3.5.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.5.0",
+    "concurrently": "^9.2.1",
+    "postcss": "^8.5.10",
+    "supabase": "^2.78.1",
+    "tailwindcss": "^4.2.4",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  },
+  "overrides": {
+    "vite": {
+      "rollup": "npm:@rollup/wasm-node@4"
+    },
+    "rollup": "npm:@rollup/wasm-node@4"
+  }
+}

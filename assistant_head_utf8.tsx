@@ -1,0 +1,717 @@
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, Volume2, VolumeX, Play, Square, ThumbsUp, ThumbsDown, ArrowLeft, CheckCheck, Zap, Loader2, Trash2, MoreVertical, Phone, Video, Search, MessageSquare, Plus, Sparkles, User, HelpCircle, ShieldCheck, X, Briefcase, MapPin, GraduationCap, ArrowRight } from 'lucide-react';
+
+import { generateAssistantResponseV45, generateSpeech } from '../services/geminiService';
+import { adminService } from '../services/adminService';
+import { templates, serviceGuides } from '../utils/documentsDatabase';
+import { audioService } from '../services/audioService';
+import { Message, ViewType, User as UserType, JobPost } from '../types';
+import { supabase } from '../lib/supabase';
+import { useToast } from './Toast';
+import { t } from '../utils/translations';
+import { persistence } from '../utils/persistence';
+import ChatInput from './ChatInput';
+
+interface AssistantViewProps {
+  language: string;
+  onViewChange: (view: ViewType, params?: any) => void;
+  user: UserType;
+}
+
+const sanitizeTTS = (text: string) => {
+  return text
+    .replace(/\[.*?\]\(.*?\)/g, '') // Remove links
+    .replace(/\*\*?|_|#|`|~|-/g, '') // Remove MD chars
+    .replace(/\[(job|course)-card:([a-f0-9-]+|[0-9]+)\]/g, '') // Remove card tags
+    .replace(/[\n\r]+/g, ' ') // Flatten lines
+    .trim();
+};
+
+// --- CONTEXT-DRIVEN MODERN COMPONENTS ---
+
+const MiraChatHeader = ({ 
+  language, 
+  onBack, 
+  onShowAvatar, 
+  audioEnabled, 
+  onToggleAudio,
+  onClearChat
+}: { 
+  language: string, 
+  onBack: () => void, 
+  onShowAvatar: () => void,
+  audioEnabled: boolean,
+  onToggleAudio: () => void,
+  onClearChat: () => void
+}) => {
+    return (
+        <div className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-3 sm:px-5 py-3 sm:py-4 flex items-center gap-3 sm:gap-4 z-[200] sticky top-0 shrink-0">
+            <button onClick={onBack} className="p-2 sm:p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all active:scale-95 text-slate-400 border border-slate-100 shrink-0">
+                <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
+            </button>
+            <div className="flex items-center gap-3 sm:gap-4 flex-1 cursor-pointer group min-w-0" onClick={onShowAvatar}>
+                <div className="relative shrink-0">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 bg-white rounded-xl sm:rounded-2xl p-0.5 shadow-lg border border-slate-100 transition-transform group-hover:scale-105 duration-500 overflow-hidden text-mira-blue flex items-center justify-center">
+                        <img src="/mira-robot.png" alt="MIRA Avatar" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+                <div className="flex flex-col min-w-0">
+                    <h1 className="text-lg sm:text-xl font-black text-slate-800 tracking-widest uppercase truncate leading-none mb-1">MIRA</h1>
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-full border border-blue-200 w-fit group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                      <span className="text-[8px] sm:text-[9px] font-black text-blue-700 uppercase tracking-[0.1em]">Diamond Sovereign Active</span>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+                <button 
+                   onClick={() => onToggleAudio?.()} 
+                   className={`p-1.5 rounded-[1.2rem] transition-all shadow-sm border active:scale-90 ${audioEnabled ? 'bg-mira-orange text-white border-orange-400 shadow-orange-500/20' : 'bg-slate-50 text-slate-300 border-slate-100'}`}
+                >
+                    {audioEnabled ? <Volume2 size={12} /> : <VolumeX size={12} />}
+                </button>
+                <button 
+                  onClick={onClearChat}
+                  className="p-3 md:px-5 md:py-2.5 rounded-2xl md:rounded-2xl bg-red-50 text-red-500 border border-red-100 transition-all hover:bg-red-500 hover:text-white hover:border-red-500 active:scale-95 flex items-center gap-2 shadow-sm group"
+                >
+                  <Trash2 size={16} className="group-hover:rotate-12 transition-transform" />
+                  <span className="hidden md:inline text-[10px] font-black uppercase tracking-widest group-hover:text-white">ELIMINAR</span>
+                </button>
+            </div>
+        </div>
+    );
+};
+
+const LazyChatCard = React.memo(({ 
+  type, 
+  id, 
+  language,
+  onViewChange 
+}: { 
+  type: 'job' | 'course', 
+  id: string, 
+  language: string,
+  onViewChange: (view: ViewType, params?: any) => void 
+}) => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const table = type === 'job' ? 'job_posts' : 'courses';
+        const { data: res } = await supabase.from(table).select('*').eq('id', id).single();
+        if (res) setData(res);
+      } catch (e) {
+        console.error("MIRA Card Error:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [type, id]);
+
+  if (loading) return (
+    <div className="w-full h-24 bg-slate-100/50 animate-pulse rounded-[1.5rem] flex items-center justify-center border border-slate-200/50 mt-4">
+      <div className="w-8 h-8 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin" />
+    </div>
+  );
+
+  if (!data) return null;
+
+  if (type === 'job') {
+    return (
+      <div className="w-full bg-white p-5 rounded-[1.8rem] shadow-xl border border-slate-100 mt-4 group overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 blur-[50px] rounded-full -mr-10 -mt-10" />
+        <div className="flex gap-4 items-start relative z-10">
+          <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center border border-orange-100 text-mira-orange">
+            <Briefcase size={20} />
+          </div>
+          <div className="flex-1">
+            <h4 className="text-slate-800 font-bold text-sm tracking-tight mb-1 group-hover:text-mira-orange transition-colors">{data.title}</h4>
+            <p className="text-slate-400 text-[10px] font-medium uppercase tracking-wider mb-2">{data.company || t('job_card_company_confidential', language)}</p>
+            <div className="flex items-center gap-3 text-slate-500 text-[10px]">
+              <span className="flex items-center gap-1"><MapPin size={10} /> {data.location || 'Portugal'}</span>
+              <span className="flex items-center gap-1 text-mira-orange">ΓùÅ {data.category || t('job_card_active', language)}</span>
+            </div>
+          </div>
+        </div>
+        <button 
+          onClick={() => onViewChange(ViewType.JOBS, { jobId: id })}
+          className="w-full mt-4 py-3.5 bg-mira-orange text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20"
+        >
+          {t('job_card_apply', language)} <ArrowRight size={14} />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full bg-indigo-950 p-5 rounded-[1.8rem] shadow-2xl border border-white/5 mt-4 group">
+      <div className="flex gap-4 items-start">
+        <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 text-indigo-400">
+          <GraduationCap size={20} />
+        </div>
+        <div className="flex-1">
+          <h4 className="text-white font-bold text-sm mb-1">{data.title}</h4>
+          <p className="text-white/50 text-[10px] line-clamp-2 leading-relaxed">{data.description}</p>
+        </div>
+      </div>
+      <button 
+        onClick={() => onViewChange(ViewType.LEARNING, { courseId: id })}
+        className="w-full mt-4 py-3.5 bg-indigo-500 text-white text-[10px] font-black uppercase tracking-wider rounded-xl flex items-center justify-center gap-2"
+      >
+        {t('course_card_access', language)} <ArrowRight size={14} />
+      </button>
+    </div>
+  );
+});
+
+const MiraChatMessage = React.memo(({ 
+  msg, 
+  language, 
+  isPlaying, 
+  onAudioAction, 
+  onFeedback, 
+  onViewChange 
+}: {
+  msg: any;
+  language: string;
+  isPlaying: string | null;
+  onAudioAction: (msg: any) => void;
+  onFeedback: (id: string, type: 'helpful' | 'not_helpful') => void;
+  onViewChange: (view: ViewType, params?: any) => void;
+}) => {
+  const isUser = msg.role === 'user';
+  const isSovereign = (msg as any).isSovereign;
+  
+  // Detect [job-card:ID] or [course-card:ID]
+  const cardMatch = msg.text.match(/\[(job|course)-card:([a-f0-9-]+|[0-9]+)\]/);
+  const cleanText = msg.text.replace(/\[(job|course)-card:([a-f0-9-]+|[0-9]+)\]/g, '').trim();
+
+  return (
+    <div className={`flex w-full mb-8 px-2 sm:px-5 ${isUser ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-700`}>
+      <div className={`max-w-[92%] sm:max-w-[85%] relative group transition-all duration-500
+        ${isUser 
+            ? 'px-6 py-4 bg-gradient-to-br from-mira-orange to-orange-600 text-white rounded-[2.2rem] rounded-tr-none shadow-2xl shadow-orange-500/10' 
+            : 'px-7 py-5 bg-gradient-to-br from-[#0066FF] via-[#004ECC] to-[#003399] text-white rounded-[2.2rem] rounded-tl-none border-l-[6px] border-[#FF8C00] shadow-2xl shadow-blue-900/20 border border-white/10 ring-1 ring-white/20 backdrop-blur-sm'}`}>
+
+          {!isUser && (
+            <div className="flex items-center gap-3 mb-4">
+               <div className="px-3 py-1 bg-white/15 backdrop-blur-md rounded-lg text-[8px] font-black uppercase tracking-[0.2em] text-cyan-300 border border-white/20 flex items-center gap-2 group-hover:border-cyan-300/50 transition-all shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                <Sparkles size={10} className="text-white animate-spin-slow" />
+                {msg.category?.includes('Soberano+') ? 'DIAMOND REALTIME ELITE' : 'DIAMOND SOVEREIGN PRIME'}
+               </div>
+               {isSovereign && (
+                 <div className="flex items-center gap-1">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="w-1 h-1 rounded-full bg-mira-orange animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
+                    ))}
+                 </div>
+               )}
+            </div>
+          )}
+
+          
+          {!isUser && (
+            <div className={`absolute right-3 ${isSovereign ? 'top-[-10px]' : 'top-3'} z-30`}>
+              <button 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onAudioAction(msg);
+                }} 
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-xl backdrop-blur-md active:scale-95 border-2 ${isPlaying === msg.id ? 'bg-mira-orange text-white border-white animate-pulse' : 'bg-white/95 text-mira-blue hover:text-mira-orange border-blue-100/50'}`}
+                title={isPlaying === msg.id ? "Parar" : "Ouvir Resposta"}
+              >
+                {isPlaying === msg.id ? <Square size={14} fill="currentColor" /> : <Volume2 size={16} className="ml-0.5" />}
+              </button>
+            </div>
+          )}
+
+          <div className={`text-[16px] leading-[1.6] whitespace-pre-wrap select-text break-words font-bold antialiased opacity-95 ${!isUser ? 'pr-14' : ''}`}>
+            {cleanText.split(/(\[.*?\]\(.*?\))/g).map((part: string, i: number) => {
+              if (part.match(/\[(.*?)\]\((.*?)\)/)) return null; // Link parts handled below
+              return part;
+            })}
+          </div>
+
+          {!isUser && (
+            <div className="flex flex-wrap gap-2 mt-3 mb-1">
+              {(() => {
+                const links: { label: string, target: string }[] = [];
+                const seenKeys = new Set<string>();
+                
+                // MIRA V2026.ELITE: Ultra-Resilient De-duplication Protocol
+                const matches = msg.text.matchAll(/\[(.*?)\]\((.*?)\)/g);
+                for (const match of matches) {
+                    const [_, label, target] = match;
+                    const cleanLabel = label.trim().toUpperCase();
+                    // Near-match dedup (e.g. "Fala com a Comunidade" vs "Comunidade")
+                    const simpleKey = target.split('?')[0].toLowerCase(); 
+                    if (!seenKeys.has(simpleKey)) {
+                        links.push({ label, target });
+                        seenKeys.add(simpleKey);
+                    }
+                }
+
+                return links.map((link, i) => {
+                  const [route, queryString] = link.target.split('?');
+                  const params: any = {};
+                  if (queryString) {
+                      queryString.split('&').forEach(pair => {
+                          const [key, value] = pair.split('=');
+                          params[key] = decodeURIComponent(value);
+                      });
+                  }
+                  
+                  const ROUTE_MAP: Record<string, ViewType> = {
+                    '/regularize': ViewType.DOCUMENTS, '/docs': ViewType.DOCUMENTS,
+                    '/map': ViewType.MAP, '/jobs': ViewType.JOBS, '/learning': ViewType.LEARNING,
+                    '/academy': ViewType.LEARNING,
+                    '/community': ViewType.COMMUNITY, '/profile': ViewType.PROFILE
+                  };
+                  const targetView = ROUTE_MAP[route.toLowerCase()];
+                  
+                  if (targetView !== undefined) {
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => onViewChange(targetView, params)}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900/90 hover:bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.15em] rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all text-center border border-white/10"
+                      >
+                        <Zap size={10} className="fill-blue-400 text-blue-400" />
+                        {link.label}
+                      </button>
+                    );
+                  }
+                  return null;
+                });
+              })()}
+            </div>
+          )}
+
+          {!isUser && cardMatch && (
+            <LazyChatCard type={cardMatch[1] as any} id={cardMatch[2]} language={language} onViewChange={onViewChange} />
+          )}
+
+          <div className={`mt-4 flex items-center justify-between gap-2 ${isUser ? 'text-white/60' : 'text-white/50'}`}>
+            {!isUser && (
+              <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => onFeedback(msg.id, 'helpful')} className={`p-1 transition-all ${msg.feedback === 'helpful' ? 'text-emerald-400' : 'text-slate-400 hover:text-emerald-400'}`}><ThumbsUp size={12} /></button>
+                <button onClick={() => onFeedback(msg.id, 'not_helpful')} className={`p-1 transition-all ${msg.feedback === 'not_helpful' ? 'text-red-400' : 'text-slate-400 hover:text-red-400'}`}><ThumbsDown size={12} /></button>
+              </div>
+            )}
+
+            <div className={`flex items-center gap-2 ${isUser ? 'ml-auto' : ''}`}>
+               <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">
+                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+              {isUser && <CheckCheck size={16} className="text-white opacity-40" />}
+            </div>
+          </div>
+
+      </div>
+      
+      {/* MIRA V2026.SUPREMO: Bubble-Level Disclaimer REMOVED BY CEO ORDER */}
+    </div>
+  );
+});
+
+const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => {
+  const [messages, setMessages] = useState<(Message & { category?: string, audioBase64?: string, feedback?: 'helpful' | 'not_helpful', relatedArticles?: any[] })[]>([]);
+  
+  // MIRA V12000.SOVEREIGN: Chat Persistence Load (Dual-Mode: Local-First)
+  useEffect(() => {
+    const loadHistory = async () => {
+      // 1. CARREGAMENTO IMEDIATO (LOCAL-FIRST)
+      // Prioridade absoluta para o que est├í no computador da Amanda
+      const localHistory = await persistence.get('mira_chat_history');
+      if (localHistory && Array.isArray(localHistory) && localHistory.length > 0) {
+        console.log("≡ƒÅ¢∩╕Å MIRA SOVEREIGNTY: Local history loaded instantly.");
+        const formatted = localHistory.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) }));
+        setMessages(formatted);
+      } else {
+        // Se estiver vazio, coloca a mensagem de boas-vindas inicial para n├úo ficar em branco
+        const welcomeText = t('assistant_welcome', language);
+        setMessages([{
+            id: 'welcome',
+            role: 'assistant',
+            text: welcomeText === 'assistant_welcome' ? "Ol├í, sou o MIRA! Como posso ajudar?" : welcomeText,
+            timestamp: new Date()
+        }]);
+      }
+
+      // 2. TENTAR SINCRONIZA├ç├âO EM BACKGROUND (SUPABASE)
+      // Se falhar (ex: tabela profiles sumiu), o usu├írio N├âO percebe
+      try {
+        const { data: { session: authSession } } = await supabase.auth.getSession();
+        if (authSession?.user?.id) {
+          const { data: dbSess } = await supabase
+            .from('chat_sessions')
+            .select('id')
+            .eq('user_id', authSession.user.id)
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (dbSess) {
+            setSessionId(dbSess.id);
+            const { data: dbMsgs } = await supabase
+              .from('chat_messages')
+              .select('*')
+              .eq('session_id', dbSess.id)
+              .order('created_at', { ascending: true });
+
+            if (dbMsgs && dbMsgs.length > 0) {
+              const serverMsgs = dbMsgs.map(m => ({
+                id: m.id,
+                role: m.role as 'user' | 'assistant',
+                text: m.content,
+                timestamp: new Date(m.created_at),
+                isSovereign: m.is_sovereign
+              }));
+              
+              // Otimista: s├│ atualiza se houver mensagens novas que n├úo temos localmente
+              setMessages(prev => {
+                if (prev.length < serverMsgs.length) return serverMsgs;
+                return prev;
+              });
+            }
+          }
+        }
+      } catch (e) {
+        // Silencioso. Soberania Local mantida.
+        console.warn("MIRA Cloud Sync (Silent): Unreachable.");
+      }
+    };
+    loadHistory();
+  }, [language, user?.id]);
+
+  // MIRA V12000.SOVEREIGN: Auto-Save to IndexedDB
+  useEffect(() => {
+    if (messages.length > 0) {
+      persistence.set('mira_chat_history', messages);
+    }
+  }, [messages]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<string | null>(null);
+  const [audioEnabled, setAudioEnabled] = useState(() => {
+    const saved = localStorage.getItem('mira_audio_enabled');
+    return saved === null ? true : saved === 'true'; // Default to true for "Elite" experience
+  });
+  const [sessionId, setSessionId] = useState<string | null>(sessionStorage.getItem('mira_chat_session_id'));
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const { showToast } = useToast();
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // AUTO-SCROLL
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping]);
+
+  useEffect(() => {
+    audioService.getVoices();
+  }, []);
+
+  useEffect(() => {
+    const initChat = async () => {
+      const alreadyHasWelcome = messages.some(m => m.id === '1' || m.id === 'welcome');
+      if (!alreadyHasWelcome && messages.length === 0) {
+        setIsTyping(true);
+        setTimeout(async () => {
+          const rawWelcome = t('assistant_welcome', language);
+          const welcomeText = rawWelcome === 'assistant_welcome' ? "Ol├í, sou o MIRA! Como posso ajudar?" : rawWelcome;
+          const welcome = { id: '1', role: 'assistant' as const, text: welcomeText, timestamp: new Date() };
+          setMessages([welcome]);
+          setIsTyping(false);
+          
+          if (audioEnabled) {
+              handleAudioAction(welcome);
+          }
+        }, 1200);
+      }
+    };
+    initChat();
+  }, [language, audioEnabled, messages.length]);
+
+  useEffect(() => {
+    sessionStorage.setItem('mira_chat_history', JSON.stringify(messages));
+    if (sessionId) sessionStorage.setItem('mira_chat_session_id', sessionId);
+    localStorage.setItem('mira_audio_enabled', String(audioEnabled));
+  }, [messages, sessionId, audioEnabled]);
+
+  const handleAudioAction = async (msg: any) => {
+    if (isPlaying === msg.id) {
+       audioService.stop();
+       setIsPlaying(null);
+       return;
+    }
+    
+    // V2026.PREMIUM: Aggressive Resume (Stop previous & Prime)
+    audioService.stop();
+    if (window.speechSynthesis) window.speechSynthesis.resume();
+    setIsPlaying(msg.id);
+    audioService.prime(); 
+    
+    try {
+      // V2026: Zero-Silence Sanitization (Strip MD before synthesis)
+      const ttsText = sanitizeTTS(msg.text);
+      const audioPromise = msg.audioBase64 ? Promise.resolve(msg.audioBase64) : generateSpeech(ttsText, (language || 'PT')?.toUpperCase());
+      
+      // V2026.SOCIAL-NOBEL: Ultra-Resilience (12s Timeout for Cold Ends)
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("AUDIO_TIMEOUT")), 12000));
+      const audioBase64 = await Promise.race([audioPromise, timeoutPromise]) as string;
+
+      if (audioBase64) {
+          if (!msg.audioBase64) {
+              setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, audioBase64 } : m));
+          }
+          audioService.playBase64(audioBase64, undefined, () => setIsPlaying(null));
+      } else {
+          throw new Error("NO_AUDIO_DATA");
+      }
+    } catch (e: any) {
+      console.warn(`MIRA: Audio HQ ${e.message === 'AUDIO_TIMEOUT' ? 'timed out' : 'failed'}, using local fallback...`, e);
+      const textToSpeak = msg.text.replace(/\[.*?\]\(.*?\)/g, '').replace(/\*\*?|_|#/g, '');
+      
+      // MIRA V26.92: Ensure engine is resumed and buffer cleared before local fallback
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
+      }
+      
+      audioService.speak(textToSpeak, (language || 'PT')?.toUpperCase(), undefined, undefined, () => {
+          setIsPlaying(null);
+          if (e.message !== 'AUDIO_TIMEOUT') {
+             showToast(language === 'PT' ? "Voz b├ísica ativa (HD indispon├¡vel)" : "Local voice active", "info");
+          }
+      });
+    }
+  };
+
+  const handleFeedback = async (id: string, type: 'helpful' | 'not_helpful') => {
+    setMessages(prev => prev.map(m => m.id === id ? { ...m, feedback: type } : m));
+    showToast(type === 'helpful' ? t('toast_feedback_recorded', language) : t('toast_learn_more', language), "info");
+  };
+
+  const handleClearChat = async () => {
+    // 🛡️ MIRA SOBERANA V5.7.7: Ignição Otimista (Eliminar é Instantâneo)
+    if (window.confirm(t('comm_delete_post_q', language) || "Deseja eliminar esta conversa?") ) {
+      // 1. LIMPEZA IMEDIATA DA INTERFACE (Mente da CEO Limpa)
+      const welcome = { id: Date.now().toString(), role: 'assistant' as const, text: t('assistant_welcome', language), timestamp: new Date() };
+      setMessages([welcome]);
+      setSessionId(null);
+      setIsPlaying(null);
+      audioService.stop();
+
+      // 2. LIMPEZA DE PERSISTÊNCIA LOCAL (Zero Rastro no Browser)
+      try {
+        await persistence.delete('mira_chat_history');
+        sessionStorage.removeItem('mira_chat_history');
+        sessionStorage.removeItem('mira_chat_session_id');
+      } catch (e) { console.warn("MIRA Local Clear Fail:", e); }
+
+      showToast(language === 'PT' ? "Conversa limpa com sucesso!" : "Chat cleared!", "success");
+
+      // 3. LIMPEZA DE BACKGROUND (SUPABASE) - Não bloqueia a UI
+      if (sessionId) {
+        supabase.from('chat_sessions').delete().eq('id', sessionId).then(({error}) => {
+          if (error) console.error("MIRA DB Clear Fail (Silent):", error);
+        });
+      }
+    }
+  };
+
+  const handleSend = async (text: string) => {
+    if (!text.trim() || isLoading) return;
+    const userMsg: Message = { id: Date.now().toString(), role: 'user' as const, text, timestamp: new Date() };
+    setMessages(prev => [...prev, userMsg]);
+    setIsLoading(true);
+    setIsTyping(true);
+    
+    // MIRA V2026.AUDIO: Aggressive Priming (Zero-Silence Protocol)
+    audioService.prime();
+    if (window.speechSynthesis && window.speechSynthesis.paused) window.speechSynthesis.resume();
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      let currentSessionId = sessionId;
+
+      // V26.85: Safety timeout for Edge/Chrome hangs (75s for Expert Answers)
+      const fallbackPhrase = language === 'PT' ? "Desculpa, n├úo compreendi! Poderia me explicar melhor como posso te ajudar?" : t('toast_server_error', language);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error(fallbackPhrase)), 75000));
+      
+      const generationPromise = generateAssistantResponseV45(text, messages.map(m => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.text }]
+      })), "MIRA Intelligent Hub", (language || 'PT')?.toUpperCase(), undefined, { name: user.name });
+
+      // Let AI generate in parallel while we *optionally* prepare suggestions
+      const responseData: any = await Promise.race([generationPromise, timeoutPromise]);
+      const responseText = responseData?.text || responseData;
+
+      const assistantMsg: Message & { relatedArticles?: any[] } = { 
+        id: (Date.now() + 1).toString(), 
+        role: 'assistant' as const, 
+        text: (typeof responseText === 'string' ? responseText : (responseText as any)?.text) || "MIRA em sil├¬ncio moment├óneo.", 
+        timestamp: new Date() 
+      };
+
+      // Independent Suggestions & Sovereignty Check (V2026.NOBEL)
+      try {
+          const knowledge = await adminService.fetchAIKnowledge();
+          const textToProcess = assistantMsg.text || "";
+          const words = textToProcess.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+          const matches = knowledge.filter(art => {
+              const artText = ((art.topic || "") + " " + (art.information || "")).toLowerCase();
+              return words.some(w => artText.includes(w));
+          }).map(art => ({ id: art.id, topic: art.topic, type: art.category || 'article' })).slice(0, 2);
+          
+          if (matches.length > 0) {
+              assistantMsg.relatedArticles = matches;
+              // If there's a match in Saber IA / Knowledge, it's a Sovereign response
+              (assistantMsg as any).isSovereign = true; 
+          }
+      } catch (e) { /* ignore silently */ }
+
+      setMessages(prev => [...prev, assistantMsg]);
+      
+      if (userId && currentSessionId) {
+        supabase.from('chat_messages').insert([
+          { session_id: currentSessionId, role: 'user', content: text },
+          { session_id: currentSessionId, role: 'assistant', content: assistantMsg.text, is_sovereign: (assistantMsg as any).isSovereign }
+        ]).then(({error}) => { 
+          if(error) console.error("History Save Error:", error);
+          // Update session timestamp
+          supabase.from('chat_sessions').update({ updated_at: new Date() }).eq('id', currentSessionId);
+        });
+      } else if (userId && !currentSessionId) {
+          // Auto-create session on first valid response
+          const { data: newSess } = await supabase.from('chat_sessions').insert([{ user_id: userId, title: text.substring(0, 35) }]).select().single();
+          if (newSess) {
+              setSessionId(newSess.id);
+              await supabase.from('chat_messages').insert([
+                  { session_id: newSess.id, role: 'user', content: text },
+                  { session_id: newSess.id, role: 'assistant', content: assistantMsg.text, is_sovereign: (assistantMsg as any).isSovereign }
+              ]);
+          }
+      }
+    } catch (error: any) {
+      console.error("MIRA CHAT ERROR:", error);
+      showToast(error?.message || t('toast_server_error', language), "error");
+    } finally {
+      setIsLoading(false);
+      setIsTyping(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-[#f8fbff] relative overflow-hidden font-['Plus_Jakarta_Sans'] pb-[62px] md:pb-0">
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none select-none" 
+           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230066ff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
+
+      <MiraChatHeader 
+        language={language} 
+        onBack={() => onViewChange(ViewType.HOME)} 
+        onShowAvatar={() => setShowAvatarModal(true)} 
+        audioEnabled={audioEnabled}
+        onToggleAudio={() => {
+          const newState = !audioEnabled;
+          setAudioEnabled(newState);
+          if (newState) audioService.prime();
+          else audioService.stop();
+          showToast(newState ? t('toast_audio_on', language) : t('toast_audio_off', language), "info");
+        }}
+        onClearChat={handleClearChat}
+      />
+
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto no-scrollbar relative z-10 px-0 sm:px-2 scroll-smooth overscroll-contain">
+        <div className="max-w-3xl w-full mx-auto flex flex-col justify-end min-h-full py-4 sm:py-8">
+            <div className="mt-auto">
+                {messages.map((m) => (
+                <MiraChatMessage 
+                    key={m.id} 
+                    msg={m} 
+                    language={language} 
+                    isPlaying={isPlaying} 
+                    onAudioAction={handleAudioAction} 
+                    onFeedback={handleFeedback} 
+                    onViewChange={onViewChange} 
+                />
+                ))}
+                <div ref={messagesEndRef} className="h-4" />
+                
+                {/* Elite Disclaimer Section REMOVED BY CEO ORDER */}
+            </div>
+        </div>
+      </div>
+
+      <div className="shrink-0 bg-transparent px-4 pb-0 sm:pb-2 pt-2 sticky bottom-0 z-[100] transition-all duration-300">
+        {isTyping && (
+            <div className="absolute -top-12 left-8">
+                <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl rounded-bl-none shadow-lg flex gap-1 items-center border border-slate-100 animate-in fade-in slide-in-from-bottom-2">
+                    <span className="w-1 h-1 bg-mira-orange rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                    <span className="w-1 h-1 bg-mira-orange rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                    <span className="w-1 h-1 bg-mira-orange rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                </div>
+            </div>
+        )}
+        <div className="max-w-3xl mx-auto">
+            {/* V2026.GO-LIVE: Ultra-Compact Legal Hook */}
+            <div className="flex justify-center mb-2 px-6">
+              <div className="flex items-center gap-2 py-1 px-4 bg-slate-50/80 backdrop-blur-sm border border-slate-100 rounded-full shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-700">
+                <ShieldCheck size={10} className="text-slate-400" />
+                <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tight">
+                  <span className="text-slate-900 font-black mr-1.5">{t('legal_s_title', language) || 'AVISO LEGAL:'}</span>
+                  {t('general_disclaimer_note', language) || 'O MIRA ├⌐ uma ferramenta de apoio. N├úo substitu├¡mos aconselhamento jur├¡dico oficial.'}
+                </p>
+              </div>
+            </div>
+            {/* V2026.ELITE: Quick Suggestions */}
+            {messages.length === 1 && !isLoading && (
+              <div className="flex flex-wrap justify-center gap-2 mb-4 px-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+                {[
+                  "Como tirar o NIF?",
+                  "O que ├⌐ o Artigo 88?",
+                  "Agendamento AIMA 2026",
+                  "Atribui├º├úo de NISS"
+                ].map(suggestion => (
+                  <button
+                    key={suggestion}
+                    onClick={() => handleSend(suggestion)}
+                    className="px-4 py-2.5 bg-white/90 backdrop-blur-md border border-slate-100 rounded-full shadow-sm text-[10px] font-extrabold text-slate-700 uppercase tracking-tight hover:border-mira-orange hover:text-mira-orange active:scale-95 transition-all"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <ChatInput language={language} isLoading={isLoading} onSend={handleSend} />
+        </div>
+      </div>
+
+      {showAvatarModal && (
+        <div className="fixed inset-0 z-[1000] bg-[#001F3F]/95 backdrop-blur-3xl flex items-center justify-center cursor-pointer p-0" onClick={() => setShowAvatarModal(false)}>
+            <button className="absolute top-8 right-8 text-white/70 hover:text-white transition-all p-3 bg-white/10 rounded-full hover:bg-white/20 z-[1001]" onClick={(e) => { e.stopPropagation(); setShowAvatarModal(false); }}>
+                <X size={32} />
+            </button>
+            <div className="w-full h-full p-6 flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                <div className="max-w-lg w-full aspect-square bg-slate-900 rounded-[3rem] p-1 shadow-2xl overflow-hidden border border-white/10 animate-in zoom-in-95 duration-500">
+                    <img src="/mira-robot.png" alt="MIRA" className="w-full h-full object-cover rounded-[2.8rem]" />
+                </div>
+            </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default React.memo(AssistantView);

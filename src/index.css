@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme {
+  --color-mira-orange: #FF8C00;
+  --color-mira-navy: #001F3F;
+  --color-mira-negro: #0A0A0A;
+  --color-mira-blue: #0066FF;
+  --color-mira-blue-light: #00E5FF;
+  --color-mira-blue-electric: #0066FF;
+  --color-mira-green: #22c55e;
+  --color-mira-yellow: #facc15;
+  --color-mira-secondary: #0066FF;
+  --color-mira-orange-pastel: #FFF1E6;
+  --color-mira-yellow-pastel: #FEFAE0;
+  --color-mira-blue-pastel: #E0F2FE;
+  --color-mira-green-pastel: #DCFCE7;
+
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+
+  --radius-post: 24px;
+  --radius-imperial: 2.5rem;
+
+  --animate-pulse-green: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-spin-slow: spin 8s linear infinite;
+
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(1.2); }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+}
+
+/* 👑 MIRA V2026.GOLD: Global Styles */
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #F8F9FA;
+  background-image:
+    radial-gradient(at 0% 0%, hsla(253,16%,7%,0.03) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(339,49%,30%,0.03) 0, transparent 50%);
+  color: #0F172A;
+  overflow-x: hidden;
+  min-height: 100dvh;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* V2026.PRO: Imperial Icon Reinforcement */
+svg {
+  stroke-width: 3 !important;
+}
+
+/* Custom Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s infinite ease-in-out;
+}
+
+.animate-mira-blink {
+  animation: high-tech-blink 1.5s infinite ease-in-out;
+}
+
+.animate-mira-blink-modern {
+  animation: mira-luxury-glow 3s infinite ease-in-out;
+}
+
+@keyframes mira-luxury-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.2);
+    transform: scale(1) translateY(0);
+  }
+  50% { 
+    box-shadow: 0 0 50px rgba(255, 107, 0, 0.8), inset 0 0 25px rgba(255, 255, 255, 0.4);
+    transform: scale(1.05) translateY(-5px);
+  }
+}
+
+@keyframes mira-icon-float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-3px) rotate(5deg); }
+}
+
+.animate-mira-icon {
+  animation: mira-icon-float 4s infinite ease-in-out;
+}
+
+.mira-glass-gloss {
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%);
+}
+
+.bg-body-gradient {
+  background: linear-gradient(135deg, #FF8C00 0%, #0A0A0A 100%);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Typing state transitions */
+.is-typing .hide-on-typing {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(100px) !important;
+}
+
+.is-typing header {
+  transform: translateY(-100%) !important;
+}
+
+.is-typing nav {
+  transform: translateY(100%) !important;
+}
+
+@keyframes mira-lights {
+  0%, 100% { box-shadow: 0 0 30px #FF8C00, 0 0 60px #FF8C00; filter: brightness(1.2); }
+  25% { box-shadow: 0 0 30px #0066FF, 0 0 60px #0066FF; filter: brightness(1.2); }
+  50% { box-shadow: 0 0 30px #22c55e, 0 0 60px #22c55e; filter: brightness(1.2); }
+  75% { box-shadow: 0 0 30px #facc15, 0 0 60px #facc15; filter: brightness(1.2); }
+}
+
+.mira-lights-glow {
+  animation: mira-lights 4s infinite linear;
+  border-radius: 9999px;
+}
+
+@keyframes rainbow-scan {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.rainbow-bar {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, #FF8C00, #0066FF, #22c55e, #facc15, #FF8C00);
+  background-size: 200% 100%;
+  animation: rainbow-scan 3s infinite linear;
+  border-radius: 2px;
+}
+
+.mira-module-title {
+  font-size: clamp(1.4rem, 6vw, 2.5rem);
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.mira-module-subtitle {
+  font-size: clamp(0.7rem, 2vw, 0.875rem);
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 2rem;
+}
+
+.bg-slate-900 .mira-module-title, 
+.bg-\[\#0A0A0A\] .mira-module-title,
+.bg-\[\#050505\] .mira-module-title {
+  color: #FFFFFF !important;
+}
+
+@keyframes story-progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
