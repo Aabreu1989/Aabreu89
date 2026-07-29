@@ -471,38 +471,6 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
             {T.disclaimer}
         </div>
 
-        {/* 🏷️ UNIFIED APP CATEGORIES SELECTOR */}
-        <div className="max-w-2xl mx-auto mb-4 px-1">
-          <div className="flex items-center justify-between mb-1.5 px-1">
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <Sparkles size={11} className="text-orange-500" /> Categoria da Pergunta:
-            </span>
-            {selectedCategory && (
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className="text-[9px] font-bold text-orange-500 hover:underline uppercase"
-              >
-                Limpar ({selectedCategory})
-              </button>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-            {UNIFIED_CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-                className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-all border ${
-                  selectedCategory === cat
-                    ? 'bg-orange-500 text-white border-orange-600 shadow-md shadow-orange-500/20 scale-[1.03]'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-orange-300 hover:bg-orange-50/50'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* 💡 SUGGESTIONS (Sovereign Choice Grid) */}
         <div className="flex flex-col gap-2 mb-6 max-w-2xl mx-auto px-2">
             <div className="grid grid-cols-2 gap-2">
