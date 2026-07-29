@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import {
     ArrowLeft, ChevronRight, CheckCircle2, FileText, Info,
-    Shield, RotateCcw, Zap, MapPin, ExternalLink, Globe, Sparkles
+    Shield, RotateCcw, Zap, MapPin, ExternalLink, Globe, Sparkles,
+    Calculator, Calendar, DollarSign, Lightbulb, Check, Copy, HelpCircle, AlertTriangle
 } from 'lucide-react';
 import { t } from '../utils/translations';
 
@@ -41,10 +42,16 @@ const BadgePill: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, te
 // Localized translations for the new structures
 const LOCAL_TRANS: Record<'pt' | 'en', Record<string, string>> = {
     pt: {
-        niss_title: "Segurança Social",
-        niss_menu_desc: "Gerencie o seu NISS ou solicite prestações de apoio social em Portugal.",
+        niss_title: "Segurança Social & Jornada MIRA",
+        niss_menu_desc: "NISS, Declaração Trimestral, Simulador de Contribuição e Life Hacks para Imigrantes em Portugal.",
         menu_get_niss: "Obter Número NISS",
-        menu_get_niss_sub: "Passo a passo e documentação para solicitar o NISS.",
+        menu_get_niss_sub: "Passo a passo e documentação oficial para obter o seu NISS.",
+        menu_decl_trimestral: "Declaração Trimestral SS",
+        menu_decl_trimestral_sub: "Guia oficial de como declarar rendimentos de Recibos Verdes na SS Direta.",
+        menu_simulador_ss: "Simulador de Contribuição SS",
+        menu_simulador_ss_sub: "Calcule quanto vai pagar por mês com opção de variação de -25% a +25%.",
+        menu_lifehacks: "Life Hacks & Dicas de Integração",
+        menu_lifehacks_sub: "Isenção no 1.º ano, Acordo de Saúde PB4/SNS, Atestado de Morada e Dicas Fiscais.",
         menu_supports: "Apoios Sociais (Prestações)",
         menu_supports_sub: "Consulte abonos, subsídios de desemprego, doença, RSI e mais.",
         back_to_menu: "Voltar ao Menu",
@@ -55,10 +62,16 @@ const LOCAL_TRANS: Record<'pt' | 'en', Record<string, string>> = {
         support_list_sub: "Selecione um apoio para ver o procedimento passo a passo e onde aplicar."
     },
     en: {
-        niss_title: "Social Security",
-        niss_menu_desc: "Manage your NISS or request social security benefits in Portugal.",
+        niss_title: "Social Security & MIRA Journey",
+        niss_menu_desc: "NISS, Quarterly Declaration, Contribution Simulator and Life Hacks for Immigrants in Portugal.",
         menu_get_niss: "Get NISS Number",
-        menu_get_niss_sub: "Step-by-step instructions and documentation to request NISS.",
+        menu_get_niss_sub: "Official step-by-step and paperwork guide to obtain your NISS.",
+        menu_decl_trimestral: "Quarterly Declaration SS",
+        menu_decl_trimestral_sub: "Official guide on how to report Green Receipt income on Social Security Direct.",
+        menu_simulador_ss: "Social Security Simulator",
+        menu_simulador_ss_sub: "Calculate your monthly contribution with optional -25% to +25% adjustments.",
+        menu_lifehacks: "Life Hacks & Integration Tips",
+        menu_lifehacks_sub: "1st Year Exemption, PB4/SNS Health Agreement, Proof of Address & Tax Hacks.",
         menu_supports: "Social Supports (Benefits)",
         menu_supports_sub: "Check allowances, unemployment benefits, sickness, RSI and more.",
         back_to_menu: "Back to Menu",
@@ -115,7 +128,7 @@ const SOCIAL_SUPPORTS: Record<string, Record<'pt' | 'en', SupportDetail>> = {
                 { icon: "4️⃣", text: "Submit the application on the Social Security Direct portal or at a physical branch." }
             ],
             docs: [
-                { icon: "🛂", text: "ID Document for the child and parents" },
+                { icon: "... ", text: "ID Document for the child and parents" },
                 { icon: "🔢", text: "NIF and NISS of all household members" },
                 { icon: "📄", text: "IRS tax return or proof of income" },
                 { icon: "📋", text: "Completed Form Mod. RP5045-DGSS" }
@@ -172,249 +185,48 @@ const SOCIAL_SUPPORTS: Record<string, Record<'pt' | 'en', SupportDetail>> = {
                 { label: "Social Security Direct", url: "https://app.seg-social.pt" }
             ]
         }
-    },
-    rsi: {
-        pt: {
-            title: "Rendimento Social de Inserção (RSI)",
-            description: "Prestação social de apoio a indivíduos ou agregados familiares em situação de pobreza extrema.",
-            category: "Apoio Social & Integração",
-            steps: [
-                { icon: "1️⃣", text: "Requeira um atestado de residência na Junta de Freguesia local provando residência efetiva em Portugal." },
-                { icon: "2️⃣", text: "Preencha por completo o formulário Mod. RV1010-DGSS e anexe a declaração de rendimentos do agregado." },
-                { icon: "3️⃣", text: "Agende atendimento na Segurança Social ou submeta o pedido pela internet." },
-                { icon: "4️⃣", text: "Assine e cumpra o Contrato de Inserção (plano de formação/inserção laboral)." }
-            ],
-            docs: [
-                { icon: "🛂", text: "Documentos de Identificação, NIF e NISS de todo o agregado" },
-                { icon: "🏠", text: "Atestado de residência emitido pela Junta de Freguesia" },
-                { icon: "📋", text: "Formulário Mod. RV1010-DGSS devidamente assinado" },
-                { icon: "📄", text: "Extratos bancários dos últimos 3 meses de todas as contas do agregado" }
-            ],
-            applyInfo: "A entrega física do formulário e anexos é recomendada num balcão local da Segurança Social ou através da Cooperativa de Ação Social da sua zona. Também pode submeter via Segurança Social Direta.",
-            links: [
-                { label: "Segurança Social Direta", url: "https://app.seg-social.pt" },
-                { label: "Agendamento Presencial (SIGA)", url: "https://siga.marcacaodeatendimento.pt" }
-            ]
-        },
-        en: {
-            title: "Social Insertion Income (RSI)",
-            description: "Social support benefit aimed at individuals or households living in extreme poverty.",
-            category: "Social Support & Integration",
-            steps: [
-                { icon: "1️⃣", text: "Request a proof of address certificate (atestado) from the local Junta de Freguesia." },
-                { icon: "2️⃣", text: "Complete application Form Mod. RV1010-DGSS and attach your household income statement." },
-                { icon: "3️⃣", text: "Book an appointment at the Social Security office or submit your application online." },
-                { icon: "4️⃣", text: "Sign and comply with the Insertion Contract (training/employment integration plan)." }
-            ],
-            docs: [
-                { icon: "🛂", text: "IDs, NIFs, and NISS numbers for all household members" },
-                { icon: "🏠", text: "Residence certificate issued by the local Junta de Freguesia" },
-                { icon: "📋", text: "Duly signed Form Mod. RV1010-DGSS" },
-                { icon: "📄", text: "Bank statements from the last 3 months for all household accounts" }
-            ],
-            applyInfo: "Physical delivery of the forms is highly recommended at a local Social Security office or through your area's Social Action support unit. You can also submit via Social Security Direct.",
-            links: [
-                { label: "Social Security Direct", url: "https://app.seg-social.pt" },
-                { label: "Online Bookings (SIGA)", url: "https://siga.marcacaodeatendimento.pt" }
-            ]
-        }
-    },
-    parentalidade: {
-        pt: {
-            title: "Subsídio de Parentalidade",
-            description: "Apoio financeiro pago a mãe e pai trabalhadores durante a licença por nascimento ou adoção de filhos.",
-            category: "Família & Crianças",
-            steps: [
-                { icon: "1️⃣", text: "Obtenha o registo de nascimento da criança ou a certidão emitida pela maternidade/hospital." },
-                { icon: "2️⃣", text: "Articule e defina com o outro progenitor o período de licença partilhada escolhido." },
-                { icon: "3️⃣", text: "Preencha o formulário Mod. RP5049-DGSS (Requerimento de Subsídio de Parentalidade)." },
-                { icon: "4️⃣", text: "Submeta o requerimento na Segurança Social Direta no prazo de 30 dias após o parto." }
-            ],
-            docs: [
-                { icon: "📄", text: "Certidão ou registo de nascimento da criança" },
-                { icon: "🛂", text: "Documentos de identificação dos pais" },
-                { icon: "📋", text: "Formulário Mod. RP5049-DGSS preenchido" },
-                { icon: "💼", text: "Declaração da entidade patronal indicando as datas de início e fim da licença" }
-            ],
-            applyInfo: "O requerimento deve ser submetido preferencialmente online através da Segurança Social Direta (Família > Parentalidade) para maior celeridade na aprovação e pagamento.",
-            links: [
-                { label: "Segurança Social Direta", url: "https://app.seg-social.pt" }
-            ]
-        },
-        en: {
-            title: "Parental Benefit",
-            description: "Financial support paid to working mothers and fathers during birth or adoption leaves.",
-            category: "Family & Children",
-            steps: [
-                { icon: "1️⃣", text: "Obtain the child's birth registration or the certificate issued by the hospital." },
-                { icon: "2️⃣", text: "Coordinate and define the shared leave period structure with the other parent." },
-                { icon: "3️⃣", text: "Complete application Form Mod. RP5049-DGSS (Parental Benefit Request)." },
-                { icon: "4️⃣", text: "Submit the request on the Social Security Direct portal within 30 days of the birth." }
-            ],
-            docs: [
-                { icon: "📄", text: "Child's birth registration certificate" },
-                { icon: "🛂", text: "ID documents of both parents" },
-                { icon: "📋", text: "Completed Form Mod. RP5049-DGSS" },
-                { icon: "💼", text: "Employer declaration specifying the start and end dates of the leave" }
-            ],
-            applyInfo: "The application should be submitted online through the Social Security Direct portal (Family > Parental Leave) to ensure faster processing and payment approval.",
-            links: [
-                { label: "Social Security Direct", url: "https://app.seg-social.pt" }
-            ]
-        }
-    },
-    doenca: {
-        pt: {
-            title: "Subsídio de Doença",
-            description: "Compensação financeira temporária para trabalhadores impedidos de exercer atividade profissional por doença.",
-            category: "Saúde & Proteção",
-            steps: [
-                { icon: "1️⃣", text: "Agende consulta médica no Centro de Saúde (SNS) ou dirija-se a um hospital público." },
-                { icon: "2️⃣", text: "O médico emite eletronicamente o Certificado de Incapacidade Temporária (CIT) - a Baixa Médica." },
-                { icon: "3️⃣", text: "A baixa é enviada de forma digital automática pelo SNS para a Segurança Social." },
-                { icon: "4️⃣", text: "Registe o seu IBAN na Segurança Social Direta para o pagamento do subsídio." }
-            ],
-            docs: [
-                { icon: "🏥", text: "CIT (Baixa Médica) emitido eletronicamente pelo médico do SNS" },
-                { icon: "🏦", text: "Comprovativo de IBAN registado no perfil da Segurança Social Direta" }
-            ],
-            applyInfo: "Não é necessário entregar nenhum requerimento físico na Segurança Social. O processo inicia-se de forma 100% eletrónica pelo serviço de saúde pública (SNS). Certifique-se apenas de ter o seu IBAN associado no portal.",
-            links: [
-                { label: "Segurança Social Direta", url: "https://app.seg-social.pt" }
-            ]
-        },
-        en: {
-            title: "Sickness Benefit",
-            description: "Temporary financial compensation for workers who are unable to work due to medical reasons.",
-            category: "Health & Protection",
-            steps: [
-                { icon: "1️⃣", text: "Book an appointment at your local Health Center (SNS) or visit a public hospital." },
-                { icon: "2️⃣", text: "The doctor electronically issues the Certificate of Temporary Incapacity (CIT) - 'Baixa Médica'." },
-                { icon: "3️⃣", text: "The sick leave certificate is automatically transmitted digitally from the health service to Social Security." },
-                { icon: "4️⃣", text: "Link your IBAN bank details in the Social Security Direct portal to receive payments." }
-            ],
-            docs: [
-                { icon: "🏥", text: "CIT Certificate issued electronically by the NHS (SNS) doctor" },
-                { icon: "🏦", text: "IBAN details registered on your Social Security Direct profile" }
-            ],
-            applyInfo: "You do not need to submit any physical paperwork to the Social Security. The process starts automatically through the public health system (SNS). You only need to ensure your IBAN is updated in your account.",
-            links: [
-                { label: "Social Security Direct", url: "https://app.seg-social.pt" }
-            ]
-        }
-    },
-    psi: {
-        pt: {
-            title: "Prestação Social para a Inclusão (PSI)",
-            description: "Apoio destinado a cidadãos residentes com grau de incapacidade permanente igual ou superior a 60%.",
-            category: "Apoio Social & Integração",
-            steps: [
-                { icon: "1️⃣", text: "Submeta-se a uma junta médica do SNS para obter o Atestado Médico de Incapacidade Multiuso (AMIM)." },
-                { icon: "2️⃣", text: "Preencha o formulário de requerimento Mod. PSI 1-DGSS." },
-                { icon: "3️⃣", text: "Junte comprovativos de residência e extrato de IBAN atualizado." },
-                { icon: "4️⃣", text: "Submeta eletronicamente na Segurança Social Direta ou presencialmente." }
-            ],
-            docs: [
-                { icon: "🏥", text: "Atestado Médico de Incapacidade Multiuso (AMIM) indicando incapacidade >= 60%" },
-                { icon: "📋", text: "Formulário Mod. PSI 1-DGSS preenchido e assinado" },
-                { icon: "🛂", text: "Documento de identificação civil, NIF e NISS" },
-                { icon: "🏦", text: "Documento comprovativo de IBAN bancário" }
-            ],
-            applyInfo: "A candidatura pode ser efetuada online na Segurança Social Direta (Ações Sociais > Prestação Social para a Inclusão) ou entregando a documentação presencialmente num balcão local.",
-            links: [
-                { label: "Segurança Social Direta", url: "https://app.seg-social.pt" },
-                { label: "Agendamento Presencial (SIGA)", url: "https://siga.marcacaodeatendimento.pt" }
-            ]
-        },
-        en: {
-            title: "Social Benefit for Inclusion (PSI)",
-            description: "Financial support for resident citizens with a permanent degree of disability of 60% or higher.",
-            category: "Social Support & Integration",
-            steps: [
-                { icon: "1️⃣", text: "Book a public health medical board evaluation to obtain the Multipurpose Medical Disability Certificate (AMIM)." },
-                { icon: "2️⃣", text: "Complete application Form Mod. PSI 1-DGSS." },
-                { icon: "3️⃣", text: "Gather your proof of legal residence and an updated IBAN certificate." },
-                { icon: "4️⃣", text: "Submit electronically via Social Security Direct or deliver in person." }
-            ],
-            docs: [
-                { icon: "🏥", text: "Multipurpose Medical Disability Certificate (AMIM) showing disability >= 60%" },
-                { icon: "📋", text: "Completed and signed Form Mod. PSI 1-DGSS" },
-                { icon: "🛂", text: "Civil identification documents, NIF, and NISS" },
-                { icon: "🏦", text: "Proof of IBAN bank account details" }
-            ],
-            applyInfo: "The application can be submitted online on Social Security Direct (Social Action > Social Benefit for Inclusion) or by delivering the paperwork in person to a local office.",
-            links: [
-                { label: "Social Security Direct", url: "https://app.seg-social.pt" },
-                { label: "Online Bookings (SIGA)", url: "https://siga.marcacaodeatendimento.pt" }
-            ]
-        }
-    },
-    csi: {
-        pt: {
-            title: "Complemento Solidário para Idosos (CSI)",
-            description: "Apoio mensal em dinheiro pago a idosos de baixos recursos que tenham atingido a idade da reforma.",
-            category: "Apoio Social & Integração",
-            steps: [
-                { icon: "1️⃣", text: "Comprove residência legal efetiva em território nacional há pelo menos 6 anos consecutivos." },
-                { icon: "2️⃣", text: "Preencha o requerimento oficial Mod. CSI 1-DGSS e recolha dados de rendimentos do seu agregado." },
-                { icon: "3️⃣", text: "Junte a folha de rendimentos tributários IRS do último ano fiscal." },
-                { icon: "4️⃣", text: "Entregue a documentação presencialmente num balcão local da Segurança Social." }
-            ],
-            docs: [
-                { icon: "🛂", text: "Documento de identificação civil, NIF e NISS do requerente" },
-                { icon: "🏠", text: "Comprovativo de residência legal há pelo menos 6 anos" },
-                { icon: "📋", text: "Formulário Mod. CSI 1-DGSS preenchido" },
-                { icon: "📄", text: "Comprovativo de rendimentos (IRS) do próprio e do cônjuge/companheiro" }
-            ],
-            applyInfo: "Dada a complexidade da avaliação patrimonial e de parentesco familiar, a candidatura é habitualmente instruída e entregue de forma presencial no balcão da Segurança Social da sua área de residência.",
-            links: [
-                { label: "Segurança Social Direta", url: "https://app.seg-social.pt" },
-                { label: "Agendamento Presencial (SIGA)", url: "https://siga.marcacaodeatendimento.pt" }
-            ]
-        },
-        en: {
-            title: "Solidarity Supplement for the Elderly (CSI)",
-            description: "Monthly financial support paid to low-income seniors who have reached the legal retirement age.",
-            category: "Social Support & Integration",
-            steps: [
-                { icon: "1️⃣", text: "Prove legal and continuous residence in Portugal for at least the last 6 consecutive years." },
-                { icon: "2️⃣", text: "Complete application Form Mod. CSI 1-DGSS and collect household income information." },
-                { icon: "3️⃣", text: "Attach last year's IRS tax return statements." },
-                { icon: "4️⃣", text: "Deliver the completed forms in person to a local Social Security office." }
-            ],
-            docs: [
-                { icon: "🛂", text: "Civil ID, NIF, and NISS of the applicant" },
-                { icon: "🏠", text: "Proof of legal residence for at least 6 years" },
-                { icon: "📋", text: "Completed Form Mod. CSI 1-DGSS" },
-                { icon: "📄", text: "Proof of income (IRS tax returns) of the applicant and their spouse" }
-            ],
-            applyInfo: "Due to the complex evaluation of family income and assets, this application is typically submitted in person at the local Social Security branch in your area of residence.",
-            links: [
-                { label: "Social Security Direct", url: "https://app.seg-social.pt" },
-                { label: "Online Bookings (SIGA)", url: "https://siga.marcacaodeatendimento.pt" }
-            ]
-        }
     }
 };
 
 export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSelectTemplate }) => {
-    const [flow, setFlow] = useState<'menu' | 'niss' | 'supports'>('menu');
+    const [flow, setFlow] = useState<'menu' | 'niss' | 'decl_trimestral' | 'simulador_ss' | 'lifehacks' | 'supports'>('menu');
     const [step, setStep] = useState(1);
     const [workerType, setWorkerType] = useState<string>('');
     const [selectedSupport, setSelectedSupport] = useState<string>('');
 
+    // Simulator Interactive State
+    const [simRevenue, setSimRevenue] = useState<number>(3000);
+    const [simActivity, setSimActivity] = useState<'servicos' | 'vendas' | 'saude_producao'>('servicos');
+    const [simAdjustment, setSimAdjustment] = useState<number>(0); // -0.25, 0, 0.25
+    const [simTaxRate, setSimTaxRate] = useState<number>(0.214); // 0.214 (21.4%), 0.252 (25.2%)
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
     const lang: 'pt' | 'en' = (language?.toLowerCase() === 'en' ? 'en' : 'pt');
 
+    // Simulator Calculations
+    const activityCoeff = simActivity === 'servicos' ? 0.70 : simActivity === 'vendas' ? 0.20 : 0.50;
+    const relevantQuarterlyRevenue = Math.max(0, simRevenue) * activityCoeff;
+    const monthlyAverageBase = relevantQuarterlyRevenue / 3;
+    const adjustedMonthlyBase = monthlyAverageBase * (1 + simAdjustment);
+    const computedMonthlyContrib = Math.max(20, adjustedMonthlyBase * simTaxRate);
+    const computedQuarterlyTotal = computedMonthlyContrib * 3;
+
     const handleBack = () => {
-        if (flow === 'niss') {
-            if (step > 1) setStep(s => s - 1);
-            else setFlow('menu');
-        } else if (flow === 'supports') {
-            if (step > 1) setStep(1);
-            else setFlow('menu');
+        if (flow !== 'menu') {
+            if (flow === 'niss' && step > 1) {
+                setStep(s => s - 1);
+            } else {
+                setFlow('menu');
+            }
         } else {
             onBack();
         }
+    };
+
+    const copyToClipboard = (text: string, index: number) => {
+        navigator.clipboard.writeText(text);
+        setCopiedIndex(index);
+        setTimeout(() => setCopiedIndex(null), 2000);
     };
 
     const types = [
@@ -440,7 +252,7 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
     // Helper translation accessor
     const localT = (key: string) => LOCAL_TRANS[lang][key] || key;
 
-    const currentSupportData = selectedSupport ? SOCIAL_SUPPORTS[selectedSupport][lang] : null;
+    const currentSupportData = selectedSupport ? SOCIAL_SUPPORTS[selectedSupport]?.[lang] : null;
 
     return (
         <div className="flex flex-col h-full bg-slate-950 overflow-hidden">
@@ -468,7 +280,7 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                     <div className="flex items-center gap-1">
                         <Sparkles size={12} className="text-blue-400 animate-pulse" />
                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20">
-                            ✦ {flow === 'menu' ? 'MENU' : flow === 'niss' ? `NISS ${step}/2` : step === 1 ? 'APOIOS' : 'DETALHES'}
+                            ✦ {flow === 'menu' ? 'MENU' : flow === 'decl_trimestral' ? 'DECLARAÇÃO SS' : flow === 'simulador_ss' ? 'SIMULADOR SS' : flow === 'lifehacks' ? 'LIFE HACKS' : flow === 'niss' ? `NISS ${step}/2` : 'APOIOS'}
                         </span>
                     </div>
                 </div>
@@ -489,6 +301,39 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                             </h2>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
                                 {localT('niss_menu_desc')}
+                            </p>
+                        </div>
+                    )}
+
+                    {flow === 'decl_trimestral' && (
+                        <div className="animate-in slide-in-from-bottom-2 duration-400">
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">
+                                Declaração Trimestral SS
+                            </h2>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                Passo a passo oficial de preenchimento para Recibos Verdes na Segurança Social Direta.
+                            </p>
+                        </div>
+                    )}
+
+                    {flow === 'simulador_ss' && (
+                        <div className="animate-in slide-in-from-bottom-2 duration-400">
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">
+                                Simulador de Contribuição SS
+                            </h2>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                Calcule em tempo real o valor mensal a pagar com os coeficientes de variação oficiais.
+                            </p>
+                        </div>
+                    )}
+
+                    {flow === 'lifehacks' && (
+                        <div className="animate-in slide-in-from-bottom-2 duration-400">
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">
+                                Life Hacks de Integração 🇵🇹
+                            </h2>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                Isenções fiscais, Acordo de Saúde PB4/SNS, Atestado de Morada e Dicas Fiscais Vitais.
                             </p>
                         </div>
                     )}
@@ -521,7 +366,7 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
             <div className="flex-1 overflow-y-auto bg-slate-50 no-scrollbar">
                 <div className="p-5 space-y-5 pb-32">
 
-                    {/* ════ FLOW MENU — Get NISS or Social Supports ════════════════ */}
+                    {/* ════ FLOW MENU — Core Hub ════════════════ */}
                     {flow === 'menu' && (
                         <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
                             {/* Option 1: Get NISS */}
@@ -543,10 +388,67 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                 <ChevronRight className="text-slate-300 group-hover:text-blue-500 transition-colors" size={20} />
                             </button>
 
-                            {/* Option 2: Social Supports */}
+                            {/* Option 2: Declaração Trimestral SS */}
+                            <button
+                                onClick={() => { setFlow('decl_trimestral'); }}
+                                className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-6 text-left transition-all duration-500 hover:border-indigo-400/30 hover:shadow-2xl hover:shadow-indigo-500/5 active:scale-[0.98] flex items-center gap-4"
+                            >
+                                <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-500 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
+                                    📋
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-indigo-500 transition-colors">
+                                        {localT('menu_decl_trimestral')}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-400 font-medium mt-1 leading-normal">
+                                        {localT('menu_decl_trimestral_sub')}
+                                    </p>
+                                </div>
+                                <ChevronRight className="text-slate-300 group-hover:text-indigo-500 transition-colors" size={20} />
+                            </button>
+
+                            {/* Option 3: Simulador SS */}
+                            <button
+                                onClick={() => { setFlow('simulador_ss'); }}
+                                className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-6 text-left transition-all duration-500 hover:border-amber-400/30 hover:shadow-2xl hover:shadow-amber-500/5 active:scale-[0.98] flex items-center gap-4"
+                            >
+                                <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-100 text-amber-500 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
+                                    🧮
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-amber-500 transition-colors">
+                                        {localT('menu_simulador_ss')}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-400 font-medium mt-1 leading-normal">
+                                        {localT('menu_simulador_ss_sub')}
+                                    </p>
+                                </div>
+                                <ChevronRight className="text-slate-300 group-hover:text-amber-500 transition-colors" size={20} />
+                            </button>
+
+                            {/* Option 4: Life Hacks & Dicas de Integração */}
+                            <button
+                                onClick={() => { setFlow('lifehacks'); }}
+                                className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-6 text-left transition-all duration-500 hover:border-purple-400/30 hover:shadow-2xl hover:shadow-purple-500/5 active:scale-[0.98] flex items-center gap-4"
+                            >
+                                <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 text-purple-500 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
+                                    💡
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-purple-500 transition-colors">
+                                        {localT('menu_lifehacks')}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-400 font-medium mt-1 leading-normal">
+                                        {localT('menu_lifehacks_sub')}
+                                    </p>
+                                </div>
+                                <ChevronRight className="text-slate-300 group-hover:text-purple-500 transition-colors" size={20} />
+                            </button>
+
+                            {/* Option 5: Social Supports */}
                             <button
                                 onClick={() => { setFlow('supports'); setStep(1); setSelectedSupport(''); }}
-                                className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-6 text-left transition-all duration-500 hover:border-blue-400/30 hover:shadow-2xl hover:shadow-blue-500/5 active:scale-[0.98] flex items-center gap-4"
+                                className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-6 text-left transition-all duration-500 hover:border-emerald-400/30 hover:shadow-2xl hover:shadow-emerald-500/5 active:scale-[0.98] flex items-center gap-4"
                             >
                                 <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-500 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
                                     🤝
@@ -567,6 +469,355 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                 <Info size={16} className="text-slate-500 shrink-0 mt-0.5" />
                                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider leading-relaxed">
                                     {t('general_disclaimer_note', lang)}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ════ FLOW DECLARAÇÃO TRIMESTRAL ═════════════════════════════ */}
+                    {flow === 'decl_trimestral' && (
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                            {/* Schedule Card */}
+                            <div className="bg-indigo-900/90 text-white rounded-3xl p-6 border border-indigo-700/50 shadow-xl space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="text-indigo-300" size={20} />
+                                    <h3 className="text-sm font-black uppercase tracking-wider text-indigo-200">
+                                        Calendário Oficial de Entregas 2026
+                                    </h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                                    <div className="bg-white/10 p-3 rounded-2xl border border-white/10">
+                                        <p className="font-black text-indigo-300">🗓️ 1 a 31 de JANEIRO</p>
+                                        <p className="text-[11px] text-slate-200 mt-1">Rendimentos de Outubro, Novembro e Dezembro</p>
+                                    </div>
+                                    <div className="bg-white/10 p-3 rounded-2xl border border-white/10">
+                                        <p className="font-black text-indigo-300">🗓️ 1 a 30 de ABRIL</p>
+                                        <p className="text-[11px] text-slate-200 mt-1">Rendimentos de Janeiro, Fevereiro e Março</p>
+                                    </div>
+                                    <div className="bg-white/10 p-3 rounded-2xl border border-white/10">
+                                        <p className="font-black text-indigo-300">🗓️ 1 a 31 de JULHO</p>
+                                        <p className="text-[11px] text-slate-200 mt-1">Rendimentos de Abril, Maio e Junho</p>
+                                    </div>
+                                    <div className="bg-white/10 p-3 rounded-2xl border border-white/10">
+                                        <p className="font-black text-indigo-300">🗓️ 1 a 31 de OUTUBRO</p>
+                                        <p className="text-[11px] text-slate-200 mt-1">Rendimentos de Julho, Agosto e Setembro</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Step-by-Step Instructions */}
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                                <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                    <span>📝</span> Passo a Passo na Segurança Social Direta
+                                </h3>
+                                <div className="space-y-4 text-xs text-slate-700">
+                                    <div className="flex gap-3">
+                                        <div className="w-7 h-7 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                                            1
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-900">Aceder ao Portal Oficial</p>
+                                            <p className="text-slate-500 mt-0.5">Entre em <a href="https://app.seg-social.pt" target="_blank" rel="noreferrer" className="text-indigo-600 underline font-bold">app.seg-social.pt</a> com o seu NISS e Palavra-passe ou Chave Móvel Digital.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <div className="w-7 h-7 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                                            2
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-900">Navegar até ao Menu Correto</p>
+                                            <p className="text-slate-500 mt-0.5">No menu superior, escolha: <strong className="text-slate-800">Emprego</strong> ➔ <strong className="text-slate-800">Trabalho Independente</strong> ➔ <strong className="text-slate-800">Declaração Trimestral</strong>.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <div className="w-7 h-7 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                                            3
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-900">Inserir os Rendimentos Ilíquidos</p>
+                                            <p className="text-slate-500 mt-0.5">Preencha o valor total bruto das Faturas-Recibos emitidas em cada um dos 3 meses do trimestre anterior. Se não faturou num mês, insira <strong>0,00€</strong>.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <div className="w-7 h-7 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                                            4
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-900">Escolher a Opção de Variação (-25% a +25%)</p>
+                                            <p className="text-slate-500 mt-0.5">Pode optar por reduzir a base em <strong>-25%</strong> para pagar menos nos 3 meses seguintes ou aumentar até <strong>+25%</strong> para acumular mais direitos de proteção social.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <div className="w-7 h-7 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-black shrink-0">
+                                            5
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-900">Submeter e Guardar o Comprovativo</p>
+                                            <p className="text-slate-500 mt-0.5">Confirme a declaração. O sistema irá gerar a nota com o valor fixo mensal a pagar a cada dia 20 nos 3 meses seguintes.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Button to Open Simulator */}
+                            <button
+                                onClick={() => setFlow('simulador_ss')}
+                                className="w-full py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-indigo-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <Calculator size={18} />
+                                Abrir Simulador Interativo de Contribuição
+                            </button>
+                        </div>
+                    )}
+
+                    {/* ════ FLOW SIMULADOR SEGURANÇA SOCIAL ═════════════════════════ */}
+                    {flow === 'simulador_ss' && (
+                        <div className="space-y-5 animate-in slide-in-from-bottom-4 duration-500">
+                            {/* Input Form */}
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+                                <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+                                    <Calculator className="text-amber-500" size={22} />
+                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">
+                                        Simulador de Contribuição SS (Recibos Verdes)
+                                    </h3>
+                                </div>
+
+                                {/* Revenue Input */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 block">
+                                        Rendimento Bruto Total do Trimestre (€):
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">€</span>
+                                        <input
+                                            type="number"
+                                            value={simRevenue}
+                                            onChange={(e) => setSimRevenue(Number(e.target.value))}
+                                            placeholder="Ex: 3000"
+                                            className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-black text-base focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-slate-400">Soma dos valores emitidos nos 3 meses do trimestre.</p>
+                                </div>
+
+                                {/* Activity Type */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 block">
+                                        Tipo de Atividade:
+                                    </label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                        <button
+                                            onClick={() => setSimActivity('servicos')}
+                                            className={`p-3 rounded-2xl border text-left text-xs font-bold transition-all ${
+                                                simActivity === 'servicos'
+                                                    ? 'bg-amber-500 text-white border-amber-600 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                                            }`}
+                                        >
+                                            💼 Prestação de Serviços (70%)
+                                        </button>
+                                        <button
+                                            onClick={() => setSimActivity('vendas')}
+                                            className={`p-3 rounded-2xl border text-left text-xs font-bold transition-all ${
+                                                simActivity === 'vendas'
+                                                    ? 'bg-amber-500 text-white border-amber-600 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                                            }`}
+                                        >
+                                            🛍️ Venda / Comércio (20%)
+                                        </button>
+                                        <button
+                                            onClick={() => setSimActivity('saude_producao')}
+                                            className={`p-3 rounded-2xl border text-left text-xs font-bold transition-all ${
+                                                simActivity === 'saude_producao'
+                                                    ? 'bg-amber-500 text-white border-amber-600 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                                            }`}
+                                        >
+                                            🩺 Saúde / Produção (50%)
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Adjustment Coeff */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 block">
+                                        Ajuste de Variação Escolhido:
+                                    </label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <button
+                                            onClick={() => setSimAdjustment(-0.25)}
+                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                                simAdjustment === -0.25
+                                                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                            }`}
+                                        >
+                                            📉 -25% (Pagar Menos)
+                                        </button>
+                                        <button
+                                            onClick={() => setSimAdjustment(0)}
+                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                                simAdjustment === 0
+                                                    ? 'bg-blue-600 text-white border-blue-700 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                            }`}
+                                        >
+                                            ⚖️ 0% (Padrão)
+                                        </button>
+                                        <button
+                                            onClick={() => setSimAdjustment(0.25)}
+                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                                simAdjustment === 0.25
+                                                    ? 'bg-purple-600 text-white border-purple-700 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                            }`}
+                                        >
+                                            📈 +25% (Proteger Mais)
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Tax Rate */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 block">
+                                        Taxa Contributiva Aplicável:
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button
+                                            onClick={() => setSimTaxRate(0.214)}
+                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                                simTaxRate === 0.214
+                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                            }`}
+                                        >
+                                            21,4% (Trabalhador Independente)
+                                        </button>
+                                        <button
+                                            onClick={() => setSimTaxRate(0.252)}
+                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                                simTaxRate === 0.252
+                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-md'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                            }`}
+                                        >
+                                            25,2% (Empresário Nome Individual)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Result Card */}
+                            <div className="bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-950 text-white rounded-3xl p-6 border border-amber-500/30 shadow-2xl space-y-4">
+                                <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                                    <span className="text-xs font-black uppercase tracking-widest text-amber-400">
+                                        📊 Resultado da Simulação
+                                    </span>
+                                    <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2.5 py-1 rounded-full border border-amber-500/30">
+                                        Cálculo Oficial DGSS 2026
+                                    </span>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+                                        Contribuição Mensal a Pagar (durante 3 meses):
+                                    </p>
+                                    <p className="text-3xl font-black text-amber-400 tracking-tight">
+                                        € {computedMonthlyContrib.toFixed(2)} <span className="text-xs text-slate-400 font-normal">/ mês</span>
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 pt-2 text-xs border-t border-white/10">
+                                    <div>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Rendimento Relevante Apurado:</p>
+                                        <p className="font-black text-white">€ {relevantQuarterlyRevenue.toFixed(2)}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Total do Trimestre (3 meses):</p>
+                                        <p className="font-black text-amber-300">€ {computedQuarterlyTotal.toFixed(2)}</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white/5 rounded-2xl p-3 border border-white/10 text-[11px] text-slate-300 space-y-1">
+                                    <p className="font-bold text-white">💡 Nota MIRA:</p>
+                                    <p>O pagamento deve ser efetuado mensalmente entre os dias <strong>10 e 20</strong> do mês seguinte àquele a que respeita (ex: contribuição de Janeiro paga até 20 de Fevereiro).</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ════ FLOW LIFE HACKS ═══════════════════════════════════════════ */}
+                    {flow === 'lifehacks' && (
+                        <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
+                            {/* Hack 1 */}
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-2xl">🎉</span>
+                                    <div>
+                                        <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                                            Hack #1: Isenção no 1.º Ano de Recibos Verdes
+                                        </h3>
+                                        <p className="text-[10px] text-purple-600 font-bold uppercase">Artigo 157.º do Código dos Contratantes</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed">
+                                    Ao abrir atividade de Trabalhador Independente pela primeira vez em Portugal, fica <strong>isento de pagar Segurança Social durante os primeiros 12 meses</strong> consecutivos.
+                                </p>
+                                <div className="bg-purple-50 p-3 rounded-2xl border border-purple-100 text-[11px] text-purple-900 font-medium">
+                                    💡 <strong>Dica de Ouro:</strong> Pode optar por renunciar à isenção caso necessite de comprovar contribuições para subsidios ou renovação de visto.
+                                </div>
+                            </div>
+
+                            {/* Hack 2 */}
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-2xl">🇧🇷</span>
+                                    <div>
+                                        <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                                            Hack #2: Acordo de Saúde PB4 / CDAM para Brasileiros
+                                        </h3>
+                                        <p className="text-[10px] text-blue-600 font-bold uppercase">Acesso ao SNS sem Título Físico</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed">
+                                    Cidadãos brasileiros com o certificado PB4 (emitido pelo Ministério da Saúde do Brasil) têm direito a ser atendidos no Sistema Nacional de Saúde (SNS) exatamente com os mesmos custos e direitos de um cidadão português, mesmo antes de terem a residência emitida.
+                                </p>
+                            </div>
+
+                            {/* Hack 3 */}
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-2xl">🏠</span>
+                                    <div>
+                                        <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                                            Hack #3: Atestado na Junta de Freguesia
+                                        </h3>
+                                        <p className="text-[10px] text-emerald-600 font-bold uppercase">Sem necessidade de 2 testemunhas</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed">
+                                    Se não tiver 2 testemunhas recenseadas na mesma freguesia, pode apresentar o <strong>Contrato de Arrendamento ou Contrato de Comodato</strong> acompanhado pelo recibo de renda eletrónico emitido nas Finanças.
+                                </p>
+                            </div>
+
+                            {/* Hack 4 */}
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-2xl">📊</span>
+                                    <div>
+                                        <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                                            Hack #4: Isenção de Retenção de IRS até 14.500€
+                                        </h3>
+                                        <p className="text-[10px] text-amber-600 font-bold uppercase">Artigo 101.º, n.º 1 do CIRS (2026)</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed">
+                                    Se estima faturar menos de <strong>14.500€ em 2026</strong>, pode selecionar a opção <em>"Sem retenção - art. 101.º, n.º 1 do CIRS"</em> ao emitir faturas-recibos verdes, evitando retenções de imposto na fonte no arranque.
                                 </p>
                             </div>
                         </div>
@@ -598,287 +849,129 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                             {type.sub}
                                         </p>
                                     </div>
-                                    <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white group-hover:border-slate-900 transition-all duration-300">
-                                        <ChevronRight size={14} />
-                                    </div>
+                                    <ChevronRight className="text-slate-300 group-hover:text-blue-500 transition-colors" size={18} />
                                 </button>
                             ))}
-
-                            {/* Info Box */}
-                            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
-                                <Info size={16} className="text-blue-600 shrink-0 mt-0.5" />
-                                <p className="text-xs text-blue-800 font-medium leading-relaxed">
-                                    {t('niss_info_box', lang)}
-                                </p>
-                            </div>
                         </div>
                     )}
 
-                    {/* ════ FLOW NISS — Step 2: Checklist & Process ═══════════════ */}
+                    {/* ════ FLOW NISS — Step 2: Checklist & Apply ══════════════════ */}
                     {flow === 'niss' && step === 2 && (
-                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                            {/* Where */}
-                            <div className="bg-white border border-slate-100 rounded-[2.25rem] p-5 shadow-sm">
-                                <div className="flex items-start gap-3.5 mb-3">
-                                    <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
-                                        <MapPin size={18} />
-                                    </div>
-                                    <div className="space-y-1 flex-1">
-                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            {t('niss_where_label', lang)}
-                                        </h4>
-                                        <p className="text-xs text-slate-600 font-bold leading-relaxed">
-                                            {t('niss_where_text', lang)}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="pt-2 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 mt-2">
-                                    <a
-                                        href="https://www.seg-social.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-blue-600 text-[9px] font-black uppercase tracking-widest hover:text-blue-700 transition-colors"
-                                    >
-                                        <Globe size={11} />
-                                        Segurança Social
-                                        <ExternalLink size={10} />
-                                    </a>
-                                    <span className="text-slate-200">|</span>
-                                    <a
-                                        href="https://siga.marcacaodeatendimento.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-blue-600 text-[9px] font-black uppercase tracking-widest hover:text-blue-700 transition-colors"
-                                    >
-                                        <ExternalLink size={11} />
-                                        Agendamento (SIGA)
-                                        <ExternalLink size={10} />
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* Checklist Container */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 px-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                        {t('niss_docs_needed', lang)}
-                                    </h3>
-                                </div>
-
-                                <div className="bg-white border border-slate-100 rounded-[2.25rem] shadow-sm overflow-hidden divide-y divide-slate-50">
-                                    {checklist.map((doc, idx) => (
-                                        <div
-                                            key={idx}
-                                            style={{ animationDelay: `${idx * 50}ms` }}
-                                            className="group flex items-center gap-4 p-5 hover:bg-slate-50/50 transition-colors animate-in slide-in-from-left-4 duration-500"
-                                        >
-                                            <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100/50 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                                {doc.icon}
-                                            </div>
-                                            <p className="flex-1 text-xs font-bold text-slate-700 leading-snug group-hover:text-slate-950 transition-colors">
-                                                {doc.text}
-                                            </p>
-                                            <div className="w-6 h-6 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                                <CheckCircle2 size={14} className="animate-in zoom-in duration-300" />
-                                            </div>
+                        <div className="space-y-5 animate-in slide-in-from-bottom-4 duration-500">
+                            {/* Checklist */}
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                                <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                    <span>📋</span> Documentos Necessários
+                                </h3>
+                                <div className="space-y-3">
+                                    {checklist.map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 text-xs font-medium text-slate-700">
+                                            <span className="text-lg">{item.icon}</span>
+                                            <span>{item.text}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Recommended Form */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 px-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                        {t('niss_form_label', lang)}
-                                    </h3>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <button
-                                        onClick={() => onSelectTemplate('ss_niss')}
-                                        className="group w-full flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-[2.25rem] hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5 active:scale-[0.98] transition-all text-left animate-in slide-in-from-right-4 duration-500"
-                                    >
-                                        <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:bg-blue-500 group-hover:border-blue-500 transition-all duration-300">
-                                            <FileText size={18} className="text-blue-500 group-hover:text-white transition-colors" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
-                                                {t('niss_fill_doc', lang)}
-                                            </p>
-                                            <h4 className="text-xs font-black text-slate-700 uppercase tracking-tight leading-tight whitespace-normal break-words group-hover:text-blue-500 transition-colors">
-                                                {t('ss_niss', lang)}
-                                            </h4>
-                                        </div>
-                                        <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100/50 flex items-center justify-center text-slate-400 group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500 transition-all duration-300">
-                                            <ChevronRight size={14} />
-                                        </div>
-                                    </button>
-
-                                    <div className="flex items-start gap-2.5 text-[10px] text-blue-600 bg-blue-500/5 border border-blue-500/10 rounded-2xl p-4 animate-in fade-in duration-500">
-                                        <Info size={14} className="shrink-0 mt-0.5" />
-                                        <span className="font-semibold leading-normal">
-                                            {t('wiz_pdf_explicit_notice', lang)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Reset Button */}
-                            <button
-                                onClick={() => { setStep(1); setWorkerType(''); }}
-                                className="group w-full py-5 rounded-[2.25rem] border-2 border-dashed border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:border-blue-500 hover:text-blue-500 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            {/* Direct Action Link */}
+                            <a
+                                href="https://app.seg-social.pt"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                             >
-                                <RotateCcw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
-                                {t('niss_reset', lang)}
-                            </button>
+                                <ExternalLink size={18} />
+                                Solicitar NISS na Segurança Social Direta
+                            </a>
                         </div>
                     )}
 
-                    {/* ════ FLOW SUPPORTS — Step 1: Catalog List ══════════════════ */}
+                    {/* ════ FLOW SUPPORTS — List or Detail ═════════════════════════ */}
                     {flow === 'supports' && step === 1 && (
                         <div className="space-y-3 animate-in slide-in-from-bottom-4 duration-500">
-                            {Object.entries(SOCIAL_SUPPORTS).map(([id, itemData], idx) => {
-                                const details = itemData[lang];
+                            {Object.entries(SOCIAL_SUPPORTS).map(([key, data]) => {
+                                const support = data[lang];
                                 return (
                                     <button
-                                        key={id}
-                                        onClick={() => { setSelectedSupport(id); setStep(2); }}
-                                        style={{ animationDelay: `${idx * 60}ms` }}
-                                        className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-5 flex items-center gap-4 text-left transition-all duration-500 hover:border-blue-400/30 hover:shadow-2xl hover:shadow-blue-500/5 active:scale-[0.97]"
+                                        key={key}
+                                        onClick={() => { setSelectedSupport(key); setStep(2); }}
+                                        className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-5 text-left transition-all duration-500 hover:border-emerald-400/30 hover:shadow-2xl hover:shadow-emerald-500/5 active:scale-[0.98] flex items-center gap-4"
                                     >
-                                        <div className="relative w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 group-hover:bg-white transition-all duration-500">
-                                            {id === 'abono' ? '👶' : id === 'desemprego' ? '📋' : id === 'rsi' ? '🤝' : id === 'parentalidade' ? '🍼' : id === 'doenca' ? '🏥' : id === 'psi' ? '♿' : '👵'}
+                                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                                            🤝
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <span className="px-2 py-0.5 text-[8px] font-black uppercase tracking-wider border rounded-full bg-blue-500/10 text-blue-500 border-blue-500/20">
-                                                {details.category}
+                                            <span className="px-2 py-0.5 text-[8px] font-black uppercase tracking-wider rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 mb-1 inline-block">
+                                                {support.category}
                                             </span>
-                                            <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-blue-500 transition-colors mt-1">
-                                                {details.title}
+                                            <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">
+                                                {support.title}
                                             </h4>
-                                            <p className="text-[10px] text-slate-400 font-medium mt-1 leading-normal line-clamp-1">
-                                                {details.description}
+                                            <p className="text-[10px] text-slate-400 font-medium mt-0.5 line-clamp-1">
+                                                {support.description}
                                             </p>
                                         </div>
-                                        <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
-                                            <ChevronRight size={12} />
-                                        </div>
+                                        <ChevronRight className="text-slate-300 group-hover:text-emerald-600 transition-colors" size={18} />
                                     </button>
                                 );
                             })}
                         </div>
                     )}
 
-                    {/* ════ FLOW SUPPORTS — Step 2: Detail, Steps, Links ═════════════ */}
                     {flow === 'supports' && step === 2 && currentSupportData && (
-                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                            {/* Summary description card */}
-                            <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-3">
-                                <span className="px-3 py-1 text-[8px] font-black uppercase tracking-widest border rounded-full bg-blue-500/10 text-blue-500 border-blue-500/20">
-                                    {currentSupportData.category}
-                                </span>
-                                <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-none mt-1">
-                                    {currentSupportData.title}
+                        <div className="space-y-5 animate-in slide-in-from-bottom-4 duration-500">
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                                <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                                    {localT('support_steps_title')}
                                 </h3>
-                                <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                                    {currentSupportData.description}
+                                <div className="space-y-3">
+                                    {currentSupportData.steps.map((st, idx) => (
+                                        <div key={idx} className="flex gap-3 text-xs text-slate-700 p-3 bg-slate-50 rounded-2xl">
+                                            <span className="text-base shrink-0">{st.icon}</span>
+                                            <span className="font-medium">{st.text}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                                <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                                    {localT('support_docs_title')}
+                                </h3>
+                                <div className="space-y-2.5">
+                                    {currentSupportData.docs.map((dc, idx) => (
+                                        <div key={idx} className="flex items-center gap-3 text-xs font-medium text-slate-700 p-3 bg-slate-50 rounded-2xl">
+                                            <span className="text-base shrink-0">{dc.icon}</span>
+                                            <span>{dc.text}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-emerald-950 text-white rounded-3xl p-6 border border-emerald-800/50 shadow-xl space-y-3">
+                                <h3 className="text-xs font-black uppercase tracking-wider text-emerald-300">
+                                    {localT('support_apply_title')}
+                                </h3>
+                                <p className="text-xs text-slate-200 leading-relaxed">
+                                    {currentSupportData.applyInfo}
                                 </p>
-                            </div>
-
-                            {/* Step by step */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 px-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                        {localT('support_steps_title')}
-                                    </h3>
-                                </div>
-                                <div className="bg-white border border-slate-100 rounded-[2.25rem] p-5 shadow-sm space-y-4">
-                                    {currentSupportData.steps.map((s, idx) => (
-                                        <div key={idx} className="flex gap-4 items-start">
-                                            <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-md shrink-0">
-                                                {s.icon}
-                                            </div>
-                                            <p className="text-xs text-slate-600 font-bold leading-relaxed pt-0.5">
-                                                {s.text}
-                                            </p>
-                                        </div>
+                                <div className="pt-2 space-y-2">
+                                    {currentSupportData.links.map((link, idx) => (
+                                        <a
+                                            key={idx}
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="w-full py-3 bg-emerald-500/20 border border-emerald-500/30 text-emerald-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-emerald-500/30 transition-all"
+                                        >
+                                            <ExternalLink size={14} />
+                                            {link.label}
+                                        </a>
                                     ))}
                                 </div>
                             </div>
-
-                            {/* Required documents */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 px-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                        {localT('support_docs_title')}
-                                    </h3>
-                                </div>
-                                <div className="bg-white border border-slate-100 rounded-[2.25rem] shadow-sm overflow-hidden divide-y divide-slate-50">
-                                    {currentSupportData.docs.map((d, idx) => (
-                                        <div key={idx} className="flex items-center gap-4 p-5 hover:bg-slate-50/50 transition-colors">
-                                            <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100/50 flex items-center justify-center text-xl shrink-0">
-                                                {d.icon}
-                                            </div>
-                                            <p className="flex-1 text-xs font-bold text-slate-700 leading-snug">
-                                                {d.text}
-                                            </p>
-                                            <CheckCircle2 size={14} className="text-blue-500 shrink-0" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Where and How to Apply */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 px-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                        {localT('support_apply_title')}
-                                    </h3>
-                                </div>
-                                <div className="bg-white border border-slate-100 rounded-[2.25rem] p-5 shadow-sm space-y-4">
-                                    <div className="flex gap-3 items-start">
-                                        <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
-                                            <MapPin size={16} />
-                                        </div>
-                                        <p className="text-xs text-slate-600 font-bold leading-relaxed">
-                                            {currentSupportData.applyInfo}
-                                        </p>
-                                    </div>
-                                    <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center gap-4">
-                                        {currentSupportData.links.map((link, idx) => (
-                                            <a
-                                                key={idx}
-                                                href={link.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-blue-600 text-[10px] font-black uppercase tracking-widest hover:text-blue-700 transition-colors"
-                                            >
-                                                <Globe size={12} />
-                                                {link.label}
-                                                <ExternalLink size={11} />
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Back to supports catalog */}
-                            <button
-                                onClick={() => setStep(1)}
-                                className="group w-full py-5 rounded-[2.25rem] border-2 border-dashed border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:border-blue-500 hover:text-blue-500 active:scale-95 transition-all flex items-center justify-center gap-2"
-                            >
-                                <RotateCcw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
-                                {localT('back_to_menu')}
-                            </button>
                         </div>
                     )}
-
                 </div>
             </div>
         </div>
