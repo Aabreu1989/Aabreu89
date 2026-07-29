@@ -215,9 +215,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             return;
         }
 
-        // MIRA V2026.GOLD: Silent Sync - Only show global loader if no counts/data exist
-        const hasData = Object.keys(counts).length > 0 && (activeTab === 'dashboard' || (activeTab === 'users' && users.length > 0) || (activeTab === 'knowledge' && aiKnowledge.length > 0));
-        if (!hasData) setLoading(true);
+        // MIRA V2026.GOLD: Silent Sync - Only show global loader if no counts/data exist at all
+        const hasData = Object.keys(counts).length > 0 && (
+            activeTab === 'dashboard' || 
+            activeTab === 'impact' || 
+            (activeTab === 'users' && users.length > 0) || 
+            (activeTab === 'knowledge' && aiKnowledge.length > 0)
+        );
+        if (!hasData && Object.keys(counts).length === 0) setLoading(true);
         try {
             const tasks = [];
             
