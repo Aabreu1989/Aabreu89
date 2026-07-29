@@ -3,13 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 const PROJ1 = {
     name: "pnlzyshozpqlzuyjesdq (OLD per User)",
     url: "https://pnlzyshozpqlzuyjesdq.supabase.co",
-    key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBubHp5c2hvenBxbHp1eWplc2RxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjY4NDIwMSwiZXhwIjoyMDkyMjYwMjAxfQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0"
+    key: "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER"
 };
 
 const PROJ2 = {
     name: "ychwhxkxsxmuvabxlyjn (NEW per User)",
     url: "https://ychwhxkxsxmuvabxlyjn.supabase.co",
-    key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljaHdoeGt4c3htdXZhYnhseWpuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjAzNzc5OCwiZXhwIjoyMDg3NjEzNzk4fQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0"
+    key: "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER"
 };
 
 async function check(proj) {

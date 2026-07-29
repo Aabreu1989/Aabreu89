@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
 const PNLZ_URL = "https://pnlzyshozpqlzuyjesdq.supabase.co";
-const PNLZ_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBubHp5c2hvenBxbHp1eWplc2RxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjY4NDIwMSwiZXhwIjoyMDkyMjYwMjAxfQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0";
+const PNLZ_KEY = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
 
 const YCHW_URL = "https://ychwhxkxsxmuvabxlyjn.supabase.co";
-const YCHW_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljaHdoeGt4c3htdXZhYnhseWpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMzc3OTgsImV4cCI6MjA4NzYxMzc5OH0.o3-cCO24KjNrW8NM7HFOycdpxX8D0q4vHeXS0BqFMGc";
+const YCHW_ANON = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
 
 async function compareTimestamps() {
     const s1 = createClient(PNLZ_URL, PNLZ_KEY);

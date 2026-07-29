@@ -1,6 +1,6 @@
 async function probe() {
     const url = "https://pnlzyshozpqlzuyjesdq.supabase.co/rest/v1/profiles?select=count";
-    const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBubHp5c2hvenBxbHp1eWplc2RxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjY4NDIwMSwiZXhwIjoyMDkyMjYwMjAxfQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0";
+    const key = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
     
     console.log("Probing pnlz with Service Key...");
     try {

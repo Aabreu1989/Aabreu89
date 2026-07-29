@@ -9,6 +9,11 @@ refactor*
 update_websites*
 check_empty*
 cleanIrs*
+*.mjs
+inspect_*
+probe_*
+test_*
+run_live_*
 
 # ─── MIRA SOVEREIGN VAULT (PROIBIDO NO GITHUB) ──────────────────────
 # ESTES FICHEIROS NUNCA PODEM SUBIR PARA O GITHUB

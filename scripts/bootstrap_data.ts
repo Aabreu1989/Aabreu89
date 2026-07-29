@@ -4,7 +4,7 @@ import { IEFP_MASSIVE_DATABASE } from '../src/utils/iefpCoursesDatabase';
 import { PROTECTED_JOBS } from '../src/utils/massiveJobsDatabase';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://ychwhxkxsxmuvabxlyjn.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljaHdoeGt4c3htdXZhYnhseWpuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjAzNzc5OCwiZXhwIjoyMDcyNjEzNzk4fQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 

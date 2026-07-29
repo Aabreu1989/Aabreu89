@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 const supabaseUrl = "https://ychwhxkxsxmuvabxlyjn.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljaHdoeGt4c3htdXZhYnhseWpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMzc3OTgsImV4cCI6MjA4NzYxMzc5OH0.o3-cCO24KjNrW8NM7HFOycdpxX8D0q4vHeXS0BqFMGc";
+const supabaseKey = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const vaultDir = path.resolve('backups/RESCUE_VAULT');

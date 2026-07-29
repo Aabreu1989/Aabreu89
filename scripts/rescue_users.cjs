@@ -2,9 +2,9 @@ const { createClient } = require('@supabase/supabase-js');
 
 // 👑 CONFIGURAÇÃO SOBERANA DE RESGATE
 const LEGACY_URL = "https://ychwhxkxsxmuvabxlyjn.supabase.co";
-const LEGACY_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljaHdoeGt4c3htdXZhYnhseWpuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjAzNzc5OCwiZXhwIjoyMDg3NjEzNzk4fQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0";
+const LEGACY_KEY = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
 const NEW_URL = "https://pnlzyshozpqlzuyjesdq.supabase.co";
-const NEW_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBubHp5c2hvenBxbHp1eWplc2RxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjY4NDIwMSwiZXhwIjoyMDkyMjYwMjAxfQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0";
+const NEW_KEY = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
 
 const oldSupa = createClient(LEGACY_URL, LEGACY_KEY);
 const newSupa = createClient(NEW_URL, NEW_KEY);

@@ -1,6 +1,6 @@
 async function testInsert() {
     const url = "https://ychwhxkxsxmuvabxlyjn.supabase.co/rest/v1/job_posts";
-    const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljaHdoeGt4c3htdXZhYnhseWpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMzc3OTgsImV4cCI6MjA4NzYxMzc5OH0.o3-cCO24KjNrW8NM7HFOycdpxX8D0q4vHeXS0BqFMGc";
+    const key = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
     
     console.log("Testing minimal insert on ychw with ANON key...");
     try {

@@ -5,7 +5,7 @@ async function rescueWithDB() {
     const projectRef = "ychwhxkxsxmuvabxlyjn";
     const passwords = ["mira-admin-2024", "Britney"];
     const NEW_URL = "https://pnlzyshozpqlzuyjesdq.supabase.co";
-    const NEW_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBubHp5c2hvenBxbHp1eWplc2RxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjY4NDIwMSwiZXhwIjoyMDkyMjYwMjAxfQ.B7nklWlm6C7AcZB1-ca0QWzvTLLDj-1yat7AjdQJal0";
+    const NEW_KEY = "SUPABASE_SERVICE_ROLE_KEY_PLACEHOLDER";
     
     const newSupa = createClient(NEW_URL, NEW_KEY);
     let legacyProfiles = [];
