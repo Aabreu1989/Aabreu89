@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import AdminSaberIA from './AdminSaberIA';
-import { AiQueryAuditDashboard } from './AiQueryAuditDashboard';
-import { PublicPolicyDashboard } from './PublicPolicyDashboard';
+import { MiraImpactReport } from './MiraImpactReport';
 import { adminService } from '../services/adminService';
 import { User, Post } from '../types';
 import {
@@ -100,7 +99,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     isSuperAdmin,
     onViewChange
 }) => {
-    const [activeTab, setActiveTab ] = useState<'dashboard' | 'users' | 'knowledge' | 'gamification' | 'broadcast' | 'analytics' | 'ai_audit'>(initialTab as any || 'dashboard');
+    const [activeTab, setActiveTab ] = useState<'dashboard' | 'users' | 'knowledge' | 'gamification' | 'broadcast' | 'impact'>(initialTab as any || 'dashboard');
 
     
     useEffect(() => {
@@ -270,8 +269,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             } else if (activeTab === 'gamification') {
                 const { gamificationService } = await import('../services/gamificationService');
                 tasks.push(gamificationService.fetchAllBadges().then(res => setAllBadges(res || [])));
-            } else if (activeTab === 'analytics') {
-                tasks.push(adminService.fetchPolicyAnalytics().then(res => setPolicyAnalytics(res || { totalInteractions: 0, categories: [] })));
             }
 
             await Promise.allSettled(tasks);
@@ -439,8 +436,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:flex lg:flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-white/5 mx-3 sm:mx-8 mt-4 sm:mt-6 rounded-2xl border border-white/10 sticky top-[70px] sm:top-[80px] z-[90] backdrop-blur-md">
                 {[
                     { id: 'dashboard', label: 'DASHBOARD', icon: Activity },
-                    { id: 'ai_audit', label: 'AUDITORIA 18K+ IA', icon: FileText },
-                    { id: 'analytics', label: 'MÉTRICAS', icon: BarChart3 },
+                    { id: 'impact', label: 'RELATÓRIO IMPACTO', icon: BarChart3 },
                     { id: 'broadcast', label: 'TRANSMISSÃO', icon: Bell },
                     { id: 'gamification', label: 'GAMIFICAÇÃO', icon: Award },
                     { id: 'knowledge', label: 'SABER IA', icon: Sparkles },
@@ -628,16 +624,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
 
 
-                        {activeTab === 'ai_audit' && (
+                        {activeTab === 'impact' && (
                             <div className="space-y-6 animate-in fade-in duration-500">
-                                <AiQueryAuditDashboard />
-                            </div>
-                        )}
-
-                        {activeTab === 'analytics' && (
-                            <div className="space-y-8 animate-in fade-in duration-500">
-                                <AiQueryAuditDashboard />
-                                <PublicPolicyDashboard />
+                                <MiraImpactReport platformCounts={counts as any} />
                             </div>
                         )}
 
@@ -1094,85 +1083,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 </div>
                             </div>
                         )}
-                        
-                        {activeTab === 'analytics' && (
-                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 text-white">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/20">
-                                            <BarChart3 size={28} className="text-indigo-400" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-2xl font-black uppercase tracking-tighter">Monitorização Social & Políticas Públicas 📊</h2>
-                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Indicadores Estratégicos para ONGs, Decisores e Artigos Científicos</p>
-                                        </div>
-                                    </div>
-                                    <button onClick={() => loadData(true)} className="p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all border border-white/10 group">
-                                        <RefreshCcw size={20} className={`text-white/40 group-hover:text-white ${loading ? 'animate-spin' : ''}`} />
-                                    </button>
-                                </div>
 
-                                {/* 📌 1. Engajamento e Pedidos de Ajuda por Categoria (Dados Reais) */}
-                                <div className="p-8 bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl space-y-6">
-                                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                                        <div>
-                                            <h3 className="text-lg font-black uppercase tracking-wider text-white">Engajamento e Pedidos de Ajuda por Categoria</h3>
-                                            <p className="text-[10px] text-white/40 font-bold uppercase mt-1">Interações Reais Registadas no Supabase • Total: {policyAnalytics.totalInteractions}</p>
-                                        </div>
-                                        <span className="text-[9px] font-black uppercase tracking-widest bg-[#FF8C00]/20 text-[#FF8C00] px-3 py-1 rounded-full border border-orange-500/30">Dados Reais</span>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {policyAnalytics.categories.map((cat: any) => (
-                                            <div key={cat.key} className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-4 hover:border-white/20 transition-all">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-xs font-black uppercase tracking-wider text-white">{cat.label}</span>
-                                                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full text-white" style={{ backgroundColor: cat.color + '40', border: `1px solid ${cat.color}` }}>
-                                                        {cat.percentage}%
-                                                    </span>
-                                                </div>
-                                                <div className="w-full bg-black/40 h-2.5 rounded-full overflow-hidden">
-                                                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.max(cat.percentage, 5)}%`, backgroundColor: cat.color }}></div>
-                                                </div>
-                                                <div className="flex justify-between text-[10px] text-white/50 font-bold uppercase">
-                                                    <span>Interações: <strong className="text-white">{cat.count}</strong></span>
-                                                    <span>Pedidos Ajuda: <strong className="text-[#FF8C00]">{cat.helpRequests}</strong></span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* ⚠️ 2. Gargalos Identificados & Diagnóstico Social */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="p-8 bg-slate-900 border border-red-500/30 rounded-[2.5rem] shadow-2xl space-y-4 relative overflow-hidden">
-                                        <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                            <span className="text-xs font-black text-red-400 uppercase tracking-widest">Gargalo Identificado: Agendamento Biométrico AIMA</span>
-                                            <span className="text-[8px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full border border-red-500/30">Severidade: Crítica • Lisboa/Porto</span>
-                                        </div>
-                                        <p className="text-xs text-white/70 font-semibold leading-relaxed">
-                                            65% dos utilizadores relatam impossibilidade de contacto telefónico com a AIMA. Isto impede a renovação de vistos e causa situações de precariedade laboral imediata por falta de documentos válidos.
-                                        </p>
-                                        <div className="pt-2 text-[10px] font-black text-white/40 uppercase tracking-widest">
-                                            Impacto em Políticas Públicas: Necessidade urgente de canal digital prioritário de agendamento.
-                                        </div>
-                                    </div>
-
-                                    <div className="p-8 bg-slate-900 border border-amber-500/30 rounded-[2.5rem] shadow-2xl space-y-4 relative overflow-hidden">
-                                        <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                            <span className="text-xs font-black text-amber-400 uppercase tracking-widest">Prioridade: Apoio em Creches</span>
-                                            <span className="text-[8px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full border border-amber-500/30">Urgência: Média-Alta • Centro/Sul</span>
-                                        </div>
-                                        <p className="text-xs text-white/70 font-semibold leading-relaxed">
-                                            Observou-se um aumento de 40% em discussões sobre acesso a creches. A ausência de rede de apoio infantil é o maior factor de exclusão de mulheres migrantes do mercado de trabalho qualificado.
-                                        </p>
-                                        <div className="pt-2 text-[10px] font-black text-white/40 uppercase tracking-widest">
-                                            Impacto em Políticas Públicas: Ampliação de vagas em creches IPSS para famílias recém-chegadas.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
             </div>
