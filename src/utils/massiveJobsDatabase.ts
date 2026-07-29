@@ -6756,18 +6756,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-02T13:04:00.000Z"
   },
   {
-    "id": "26517657-f867-4255-9846-5937c215af76",
-    "title": "Continente: recrutamento de Operadores de Loja",
-    "location": "Portugal",
-    "source_name": "Feed Empregos",
-    "source_url": "https://www.feedempregos.pt/2025/06/operadores-de-loja-continente.html",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T05:00:00+00:00",
-    "posted_at": "2026-06-29T05:00:00+00:00",
-    "date_posted": "2026-06-29T05:00:00.000Z"
-  },
-  {
     "id": "83792df6-a3c9-4765-a351-ad38692edfee",
     "title": "Sonae Sierra está a recrutar Especialista em Desempenho e Remuneração",
     "location": "Portugal",
@@ -10164,42 +10152,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.522Z"
   },
   {
-    "id": "8109119a-bbcb-4df5-af3c-deab6cf6ebde",
-    "title": "Encarregado Electricista (M/F) - Leiria",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630882/encarregado-electricista-m-f-leiria/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:56+00:00",
-    "posted_at": "2026-06-29T10:35:56+00:00",
-    "date_posted": "2026-06-29T10:35:56.000Z"
-  },
-  {
-    "id": "bae6212f-4057-4627-9867-88b5ef9437ae",
-    "title": "Empregado de Refeitório (m/f) BENAVENTE",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630782/empregado-de-refeitorio-m-f-benavente/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:28:03+00:00",
-    "posted_at": "2026-06-29T10:28:03+00:00",
-    "date_posted": "2026-06-29T10:28:03.000Z"
-  },
-  {
-    "id": "d7a14d0c-0974-4ff4-9d27-f7c6acbd007c",
-    "title": "Técnico(a) de Controlo de Gestão - Estágio",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630754/tecnico-a-de-controlo-de-gestao-estagio/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:28:23+00:00",
-    "posted_at": "2026-06-29T10:28:23+00:00",
-    "date_posted": "2026-06-29T10:28:23.000Z"
-  },
-  {
     "id": "60607e8f-aeea-4b40-9ca3-af6fcd4d5679",
     "title": "Agência Ciência Viva - recrutamento de Assistente de Contabilidade para o Pavilhão do Conhecimento",
     "location": "Portugal",
@@ -10210,78 +10162,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-09T08:41:02+00:00",
     "posted_at": "2026-07-09T08:41:02+00:00",
     "date_posted": "2026-07-09T08:41:02.000Z"
-  },
-  {
-    "id": "889781a8-ed19-4413-9bf3-8f422cc41a9c",
-    "title": "Técnico(a) Administrativo(a) para Departamento Financeiro",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630408/tecnico-a-administrativo-a-para-departamento-financeiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:28:23+00:00",
-    "posted_at": "2026-06-29T10:28:23+00:00",
-    "date_posted": "2026-06-29T10:28:23.000Z"
-  },
-  {
-    "id": "5536bb59-ee63-4c92-a1af-06bcf75f520c",
-    "title": "Preparador/a Embalador/a com funções de abastecimento de aeronaves (Carta de Pesados)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630225/preparador-a-embalador-a-com-funcoes-de-abastecimento-de-aeronaves-carta-de-pesados/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:37:10+00:00",
-    "posted_at": "2026-06-29T10:37:10+00:00",
-    "date_posted": "2026-06-29T10:37:10.000Z"
-  },
-  {
-    "id": "6da428a4-0367-41f1-9e5d-2496a7446ba0",
-    "title": "Promotor(a) / Vendedor(a) de Loja (M/F) - Funchal",
-    "location": "Funchal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630200/promotor-a-vendedor-a-de-loja-m-f-funchal/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:37:01+00:00",
-    "posted_at": "2026-06-29T10:37:01+00:00",
-    "date_posted": "2026-06-29T10:37:01.000Z"
-  },
-  {
-    "id": "1bcbab43-7db7-492b-ad13-3b13c6100c71",
-    "title": "Empregado/a de armazém (CARGAS E EQUIPAMENTOS)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630193/empregado-a-de-armazem-cargas-e-equipamentos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:37:10+00:00",
-    "posted_at": "2026-06-29T10:37:10+00:00",
-    "date_posted": "2026-06-29T10:37:10.000Z"
-  },
-  {
-    "id": "1833569e-de93-48bc-a899-6932370e740a",
-    "title": "Animador Sociocultural - Zona de Sintra - Part time",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15630102/animador-sociocultural-zona-de-sintra-part-time/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:36:35+00:00",
-    "posted_at": "2026-06-29T10:36:35+00:00",
-    "date_posted": "2026-06-29T10:36:35.000Z"
-  },
-  {
-    "id": "0dc71deb-cb2c-43c5-9fea-f33e0baae85a",
-    "title": "Estamos a recrutar  Colaborador (a) de Restauração (Full-Time)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629915/estamos-a-recrutar-colaborador-a-de-restauracao-full-time/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T10:36:15+00:00",
-    "posted_at": "2026-06-29T10:36:15+00:00",
-    "date_posted": "2026-06-29T10:36:15.000Z"
   },
   {
     "id": "4dcd8c2c-49ec-4366-850b-c050891368fd",
@@ -10594,66 +10474,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.523+00:00",
     "posted_at": "2026-07-13T11:42:31.523+00:00",
     "date_posted": "2026-07-13T11:42:31.523Z"
-  },
-  {
-    "id": "2b4fba5b-d49a-4571-abb7-9a8842bd78a3",
-    "title": "Técnico Instalador Especializado de Sistemas Fotovoltaicos",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629874/tecnico-instalador-especializado-de-sistemas-fotovoltaicos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:26+00:00",
-    "posted_at": "2026-06-29T10:35:26+00:00",
-    "date_posted": "2026-06-29T10:35:26.000Z"
-  },
-  {
-    "id": "5cc6af78-a34e-4fc4-aa6e-3d20a15d1746",
-    "title": "Engenheiro Civil / Diretor de Obra (Junior)",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629868/engenheiro-civil-diretor-de-obra-junior/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T10:35:17+00:00",
-    "posted_at": "2026-06-29T10:35:17+00:00",
-    "date_posted": "2026-06-29T10:35:17.000Z"
-  },
-  {
-    "id": "f958f3ca-9d2d-4feb-910a-2610cccc2bc2",
-    "title": "Técnico CNC (m/f)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629867/tecnico-cnc-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:29+00:00",
-    "posted_at": "2026-06-29T10:35:29+00:00",
-    "date_posted": "2026-06-29T10:35:29.000Z"
-  },
-  {
-    "id": "21f0217e-a130-4086-b191-4f379f5e45c0",
-    "title": "Vendedor(a) de Loja (Part-Time 20H) - Guimarães (Retail Park) - Radio Popular",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629865/vendedor-a-de-loja-part-time-20h-guimaraes-retail-park-radio-popular/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:35:35+00:00",
-    "posted_at": "2026-06-29T10:35:35+00:00",
-    "date_posted": "2026-06-29T10:35:35.000Z"
-  },
-  {
-    "id": "13ec479e-2fa0-4293-b329-38a1a63281e8",
-    "title": "Técnico Instalador de Sistemas Fotovoltaicos (M/F)",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629863/tecnico-instalador-de-sistemas-fotovoltaicos-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:26+00:00",
-    "posted_at": "2026-06-29T10:35:26+00:00",
-    "date_posted": "2026-06-29T10:35:26.000Z"
   },
   {
     "id": "ad1240ad-5a90-4c1c-b725-ea67eda2d1fd",
@@ -11376,162 +11196,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-14T11:42:31.525Z"
   },
   {
-    "id": "7f494081-4c90-4a7f-a5f8-aa7ac99d43f8",
-    "title": "Técnico de Planeamento e Instalação de Linhas de Vida Fixas",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629861/tecnico-de-planeamento-e-instalacao-de-linhas-de-vida-fixas/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:31+00:00",
-    "posted_at": "2026-06-29T10:35:31+00:00",
-    "date_posted": "2026-06-29T10:35:31.000Z"
-  },
-  {
-    "id": "c58de891-363e-4cb1-8f62-ef93c884aaa5",
-    "title": "Assistente de Linha de Atendimento (M/F) - Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629859/assistente-de-linha-de-atendimento-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "3c3ad565-b5f8-4d35-8957-a4136f0a299d",
-    "title": "Técnico de Manutenção Júnior (M/F) - Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629858/tecnico-de-manutencao-junior-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "78ac722d-b905-4274-a137-977898b73d80",
-    "title": "Técnico de Manutenção Industrial (m/f) - Aveiro",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629855/tecnico-de-manutencao-industrial-m-f-aveiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "32842042-aa53-496a-8ac0-6a4efce89e91",
-    "title": "Serralheiro (m/f) - Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629854/serralheiro-m-f-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "709e1386-4e4c-4c62-ad35-e3f8a5d985ae",
-    "title": "Operador Fabril (m/f) - Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629853/operador-fabril-m-f-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "345f6c5c-12f2-4fc8-9eb4-11ab51c30582",
-    "title": "Operador de Produção de Cerâmica (m/f) - Aveiro",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629852/operador-de-producao-de-ceramica-m-f-aveiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "897f0af2-4d5b-4a69-ba17-09228dcf0322",
-    "title": "Administrativo (m/f) - Aroeira, Leiria",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629850/administrativo-m-f-aroeira-leiria/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "a797dfdf-bff1-48e0-9dff-7cea643a9688",
-    "title": "Operador de Produção (m/f) - Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629847/operador-de-producao-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "106c47ea-c997-4072-ae4e-685dbc8cb177",
-    "title": "Técnico de Processamento Salarial (m/f) - Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629846/tecnico-de-processamento-salarial-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "ece741a0-5876-4b27-8c6c-a1372b363f73",
-    "title": "Operador de Armazém (M/F) - Prior Velho",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629843/operador-de-armazem-m-f-prior-velho/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "66f3af8e-aae7-4cbc-a74b-19230071d2f6",
-    "title": "Operador de Armazém (M/F) - Part-Time - Alverca",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629841/operador-de-armazem-m-f-part-time-alverca/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "3e21154f-cc2a-4fa4-bf6a-1990c3d2d55b",
-    "title": "Assistente de Informações (m/f) - Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629838/assistente-de-informacoes-m-f-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
     "id": "a7de4314-8db1-4067-a65a-b346be1410e5",
     "title": "Ajudante de Serralharia em Indústria (Lordelo) [247-000245-3]",
     "location": "Braga",
@@ -12096,78 +11760,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T12:57:08.000Z"
   },
   {
-    "id": "4112ee16-b837-4fb0-9f7f-376b510503f8",
-    "title": "Coordenador de ETAR (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629836/coordenador-de-etar-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "769af10d-22a9-4082-a2d3-8c0a540da32f",
-    "title": "Movimentador Interno de Viaturas (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629834/movimentador-interno-de-viaturas-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "fbd2fe84-1b01-49d9-b0d5-69654588ab13",
-    "title": "Operador de Logística Interna (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629830/operador-de-logistica-interna-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "32b7631f-50a2-43a7-84d6-3b89ae74a08b",
-    "title": "Operador de Expedição (M/F) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629829/operador-de-expedicao-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "909abcac-f6b6-4fc0-a05d-98b7d64ed381",
-    "title": "Operador de Higiene Especializada (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629826/operador-de-higiene-especializada-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "28013788-229a-42f1-9e0d-8c37e82cee7b",
-    "title": "Operador de Desmanche (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629824/operador-de-desmanche-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
     "id": "757c0e3b-833c-41fa-b922-4e571454f275",
     "title": "Assistente Administrativo / Rececionista (m/f)",
     "location": "Coimbra",
@@ -12238,186 +11830,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-12T11:42:31.587+00:00",
     "posted_at": "2026-07-12T11:42:31.587+00:00",
     "date_posted": "2026-07-12T11:42:31.587Z"
-  },
-  {
-    "id": "7c29324e-be39-455d-8b8b-22245ea1b1c4",
-    "title": "Operador de Embalamento (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629822/operador-de-embalamento-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "da3964ff-7a47-4bff-8d82-637fa2ec0fdf",
-    "title": "Operador de Calibradora (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629821/operador-de-calibradora-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "d1f05a5c-868a-4d75-b0da-d4baea88cefb",
-    "title": "Operador de Abate (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629819/operador-de-abate-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "c43c041f-09c4-4839-896b-a16c3ecce98c",
-    "title": "Assistente PMR (m/f) - Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629817/assistente-pmr-m-f-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "d4f8b0ba-cc78-492b-8708-5e7d3f2944a1",
-    "title": "Gestor de Clientes B2B - Vodafone Business (m/f) - Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629815/gestor-de-clientes-b2b-vodafone-business-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "e3885ee0-c1f8-448b-bec3-0ab49da84ca3",
-    "title": "Técnico de Manutenção AVAC (m/f) - Parchal",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629811/tecnico-de-manutencao-avac-m-f-parchal/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "6c6b194f-799b-40fc-a7c8-c2d81d477bde",
-    "title": "Auxiliar de Armazém (m/f) - Vagos, Aveiro",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629810/auxiliar-de-armazem-m-f-vagos-aveiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "93f2d2d4-3065-4860-af89-11c7c0263858",
-    "title": "Assistente Administrativo (m/f) - São João da Talha",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629808/assistente-administrativo-m-f-sao-joao-da-talha/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "403f9bea-70cb-45fe-bf07-b683a2cdbda1",
-    "title": "Técnico de Manutenção Industrial (m/f) - Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629807/tecnico-de-manutencao-industrial-m-f-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "63106147-84fd-4c91-9b48-f3dd8aaa0e5b",
-    "title": "Técnico de Manutenção Industrial (m/f) - Pombal",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629804/tecnico-de-manutencao-industrial-m-f-pombal/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "6d61eb2c-5875-4dab-80bd-c8460cd533fe",
-    "title": "Vendedor de Loja (M/F) - Coimbra - Radio Popular",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629803/vendedor-de-loja-m-f-coimbra-radio-popular/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:35:35+00:00",
-    "posted_at": "2026-06-29T10:35:35+00:00",
-    "date_posted": "2026-06-29T10:35:35.000Z"
-  },
-  {
-    "id": "dd8dafea-b3b3-4359-bb03-7509e6f9053f",
-    "title": "Técnico de Produção Industrial (m/f) - Pombal",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629802/tecnico-de-producao-industrial-m-f-pombal/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "8735cea5-7415-4884-9c94-343d51da2d0e",
-    "title": "Operador Industrial (m/f) - Pombal",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629801/operador-industrial-m-f-pombal/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "380de993-cea4-4589-af32-9da35b85d0a5",
-    "title": "Serralheiro Mecânico (m/f) - São João da Talha",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629797/serralheiro-mecanico-m-f-sao-joao-da-talha/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "e7915e29-a64c-4d8c-b1ea-745c292e051f",
-    "title": "Gestor de Recuperação de Crédito (m/f) - Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629795/gestor-de-recuperacao-de-credito-m-f-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
   },
   {
     "id": "e990929f-b58e-4ea3-aff4-519d9d27f0c3",
@@ -12696,78 +12108,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-14T11:42:31.589Z"
   },
   {
-    "id": "148f16a5-32ee-40b5-b1dc-e549092a9de8",
-    "title": "Operador de Picking (m/f) - Moita",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629791/operador-de-picking-m-f-moita/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "f993ee06-5dc6-4320-8ab4-1017e3bae151",
-    "title": "Operador Logístico de Aprovisionamento (m/f) - Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629789/operador-logistico-de-aprovisionamento-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "f49d3f0b-ab35-425c-9590-97dcaede4c9b",
-    "title": "Operador de Armazém (m/f) - Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629788/operador-de-armazem-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "9d707191-6315-46d2-b6d0-b905481c2187",
-    "title": "Engenheiro(a) Eletrotécnico(a)",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629786/engenheiro-a-eletrotecnico-a/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:28:23+00:00",
-    "posted_at": "2026-06-29T10:28:23+00:00",
-    "date_posted": "2026-06-29T10:28:23.000Z"
-  },
-  {
-    "id": "00e3bfb3-36f0-4206-bb7c-7aa6b7136472",
-    "title": "Trabalhador agrícola (M/f) - Soure",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629779/trabalhador-agricola-m-f-soure/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "20cfe1ff-7f04-4a5e-b607-d83a8966f906",
-    "title": "OPERADOR/A DE LOJA",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629768/operador-a-de-loja/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:03:13+00:00",
-    "posted_at": "2026-06-29T10:03:13+00:00",
-    "date_posted": "2026-06-29T10:03:13.000Z"
-  },
-  {
     "id": "1e49850b-7059-4538-9d12-d035f72019c8",
     "title": "Operador de Armazém / Logística (m/f)",
     "location": "Faro",
@@ -12886,42 +12226,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-15T11:42:31.59+00:00",
     "posted_at": "2026-07-15T11:42:31.59+00:00",
     "date_posted": "2026-07-15T11:42:31.590Z"
-  },
-  {
-    "id": "4d716f3f-c82b-4314-b521-2edecb3ceccc",
-    "title": "Assistente Administrativo(a)",
-    "location": "Amadora",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629766/assistente-administrativo-a/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:07:48+00:00",
-    "posted_at": "2026-06-29T10:07:48+00:00",
-    "date_posted": "2026-06-29T10:07:48.000Z"
-  },
-  {
-    "id": "f1dd9a56-05f1-4edf-b937-08ae1ca20bc9",
-    "title": "Enfermeiro(a)/ Técnico de Análises - Figueira da Foz, Cantanhede e Condeixa",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629745/enfermeiro-a-tecnico-de-analises-figueira-da-foz-cantanhede-e-condeixa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Sa├║de & Cuidados",
-    "created_at": "2026-06-29T10:33:59+00:00",
-    "posted_at": "2026-06-29T10:33:59+00:00",
-    "date_posted": "2026-06-29T10:33:59.000Z"
-  },
-  {
-    "id": "e8fafd76-6311-4e18-9bd9-f4a53b5ae15e",
-    "title": "Enfermeiro(a) Figueira da Foz",
-    "location": "Coimbra",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629743/enfermeiro-a-figueira-da-foz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Sa├║de & Cuidados",
-    "created_at": "2026-06-29T10:33:59+00:00",
-    "posted_at": "2026-06-29T10:33:59+00:00",
-    "date_posted": "2026-06-29T10:33:59.000Z"
   },
   {
     "id": "6e6eaac3-69fc-40c4-b60a-1c467c3fe0e2",
@@ -13128,78 +12432,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-09T16:20:46.000Z"
   },
   {
-    "id": "2cafed6e-bc07-400e-947d-a8832d42e085",
-    "title": "Formador/a Curso Técnico/a Auxiliar de Saúde e Geriatria_ B-learning - Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629740/formador-a-curso-tecnico-a-auxiliar-de-saude-e-geriatria-b-learning-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Educa├º├úo & Forma├º├úo",
-    "created_at": "2026-06-29T10:33:54+00:00",
-    "posted_at": "2026-06-29T10:33:54+00:00",
-    "date_posted": "2026-06-29T10:33:54.000Z"
-  },
-  {
-    "id": "4198091b-66c2-455c-ad20-4f7705543fda",
-    "title": "Assistente Administrativo (M/F)  - Disponibilidade Imediata",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629725/assistente-administrativo-m-f-disponibilidade-imediata/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:34:11+00:00",
-    "posted_at": "2026-06-29T10:34:11+00:00",
-    "date_posted": "2026-06-29T10:34:11.000Z"
-  },
-  {
-    "id": "17b5e7ec-b1ed-48b9-98b0-426b6e0ee234",
-    "title": "Colaboradora /limpeza/- Constância",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629724/colaboradora-limpeza-constancia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Servi├ºos Dom├⌐sticos",
-    "created_at": "2026-06-29T10:34:02+00:00",
-    "posted_at": "2026-06-29T10:34:02+00:00",
-    "date_posted": "2026-06-29T10:34:02.000Z"
-  },
-  {
-    "id": "1cdc52e7-1eab-400a-8aa6-c7bcc26f4b30",
-    "title": "Recrutamento de Cozinheiro/a para Silves",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629721/recrutamento-de-cozinheiro-a-para-silves/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T10:34:05+00:00",
-    "posted_at": "2026-06-29T10:34:05+00:00",
-    "date_posted": "2026-06-29T10:34:05.000Z"
-  },
-  {
-    "id": "ad2d8b75-67b5-4f1e-887d-be029031c4f1",
-    "title": "Housekeeper (Comporta)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629715/housekeeper-comporta/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:36:27+00:00",
-    "posted_at": "2026-06-29T10:36:27+00:00",
-    "date_posted": "2026-06-29T10:36:27.000Z"
-  },
-  {
-    "id": "f0b4cac1-fc95-4c27-a094-ebb3951a4861",
-    "title": "Operador de Produção (M/F) - Esmoriz",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629714/operador-de-producao-m-f-esmoriz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:33:51+00:00",
-    "posted_at": "2026-06-29T10:33:51+00:00",
-    "date_posted": "2026-06-29T10:33:51.000Z"
-  },
-  {
     "id": "198878de-6cb3-4e31-b491-cd6339fa22ba",
     "title": "Empregado de Mesa / Atendimento (m/f)",
     "location": "Lisboa",
@@ -13212,114 +12444,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-16T11:42:31.590Z"
   },
   {
-    "id": "90a930fb-736e-443e-8345-36e9444414a0",
-    "title": "Precisa-se colaborador/a de limpeza para a zona de Óbidos",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629713/precisa-se-colaborador-a-de-limpeza-para-a-zona-de-obidos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Servi├ºos Dom├⌐sticos",
-    "created_at": "2026-06-29T10:34:16+00:00",
-    "posted_at": "2026-06-29T10:34:16+00:00",
-    "date_posted": "2026-06-29T10:34:16.000Z"
-  },
-  {
-    "id": "e92e034f-909e-4b2b-8687-d6d28090f130",
-    "title": "Estafeta de Mota",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629712/estafeta-de-mota/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:34:13+00:00",
-    "posted_at": "2026-06-29T10:34:13+00:00",
-    "date_posted": "2026-06-29T10:34:13.000Z"
-  },
-  {
-    "id": "7b6d5fdf-55d1-4741-832b-1cb547d61e64",
-    "title": "Operador de Produção (M/F) - São João da Madeira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629705/operador-de-producao-m-f-sao-joao-da-madeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:33:51+00:00",
-    "posted_at": "2026-06-29T10:33:51+00:00",
-    "date_posted": "2026-06-29T10:33:51.000Z"
-  },
-  {
-    "id": "34f14592-c719-486d-9178-b57bd0ab2bec",
-    "title": "Operador de Armazém em Frio (M/F) - Montijo",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629702/operador-de-armazem-em-frio-m-f-montijo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:36:23+00:00",
-    "posted_at": "2026-06-29T10:36:23+00:00",
-    "date_posted": "2026-06-29T10:36:23.000Z"
-  },
-  {
-    "id": "a7811632-7c00-47ed-8267-046b8ac45c2b",
-    "title": "Técnico de QHSE  Aeroporto do Porto (m/f)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629700/tecnico-de-qhse-aeroporto-do-porto-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:36:04+00:00",
-    "posted_at": "2026-06-29T10:36:04+00:00",
-    "date_posted": "2026-06-29T10:36:04.000Z"
-  },
-  {
-    "id": "0f570b0e-f808-4ac7-8f01-1483fa1279a3",
-    "title": "Assistente de Loja - Moon Baby Shop - Espinho",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629697/assistente-de-loja-moon-baby-shop-espinho/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:33:05+00:00",
-    "posted_at": "2026-06-29T10:33:05+00:00",
-    "date_posted": "2026-06-29T10:33:05.000Z"
-  },
-  {
-    "id": "4741391e-3b90-45b0-a772-b63bb69b57e0",
-    "title": "Assistente de Loja - Moon Baby Shop - Espinho",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629694/assistente-de-loja-moon-baby-shop-espinho/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:33:05+00:00",
-    "posted_at": "2026-06-29T10:33:05+00:00",
-    "date_posted": "2026-06-29T10:33:05.000Z"
-  },
-  {
-    "id": "a6b23729-62e1-4a38-ba3d-7fd89d2f9aa0",
-    "title": "Programador CNC (eletro-erosão por penetração e fio)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629693/programador-cnc-eletro-erosao-por-penetracao-e-fio/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Tecnologia & TI",
-    "created_at": "2026-06-29T10:35:59+00:00",
-    "posted_at": "2026-06-29T10:35:59+00:00",
-    "date_posted": "2026-06-29T10:35:59.000Z"
-  },
-  {
-    "id": "462df303-b64c-43bc-bd32-9bd1f4f4d4f3",
-    "title": "Operador de armazém",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629689/operador-de-armazem/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:59+00:00",
-    "posted_at": "2026-06-29T10:35:59+00:00",
-    "date_posted": "2026-06-29T10:35:59.000Z"
-  },
-  {
     "id": "a3c73d22-7226-41f7-9e26-937ea0fa55d8",
     "title": "Assistente Administrativo / Rececionista (m/f)",
     "location": "Aveiro",
@@ -13330,42 +12454,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-12T11:42:31.606+00:00",
     "posted_at": "2026-07-12T11:42:31.606+00:00",
     "date_posted": "2026-07-12T11:42:31.606Z"
-  },
-  {
-    "id": "40452c83-b521-4a2b-98d7-8618672ae04a",
-    "title": "Operador Fabril (M/F) - Esmoriz",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629686/operador-fabril-m-f-esmoriz/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:33:51+00:00",
-    "posted_at": "2026-06-29T10:33:51+00:00",
-    "date_posted": "2026-06-29T10:33:51.000Z"
-  },
-  {
-    "id": "04e51306-a9f5-4790-bece-724074401d3a",
-    "title": "Sales Assistant (M/F) - Guess Oeiras (Part-Time 32H)",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629682/sales-assistant-m-f-guess-oeiras-part-time-32h/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:33:16+00:00",
-    "posted_at": "2026-06-29T10:33:16+00:00",
-    "date_posted": "2026-06-29T10:33:16.000Z"
-  },
-  {
-    "id": "028516e8-416b-4e4d-a61a-128b20a44ff7",
-    "title": "Eletricista (M/F) - Leiria",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629680/eletricista-m-f-leiria/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T10:33:19+00:00",
-    "posted_at": "2026-06-29T10:33:19+00:00",
-    "date_posted": "2026-06-29T10:33:19.000Z"
   },
   {
     "id": "2ea63a2c-fda3-4832-880c-7eb99b4a812c",
@@ -13402,18 +12490,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.606+00:00",
     "posted_at": "2026-07-13T11:42:31.606+00:00",
     "date_posted": "2026-07-13T11:42:31.606Z"
-  },
-  {
-    "id": "6339a587-e6d0-4bfa-bf52-52df4b8871d0",
-    "title": "Operador de Máquina PVC (M/F) - Cacia",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629669/operador-de-maquina-pvc-m-f-cacia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:42+00:00",
-    "posted_at": "2026-06-29T10:35:42+00:00",
-    "date_posted": "2026-06-29T10:35:42.000Z"
   },
   {
     "id": "0449b887-78f0-4cf8-b7cc-f444ad31c1de",
@@ -13896,66 +12972,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-09T16:21:31.000Z"
   },
   {
-    "id": "8e48db1b-97e8-47cc-a09d-226c9bddb70c",
-    "title": "Rececionista para o Santuário de Fátima (M/F)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629668/rececionista-para-o-santuario-de-fatima-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "b3945b2d-e052-42f0-bba0-7c1a7a4a6d6f",
-    "title": "Sales Assistant (M/F)  Vans Almada (Part-Time 30H)",
-    "location": "Almada",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629667/sales-assistant-m-f-vans-almada-part-time-30h/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:33:16+00:00",
-    "posted_at": "2026-06-29T10:33:16+00:00",
-    "date_posted": "2026-06-29T10:33:16.000Z"
-  },
-  {
-    "id": "86dd7ca6-8503-4eb8-b6e7-c6fa27d1e9f3",
-    "title": "Rececionista para o Santuário de Fátima (M/F)",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629659/rececionista-para-o-santuario-de-fatima-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
-    "id": "94753bc7-ab10-41d0-ad0b-5d248575adc7",
-    "title": "Técnico de Instalação (m/f)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629658/tecnico-de-instalacao-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:18:27+00:00",
-    "posted_at": "2026-06-29T10:18:27+00:00",
-    "date_posted": "2026-06-29T10:18:27.000Z"
-  },
-  {
-    "id": "5bee0f44-9424-457b-83ba-e9c22d064716",
-    "title": "Serralheiros Montadores (Bélgica)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629652/serralheiros-montadores-belgica/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:00+00:00",
-    "posted_at": "2026-06-29T10:35:00+00:00",
-    "date_posted": "2026-06-29T10:35:00.000Z"
-  },
-  {
     "id": "4c08b396-823d-46d0-803f-e2263948796c",
     "title": "PYP Portuguese Teacher",
     "location": "Lisboa",
@@ -13968,30 +12984,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-09T16:20:22.000Z"
   },
   {
-    "id": "545b2a8b-586e-452b-8c21-435ba949ee6e",
-    "title": "Estágio Profissional  SALES MAINSTREAM & CARFLOW (M/F)",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629651/estagio-profissional-sales-mainstream-carflow-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:35:14+00:00",
-    "posted_at": "2026-06-29T10:35:14+00:00",
-    "date_posted": "2026-06-29T10:35:14.000Z"
-  },
-  {
-    "id": "736293fa-3f34-433b-b5fa-c7eadc81d3d8",
-    "title": "Operador de loja (M/F) - Santiago do Cacém",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629650/operador-de-loja-m-f-santiago-do-cacem/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T10:35:44+00:00",
-    "posted_at": "2026-06-29T10:35:44+00:00",
-    "date_posted": "2026-06-29T10:35:44.000Z"
-  },
-  {
     "id": "efe6da16-6b87-4322-9b9c-ef151fe1836a",
     "title": "Professor de Física e Química - Escola Profissional de Coruche",
     "location": "Portugal",
@@ -14002,42 +12994,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-09T16:20:46+00:00",
     "posted_at": "2026-07-09T16:20:46+00:00",
     "date_posted": "2026-07-09T16:20:46.000Z"
-  },
-  {
-    "id": "a6f505d3-9b05-43d2-85a6-fa72c6b7d695",
-    "title": "Gestor de Manutenção Industrial - Tondela, Barreiro de Besteiros (m/f/d)",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629638/gestor-de-manutencao-industrial-tondela-barreiro-de-besteiros-m-f-d/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T10:34:51+00:00",
-    "posted_at": "2026-06-29T10:34:51+00:00",
-    "date_posted": "2026-06-29T10:34:51.000Z"
-  },
-  {
-    "id": "685a9865-d3ec-4e6b-9c0c-b87cb7f2b619",
-    "title": "Governanta de Andares (M/F) - The Noble House, Évora",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629620/governanta-de-andares-m-f-the-noble-house-evora/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:34:48+00:00",
-    "posted_at": "2026-06-29T10:34:48+00:00",
-    "date_posted": "2026-06-29T10:34:48.000Z"
-  },
-  {
-    "id": "3b25a9f3-d00b-49ae-bece-95ad870e8d2e",
-    "title": "Técnico(a) de Produção / Armazém - Urgente - Maia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629619/tecnico-a-de-producao-armazem-urgente-maia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:34:41+00:00",
-    "posted_at": "2026-06-29T10:34:41+00:00",
-    "date_posted": "2026-06-29T10:34:41.000Z"
   },
   {
     "id": "d6bf6d2a-9b94-48dd-b921-3eff6a50d4e6",
@@ -14062,18 +13018,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-09T16:20:26+00:00",
     "posted_at": "2026-07-09T16:20:26+00:00",
     "date_posted": "2026-07-09T16:20:26.000Z"
-  },
-  {
-    "id": "9babef1e-4e80-49cb-9b0c-7e673e51636c",
-    "title": "Empregada de Andares (Housekeeping) - The Noble House",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629617/empregada-de-andares-housekeeping-the-noble-house/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Servi├ºos Dom├⌐sticos",
-    "created_at": "2026-06-29T10:34:48+00:00",
-    "posted_at": "2026-06-29T10:34:48+00:00",
-    "date_posted": "2026-06-29T10:34:48.000Z"
   },
   {
     "id": "26342127-7e87-4f5e-812b-ed9340add705",
@@ -14170,54 +13114,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T12:56:35+00:00",
     "posted_at": "2026-07-22T12:56:35+00:00",
     "date_posted": "2026-07-22T12:56:35.000Z"
-  },
-  {
-    "id": "3f091ae4-001f-41e5-ae5c-7638548bfc39",
-    "title": "Chefe de Linha / Chefe produção - (BARCELOS - CARREIRA)",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629612/chefe-de-linha-chefe-producao-barcelos-carreira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T10:34:46+00:00",
-    "posted_at": "2026-06-29T10:34:46+00:00",
-    "date_posted": "2026-06-29T10:34:46.000Z"
-  },
-  {
-    "id": "02dd1166-76c3-496b-8f40-7546abe16f7e",
-    "title": "Responsável de Laboratório Qualidade  Têxtil (M/F/D)  Guimarães",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629570/responsavel-de-laboratorio-qualidade-textil-m-f-d-guimaraes/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:33:55+00:00",
-    "posted_at": "2026-06-29T10:33:55+00:00",
-    "date_posted": "2026-06-29T10:33:55.000Z"
-  },
-  {
-    "id": "efa61edd-97ea-4f57-9e28-b00befa3c161",
-    "title": "Senior Project Manager",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629559/senior-project-manager/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:33:02+00:00",
-    "posted_at": "2026-06-29T10:33:02+00:00",
-    "date_posted": "2026-06-29T10:33:02.000Z"
-  },
-  {
-    "id": "3d16762c-4223-4960-aa4b-2824c9bde86b",
-    "title": "Empregada de limpeza (m/f) - Lagos",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629553/empregada-de-limpeza-m-f-lagos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Servi├ºos Dom├⌐sticos",
-    "created_at": "2026-06-29T10:32:59+00:00",
-    "posted_at": "2026-06-29T10:32:59+00:00",
-    "date_posted": "2026-06-29T10:32:59.000Z"
   },
   {
     "id": "9520e519-6043-4dce-8943-c7d3461228c8",
@@ -15226,78 +14122,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.693+00:00",
     "posted_at": "2026-07-13T11:42:31.693+00:00",
     "date_posted": "2026-07-13T11:42:31.693Z"
-  },
-  {
-    "id": "113409c2-09f5-4df2-a0b6-3def2e66599d",
-    "title": "Cozinheiro de 2 - AETHOS Ericeira",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629550/cozinheiro-de-2-aethos-ericeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T10:32:57+00:00",
-    "posted_at": "2026-06-29T10:32:57+00:00",
-    "date_posted": "2026-06-29T10:32:57.000Z"
-  },
-  {
-    "id": "415ca1b6-4993-42fc-a4e2-25d69f130271",
-    "title": "Shift Leader/Sub-Gerente (Têxtil e Decoração) PEPCO SANTARÉM",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629547/shift-leader-sub-gerente-textil-e-decoracao-pepco-santarem/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:32:44+00:00",
-    "posted_at": "2026-06-29T10:32:44+00:00",
-    "date_posted": "2026-06-29T10:32:44.000Z"
-  },
-  {
-    "id": "e37eecd5-da60-454f-8a74-9cf4fc0d42f2",
-    "title": "Distribuidor",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629543/distribuidor/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:32:47+00:00",
-    "posted_at": "2026-06-29T10:32:47+00:00",
-    "date_posted": "2026-06-29T10:32:47.000Z"
-  },
-  {
-    "id": "c8aa6376-a595-4d37-9093-dcb600ac3fdc",
-    "title": "Consultor/a Imobiliário/a em Braga",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629542/consultor-a-imobiliario-a-em-braga/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T10:32:40+00:00",
-    "posted_at": "2026-06-29T10:32:40+00:00",
-    "date_posted": "2026-06-29T10:32:40.000Z"
-  },
-  {
-    "id": "7033ed62-3fed-408d-94d6-9c9e5ed90c0f",
-    "title": "Gestor de Projetos IT (M/F/D) - Carnaxide, Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629540/gestor-de-projetos-it-m-f-d-carnaxide-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Tecnologia & TI",
-    "created_at": "2026-06-29T10:33:55+00:00",
-    "posted_at": "2026-06-29T10:33:55+00:00",
-    "date_posted": "2026-06-29T10:33:55.000Z"
-  },
-  {
-    "id": "7ad58f6c-8fd0-49a0-a130-2a627350bcd9",
-    "title": "Operador de Produção",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629539/operador-de-producao/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T09:57:41+00:00",
-    "posted_at": "2026-06-29T09:57:41+00:00",
-    "date_posted": "2026-06-29T09:57:41.000Z"
   },
   {
     "id": "d4be3ec8-f45c-42a9-88a1-be879de7c4cc",
@@ -17568,30 +16392,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-09T18:34:02.000Z"
   },
   {
-    "id": "916f1260-81f4-422d-b3b3-1c3e615f8d37",
-    "title": "Store Manager/Gerente de Loja (Têxtil e Decoração) PEPCO SANTAREM",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629536/store-manager-gerente-de-loja-textil-e-decoracao-pepco-santarem/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T10:32:44+00:00",
-    "posted_at": "2026-06-29T10:32:44+00:00",
-    "date_posted": "2026-06-29T10:32:44.000Z"
-  },
-  {
-    "id": "53057a38-5c14-4f08-b4f3-fbb666f75a4f",
-    "title": "Chefe de Manutenção  (M/F/D) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15629523/chefe-de-manutencao-m-f-d-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T10:33:55+00:00",
-    "posted_at": "2026-06-29T10:33:55+00:00",
-    "date_posted": "2026-06-29T10:33:55.000Z"
-  },
-  {
     "id": "c923438a-119f-431e-8e08-fde22a6406af",
     "title": "Precisa-se Saxofonista (F/M) para Banda de Baile/Espetáculo - Lisboa",
     "location": "Lisboa",
@@ -17746,270 +16546,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-09T18:38:03+00:00",
     "posted_at": "2026-07-09T18:38:03+00:00",
     "date_posted": "2026-07-09T18:38:03.000Z"
-  },
-  {
-    "id": "7a9f3477-3d0d-4d2b-95b3-1aca9698b02a",
-    "title": "Administrativo - IMPACTO FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633232/administrativo-impacto-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:27:29+00:00",
-    "posted_at": "2026-06-29T16:27:29+00:00",
-    "date_posted": "2026-06-29T16:27:29.000Z"
-  },
-  {
-    "id": "3cc364e3-10e1-445e-a81a-6a0aafc9c767",
-    "title": "Gestor de Clientes - IMPACTO FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633206/gestor-de-clientes-impacto-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:27:29+00:00",
-    "posted_at": "2026-06-29T16:27:29+00:00",
-    "date_posted": "2026-06-29T16:27:29.000Z"
-  },
-  {
-    "id": "f8ed35f1-f254-4b8e-b6f0-7f3d1f05a6c8",
-    "title": "Administrativa de Recursos Humanos",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633205/administrativa-de-recursos-humanos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:27:43+00:00",
-    "posted_at": "2026-06-29T16:27:43+00:00",
-    "date_posted": "2026-06-29T16:27:43.000Z"
-  },
-  {
-    "id": "453e755d-b588-44d1-b367-11c5ef4b968d",
-    "title": "Consultor Comercial - IMPACTO FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633197/consultor-comercial-impacto-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:27:29+00:00",
-    "posted_at": "2026-06-29T16:27:29+00:00",
-    "date_posted": "2026-06-29T16:27:29.000Z"
-  },
-  {
-    "id": "7c683e96-a6a3-41b4-8e67-29f44e93485a",
-    "title": "Eletricista (M/F)- Viana do Castelo",
-    "location": "Viana do Castelo",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633194/eletricista-m-f-viana-do-castelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "c69e2810-4d23-4268-b2ba-593242f61ee1",
-    "title": "Eletricista (M/F)- Viseu",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633193/eletricista-m-f-viseu/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "c64a2e39-bd15-4586-ae86-d2f0ad573792",
-    "title": "Ajudante Eletricista (M/F)- Viseu",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633191/ajudante-eletricista-m-f-viseu/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "fe88b0cd-0ff9-4b5a-8b69-e18d120bc45a",
-    "title": "Ajudante de Serralheiro (M/F)- Barcelos",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633190/ajudante-de-serralheiro-m-f-barcelos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "9bf08247-a4c9-48ef-8cb9-3a253bfe9655",
-    "title": "Ajudante de Eletricista (M/F)- Viana do Castelo",
-    "location": "Viana do Castelo",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633187/ajudante-de-eletricista-m-f-viana-do-castelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "6614a753-c5cd-48f3-9a9c-96ed70de2013",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633185/ajudante-de-cargas-e-descargas-m-f-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "8823599a-bdff-4af3-8281-887c5deddb09",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Viana do Castelo",
-    "location": "Viana do Castelo",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633183/ajudante-de-cargas-e-descargas-m-f-viana-do-castelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "f3a65752-e5f2-4cc2-9c9c-7221e9bc0b06",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Mirandela",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633181/ajudante-de-cargas-e-descargas-m-f-mirandela/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "327ab76c-650a-46ad-bca2-21574578a717",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Chaves",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633169/ajudante-de-cargas-e-descargas-m-f-chaves/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "73d3de49-8dbe-43bb-9f3c-1652179ad462",
-    "title": "Operadores de Armazém (m/f) - Oliveira de Azeméis",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633144/operadores-de-armaz-233-m-m-f-oliveira-de-azem-233-is/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:18:44+00:00",
-    "posted_at": "2026-06-29T16:18:44+00:00",
-    "date_posted": "2026-06-29T16:18:44.000Z"
-  },
-  {
-    "id": "52ab2a94-ac4f-4ba0-876f-9a117acdac5d",
-    "title": "Operador Caixa-Posto Abastecimento - SANTARÉM",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633133/-operador-caixa-posto-abastecimento-santarem/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:18:39+00:00",
-    "posted_at": "2026-06-29T16:18:39+00:00",
-    "date_posted": "2026-06-29T16:18:39.000Z"
-  },
-  {
-    "id": "3789bed3-e16f-4af5-b988-7f98be04947f",
-    "title": "Técnico(a) de contabilidade",
-    "location": "Beja",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633120/tecnico-a-de-contabilidade/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:18:15+00:00",
-    "posted_at": "2026-06-29T16:18:15+00:00",
-    "date_posted": "2026-06-29T16:18:15.000Z"
-  },
-  {
-    "id": "0f3d4a2f-1878-49f1-925c-a3d11fe2f83f",
-    "title": "Engenheiro / Diretor de obra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633115/engenheiro-diretor-de-obra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:17:53+00:00",
-    "posted_at": "2026-06-29T16:17:53+00:00",
-    "date_posted": "2026-06-29T16:17:53.000Z"
-  },
-  {
-    "id": "43c6938a-6a1a-4c10-821d-1b9a59667cbd",
-    "title": "Assistente Dentária(o) - Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633110/assistente-dentaria-o-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:18:01+00:00",
-    "posted_at": "2026-06-29T16:18:01+00:00",
-    "date_posted": "2026-06-29T16:18:01.000Z"
-  },
-  {
-    "id": "24e06db3-3aed-4f13-9559-988cbfa909df",
-    "title": "Operador (a) de Picking (m/f)",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633103/operador-a-de-picking-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:25:22+00:00",
-    "posted_at": "2026-06-29T16:25:22+00:00",
-    "date_posted": "2026-06-29T16:25:22.000Z"
-  },
-  {
-    "id": "3acd31b9-a146-42ed-8050-b2106db3ef53",
-    "title": "Auxiliar de Serviços Gerais para Lar de Idosos em GONDOMAR",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633102/auxiliar-de-servicos-gerais-para-lar-de-idosos-em-gondomar/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:25:15+00:00",
-    "posted_at": "2026-06-29T16:25:15+00:00",
-    "date_posted": "2026-06-29T16:25:15.000Z"
-  },
-  {
-    "id": "9ba8a534-e632-4fa2-bef8-5404ce15a98d",
-    "title": "Customer Service Agent - SIXT Paredes",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633100/customer-service-agent-sixt-paredes/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:25:25+00:00",
-    "posted_at": "2026-06-29T16:25:25+00:00",
-    "date_posted": "2026-06-29T16:25:25.000Z"
-  },
-  {
-    "id": "8568aaa3-6598-4f6d-b518-09dab62db08d",
-    "title": "Oportunidade de Trabalho: Marcação de Preços",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633098/oportunidade-de-trabalho-marcacao-de-precos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:14:49+00:00",
-    "posted_at": "2026-06-29T16:14:49+00:00",
-    "date_posted": "2026-06-29T16:14:49.000Z"
   },
   {
     "id": "6cbe280c-30ec-43f3-9dab-1ff35a3114c6",
@@ -19608,42 +18144,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-10T10:56:36.000Z"
   },
   {
-    "id": "41903246-f9ec-4de0-835d-733e9457d2fa",
-    "title": "Serviços de Lavandaria - Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633095/servicos-de-lavandaria-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:37+00:00",
-    "posted_at": "2026-06-29T16:11:37+00:00",
-    "date_posted": "2026-06-29T16:11:37.000Z"
-  },
-  {
-    "id": "079cf505-6721-4cd8-b1f7-65ccd14db619",
-    "title": "Precisa-se de Empregado de Mesa para Restaurante na Baixa do Porto - Part-Time",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633093/precisa-se-de-empregado-de-mesa-para-restaurante-na-baixa-do-porto-part-time/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T16:19:44+00:00",
-    "posted_at": "2026-06-29T16:19:44+00:00",
-    "date_posted": "2026-06-29T16:19:44.000Z"
-  },
-  {
-    "id": "da65c650-8084-4efc-b860-452378f18f5a",
-    "title": "Comercial (M/F) - Loulé",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633091/comercial-m-f-loule/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:19:51+00:00",
-    "posted_at": "2026-06-29T16:19:51+00:00",
-    "date_posted": "2026-06-29T16:19:51.000Z"
-  },
-  {
     "id": "18a77f3f-da19-47a3-b5e9-45f18d7b9c8f",
     "title": "Restaurante Manager - Lisboa/Cais do Sodré",
     "location": "Lisboa",
@@ -20328,18 +18828,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-10T10:57:33.000Z"
   },
   {
-    "id": "5cca7475-4cf5-4604-ad89-e3a76b1c291c",
-    "title": "Precisa-se de Ajudante de Cozinha para restaurante situado no Porto.",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633090/precisa-se-de-ajudante-de-cozinha-para-restaurante-situado-no-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T16:19:44+00:00",
-    "posted_at": "2026-06-29T16:19:44+00:00",
-    "date_posted": "2026-06-29T16:19:44.000Z"
-  },
-  {
     "id": "acf7a9fe-85ca-440d-9ed8-e6712d6133e4",
     "title": "Rececionista de Hotel / Alojamento (m/f)",
     "location": "Lisboa",
@@ -20350,54 +18838,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-14T11:42:31.76+00:00",
     "posted_at": "2026-07-14T11:42:31.76+00:00",
     "date_posted": "2026-07-14T11:42:31.760Z"
-  },
-  {
-    "id": "4c10fd3c-21cf-4a0e-a012-bcb822fe161d",
-    "title": "Gestor de Clientes - IMPULSE FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633089/gestor-de-clientes-impulse-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:19:47+00:00",
-    "posted_at": "2026-06-29T16:19:47+00:00",
-    "date_posted": "2026-06-29T16:19:47.000Z"
-  },
-  {
-    "id": "7568cb06-bf34-4dd1-9754-75ebc3b3f761",
-    "title": "Synergie recruta Ajudante de conservação/ manutenção rodoviária (M/F/D) - Albufeira",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633088/synergie-recruta-ajudante-de-conservacao-manutencao-rodoviaria-m-f-d-albufeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "8208d8d7-5eb2-4ba3-9c02-c47a50712e6d",
-    "title": "Synergie recruta Ajudante de Conservação (M/F/D) - Silves",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633087/synergie-recruta-ajudante-de-conservacao-m-f-d-silves/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "767fb78f-2d19-46a9-9b62-c1b1819e6f56",
-    "title": "Motorista de Pesados com Experiência (C+E)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633085/motorista-de-pesados-com-experiencia-c-e/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:11:07+00:00",
-    "posted_at": "2026-06-29T16:11:07+00:00",
-    "date_posted": "2026-06-29T16:11:07.000Z"
   },
   {
     "id": "6a05b299-080a-49ca-81f2-c9ccebd25a65",
@@ -20412,18 +18852,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T11:42:31.760Z"
   },
   {
-    "id": "0cc6410f-f1f2-4b33-b610-2a377d7e2626",
-    "title": "Estágio Profissional IEFP: Arquitetura (m/f/d) -Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633084/estagio-profissional-iefp-arquitetura-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
     "id": "2f459beb-417f-4a50-a5e9-e6f1435f9aec",
     "title": "Cozinheiro de 1ª e 2ª (m/f)",
     "location": "Lisboa",
@@ -20436,54 +18864,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.760Z"
   },
   {
-    "id": "cbf4dcdc-3443-4a98-be1a-ca798084ad6c",
-    "title": "Técnico(a) Auxiliar de Farmácia - Farmácia Cartaxo - Av da Igreja - Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633082/tecnico-a-auxiliar-de-farmacia-farmacia-cartaxo-av-da-igreja-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:10:58+00:00",
-    "posted_at": "2026-06-29T16:10:58+00:00",
-    "date_posted": "2026-06-29T16:10:58.000Z"
-  },
-  {
-    "id": "48719250-3e87-47a0-b78a-4913264de486",
-    "title": "Técnico de manutenção( M/F)- Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633081/tecnico-de-manutencao-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "5add054b-4724-484c-aba7-206491045eb8",
-    "title": "Estágio Profissional IEFP: Engenharia Civil (m/f/d) -Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633080/estagio-profissional-iefp-engenharia-civil-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "7a6c0d3f-76d6-48e9-8057-69e5faa75b1c",
-    "title": "Eletricista (m/f) - Santa Maria da Feira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633078/eletricista-m-f-santa-maria-da-feira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "c4fc24e3-5631-4257-8460-642a997c64a8",
     "title": "Empregado de Mesa / Bar (m/f)",
     "location": "Setúbal",
@@ -20494,78 +18874,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.76+00:00",
     "posted_at": "2026-07-13T11:42:31.76+00:00",
     "date_posted": "2026-07-13T11:42:31.760Z"
-  },
-  {
-    "id": "cc223d3f-9f59-4578-83bd-fc4de63b257b",
-    "title": "Serralheiro (m/f) - Santa Maria da Feira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633076/serralheiro-m-f-santa-maria-da-feira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "785fc728-36ae-4d2a-a7b1-744b4832b406",
-    "title": "Zona do Estoril- procuramos pickers para entrada imediata",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633075/zona-do-estoril-procuramos-pickers-para-entrada-imediata/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:05+00:00",
-    "posted_at": "2026-06-29T16:20:05+00:00",
-    "date_posted": "2026-06-29T16:20:05.000Z"
-  },
-  {
-    "id": "c4ec3f2a-8ce0-482f-9d52-6b1bfb05adb8",
-    "title": "Vendedor de Loja (m/f)- Aveiro",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633074/vendedor-de-loja-m-f-aveiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "dc4de5e6-0d4b-4545-9854-6036a183ee65",
-    "title": "Operadores de produção (m/f/d) - Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633073/operadores-de-producao-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "f0c6eed6-45b1-4467-886f-18b91102b521",
-    "title": "Operador de Produção (m/f) - Arcozelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633072/operador-de-producao-m-f-arcozelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "f5307183-1ecd-4c4b-b10f-e027f7a58d4b",
-    "title": "Preparador Embalador (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633070/preparador-embalador-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "e8fcd1e4-ba3d-48c5-b13e-3c131d65a94a",
@@ -20700,198 +19008,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T12:54:45.000Z"
   },
   {
-    "id": "aa356c7e-12dd-4d2d-ac3c-a7f0c1d722d0",
-    "title": "Operador de Armazém (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633068/operador-de-armazem-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "5902d26b-71fc-4b2f-89ea-5a7f8ff008ef",
-    "title": "Operador de Armazém (m/f) - Santa Maria da Feira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633067/operador-de-armazem-m-f-santa-maria-da-feira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "ddf55dfe-425e-40da-a7fc-1eb2ead91761",
-    "title": "Administrativa de Logística (m/f) - Soza",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633064/administrativa-de-logistica-m-f-soza/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "3d992879-f54c-46a1-a0de-9c245db2095d",
-    "title": "Responsável Melhoria Contínua (m/f/d)  Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633063/responsavel-melhoria-continua-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "7bb17e25-3d67-4b35-be2c-9b9d9c13d608",
-    "title": "Nutricionista Desportivo - SANTO TIRSO",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633062/nutricionista-desportivo-santo-tirso/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
-    "id": "0bb61664-4222-4207-ba62-f7d154ef8a65",
-    "title": "Operador de Call Center (m/f)- Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633061/operador-de-call-center-m-f-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "9c7997e8-691b-4fe8-b140-b0f8ba39e5a1",
-    "title": "Manobrador de empilhadora (m/f)- Póvoa de Varzim",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633060/manobrador-de-empilhadora-m-f-povoa-de-varzim/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "2955487c-1b30-4bba-a479-b5ce621ccad6",
-    "title": "Pedreiro/ Ladrilhador",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633058/pedreiro-ladrilhador/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:07:41+00:00",
-    "posted_at": "2026-06-29T16:07:41+00:00",
-    "date_posted": "2026-06-29T16:07:41.000Z"
-  },
-  {
-    "id": "a4e21089-ca04-42de-b86e-d38b21582d21",
-    "title": "Técnico Manutenção (M/F/D) - Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633057/tecnico-manutencao-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "ca682c80-3b9a-4e92-982b-d4bcf7b1132d",
-    "title": "Auxiliar de produção(M/F)- Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633056/auxiliar-de-producao-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "9269af69-ceab-4517-ad43-c4c6126ce782",
-    "title": "Cozinheiros (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633054/cozinheiros-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "2594e71e-8215-4313-84db-ceabc1189c77",
-    "title": "**Vigilante rodoviário (M/F/D) - Silves (Alcantarilha - Algarve) **",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633053/-vigilante-rodoviario-m-f-d-silves-alcantarilha-algarve/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "f6e2b9c0-5ca4-4fd7-88c4-90d1365d98fc",
-    "title": "Motorista de Pesados (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633052/motorista-de-pesados-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "325111a8-301a-4ac8-aeb3-2b5caf90721c",
-    "title": "Operador de Produção (m/f)- São João de Ver",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633051/operador-de-producao-m-f-sao-joao-de-ver/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "2c99e2e0-7547-4f8e-abf5-44c1a625b358",
-    "title": "Administrativo de logística (m/f) - São João de Ver",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633050/administrativo-de-logistica-m-f-sao-joao-de-ver/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "8d6b127a-2240-4574-a8ea-7db5030d073d",
-    "title": "Estamos a recrutar operador(a)/ técnico(a) de corte CNC!",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633049/estamos-a-recrutar-operador-a-tecnico-a-de-corte-cnc/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:08:57+00:00",
-    "posted_at": "2026-06-29T16:08:57+00:00",
-    "date_posted": "2026-06-29T16:08:57.000Z"
-  },
-  {
     "id": "5d1e495c-0f1a-4d46-a622-e79c35e58488",
     "title": "Vendedor de Serviço de Fotografia  - Fins de Semana - Parque das Nações 10h30-19h30",
     "location": "Lisboa",
@@ -20938,18 +19054,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T12:55:05+00:00",
     "posted_at": "2026-07-22T12:55:05+00:00",
     "date_posted": "2026-07-22T12:55:05.000Z"
-  },
-  {
-    "id": "46164a6c-e91c-4adf-a156-e0696e3a154e",
-    "title": "Oeiras Parque -  Empregada de Balcão",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633048/oeiras-parque-empregada-de-balcao/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Servi├ºos Dom├⌐sticos",
-    "created_at": "2026-06-29T16:09:07+00:00",
-    "posted_at": "2026-06-29T16:09:07+00:00",
-    "date_posted": "2026-06-29T16:09:07.000Z"
   },
   {
     "id": "6bba3b0e-ac3c-446f-bd9b-02510541252d",
@@ -22272,42 +20376,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.767Z"
   },
   {
-    "id": "ba0eb108-f863-4ea8-84bc-c07bb7109929",
-    "title": "AssistenteCentro Auditivo - Viseu, de 7 julho 2026 até 17 julho 2026",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633046/assistente-centro-auditivo-viseu-de-7-julho-2026-ate-17-julho-2026/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:34+00:00",
-    "posted_at": "2026-06-29T16:24:34+00:00",
-    "date_posted": "2026-06-29T16:24:34.000Z"
-  },
-  {
-    "id": "1596f44b-1df5-47d0-baf5-3debe7986c0a",
-    "title": "**Synergie recruta Vigilante rodoviário (M/F/D) - Silves (Alcantarilha - Algarve)**",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633044/-synergie-recruta-vigilante-rodoviario-m-f-d-silves-alcantarilha-algarve/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "30161ac2-3fa8-4a15-9b30-0e2567a32976",
-    "title": "Técnico de Contabilidade (m/f) - Argoncilhe",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633042/tecnico-de-contabilidade-m-f-argoncilhe/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "710bd41f-7230-48c5-ac4e-707581b5efb8",
     "title": "Treinador de Padel (M/F)",
     "location": "Porto",
@@ -22510,18 +20578,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T12:52:09+00:00",
     "posted_at": "2026-07-22T12:52:09+00:00",
     "date_posted": "2026-07-22T12:52:09.000Z"
-  },
-  {
-    "id": "b095ba77-df83-4a1c-b612-7f2a525bf36e",
-    "title": "Designer",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633041/designer/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:51+00:00",
-    "posted_at": "2026-06-29T16:08:51+00:00",
-    "date_posted": "2026-06-29T16:08:51.000Z"
   },
   {
     "id": "e06c8dcb-84ca-4d38-a252-1e7ae1b52b12",
@@ -22884,30 +20940,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T11:42:31.768Z"
   },
   {
-    "id": "ddd34772-cc2e-443c-8654-114b9e5ab3e3",
-    "title": "Team Leader de Produção (m/f) - Seixezelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633040/team-leader-de-producao-m-f-seixezelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "bd5989a0-7240-4aa8-8ad4-2240c814f075",
-    "title": "Operador de Logística (m/f)- Seixezelo, Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633039/operador-de-logistica-m-f-seixezelo-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "6125cfde-4fcc-4122-8a7b-b0996e4fd677",
     "title": "Operador de Armazém / Logística (m/f)",
     "location": "Aveiro",
@@ -23160,66 +21192,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-14T11:42:31.769Z"
   },
   {
-    "id": "6ea1739e-2515-407e-b2e7-216b5c8c1d22",
-    "title": "Técnico de Manutenção (m/f)-São João de Vêr",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633038/tecnico-de-manutencao-m-f-sao-joao-de-ver/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "211dfc7d-e19b-47a3-b4bf-de70b1ca7cd4",
-    "title": "Nutricionista Desportivo - FARO",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633036/nutricionista-desportivo-faro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
-    "id": "bc003059-8cb5-464f-a873-1720b96d23df",
-    "title": "Operador indiferenciado (m/f)- Caldas de São Jorge",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633034/operador-indiferenciado-m-f-caldas-de-sao-jorge/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "2ec0e524-3ca5-4e02-99ab-db350edee225",
-    "title": "Manobrador de máquinas (m/f)- Caldas de São Jorge",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633033/manobrador-de-maquinas-m-f-caldas-de-sao-jorge/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "943d199f-f524-4cf2-a55b-60b24f2a6f99",
-    "title": "Técnico de Manutenção (m/f)- São João da Madeira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633032/tecnico-de-manutencao-m-f-sao-joao-da-madeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "b7677ca6-6453-44c5-98ac-b06b10165950",
     "title": "Recrutamento: Carpinteiro de Cofragem para Lisboa",
     "location": "Lisboa",
@@ -23230,18 +21202,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-11T19:02:01+00:00",
     "posted_at": "2026-07-11T19:02:01+00:00",
     "date_posted": "2026-07-11T19:02:01.000Z"
-  },
-  {
-    "id": "d91fd8c1-e104-428c-bae9-ba22f94815a0",
-    "title": "Operador de injeção de Alumínio (m/f)-Águeda",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633031/operador-de-injecao-de-aluminio-m-f-agueda/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "c6d2cede-860f-4609-8f1d-c884c206d74a",
@@ -23544,66 +21504,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-11T17:33:59.000Z"
   },
   {
-    "id": "14857681-50ca-48f5-9db8-061687c73973",
-    "title": "Operador de Prensa (m/f)- Águeda",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633030/operador-de-prensa-m-f-agueda/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "327f4571-3daa-4fb2-b0ad-a3efdbaa26d6",
-    "title": "Trabalhador Avícola (m/f) - São Pedro do Sul",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633029/trabalhador-avicola-m-f-sao-pedro-do-sul/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "06065a3c-8a29-4963-bafe-7a1c8f691cdc",
-    "title": "Apoio ao Cliente Bancário  Inbound - Full-Time - 08/07/2026",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633028/apoio-ao-cliente-bancario-inbound-full-time-08-07-2026/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:46+00:00",
-    "posted_at": "2026-06-29T16:08:46+00:00",
-    "date_posted": "2026-06-29T16:08:46.000Z"
-  },
-  {
-    "id": "1a4b42db-7f1c-4137-a3db-c127217a8f0e",
-    "title": "Trabalhador Avícola (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633025/trabalhador-avicola-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "3850eba8-b272-47b0-80f1-e6a34fd02b0d",
-    "title": "Operador de retrátil (M/F) - Benavente",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633024/operador-de-retratil-m-f-benavente/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:24:29+00:00",
-    "posted_at": "2026-06-29T16:24:29+00:00",
-    "date_posted": "2026-06-29T16:24:29.000Z"
-  },
-  {
     "id": "aeb589a9-ae15-49b9-9f24-49e3c03c5af4",
     "title": "Kitchen and Cleaning Assistant at Chiado Restaurant",
     "location": "Lisboa",
@@ -23890,54 +21790,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-11T16:56:33+00:00",
     "posted_at": "2026-07-11T16:56:33+00:00",
     "date_posted": "2026-07-11T16:56:33.000Z"
-  },
-  {
-    "id": "d215761d-ada2-484a-884d-8c1721cd00df",
-    "title": "Operador de Higiene Especializada (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633023/operador-de-higiene-especializada-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "96244c19-9aee-44bd-b439-0c4ab990604b",
-    "title": "Operador de Calibradora (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633022/operador-de-calibradora-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "49da3787-877c-4528-b351-e7dca457bb3a",
-    "title": "Operador de Abate (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633021/operador-de-abate-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "162b16a7-4dc3-4a07-9cdf-a4174ab934b5",
-    "title": "Técnico de Manutenção (m/f)- Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633020/tecnico-de-manutencao-m-f-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "a6f39a8c-9f45-4c32-9663-cf528cda8dbb",
@@ -24720,18 +22572,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T22:05:01.000Z"
   },
   {
-    "id": "b454434e-c96e-4738-9ca0-c4f55d153a07",
-    "title": "Operador de produção (m/f)- Seixezelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633019/operador-de-producao-m-f-seixezelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "ffa357b9-9ec7-4c54-8f90-f70bf826e9ed",
     "title": "Group Business Controller - Marketing Digital Data Analysis",
     "location": "Lisboa",
@@ -24816,54 +22656,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T22:05:01.000Z"
   },
   {
-    "id": "ac87b86a-0db6-4f80-a9f9-10866d868068",
-    "title": "Técnico de AVAC",
-    "location": "Almada",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633018/tecnico-de-avac/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:30+00:00",
-    "posted_at": "2026-06-29T16:08:30+00:00",
-    "date_posted": "2026-06-29T16:08:30.000Z"
-  },
-  {
-    "id": "2f5e8a97-9451-4c6f-85a3-c692830edf8e",
-    "title": "Operador de Produção (M/F) - Silvalde - Espinho",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633017/operador-de-producao-m-f-silvalde-espinho/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "88deb135-ab85-4eb6-8ba2-f060950bc3d3",
-    "title": "Operador de Robots (m/f)- Silvalde",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633016/operador-de-robots-m-f-silvalde/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "32bfa2c3-a7cd-4682-9d16-9777c596c6ef",
-    "title": "Operador de Logística (m/f) - Arcozelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633015/operador-de-logistica-m-f-arcozelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "e5ff6b4f-f818-4946-a871-2276d98290cc",
     "title": "Motorista de Pesados",
     "location": "Lisboa",
@@ -24874,90 +22666,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-11T17:06:38+00:00",
     "posted_at": "2026-07-11T17:06:38+00:00",
     "date_posted": "2026-07-11T17:06:38.000Z"
-  },
-  {
-    "id": "40a18ebe-4b17-4b7c-b477-73e76bda93d5",
-    "title": "Operador de Produção (m/f)-Soza,Aveiro",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633014/operador-de-producao-m-f-soza-aveiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "a5629864-a0f6-4661-b567-f93aba090b11",
-    "title": "Operadora de Produção (m/f)-Laundos, Póvoa de Varzim",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633013/operadora-de-producao-m-f-laundos-povoa-de-varzim/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "788b0336-e1e9-4bbd-b146-12845d2b9223",
-    "title": "Técnico Eletromecânico (m/f)- Estarreja",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633012/tecnico-eletromecanico-m-f-estarreja/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "0fd8864e-0671-49b4-af21-62954b631652",
-    "title": "Supervisor(a) Comercial  ERA Gandra (fixo + comissões)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633011/supervisor-a-comercial-era-gandra-fixo-comissoes/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:24:27+00:00",
-    "posted_at": "2026-06-29T16:24:27+00:00",
-    "date_posted": "2026-06-29T16:24:27.000Z"
-  },
-  {
-    "id": "8eb40c7c-fb85-4433-9d33-4dd58f6b7863",
-    "title": "Ajudante de manutenção(M/F) - Vila Nova De Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633010/ajudante-de-manutencao-m-f-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "064e21d2-bab1-44e5-afa2-3ae6bca77335",
-    "title": "Técnico de Manutenção (m/f)-Póvoa de Varzim",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633009/tecnico-de-manutencao-m-f-povoa-de-varzim/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "77fe7136-445f-485c-809c-ddb3d3f6ca04",
-    "title": "Gestor de Zona (M/F) ERA Gandra",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633008/gestor-de-zona-m-f-era-gandra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:24:27+00:00",
-    "posted_at": "2026-06-29T16:24:27+00:00",
-    "date_posted": "2026-06-29T16:24:27.000Z"
   },
   {
     "id": "33262f31-b47d-4b72-ba11-c77e40629470",
@@ -25114,42 +22822,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-21T14:10:16+00:00",
     "posted_at": "2026-07-21T14:10:16+00:00",
     "date_posted": "2026-07-21T14:10:16.000Z"
-  },
-  {
-    "id": "417359c5-9906-4294-a87c-1e013eba5bb2",
-    "title": "Farmacêutico(a) - Farmácia Cartaxo  Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633007/farmaceutico-a-farmacia-cartaxo-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Sa├║de & Cuidados",
-    "created_at": "2026-06-29T16:10:58+00:00",
-    "posted_at": "2026-06-29T16:10:58+00:00",
-    "date_posted": "2026-06-29T16:10:58.000Z"
-  },
-  {
-    "id": "5f514c57-605b-4249-8c69-9dbe2abc9490",
-    "title": "Nutricionista Desportivo - PAÇOS DE FERREIRA",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633006/nutricionista-desportivo-pacos-de-ferreira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
-    "id": "442bcd11-bdc6-4dfb-abdf-44b5285e6a71",
-    "title": "Contract Manager (M/F/D) Algarve",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633005/contract-manager-m-f-d-algarve/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:08+00:00",
-    "posted_at": "2026-06-29T16:19:08+00:00",
-    "date_posted": "2026-06-29T16:19:08.000Z"
   },
   {
     "id": "d3e1a522-83f0-43e4-b715-48e8a92ca480",
@@ -25534,54 +23206,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T18:55:22+00:00",
     "posted_at": "2026-07-22T18:55:22+00:00",
     "date_posted": "2026-07-22T18:55:22.000Z"
-  },
-  {
-    "id": "5e89f7c4-d432-4457-93cc-8e319ccdc474",
-    "title": "Técnico Mecânico de Frio Industrial",
-    "location": "Almada",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633003/tecnico-mecanico-de-frio-industrial/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:30+00:00",
-    "posted_at": "2026-06-29T16:08:30+00:00",
-    "date_posted": "2026-06-29T16:08:30.000Z"
-  },
-  {
-    "id": "ee01afee-669b-4a95-ab81-edf9f3f12c33",
-    "title": "Nutricionista Desportivo - SÃO JOÃO DA MADEIRA",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15632998/nutricionista-desportivo-sao-joao-da-madeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
-    "id": "adf96865-16cc-4243-becf-c42d6999635d",
-    "title": "Operador de Logistica (M/F/D) - Palmela (SYNERGIE)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15632997/operador-de-logistica-m-f-d-palmela-synergie/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "94266de3-df61-44c1-a8f8-84d509adbe55",
-    "title": "Engomadora para lavandaria na Zona da Maia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15632996/engomadora-para-lavandaria-na-zona-da-maia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:04:01+00:00",
-    "posted_at": "2026-06-29T16:04:01+00:00",
-    "date_posted": "2026-06-29T16:04:01.000Z"
   },
   {
     "id": "570c3c0b-99d3-49d2-8bc6-27c8744ca75b",
@@ -26362,90 +23986,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T18:44:40+00:00",
     "posted_at": "2026-07-22T18:44:40+00:00",
     "date_posted": "2026-07-22T18:44:40.000Z"
-  },
-  {
-    "id": "553b54cc-df50-48e5-a9c4-484417a39f16",
-    "title": "Administrativo - IMPACTO FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633232/administrativo-impacto-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:27:29+00:00",
-    "posted_at": "2026-06-29T16:27:29+00:00",
-    "date_posted": "2026-06-29T16:27:29.000Z"
-  },
-  {
-    "id": "79a3fa2e-cff7-46f6-8f75-10310643533b",
-    "title": "Gestor de Clientes - IMPACTO FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633206/gestor-de-clientes-impacto-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:27:29+00:00",
-    "posted_at": "2026-06-29T16:27:29+00:00",
-    "date_posted": "2026-06-29T16:27:29.000Z"
-  },
-  {
-    "id": "3a5e3082-f454-470d-bc63-b4169ff7c76f",
-    "title": "Administrativa de Recursos Humanos",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633205/administrativa-de-recursos-humanos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:27:43+00:00",
-    "posted_at": "2026-06-29T16:27:43+00:00",
-    "date_posted": "2026-06-29T16:27:43.000Z"
-  },
-  {
-    "id": "f6ae3357-c223-4a6f-8036-b1802b1387f5",
-    "title": "Consultor Comercial - IMPACTO FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633197/consultor-comercial-impacto-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:27:29+00:00",
-    "posted_at": "2026-06-29T16:27:29+00:00",
-    "date_posted": "2026-06-29T16:27:29.000Z"
-  },
-  {
-    "id": "4bec56d3-80a8-4273-88d1-92b191b0bb8f",
-    "title": "Eletricista (M/F)- Viana do Castelo",
-    "location": "Viana do Castelo",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633194/eletricista-m-f-viana-do-castelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "f0f193d7-8fc7-44d4-80cb-be331486cbda",
-    "title": "Eletricista (M/F)- Viseu",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633193/eletricista-m-f-viseu/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "adab2d55-0718-4f88-8f60-5b9f3aaa9573",
-    "title": "Ajudante Eletricista (M/F)- Viseu",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633191/ajudante-eletricista-m-f-viseu/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
   },
   {
     "id": "a92765e6-5531-4259-a9d5-9296e68e2b0a",
@@ -27672,18 +25212,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T18:30:23.000Z"
   },
   {
-    "id": "5d299bc0-8689-4dab-82df-377e9dc40b71",
-    "title": "Ajudante de Serralheiro (M/F)- Barcelos",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633190/ajudante-de-serralheiro-m-f-barcelos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
     "id": "6ae073d2-b9fe-4f63-9882-d7c5541712cc",
     "title": "Engenheiro DevOps / Cloud (m/f)",
     "location": "Coimbra",
@@ -27984,78 +25512,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T18:33:10.000Z"
   },
   {
-    "id": "a6232b4b-bc66-4ffb-87f2-79fb6888168f",
-    "title": "Ajudante de Eletricista (M/F)- Viana do Castelo",
-    "location": "Viana do Castelo",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633187/ajudante-de-eletricista-m-f-viana-do-castelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "23e4a626-be61-4231-ad11-1c4626fe0257",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633185/ajudante-de-cargas-e-descargas-m-f-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "18ef4086-ed89-45de-8fd8-b38265bf8e7a",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Viana do Castelo",
-    "location": "Viana do Castelo",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633183/ajudante-de-cargas-e-descargas-m-f-viana-do-castelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "296086d6-ccff-48b1-be6a-0bdfb5a67e19",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Mirandela",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633181/ajudante-de-cargas-e-descargas-m-f-mirandela/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "055f1994-1781-4b85-92aa-ac612076d15c",
-    "title": "Ajudante de Cargas e Descargas (M/F)- Chaves",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633169/ajudante-de-cargas-e-descargas-m-f-chaves/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:09+00:00",
-    "posted_at": "2026-06-29T16:24:09+00:00",
-    "date_posted": "2026-06-29T16:24:09.000Z"
-  },
-  {
-    "id": "2402c66f-a3e3-4165-aae4-7e422f7231be",
-    "title": "Operadores de Armazém (m/f) - Oliveira de Azeméis",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633144/operadores-de-armaz-233-m-m-f-oliveira-de-azem-233-is/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:18:44+00:00",
-    "posted_at": "2026-06-29T16:18:44+00:00",
-    "date_posted": "2026-06-29T16:18:44.000Z"
-  },
-  {
     "id": "68f2f890-13ef-47c8-9083-f57b60a4c9da",
     "title": "Operador de Empilhador (M/F) - Frielas (Loures)",
     "location": "Lisboa",
@@ -28114,66 +25570,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-12T11:42:31.791+00:00",
     "posted_at": "2026-07-12T11:42:31.791+00:00",
     "date_posted": "2026-07-12T11:42:31.791Z"
-  },
-  {
-    "id": "7d38ae1d-a498-4464-bcf3-16025859428c",
-    "title": "Operador Caixa-Posto Abastecimento - SANTARÉM",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633133/-operador-caixa-posto-abastecimento-santarem/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:18:39+00:00",
-    "posted_at": "2026-06-29T16:18:39+00:00",
-    "date_posted": "2026-06-29T16:18:39.000Z"
-  },
-  {
-    "id": "a46848ff-849e-4404-83c1-2aab5381d720",
-    "title": "Técnico(a) de contabilidade",
-    "location": "Beja",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633120/tecnico-a-de-contabilidade/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:18:15+00:00",
-    "posted_at": "2026-06-29T16:18:15+00:00",
-    "date_posted": "2026-06-29T16:18:15.000Z"
-  },
-  {
-    "id": "0bf86d43-d80f-41f0-911d-0112ef121bce",
-    "title": "Engenheiro / Diretor de obra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633115/engenheiro-diretor-de-obra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:17:53+00:00",
-    "posted_at": "2026-06-29T16:17:53+00:00",
-    "date_posted": "2026-06-29T16:17:53.000Z"
-  },
-  {
-    "id": "b17472a9-897e-4783-8c95-0d62f3a99eff",
-    "title": "Assistente Dentária(o) - Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633110/assistente-dentaria-o-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:18:01+00:00",
-    "posted_at": "2026-06-29T16:18:01+00:00",
-    "date_posted": "2026-06-29T16:18:01.000Z"
-  },
-  {
-    "id": "ad404e06-ff03-4a7e-a91f-9e70aaa2511f",
-    "title": "Operador (a) de Picking (m/f)",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633103/operador-a-de-picking-m-f/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:25:22+00:00",
-    "posted_at": "2026-06-29T16:25:22+00:00",
-    "date_posted": "2026-06-29T16:25:22.000Z"
   },
   {
     "id": "6bd8af7c-fe68-49b4-aa94-e6cf9e001862",
@@ -28356,78 +25752,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-16T11:42:31.813Z"
   },
   {
-    "id": "861a4044-96a8-4f61-9044-8482bf6a0280",
-    "title": "Auxiliar de Serviços Gerais para Lar de Idosos em GONDOMAR",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633102/auxiliar-de-servicos-gerais-para-lar-de-idosos-em-gondomar/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:25:15+00:00",
-    "posted_at": "2026-06-29T16:25:15+00:00",
-    "date_posted": "2026-06-29T16:25:15.000Z"
-  },
-  {
-    "id": "1cfcbc96-897f-47ed-a90f-35eaec8358bb",
-    "title": "Customer Service Agent - SIXT Paredes",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633100/customer-service-agent-sixt-paredes/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:25:25+00:00",
-    "posted_at": "2026-06-29T16:25:25+00:00",
-    "date_posted": "2026-06-29T16:25:25.000Z"
-  },
-  {
-    "id": "c7bc1f5d-a9a5-4696-b73c-1ffa08871978",
-    "title": "Oportunidade de Trabalho: Marcação de Preços",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633098/oportunidade-de-trabalho-marcacao-de-precos/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:14:49+00:00",
-    "posted_at": "2026-06-29T16:14:49+00:00",
-    "date_posted": "2026-06-29T16:14:49.000Z"
-  },
-  {
-    "id": "87532d6f-0c44-489f-8187-98e97a699402",
-    "title": "Serviços de Lavandaria - Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633095/servicos-de-lavandaria-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:37+00:00",
-    "posted_at": "2026-06-29T16:11:37+00:00",
-    "date_posted": "2026-06-29T16:11:37.000Z"
-  },
-  {
-    "id": "42ee4a45-af8e-44f3-9692-df9e0ac8ae21",
-    "title": "Precisa-se de Empregado de Mesa para Restaurante na Baixa do Porto - Part-Time",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633093/precisa-se-de-empregado-de-mesa-para-restaurante-na-baixa-do-porto-part-time/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T16:19:44+00:00",
-    "posted_at": "2026-06-29T16:19:44+00:00",
-    "date_posted": "2026-06-29T16:19:44.000Z"
-  },
-  {
-    "id": "811c94db-8021-4f26-8055-52422ef10904",
-    "title": "Comercial (M/F) - Loulé",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633091/comercial-m-f-loule/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:19:51+00:00",
-    "posted_at": "2026-06-29T16:19:51+00:00",
-    "date_posted": "2026-06-29T16:19:51.000Z"
-  },
-  {
     "id": "91376f21-a70a-4142-b481-7939ea8e278a",
     "title": "Remote Product Designer (UI/UX) (m/f)",
     "location": "Lisboa",
@@ -28438,54 +25762,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-16T11:42:31.813+00:00",
     "posted_at": "2026-07-16T11:42:31.813+00:00",
     "date_posted": "2026-07-16T11:42:31.813Z"
-  },
-  {
-    "id": "20331e45-0616-45ec-ab67-7b62070ce02e",
-    "title": "Precisa-se de Ajudante de Cozinha para restaurante situado no Porto.",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633090/precisa-se-de-ajudante-de-cozinha-para-restaurante-situado-no-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T16:19:44+00:00",
-    "posted_at": "2026-06-29T16:19:44+00:00",
-    "date_posted": "2026-06-29T16:19:44.000Z"
-  },
-  {
-    "id": "70767954-c39e-4e8c-bbe8-80b1421f3389",
-    "title": "Gestor de Clientes - IMPULSE FITNESS",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633089/gestor-de-clientes-impulse-fitness/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:19:47+00:00",
-    "posted_at": "2026-06-29T16:19:47+00:00",
-    "date_posted": "2026-06-29T16:19:47.000Z"
-  },
-  {
-    "id": "47c90021-968e-4af1-b82f-e91216eab143",
-    "title": "Synergie recruta Ajudante de conservação/ manutenção rodoviária (M/F/D) - Albufeira",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633088/synergie-recruta-ajudante-de-conservacao-manutencao-rodoviaria-m-f-d-albufeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "58f880af-f139-4b4a-be9f-cfad8cdc923f",
-    "title": "Synergie recruta Ajudante de Conservação (M/F/D) - Silves",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633087/synergie-recruta-ajudante-de-conservacao-m-f-d-silves/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
   },
   {
     "id": "ba43a83d-cb51-444a-bbb0-491f4036a43d",
@@ -28534,30 +25810,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T18:26:47+00:00",
     "posted_at": "2026-07-22T18:26:47+00:00",
     "date_posted": "2026-07-22T18:26:47.000Z"
-  },
-  {
-    "id": "9df3e6d5-c2d9-4a50-8855-a5fa9c371514",
-    "title": "Motorista de Pesados com Experiência (C+E)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633085/motorista-de-pesados-com-experiencia-c-e/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:11:07+00:00",
-    "posted_at": "2026-06-29T16:11:07+00:00",
-    "date_posted": "2026-06-29T16:11:07.000Z"
-  },
-  {
-    "id": "bddd7143-0c4b-4dd9-a15a-032a3f22efce",
-    "title": "Estágio Profissional IEFP: Arquitetura (m/f/d) -Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633084/estagio-profissional-iefp-arquitetura-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
   },
   {
     "id": "6718929d-fac3-475e-89c1-644f622b1354",
@@ -28788,186 +26040,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T18:23:32.000Z"
   },
   {
-    "id": "4def697e-d8a8-4bb9-8adb-e80e371e9149",
-    "title": "Técnico(a) Auxiliar de Farmácia - Farmácia Cartaxo - Av da Igreja - Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633082/tecnico-a-auxiliar-de-farmacia-farmacia-cartaxo-av-da-igreja-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:10:58+00:00",
-    "posted_at": "2026-06-29T16:10:58+00:00",
-    "date_posted": "2026-06-29T16:10:58.000Z"
-  },
-  {
-    "id": "07273d55-4017-4b6f-a030-bece002cdaff",
-    "title": "Técnico de manutenção( M/F)- Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633081/tecnico-de-manutencao-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "422eeea1-35e0-452b-a4c8-a42e976a5663",
-    "title": "Estágio Profissional IEFP: Engenharia Civil (m/f/d) -Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633080/estagio-profissional-iefp-engenharia-civil-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "ae72a4b1-2cce-4913-bcfb-ccdaba06ed7f",
-    "title": "Eletricista (m/f) - Santa Maria da Feira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633078/eletricista-m-f-santa-maria-da-feira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "0b963adc-2740-4928-acb0-38829eb6a960",
-    "title": "Serralheiro (m/f) - Santa Maria da Feira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633076/serralheiro-m-f-santa-maria-da-feira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "8f6297cf-ad6b-40e7-a74e-0e2b2273c267",
-    "title": "Zona do Estoril- procuramos pickers para entrada imediata",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633075/zona-do-estoril-procuramos-pickers-para-entrada-imediata/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:05+00:00",
-    "posted_at": "2026-06-29T16:20:05+00:00",
-    "date_posted": "2026-06-29T16:20:05.000Z"
-  },
-  {
-    "id": "9c92ec91-63b0-45ea-ae8e-6dc0a94e027d",
-    "title": "Vendedor de Loja (m/f)- Aveiro",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633074/vendedor-de-loja-m-f-aveiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "e5d54c17-b102-487e-a35a-29aa9698c94c",
-    "title": "Operadores de produção (m/f/d) - Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633073/operadores-de-producao-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "2fe49064-43f6-4788-b2d5-62a6f78d90fb",
-    "title": "Operador de Produção (m/f) - Arcozelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633072/operador-de-producao-m-f-arcozelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "cecc7544-b4fa-41ff-987e-dc2899d12272",
-    "title": "Preparador Embalador (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633070/preparador-embalador-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "10b968a9-dce3-4643-8be9-f74125d4dbd1",
-    "title": "Operador de Armazém (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633068/operador-de-armazem-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "22cf488a-3ae8-40b4-bbbf-995ffcc81ee7",
-    "title": "Operador de Armazém (m/f) - Santa Maria da Feira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633067/operador-de-armazem-m-f-santa-maria-da-feira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "dfc9ee7e-7d00-4d17-aa17-d811346da25e",
-    "title": "Administrativa de Logística (m/f) - Soza",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633064/administrativa-de-logistica-m-f-soza/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "97f56af1-64bb-40d5-b838-62e886f186cf",
-    "title": "Responsável Melhoria Contínua (m/f/d)  Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633063/responsavel-melhoria-continua-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "d4121ce7-57d2-48f2-a005-4522fdaf7e5b",
-    "title": "Nutricionista Desportivo - SANTO TIRSO",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633062/nutricionista-desportivo-santo-tirso/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
     "id": "14f7fe9e-fefc-46f2-a112-12d7f38228bd",
     "title": "Cozinheiro de 2",
     "location": "Lisboa",
@@ -29076,18 +26148,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-16T11:42:31.831Z"
   },
   {
-    "id": "6fceaf71-6e25-429c-aa7c-05e827e5075e",
-    "title": "Operador de Call Center (m/f)- Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633061/operador-de-call-center-m-f-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "37770554-19ac-4fd9-8813-e107b4200fbe",
     "title": "Assistente de Atendimento Operacional (m/f)",
     "location": "Setúbal",
@@ -29122,18 +26182,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T18:23:34+00:00",
     "posted_at": "2026-07-22T18:23:34+00:00",
     "date_posted": "2026-07-22T18:23:34.000Z"
-  },
-  {
-    "id": "99afdd8c-b75c-465e-ae6d-5ae162fe0957",
-    "title": "Manobrador de empilhadora (m/f)- Póvoa de Varzim",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633060/manobrador-de-empilhadora-m-f-povoa-de-varzim/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "56acda45-b3e2-472a-81cc-ae1bf5637040",
@@ -29172,42 +26220,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T18:21:51.000Z"
   },
   {
-    "id": "3aa599e7-2fdd-42aa-a153-c19545938713",
-    "title": "Pedreiro/ Ladrilhador",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633058/pedreiro-ladrilhador/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Constru├º├úo Civil & Engenharia",
-    "created_at": "2026-06-29T16:07:41+00:00",
-    "posted_at": "2026-06-29T16:07:41+00:00",
-    "date_posted": "2026-06-29T16:07:41.000Z"
-  },
-  {
-    "id": "4855b0b4-97b3-48d2-bb06-0e2c90899f42",
-    "title": "Técnico Manutenção (M/F/D) - Vale de Cambra",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633057/tecnico-manutencao-m-f-d-vale-de-cambra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:11:13+00:00",
-    "posted_at": "2026-06-29T16:11:13+00:00",
-    "date_posted": "2026-06-29T16:11:13.000Z"
-  },
-  {
-    "id": "ca8d16c6-2312-4f92-8ef6-12994d0a57e0",
-    "title": "Auxiliar de produção(M/F)- Sintra",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633056/auxiliar-de-producao-m-f-sintra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "5fbacab1-789e-4f1f-949e-747d60ef7b55",
     "title": "Técnico administrativo de contabilidade [329-000264-1]",
     "location": "Lisboa",
@@ -29218,66 +26230,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T18:23:34+00:00",
     "posted_at": "2026-07-22T18:23:34+00:00",
     "date_posted": "2026-07-22T18:23:34.000Z"
-  },
-  {
-    "id": "4fde9cd5-c354-416a-9d7a-ebac81cf4a12",
-    "title": "Cozinheiros (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633054/cozinheiros-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "ee6bb56b-9560-4821-99a4-e036f6b48409",
-    "title": "**Vigilante rodoviário (M/F/D) - Silves (Alcantarilha - Algarve) **",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633053/-vigilante-rodoviario-m-f-d-silves-alcantarilha-algarve/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "6bb55d10-7698-4f38-b30f-c688d9d8e959",
-    "title": "Motorista de Pesados (m/f) - Aeroporto do Porto",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633052/motorista-de-pesados-m-f-aeroporto-do-porto/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "37b3ac2d-4a7f-4c89-b574-747792c0a754",
-    "title": "Operador de Produção (m/f)- São João de Ver",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633051/operador-de-producao-m-f-sao-joao-de-ver/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "8840f10e-2eac-477e-82b0-8ffa0e7c525c",
-    "title": "Administrativo de logística (m/f) - São João de Ver",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633050/administrativo-de-logistica-m-f-sao-joao-de-ver/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "ffd75cee-ff1b-400f-b698-9a5c47827b4d",
@@ -29304,18 +26256,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T16:47:14.000Z"
   },
   {
-    "id": "f6ba15db-b631-448b-b326-c26d97c6e351",
-    "title": "Estamos a recrutar operador(a)/ técnico(a) de corte CNC!",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633049/estamos-a-recrutar-operador-a-tecnico-a-de-corte-cnc/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:08:57+00:00",
-    "posted_at": "2026-06-29T16:08:57+00:00",
-    "date_posted": "2026-06-29T16:08:57.000Z"
-  },
-  {
     "id": "3b9fcf18-70b8-4f99-a256-4fa0f5648dd6",
     "title": "CP está a recrutar Operadores Comerciais (22 vagas)",
     "location": "Portugal",
@@ -29338,18 +26278,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T15:59:00+00:00",
     "posted_at": "2026-07-22T15:59:00+00:00",
     "date_posted": "2026-07-22T15:59:00.000Z"
-  },
-  {
-    "id": "83c91208-9fc9-4ce7-9afa-0fb963b2cab4",
-    "title": "Oeiras Parque -  Empregada de Balcão",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633048/oeiras-parque-empregada-de-balcao/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Servi├ºos Dom├⌐sticos",
-    "created_at": "2026-06-29T16:09:07+00:00",
-    "posted_at": "2026-06-29T16:09:07+00:00",
-    "date_posted": "2026-06-29T16:09:07.000Z"
   },
   {
     "id": "215c0d45-9d63-4ddb-b5d0-7ed34678bf60",
@@ -29376,18 +26304,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-22T13:40:01.000Z"
   },
   {
-    "id": "03f67c42-8f25-4aca-9a03-145116e79a74",
-    "title": "AssistenteCentro Auditivo - Viseu, de 7 julho 2026 até 17 julho 2026",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633046/assistente-centro-auditivo-viseu-de-7-julho-2026-ate-17-julho-2026/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:24:34+00:00",
-    "posted_at": "2026-06-29T16:24:34+00:00",
-    "date_posted": "2026-06-29T16:24:34.000Z"
-  },
-  {
     "id": "690f5c4a-112f-48f0-a409-3e535983bc58",
     "title": "BPI está a recrutar para a Direção de Canais – Plataformas Transversais",
     "location": "Portugal",
@@ -29398,126 +26314,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-22T13:34:22+00:00",
     "posted_at": "2026-07-22T13:34:22+00:00",
     "date_posted": "2026-07-22T13:34:22.000Z"
-  },
-  {
-    "id": "3f32918d-b5cb-484e-82d8-2b0acc6bccf6",
-    "title": "**Synergie recruta Vigilante rodoviário (M/F/D) - Silves (Alcantarilha - Algarve)**",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633044/-synergie-recruta-vigilante-rodoviario-m-f-d-silves-alcantarilha-algarve/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "1dac614c-28c8-42eb-8e7d-da1a1cc75476",
-    "title": "Técnico de Contabilidade (m/f) - Argoncilhe",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633042/tecnico-de-contabilidade-m-f-argoncilhe/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "35fe44a1-c245-424e-8113-fa48cbe86c40",
-    "title": "Designer",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633041/designer/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:51+00:00",
-    "posted_at": "2026-06-29T16:08:51+00:00",
-    "date_posted": "2026-06-29T16:08:51.000Z"
-  },
-  {
-    "id": "862ddccb-f529-46e7-b866-5ead292ef7e0",
-    "title": "Team Leader de Produção (m/f) - Seixezelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633040/team-leader-de-producao-m-f-seixezelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "b22ad309-7cd5-4115-8220-8ba0f90580b3",
-    "title": "Operador de Logística (m/f)- Seixezelo, Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633039/operador-de-logistica-m-f-seixezelo-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "219d926b-6b13-44ae-beca-b88bab709d86",
-    "title": "Técnico de Manutenção (m/f)-São João de Vêr",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633038/tecnico-de-manutencao-m-f-sao-joao-de-ver/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "47fdc00b-a84d-469d-b534-bf41edc92d4e",
-    "title": "Nutricionista Desportivo - FARO",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633036/nutricionista-desportivo-faro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
-    "id": "888fd5bd-cd51-431b-8e9c-747a8b24bf42",
-    "title": "Operador indiferenciado (m/f)- Caldas de São Jorge",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633034/operador-indiferenciado-m-f-caldas-de-sao-jorge/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "c3f2b61b-e80a-4dc1-9d14-f1f64e3406ba",
-    "title": "Manobrador de máquinas (m/f)- Caldas de São Jorge",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633033/manobrador-de-maquinas-m-f-caldas-de-sao-jorge/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "c90a1c0e-6d67-4dd9-8407-904ca9091ce2",
-    "title": "Técnico de Manutenção (m/f)- São João da Madeira",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633032/tecnico-de-manutencao-m-f-sao-joao-da-madeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "7bb959f4-81e2-4b60-a7fa-bb31b26b866a",
@@ -29578,18 +26374,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.832+00:00",
     "posted_at": "2026-07-13T11:42:31.832+00:00",
     "date_posted": "2026-07-13T11:42:31.832Z"
-  },
-  {
-    "id": "84e8769b-f171-4fc9-8725-34b44ca317c2",
-    "title": "Operador de injeção de Alumínio (m/f)-Águeda",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633031/operador-de-injecao-de-aluminio-m-f-agueda/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "162f6136-978d-4a48-a9fe-1df557b2329c",
@@ -29736,18 +26520,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-23T14:29:21.000Z"
   },
   {
-    "id": "da045500-7dcf-4588-8fee-8ab2e471adb2",
-    "title": "Operador de Prensa (m/f)- Águeda",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633030/operador-de-prensa-m-f-agueda/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "0ff29411-1a61-4de4-a076-899c9265b08c",
     "title": "OFCI Package Manager (m/f)",
     "location": "Portugal",
@@ -29772,18 +26544,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-23T14:29:26.000Z"
   },
   {
-    "id": "c0ccfa85-7f76-415c-a3db-6e003d7a3f3c",
-    "title": "Trabalhador Avícola (m/f) - São Pedro do Sul",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633029/trabalhador-avicola-m-f-sao-pedro-do-sul/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "cc976141-a9eb-46e3-b0f4-72af9988556f",
     "title": "BMS EPMS Package Manager  (m/f)",
     "location": "Portugal",
@@ -29794,18 +26554,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-23T14:29:21+00:00",
     "posted_at": "2026-07-23T14:29:21+00:00",
     "date_posted": "2026-07-23T14:29:21.000Z"
-  },
-  {
-    "id": "2f3ad82a-7b89-49db-9992-b1903d0543fb",
-    "title": "Apoio ao Cliente Bancário  Inbound - Full-Time - 08/07/2026",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633028/apoio-ao-cliente-bancario-inbound-full-time-08-07-2026/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:46+00:00",
-    "posted_at": "2026-06-29T16:08:46+00:00",
-    "date_posted": "2026-06-29T16:08:46.000Z"
   },
   {
     "id": "439b3084-4272-42b0-94ea-56a9a7bdb3f4",
@@ -29868,18 +26616,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-23T14:29:21.000Z"
   },
   {
-    "id": "fd89700a-f399-4372-a6db-c7e184d7a10a",
-    "title": "Trabalhador Avícola (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633025/trabalhador-avicola-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "c1ac27ef-2c70-4b8b-844c-a7b70fead6ec",
     "title": "HSE Manager (m/f)",
     "location": "Portugal",
@@ -29890,18 +26626,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-23T14:29:21+00:00",
     "posted_at": "2026-07-23T14:29:21+00:00",
     "date_posted": "2026-07-23T14:29:21.000Z"
-  },
-  {
-    "id": "c263a3fa-9cab-4cde-923d-83fd0c502d21",
-    "title": "Operador de retrátil (M/F) - Benavente",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633024/operador-de-retratil-m-f-benavente/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:24:29+00:00",
-    "posted_at": "2026-06-29T16:24:29+00:00",
-    "date_posted": "2026-06-29T16:24:29.000Z"
   },
   {
     "id": "f31f2c7f-e0dd-4b01-9e02-1c49bfd41f9b",
@@ -29938,18 +26662,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-23T14:18:01+00:00",
     "posted_at": "2026-07-23T14:18:01+00:00",
     "date_posted": "2026-07-23T14:18:01.000Z"
-  },
-  {
-    "id": "291430a8-bbff-47ae-b0c6-7f3283a66969",
-    "title": "Operador de Higiene Especializada (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633023/operador-de-higiene-especializada-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "4a997d98-446e-4f43-8c6c-757f4cc77e48",
@@ -30036,18 +26748,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-12T11:42:31.834Z"
   },
   {
-    "id": "7bd6530c-529b-4ee0-a6bb-6e183f0f0691",
-    "title": "Operador de Calibradora (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633022/operador-de-calibradora-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
     "id": "a84714d9-b5cc-432e-805a-e39b55810c07",
     "title": "Comercial para o nosso escritório em Lisboa! - Telematics",
     "location": "Lisboa",
@@ -30058,30 +26758,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-23T14:29:28+00:00",
     "posted_at": "2026-07-23T14:29:28+00:00",
     "date_posted": "2026-07-23T14:29:28.000Z"
-  },
-  {
-    "id": "24349edf-ee38-4d28-a6bd-3fccc0e7a43d",
-    "title": "Operador de Abate (m/f) - Oliveira de Frades",
-    "location": "Viseu",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633021/operador-de-abate-m-f-oliveira-de-frades/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "c1d37b89-4c78-4720-94f3-a7df38fe61ae",
-    "title": "Técnico de Manutenção (m/f)- Vila Nova de Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633020/tecnico-de-manutencao-m-f-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "26e37006-7b20-42cd-ae25-2bfb67ecd451",
@@ -30096,30 +26772,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-23T14:29:26.000Z"
   },
   {
-    "id": "aa91b851-e6c7-40e6-b49b-129699d11002",
-    "title": "Operador de produção (m/f)- Seixezelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633019/operador-de-producao-m-f-seixezelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "c43ba4f4-c3ed-4446-92e3-58fafb323667",
-    "title": "Técnico de AVAC",
-    "location": "Almada",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633018/tecnico-de-avac/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:30+00:00",
-    "posted_at": "2026-06-29T16:08:30+00:00",
-    "date_posted": "2026-06-29T16:08:30.000Z"
-  },
-  {
     "id": "f4c62c72-ef20-4b60-ae07-085f3ab0ce37",
     "title": "Assistente Social (m/f)",
     "location": "Leiria",
@@ -30130,114 +26782,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-14T11:42:31.834+00:00",
     "posted_at": "2026-07-14T11:42:31.834+00:00",
     "date_posted": "2026-07-14T11:42:31.834Z"
-  },
-  {
-    "id": "4d7052ef-3d06-42a8-a94d-386a547ba297",
-    "title": "Operador de Produção (M/F) - Silvalde - Espinho",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633017/operador-de-producao-m-f-silvalde-espinho/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "21126493-0883-4d72-a146-daf23c2660c4",
-    "title": "Operador de Robots (m/f)- Silvalde",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633016/operador-de-robots-m-f-silvalde/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "8fe45d3e-1011-4f34-994b-6c0b17a06cbb",
-    "title": "Operador de Logística (m/f) - Arcozelo",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633015/operador-de-logistica-m-f-arcozelo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "7e4d1814-c8dc-429c-848e-b2ef609aa305",
-    "title": "Operador de Produção (m/f)-Soza,Aveiro",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633014/operador-de-producao-m-f-soza-aveiro/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "601c2611-a3d1-4427-8f04-9a8606808698",
-    "title": "Operadora de Produção (m/f)-Laundos, Póvoa de Varzim",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633013/operadora-de-producao-m-f-laundos-povoa-de-varzim/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "7658c6c8-5cad-4ef0-b222-5ac2eb25cf46",
-    "title": "Técnico Eletromecânico (m/f)- Estarreja",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633012/tecnico-eletromecanico-m-f-estarreja/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "d9bb4261-1914-46d4-bbf6-04f99674b62d",
-    "title": "Supervisor(a) Comercial  ERA Gandra (fixo + comissões)",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633011/supervisor-a-comercial-era-gandra-fixo-comissoes/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Vendas & Comercial",
-    "created_at": "2026-06-29T16:24:27+00:00",
-    "posted_at": "2026-06-29T16:24:27+00:00",
-    "date_posted": "2026-06-29T16:24:27.000Z"
-  },
-  {
-    "id": "9339d990-1b40-4124-8133-f298a96c292e",
-    "title": "Ajudante de manutenção(M/F) - Vila Nova De Gaia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633010/ajudante-de-manutencao-m-f-vila-nova-de-gaia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
-  },
-  {
-    "id": "fefc101b-b3fb-4314-a91d-09cb714f81f0",
-    "title": "Técnico de Manutenção (m/f)-Póvoa de Varzim",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633009/tecnico-de-manutencao-m-f-povoa-de-varzim/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:08+00:00",
-    "posted_at": "2026-06-29T16:20:08+00:00",
-    "date_posted": "2026-06-29T16:20:08.000Z"
   },
   {
     "id": "ea853d8d-2cf9-4856-88c2-1d771def2f0a",
@@ -30252,18 +26796,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-23T14:29:17.000Z"
   },
   {
-    "id": "b17ad938-ccef-4548-99f5-dae91848392a",
-    "title": "Gestor de Zona (M/F) ERA Gandra",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633008/gestor-de-zona-m-f-era-gandra/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Administra├º├úo & Finan├ºas",
-    "created_at": "2026-06-29T16:24:27+00:00",
-    "posted_at": "2026-06-29T16:24:27+00:00",
-    "date_posted": "2026-06-29T16:24:27.000Z"
-  },
-  {
     "id": "a3806f00-28d3-438a-89ca-50739bcbb30c",
     "title": "Extras de Ajudante de Cozinha | Costa da Caparica",
     "location": "Portugal",
@@ -30274,18 +26806,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-23T14:29:17+00:00",
     "posted_at": "2026-07-23T14:29:17+00:00",
     "date_posted": "2026-07-23T14:29:17.000Z"
-  },
-  {
-    "id": "05d7ceec-edd0-408b-b3a6-632e55b04680",
-    "title": "Farmacêutico(a) - Farmácia Cartaxo  Lisboa",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633007/farmaceutico-a-farmacia-cartaxo-lisboa/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Sa├║de & Cuidados",
-    "created_at": "2026-06-29T16:10:58+00:00",
-    "posted_at": "2026-06-29T16:10:58+00:00",
-    "date_posted": "2026-06-29T16:10:58.000Z"
   },
   {
     "id": "dd272cae-974e-4e3e-8be4-6c49b6c08b56",
@@ -30312,18 +26832,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-23T14:29:06.000Z"
   },
   {
-    "id": "430bfbed-27d1-4dc2-b4dd-848810237984",
-    "title": "Nutricionista Desportivo - PAÇOS DE FERREIRA",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633006/nutricionista-desportivo-pacos-de-ferreira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
     "id": "a8eca9cb-18f5-4a2e-a1dd-d38dc7be2276",
     "title": "Auxiliar de saúde para acompanhamento noturno em Lisboa (com conhecimentos em  inglês ou italiano)",
     "location": "Lisboa",
@@ -30334,66 +26842,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-23T14:28:53+00:00",
     "posted_at": "2026-07-23T14:28:53+00:00",
     "date_posted": "2026-07-23T14:28:53.000Z"
-  },
-  {
-    "id": "a640fdeb-6a33-445f-ab9b-ab00b6824673",
-    "title": "Contract Manager (M/F/D) Algarve",
-    "location": "Faro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633005/contract-manager-m-f-d-algarve/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:19:08+00:00",
-    "posted_at": "2026-06-29T16:19:08+00:00",
-    "date_posted": "2026-06-29T16:19:08.000Z"
-  },
-  {
-    "id": "a8be2d35-d054-4e97-825e-e5311cdc1195",
-    "title": "Técnico Mecânico de Frio Industrial",
-    "location": "Almada",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15633003/tecnico-mecanico-de-frio-industrial/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:08:30+00:00",
-    "posted_at": "2026-06-29T16:08:30+00:00",
-    "date_posted": "2026-06-29T16:08:30.000Z"
-  },
-  {
-    "id": "42a09e78-7990-4db7-9f74-56b6d4bdedf8",
-    "title": "Nutricionista Desportivo - SÃO JOÃO DA MADEIRA",
-    "location": "Aveiro",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15632998/nutricionista-desportivo-sao-joao-da-madeira/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:20:11+00:00",
-    "posted_at": "2026-06-29T16:20:11+00:00",
-    "date_posted": "2026-06-29T16:20:11.000Z"
-  },
-  {
-    "id": "5eb5195c-496e-4e40-a88a-2b012e7beea8",
-    "title": "Operador de Logistica (M/F/D) - Palmela (SYNERGIE)",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15632997/operador-de-logistica-m-f-d-palmela-synergie/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Log├¡stica & Produ├º├úo",
-    "created_at": "2026-06-29T16:19:53+00:00",
-    "posted_at": "2026-06-29T16:19:53+00:00",
-    "date_posted": "2026-06-29T16:19:53.000Z"
-  },
-  {
-    "id": "d71c8d51-a19a-45b6-808d-dc90db4ba42c",
-    "title": "Engomadora para lavandaria na Zona da Maia",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15632996/engomadora-para-lavandaria-na-zona-da-maia/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T16:04:01+00:00",
-    "posted_at": "2026-06-29T16:04:01+00:00",
-    "date_posted": "2026-06-29T16:04:01.000Z"
   },
   {
     "id": "018b3cb8-3e6b-4c9c-8e00-c6e413cc3a61",
@@ -35508,18 +31956,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-06-29T18:32:03.000Z"
   },
   {
-    "id": "ac18b013-2d11-4123-b1c4-a20c01c86dcb",
-    "title": "Precisa-se Auxiliar de Serviços Gerais para IPSS Malveira da Serra, concelho de Cascais",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15634238/precisa-se-auxiliar-de-servicos-gerais-para-ipss-malveira-da-serra-concelho-de-cascais/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T18:21:50+00:00",
-    "posted_at": "2026-06-29T18:21:50+00:00",
-    "date_posted": "2026-06-29T18:21:50.000Z"
-  },
-  {
     "id": "e58c47bf-5dbb-444b-a5f3-14d6742b14a3",
     "title": "Vendedor(a) Loja Gourmet - Cascais",
     "location": "Lisboa",
@@ -35554,18 +31990,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-24T21:15:27+00:00",
     "posted_at": "2026-07-24T21:15:27+00:00",
     "date_posted": "2026-07-24T21:15:27.000Z"
-  },
-  {
-    "id": "7514eb8a-2f54-49ca-ad83-831ae684fed6",
-    "title": "Educadora de Infância  Oficina dos Sonhos - São Tomé e Príncipe",
-    "location": "Portugal",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15634237/educadora-de-infancia-oficina-dos-sonhos-sao-tome-e-principe/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Educa├º├úo & Forma├º├úo",
-    "created_at": "2026-06-29T18:21:30+00:00",
-    "posted_at": "2026-06-29T18:21:30+00:00",
-    "date_posted": "2026-06-29T18:21:30.000Z"
   },
   {
     "id": "7d46b56c-3753-4748-8923-ef098c930f23",
@@ -35784,18 +32208,6 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-14T11:42:31.859Z"
   },
   {
-    "id": "601110cd-6445-4599-a567-49c3929b4691",
-    "title": "Técnico de Controlo de Pragas - Marinha Grande e Nazaré",
-    "location": "Leiria",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15634235/tecnico-de-controlo-de-pragas-marinha-grande-e-nazare/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T18:20:05+00:00",
-    "posted_at": "2026-06-29T18:20:05+00:00",
-    "date_posted": "2026-06-29T18:20:05.000Z"
-  },
-  {
     "id": "6c7f02dc-f414-4f53-8123-859aa3d6bd97",
     "title": "Medicos dentista",
     "location": "Lisboa",
@@ -35806,30 +32218,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-24T21:16:40+00:00",
     "posted_at": "2026-07-24T21:16:40+00:00",
     "date_posted": "2026-07-24T21:16:40.000Z"
-  },
-  {
-    "id": "5b5a0e27-5b86-4f20-88c9-f54f4bbf4417",
-    "title": "Formador/a de RGPC - Lousada",
-    "location": "Porto",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15634234/formador-a-de-rgpc-lousada/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Educa├º├úo & Forma├º├úo",
-    "created_at": "2026-06-29T18:20:01+00:00",
-    "posted_at": "2026-06-29T18:20:01+00:00",
-    "date_posted": "2026-06-29T18:20:01.000Z"
-  },
-  {
-    "id": "09b76a5d-4125-4c71-847e-4b17598cac48",
-    "title": "Distribuidor (m/f) - Setúbal (Fim-de-semana)",
-    "location": "Lisboa",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15634233/distribuidor-m-f-setubal-fim-de-semana/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Outros",
-    "created_at": "2026-06-29T18:19:51+00:00",
-    "posted_at": "2026-06-29T18:19:51+00:00",
-    "date_posted": "2026-06-29T18:19:51.000Z"
   },
   {
     "id": "909bac5e-c8b0-4adc-8727-70da197ff7d8",
@@ -35938,18 +32326,6 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-14T11:42:31.859+00:00",
     "posted_at": "2026-07-14T11:42:31.859+00:00",
     "date_posted": "2026-07-14T11:42:31.859Z"
-  },
-  {
-    "id": "609a5f6d-4302-4cbc-8e60-3792bcbe745b",
-    "title": "Professores  1Ciclo",
-    "location": "Braga",
-    "source_name": "Net-Empregos",
-    "source_url": "https://www.net-empregos.com/15634228/professores-1-ciclo/",
-    "category": "Trabalho & Carreira",
-    "work_topic": "Educa├º├úo & Forma├º├úo",
-    "created_at": "2026-06-29T18:17:30+00:00",
-    "posted_at": "2026-06-29T18:17:30+00:00",
-    "date_posted": "2026-06-29T18:17:30.000Z"
   },
   {
     "id": "45ad56fc-2c80-4bfa-b555-dac8ab28cf5b",
@@ -45156,6 +41532,42 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-01T16:16:35.000Z"
   },
   {
+    "id": "0759f8f1-f22c-4024-ab27-c1038e82148b",
+    "title": "Terapeuta da Fala - Lousada",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782149/terapeuta-da-fala-lousada/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:59:24+00:00",
+    "posted_at": "2026-07-29T18:59:24+00:00",
+    "date_posted": "2026-07-29T18:59:24.000Z"
+  },
+  {
+    "id": "9f896697-d86b-40db-9c00-0c50e29e26a7",
+    "title": "Comercial para Entrada Imediata",
+    "location": "Leiria",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782148/comercial-para-entrada-imediata/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:59:10+00:00",
+    "posted_at": "2026-07-29T18:59:10+00:00",
+    "date_posted": "2026-07-29T18:59:10.000Z"
+  },
+  {
+    "id": "0e67f339-2ad8-439a-bf3c-53cd47965e5c",
+    "title": "Gestor(a) de I&D - Porto",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782147/gestor-a-de-i-d-porto/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:58:40+00:00",
+    "posted_at": "2026-07-29T18:58:40+00:00",
+    "date_posted": "2026-07-29T18:58:40.000Z"
+  },
+  {
     "id": "91c09c7b-0f76-4212-89f1-49e851ca328d",
     "title": "Engenheiro de Hardware  Automação Industrial (Holanda)",
     "location": "Portugal",
@@ -45166,6 +41578,54 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-01T16:16:50+00:00",
     "posted_at": "2026-07-01T16:16:50+00:00",
     "date_posted": "2026-07-01T16:16:50.000Z"
+  },
+  {
+    "id": "f7afe173-49ed-40c5-af12-41964edc043c",
+    "title": "Comercial Empresarial - Energia",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782146/comercial-empresarial-energia/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:58:39+00:00",
+    "posted_at": "2026-07-29T18:58:39+00:00",
+    "date_posted": "2026-07-29T18:58:39.000Z"
+  },
+  {
+    "id": "e19cccd6-c1c1-4ff8-8093-5252ddbd45c8",
+    "title": "Gestor(a) de I&D  Porto (m/f)",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782145/gestor-a-de-i-d-porto-m-f/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:57:23+00:00",
+    "posted_at": "2026-07-29T18:57:23+00:00",
+    "date_posted": "2026-07-29T18:57:23.000Z"
+  },
+  {
+    "id": "12567dc8-49ca-48d5-87a7-ce1d08ce49c4",
+    "title": "HR Generalist & Payroll - Lisboa (Híbrido)",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782144/hr-generalist-payroll-lisboa-hibrido/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:56:13+00:00",
+    "posted_at": "2026-07-29T18:56:13+00:00",
+    "date_posted": "2026-07-29T18:56:13.000Z"
+  },
+  {
+    "id": "3f8f6e08-835c-41ef-8c96-24f471c968f2",
+    "title": "Consultor Comercial (M/F)  Energia",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782143/consultor-comercial-m-f-energia/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:56:03+00:00",
+    "posted_at": "2026-07-29T18:56:03+00:00",
+    "date_posted": "2026-07-29T18:56:03.000Z"
   },
   {
     "id": "e110cf74-f41d-4ce3-bb83-95c1c72c9e8a",
@@ -45204,6 +41664,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-01T16:01:29.000Z"
   },
   {
+    "id": "62df0726-6123-429d-b901-cbae7977e213",
+    "title": "Ajudante/T.  instalação de Elevadores-Sintra [248-000581-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782142/ajudante-t-instalacao-de-elevadores-sintra-248-000581-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:56:06+00:00",
+    "posted_at": "2026-07-29T18:56:06+00:00",
+    "date_posted": "2026-07-29T18:56:06.000Z"
+  },
+  {
     "id": "459733f9-5188-4fde-a8f7-1d4dcb6855c9",
     "title": "Mecânico de Camiões  Holanda",
     "location": "Portugal",
@@ -45214,6 +41686,150 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-01T16:16:50+00:00",
     "posted_at": "2026-07-01T16:16:50+00:00",
     "date_posted": "2026-07-01T16:16:50.000Z"
+  },
+  {
+    "id": "f07de18d-f013-431d-ae20-122ce4b10b5c",
+    "title": "Procuramos Cozinheiro/a - Ajudante de Cozinha - Empregado de Sala",
+    "location": "Coimbra",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782141/procuramos-cozinheiro-a-ajudante-de-cozinha-empregado-de-sala/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
+    "created_at": "2026-07-29T19:01:33+00:00",
+    "posted_at": "2026-07-29T19:01:33+00:00",
+    "date_posted": "2026-07-29T19:01:33.000Z"
+  },
+  {
+    "id": "374087ed-f142-49aa-beaa-f3e0027e1e39",
+    "title": "Técnico(a) de Recursos Humanos - Esmoriz",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782140/tecnico-a-de-recursos-humanos-esmoriz/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:55:50+00:00",
+    "posted_at": "2026-07-29T18:55:50+00:00",
+    "date_posted": "2026-07-29T18:55:50.000Z"
+  },
+  {
+    "id": "4375908a-8e01-4f73-af78-2a13889705b5",
+    "title": "Costureira  Vestidos de Noiva - Porto - Rua da Constituição",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782139/costureira-vestidos-de-noiva-porto-rua-da-constituicao/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:55:46+00:00",
+    "posted_at": "2026-07-29T18:55:46+00:00",
+    "date_posted": "2026-07-29T18:55:46.000Z"
+  },
+  {
+    "id": "80a7bb46-0a85-4c4e-bae7-4984d9f5452e",
+    "title": "Analista Júnior de Dados e Campanhas de Marketing",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782138/analista-junior-de-dados-e-campanhas-de-marketing/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Tecnologia & TI",
+    "created_at": "2026-07-29T18:51:09+00:00",
+    "posted_at": "2026-07-29T18:51:09+00:00",
+    "date_posted": "2026-07-29T18:51:09.000Z"
+  },
+  {
+    "id": "f555b178-4f32-4dca-a3d7-87424a08954f",
+    "title": "Técnica auxiliar de fisioterapia",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782137/tecnica-auxiliar-de-fisioterapia/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Sa├║de & Cuidados",
+    "created_at": "2026-07-29T18:50:34+00:00",
+    "posted_at": "2026-07-29T18:50:34+00:00",
+    "date_posted": "2026-07-29T18:50:34.000Z"
+  },
+  {
+    "id": "05ad59dd-8168-47a4-9564-2fd1ba2341da",
+    "title": "Vigilancia na Zona da Porto",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782136/vigilancia-na-zona-da-porto/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:50:25+00:00",
+    "posted_at": "2026-07-29T18:50:25+00:00",
+    "date_posted": "2026-07-29T18:50:25.000Z"
+  },
+  {
+    "id": "bb48def7-7a94-4b93-b6ff-1722dc22e09e",
+    "title": "Gestor(a) Processual Imobiliário - Lagos",
+    "location": "Faro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782135/gestor-a-processual-imobiliario-lagos/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:49:01+00:00",
+    "posted_at": "2026-07-29T18:49:01+00:00",
+    "date_posted": "2026-07-29T18:49:01.000Z"
+  },
+  {
+    "id": "04135fe5-1e84-4cc6-a4e7-7475398ea515",
+    "title": "Assistente Administrativo(a) - Lagos",
+    "location": "Faro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782134/assistente-administrativo-a-lagos/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:49:01+00:00",
+    "posted_at": "2026-07-29T18:49:01+00:00",
+    "date_posted": "2026-07-29T18:49:01.000Z"
+  },
+  {
+    "id": "7d7b52d1-e273-496f-b53e-16b02f99dd3d",
+    "title": "Consultor(a) Imobiliário - LUXIMOS Christie's - Fixo+Variável - Portimão/Carvoeiro",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782133/consultor-a-imobiliario-luximos-christie-s-fixo-variavel-portimao-carvoeiro/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:49:01+00:00",
+    "posted_at": "2026-07-29T18:49:01+00:00",
+    "date_posted": "2026-07-29T18:49:01.000Z"
+  },
+  {
+    "id": "130a2035-fd84-4b3a-bc9e-fed9cccca8e0",
+    "title": "Técnico de Mecânica Industrial",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782132/tecnico-de-mecanica-industrial/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:48:56+00:00",
+    "posted_at": "2026-07-29T18:48:56+00:00",
+    "date_posted": "2026-07-29T18:48:56.000Z"
+  },
+  {
+    "id": "e7469d66-73df-4d1a-b36a-cf7a85db57db",
+    "title": "Conseiller Client (Francophone) - Domaine bancaire",
+    "location": "Braga",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782131/conseiller-client-francophone-domaine-bancaire/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:48:32+00:00",
+    "posted_at": "2026-07-29T18:48:32+00:00",
+    "date_posted": "2026-07-29T18:48:32.000Z"
+  },
+  {
+    "id": "2c4c0a2c-aba9-4852-ae9c-d1b51c439b78",
+    "title": "Consultor(a) Imobiliário  Marco de Canaveses  Rendimento Fixo+Variável",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782130/consultor-a-imobiliario-marco-de-canaveses-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:48:13+00:00",
+    "posted_at": "2026-07-29T18:48:13+00:00",
+    "date_posted": "2026-07-29T18:48:13.000Z"
   },
   {
     "id": "75692eb5-2dac-4e82-98d5-bae64a92f198",
@@ -45240,6 +41856,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-01T16:16:35.000Z"
   },
   {
+    "id": "6079d456-1866-4db9-adcf-c199dc071731",
+    "title": "Gestor de Clientes - HeyDoc  Amadora",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782129/gestor-de-clientes-heydoc-amadora/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:48:19+00:00",
+    "posted_at": "2026-07-29T18:48:19+00:00",
+    "date_posted": "2026-07-29T18:48:19.000Z"
+  },
+  {
     "id": "d0aeae5c-395d-428d-86d1-603e12804d29",
     "title": "Operador de Caixa Leroy (m/f)",
     "location": "Faro",
@@ -45262,6 +41890,18 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.878+00:00",
     "posted_at": "2026-07-13T11:42:31.878+00:00",
     "date_posted": "2026-07-13T11:42:31.878Z"
+  },
+  {
+    "id": "27cc1302-c2d4-4b62-8988-4f681bf8ccfc",
+    "title": "Gestor(a) Comercial  Marco de Canaveses  Rendimento Fixo+Variável",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782128/gestor-a-comercial-marco-de-canaveses-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:48:13+00:00",
+    "posted_at": "2026-07-29T18:48:13+00:00",
+    "date_posted": "2026-07-29T18:48:13.000Z"
   },
   {
     "id": "7fcf161b-1fb4-4a68-a5de-71641571d3c5",
@@ -45372,6 +42012,42 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-04T14:51:41.000Z"
   },
   {
+    "id": "243d2041-3c40-4fd4-8b70-3d622c122ac3",
+    "title": "Gestor(a) de Clientes  Caminha  Rendimento Fixo+Variável",
+    "location": "Viana do Castelo",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782127/gestor-a-de-clientes-caminha-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:46:38+00:00",
+    "posted_at": "2026-07-29T18:46:38+00:00",
+    "date_posted": "2026-07-29T18:46:38.000Z"
+  },
+  {
+    "id": "4c2a3e94-6b4d-4887-9caf-2ee840196e31",
+    "title": "Gestor(a) Comercial - Caminha  Rendimento Fixo+Variável",
+    "location": "Viana do Castelo",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782126/gestor-a-comercial-caminha-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:46:38+00:00",
+    "posted_at": "2026-07-29T18:46:38+00:00",
+    "date_posted": "2026-07-29T18:46:38.000Z"
+  },
+  {
+    "id": "4ad5fde1-79f4-46bf-bf5b-36e4e7aec3cc",
+    "title": "Diretor  Comercial",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782125/diretor-comercial/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:46:09+00:00",
+    "posted_at": "2026-07-29T18:46:09+00:00",
+    "date_posted": "2026-07-29T18:46:09.000Z"
+  },
+  {
     "id": "b0376ac8-4778-4b1f-a919-6b6989fc0472",
     "title": "Engenheiro/a Civil para Portalegre",
     "location": "Portalegre",
@@ -45456,6 +42132,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-12T11:42:31.878Z"
   },
   {
+    "id": "e1b546b9-c001-4325-a453-b3e6c3f02967",
+    "title": "Gestor(a) de Clientes  Viana do Castelo  Rendimento Fixo+Variável",
+    "location": "Viana do Castelo",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782124/gestor-a-de-clientes-viana-do-castelo-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:46:13+00:00",
+    "posted_at": "2026-07-29T18:46:13+00:00",
+    "date_posted": "2026-07-29T18:46:13.000Z"
+  },
+  {
     "id": "46bf6705-3a6d-4ec1-8854-ca5cdf8360d6",
     "title": "Recheio: recrutamento de Operadores de Loja",
     "location": "Portugal",
@@ -45466,6 +42154,42 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-01T06:30:00+00:00",
     "posted_at": "2026-07-01T06:30:00+00:00",
     "date_posted": "2026-07-01T06:30:00.000Z"
+  },
+  {
+    "id": "bb9107d8-7ab9-4e07-bd02-80f9606790ce",
+    "title": "Gestor(a) Comercial  Viana do Castelo  Rendimento Fixo+Variável",
+    "location": "Viana do Castelo",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782123/gestor-a-comercial-viana-do-castelo-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:46:13+00:00",
+    "posted_at": "2026-07-29T18:46:13+00:00",
+    "date_posted": "2026-07-29T18:46:13.000Z"
+  },
+  {
+    "id": "799d45bb-63fe-4248-842a-3dc92436f5eb",
+    "title": "Gestor Grande Porto",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782122/gestor-grande-porto/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:46:09+00:00",
+    "posted_at": "2026-07-29T18:46:09+00:00",
+    "date_posted": "2026-07-29T18:46:09.000Z"
+  },
+  {
+    "id": "2ed6c9f3-ca78-4854-b8e7-a42dba955c20",
+    "title": "Consultor(a) Imobiliário  Póvoa de Varzim  Rendimento Fixo+Variável",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782121/consultor-a-imobiliario-povoa-de-varzim-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:46:05+00:00",
+    "posted_at": "2026-07-29T18:46:05+00:00",
+    "date_posted": "2026-07-29T18:46:05.000Z"
   },
   {
     "id": "8f57997d-7d22-4a42-ace3-e0b5662cb87e",
@@ -45492,6 +42216,42 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T11:42:31.878Z"
   },
   {
+    "id": "1fab76c3-7b4c-4269-b3ac-dab3596949c3",
+    "title": "Gestor(a) de Clientes  Póvoa de Varzim  Rendimento Fixo+Variável",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782120/gestor-a-de-clientes-povoa-de-varzim-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:46:05+00:00",
+    "posted_at": "2026-07-29T18:46:05+00:00",
+    "date_posted": "2026-07-29T18:46:05.000Z"
+  },
+  {
+    "id": "47300cdd-f69d-4db1-996d-8d19f816cb77",
+    "title": "Gestor(a) Comercial  ENTREPORTAS Vila do Conde  Rendimento Fixo+Variável",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782119/gestor-a-comercial-entreportas-vila-do-conde-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:44:23+00:00",
+    "posted_at": "2026-07-29T18:44:23+00:00",
+    "date_posted": "2026-07-29T18:44:23.000Z"
+  },
+  {
+    "id": "9df85ed9-a00b-4065-83b1-854c639e439d",
+    "title": "Gestor(a) Clientes  ENTREPORTAS Vila do Conde  Rendimento Fixo+Variável",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782118/gestor-a-clientes-entreportas-vila-do-conde-rendimento-fixo-variavel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:44:23+00:00",
+    "posted_at": "2026-07-29T18:44:23+00:00",
+    "date_posted": "2026-07-29T18:44:23.000Z"
+  },
+  {
     "id": "84b2fdea-aef7-4407-bf0c-0c88f918b5b7",
     "title": "Operador de Caixa Leroy (m/f)",
     "location": "Viseu",
@@ -45504,6 +42264,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-16T11:42:31.878Z"
   },
   {
+    "id": "b767a191-f2fa-4dbd-bd2c-70b3120fedf3",
+    "title": "Recrutamento de Chefes de Equipa, Pedreiros, Serventes e Carpinteiros de Cofragem",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782117/recrutamento-de-chefes-de-equipa-pedreiros-serventes-e-carpinteiros-de-cofragem/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
+    "created_at": "2026-07-29T18:42:37+00:00",
+    "posted_at": "2026-07-29T18:42:37+00:00",
+    "date_posted": "2026-07-29T18:42:37.000Z"
+  },
+  {
     "id": "702c70e4-b535-416d-820f-40ee9034cfab",
     "title": "Operador de Loja / Supermercado Decathlon (m/f)",
     "location": "Viseu",
@@ -45514,6 +42286,78 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-12T11:42:31.881+00:00",
     "posted_at": "2026-07-12T11:42:31.881+00:00",
     "date_posted": "2026-07-12T11:42:31.881Z"
+  },
+  {
+    "id": "756dbc4c-8341-42cc-818f-baf5678ce8a1",
+    "title": "Gestor(a) Comercial - LUXIMOS Christie's  Fixo+Variável - ALBUFEIRA",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782116/gestor-a-comercial-luximos-christie-s-fixo-variavel-albufeira/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:42:39+00:00",
+    "posted_at": "2026-07-29T18:42:39+00:00",
+    "date_posted": "2026-07-29T18:42:39.000Z"
+  },
+  {
+    "id": "11924196-f1d4-4043-a9a9-c86287797a70",
+    "title": "Gestor(a) de Clientes - LUXIMOS Christie's  Fixo+Variável - ALGARVE",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782115/gestor-a-de-clientes-luximos-christie-s-fixo-variavel-algarve/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:42:39+00:00",
+    "posted_at": "2026-07-29T18:42:39+00:00",
+    "date_posted": "2026-07-29T18:42:39.000Z"
+  },
+  {
+    "id": "10407630-9b36-4fb7-bc21-df72a36882fe",
+    "title": "Assistente de Contabilidade (M/F) - Estágio IEFP",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782114/assistente-de-contabilidade-m-f-estagio-iefp/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:42:35+00:00",
+    "posted_at": "2026-07-29T18:42:35+00:00",
+    "date_posted": "2026-07-29T18:42:35.000Z"
+  },
+  {
+    "id": "0986996a-01ea-49aa-80ea-eb9d5507ca9f",
+    "title": "Operador de Armazém e Logística",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782113/operador-de-armazem-e-logistica/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:42:21+00:00",
+    "posted_at": "2026-07-29T18:42:21+00:00",
+    "date_posted": "2026-07-29T18:42:21.000Z"
+  },
+  {
+    "id": "43935e4e-9ddf-4f91-9652-46d033016d76",
+    "title": "Consultor(a) Imobiliário - LUXIMOS Christie's  Fixo+Variável - PORTO",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782112/consultor-a-imobiliario-luximos-christie-s-fixo-variavel-porto/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:42:19+00:00",
+    "posted_at": "2026-07-29T18:42:19+00:00",
+    "date_posted": "2026-07-29T18:42:19.000Z"
+  },
+  {
+    "id": "5f41717a-fed9-44f8-835d-cb252ce3f4f0",
+    "title": "Gestor(a) de Clientes - LUXIMOS Christie's  Fixo+Variável - PORTO",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782111/gestor-a-de-clientes-luximos-christie-s-fixo-variavel-porto/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:42:19+00:00",
+    "posted_at": "2026-07-29T18:42:19+00:00",
+    "date_posted": "2026-07-29T18:42:19.000Z"
   },
   {
     "id": "cdb60b2b-74f8-4d93-9274-b2f60ee947fb",
@@ -45660,6 +42504,42 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-02T12:58:38.000Z"
   },
   {
+    "id": "f49f5ce6-c2f3-4699-8188-40c4cc4167b1",
+    "title": "Precisa-se de ajudante de cozinha restaurante em Lisboa \\ Parque das Nações (ENTRADA IMEDIATA)",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782110/precisa-se-de-ajudante-de-cozinha-restaurante-em-lisboa-parque-das-nacoes-entrada-imediata/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
+    "created_at": "2026-07-29T18:37:43+00:00",
+    "posted_at": "2026-07-29T18:37:43+00:00",
+    "date_posted": "2026-07-29T18:37:43.000Z"
+  },
+  {
+    "id": "07b19f0c-3a73-4b93-beee-62928fb2d48b",
+    "title": "Técnico de Qualidade Industrial - M/F - Vila Nova de Gaia",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782109/tecnico-de-qualidade-industrial-m-f-vila-nova-de-gaia/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:38:38+00:00",
+    "posted_at": "2026-07-29T18:38:38+00:00",
+    "date_posted": "2026-07-29T18:38:38.000Z"
+  },
+  {
+    "id": "63f2bd82-efd8-4100-8729-e51542b35dfe",
+    "title": "Distribuidor carrinhas ligeiras",
+    "location": "Leiria",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782108/distribuidor-carrinhas-ligeiras/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:38:32+00:00",
+    "posted_at": "2026-07-29T18:38:32+00:00",
+    "date_posted": "2026-07-29T18:38:32.000Z"
+  },
+  {
     "id": "06279a3b-16b2-4e38-b79b-22de34cc5b45",
     "title": "Responsável de Secção Decathlon (m/f)",
     "location": "Leiria",
@@ -45670,6 +42550,78 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.881+00:00",
     "posted_at": "2026-07-13T11:42:31.881+00:00",
     "date_posted": "2026-07-13T11:42:31.881Z"
+  },
+  {
+    "id": "80c1556b-1f4c-45a1-878e-7630d0c95ad9",
+    "title": "Gestor(a) de Compras e Aprovisionamento - M/F - Póvoa do Varzim",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782106/gestor-a-de-compras-e-aprovisionamento-m-f-povoa-do-varzim/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:38:38+00:00",
+    "posted_at": "2026-07-29T18:38:38+00:00",
+    "date_posted": "2026-07-29T18:38:38.000Z"
+  },
+  {
+    "id": "0b2e7955-cf4d-42f8-88d9-f7a3ff6a15f6",
+    "title": "Educador de Infância",
+    "location": "Leiria",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782105/educador-de-infancia/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Educa├º├úo & Forma├º├úo",
+    "created_at": "2026-07-29T18:38:04+00:00",
+    "posted_at": "2026-07-29T18:38:04+00:00",
+    "date_posted": "2026-07-29T18:38:04.000Z"
+  },
+  {
+    "id": "dbc2467b-9852-452b-8339-7a8851925675",
+    "title": "Videógrafo / Fotógrafo",
+    "location": "Coimbra",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782104/videografo-fotografo/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:38:29+00:00",
+    "posted_at": "2026-07-29T18:38:29+00:00",
+    "date_posted": "2026-07-29T18:38:29.000Z"
+  },
+  {
+    "id": "d5a347b3-7c1d-4ac6-8260-af9d11421a16",
+    "title": "Técnico Comercial (m/f) - Póvoa do Varzim",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782103/tecnico-comercial-m-f-povoa-do-varzim/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:35:52+00:00",
+    "posted_at": "2026-07-29T18:35:52+00:00",
+    "date_posted": "2026-07-29T18:35:52.000Z"
+  },
+  {
+    "id": "a15fdc84-0dae-4891-b948-9a5eed63a52b",
+    "title": "Assistente Administrativa/o",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782102/assistente-administrativa-o/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:36:43+00:00",
+    "posted_at": "2026-07-29T18:36:43+00:00",
+    "date_posted": "2026-07-29T18:36:43.000Z"
+  },
+  {
+    "id": "68a9e7cf-8151-4d16-a036-028e8f9a8888",
+    "title": "Técnico/a de Manutenção Industrial (Ílhavo)",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782101/tecnico-a-de-manutencao-industrial-ilhavo/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:34:44+00:00",
+    "posted_at": "2026-07-29T18:34:44+00:00",
+    "date_posted": "2026-07-29T18:34:44.000Z"
   },
   {
     "id": "a527277c-8e46-4900-89ad-64f32e42e6a7",
@@ -45696,6 +42648,30 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T11:42:31.881Z"
   },
   {
+    "id": "f5a4bd08-b754-4ccd-b35f-9beca288a5c8",
+    "title": "Técnico de Qualidade Industrial - M/F -Povoa Do Varzim",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782100/tecnico-de-qualidade-industrial-m-f-povoa-do-varzim/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:35:52+00:00",
+    "posted_at": "2026-07-29T18:35:52+00:00",
+    "date_posted": "2026-07-29T18:35:52.000Z"
+  },
+  {
+    "id": "e03e0e1c-322b-48d1-ba5c-002d1a6fb469",
+    "title": "Oficial de Eletricista (Distrito do Porto e Distrito de Braga) -  M/F",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782099/oficial-de-eletricista-distrito-do-porto-e-distrito-de-braga-m-f/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Constru├º├úo Civil & Engenharia",
+    "created_at": "2026-07-29T18:31:58+00:00",
+    "posted_at": "2026-07-29T18:31:58+00:00",
+    "date_posted": "2026-07-29T18:31:58.000Z"
+  },
+  {
     "id": "3b54e5c8-37b1-4348-953f-a8c8b424c9cf",
     "title": "Operador de Loja / Supermercado Decathlon (m/f)",
     "location": "Leiria",
@@ -45718,6 +42694,42 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-16T11:42:31.881+00:00",
     "posted_at": "2026-07-16T11:42:31.881+00:00",
     "date_posted": "2026-07-16T11:42:31.881Z"
+  },
+  {
+    "id": "4d536d43-70cc-45ad-bcba-3e6285058e4d",
+    "title": "Pré-Oficial de Eletricista - M/F: (Amarante e Marco de Canaveses) - REF: 119552",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782098/pre-oficial-de-eletricista-m-f-amarante-e-marco-de-canaveses-ref-119552/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Constru├º├úo Civil & Engenharia",
+    "created_at": "2026-07-29T18:31:58+00:00",
+    "posted_at": "2026-07-29T18:31:58+00:00",
+    "date_posted": "2026-07-29T18:31:58.000Z"
+  },
+  {
+    "id": "0dfacb85-df4d-4693-8551-c03ebad6a7d4",
+    "title": "Gestores (as) Comerciais - Beja",
+    "location": "Beja",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782097/gestores-as-comerciais-beja/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:34:07+00:00",
+    "posted_at": "2026-07-29T18:34:07+00:00",
+    "date_posted": "2026-07-29T18:34:07.000Z"
+  },
+  {
+    "id": "fc79c54b-c484-4bba-8d08-cd60cf3b0d67",
+    "title": "Médico(a) Dentista Endodontista",
+    "location": "Faro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782096/medico-a-dentista-endodontista/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:32:15+00:00",
+    "posted_at": "2026-07-29T18:32:15+00:00",
+    "date_posted": "2026-07-29T18:32:15.000Z"
   },
   {
     "id": "708fb930-ed74-4df6-a606-a85393562920",
@@ -45828,6 +42840,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-02T12:58:07.000Z"
   },
   {
+    "id": "38fe691f-cae6-4871-a7b9-d3d375a6b69e",
+    "title": "Técnico de Manutenção Industrial (M/F) - Pardilhó - Estarreja",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782095/tecnico-de-manutencao-industrial-m-f-pardilho-estarreja/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:31:58+00:00",
+    "posted_at": "2026-07-29T18:31:58+00:00",
+    "date_posted": "2026-07-29T18:31:58.000Z"
+  },
+  {
     "id": "2ef0de88-c2c9-430d-8bd0-732fe335c37a",
     "title": "Colaborador de Atendimento ao Cliente Decathlon",
     "location": "Setúbal",
@@ -45864,6 +42888,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-02T12:57:56.000Z"
   },
   {
+    "id": "1ab3a31e-6dd7-4099-b35b-1e3be57aabaf",
+    "title": "Coordenador de Operações M/F - Pardilhó, Portugal",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782094/coordenador-de-operacoes-m-f-pardilho-portugal/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:31:58+00:00",
+    "posted_at": "2026-07-29T18:31:58+00:00",
+    "date_posted": "2026-07-29T18:31:58.000Z"
+  },
+  {
     "id": "0006c2d2-9e8a-4829-81eb-00487a29e6c5",
     "title": "Responsável de Limpeza de Alojamento Local (Lisboa)",
     "location": "Lisboa",
@@ -45886,6 +42922,30 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.881+00:00",
     "posted_at": "2026-07-13T11:42:31.881+00:00",
     "date_posted": "2026-07-13T11:42:31.881Z"
+  },
+  {
+    "id": "b43898db-1aaf-49dd-a7cd-03c7f50b9f90",
+    "title": "Operador de Produção M/F - Pardilhó, Portugal",
+    "location": "Aveiro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782093/operador-de-producao-m-f-pardilho-portugal/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:31:58+00:00",
+    "posted_at": "2026-07-29T18:31:58+00:00",
+    "date_posted": "2026-07-29T18:31:58.000Z"
+  },
+  {
+    "id": "ec73b93d-fdba-4be9-b54a-5c5daed6636a",
+    "title": "Técnico de Manutenção Industrial (m/f) - Albarranque, Sintra",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782092/tecnico-de-manutencao-industrial-m-f-albarranque-sintra/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:31:58+00:00",
+    "posted_at": "2026-07-29T18:31:58+00:00",
+    "date_posted": "2026-07-29T18:31:58.000Z"
   },
   {
     "id": "b8d38205-a447-4883-9e65-f5481cd1a152",
@@ -46548,6 +43608,42 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.883Z"
   },
   {
+    "id": "c5a1e3c8-f781-4b51-8fff-33f6a318881b",
+    "title": "Lojista  Loja Meo Odemira",
+    "location": "Beja",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782091/lojista-loja-meo-odemira/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:28:30+00:00",
+    "posted_at": "2026-07-29T18:28:30+00:00",
+    "date_posted": "2026-07-29T18:28:30.000Z"
+  },
+  {
+    "id": "506127ac-dd88-4548-a912-51d365b13c6a",
+    "title": "Administrativo(a) de Backoffice/Faturação [329-000295-3]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782090/administrativo-a-de-backoffice-faturacao-329-000295-3/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:27:39+00:00",
+    "posted_at": "2026-07-29T18:27:39+00:00",
+    "date_posted": "2026-07-29T18:27:39.000Z"
+  },
+  {
+    "id": "e1fa5019-13c8-4fbc-9524-1e7ba4607130",
+    "title": "Dutch-speaking Customer Consultant [329-000295-2]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782089/dutch-speaking-customer-consultant-329-000295-2/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:27:39+00:00",
+    "posted_at": "2026-07-29T18:27:39+00:00",
+    "date_posted": "2026-07-29T18:27:39.000Z"
+  },
+  {
     "id": "cdecfe5c-2600-4f91-b530-b3984f972349",
     "title": "Repositor de Loja Inditex (m/f)",
     "location": "Aveiro",
@@ -46558,6 +43654,30 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.883+00:00",
     "posted_at": "2026-07-13T11:42:31.883+00:00",
     "date_posted": "2026-07-13T11:42:31.883Z"
+  },
+  {
+    "id": "4c6642ad-77f5-42f7-9bcf-2e4ee56cf1de",
+    "title": "German-speaking Customer Consultant [329-000295-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782088/german-speaking-customer-consultant-329-000295-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:27:39+00:00",
+    "posted_at": "2026-07-29T18:27:39+00:00",
+    "date_posted": "2026-07-29T18:27:39.000Z"
+  },
+  {
+    "id": "79cd3d36-b7c4-4084-8321-5af732b8bb2b",
+    "title": "Operador(a) de Parque | Aeroporto do Funchal [329-000292-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782087/operador-a-de-parque-aeroporto-do-funchal-329-000292-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:27:39+00:00",
+    "posted_at": "2026-07-29T18:27:39+00:00",
+    "date_posted": "2026-07-29T18:27:39.000Z"
   },
   {
     "id": "b49eda26-fea5-4a03-bfb4-8fd48ad93510",
@@ -46596,6 +43716,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T11:42:31.883Z"
   },
   {
+    "id": "2af1f50e-9d7c-40b5-8313-69886d5c0988",
+    "title": "Cozinheiro de 1. - Junta-te à cozinha do Libertà Kitchen",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782086/cozinheiro-de-1-junta-te-a-cozinha-do-liberta-kitchen/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
+    "created_at": "2026-07-29T18:27:30+00:00",
+    "posted_at": "2026-07-29T18:27:30+00:00",
+    "date_posted": "2026-07-29T18:27:30.000Z"
+  },
+  {
     "id": "4fc6b22b-8324-4384-b425-9a7d52ddf439",
     "title": "Colaborador de Atendimento ao Cliente Inditex",
     "location": "Braga",
@@ -46632,6 +43764,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-14T11:42:31.883Z"
   },
   {
+    "id": "415291ee-c69e-4300-8e7c-66e992c53a7a",
+    "title": "Operador(a) de Parque | Aeroporto de Lisboa [329-000293-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782085/operador-a-de-parque-aeroporto-de-lisboa-329-000293-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
     "id": "a1662876-1b18-4f02-8381-a586ea891dcc",
     "title": "Operador de Caixa Inditex (m/f)",
     "location": "Faro",
@@ -46642,6 +43786,18 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-14T11:42:31.883+00:00",
     "posted_at": "2026-07-14T11:42:31.883+00:00",
     "date_posted": "2026-07-14T11:42:31.883Z"
+  },
+  {
+    "id": "1ea80f7f-e8bd-4980-a6dc-c76e8fc02977",
+    "title": "Business Developer Manager | Spanish Market [329-000289-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782084/business-developer-manager-spanish-market-329-000289-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Tecnologia & TI",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
   },
   {
     "id": "9fa6b2c1-0149-433b-a66f-a7f98e7380c1",
@@ -46680,6 +43836,66 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.883Z"
   },
   {
+    "id": "373dc7b4-c017-4b2e-b2eb-ea02b466cd41",
+    "title": "Customer Service Representative - Dutch [329-000284-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782083/customer-service-representative-dutch-329-000284-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "8d29af5f-9e1c-49b4-8dea-8d285900c5e2",
+    "title": "Mecânico Automóvel | Prior velho [329-000262-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782082/mecanico-automovel-prior-velho-329-000262-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "df2317d3-76d3-4470-96ec-e3f0ea19f00f",
+    "title": "German Customer Service Representative - Lisbon [329-000046-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782081/german-customer-service-representative-lisbon-329-000046-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "68b6ac30-ba76-4f72-ad69-2c08dafea7c4",
+    "title": "Sales Assistant (m/f) - Outlet Campera",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782080/sales-assistant-m-f-outlet-campera/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:27:08+00:00",
+    "posted_at": "2026-07-29T18:27:08+00:00",
+    "date_posted": "2026-07-29T18:27:08.000Z"
+  },
+  {
+    "id": "ed17036d-810e-4f3c-a215-b1c86b7b3de0",
+    "title": "Medidor Orçamentista / Técnico Superior - M/F - Matosinhos",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782079/medidor-orcamentista-tecnico-superior-m-f-matosinhos/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:26:13+00:00",
+    "posted_at": "2026-07-29T18:26:13+00:00",
+    "date_posted": "2026-07-29T18:26:13.000Z"
+  },
+  {
     "id": "b450ceee-63cc-4eb2-8b17-3f4f0d3c0234",
     "title": "Subgerente de Loja Inditex (m/f)",
     "location": "Porto",
@@ -46716,6 +43932,30 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-12T11:42:31.883Z"
   },
   {
+    "id": "1fbcbf97-d399-41a2-aaf2-82817962b340",
+    "title": "Chefe de Jardinagem  Tavira",
+    "location": "Faro",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782078/chefe-de-jardinagem-tavira/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Turismo, Hotelaria & Restaura├º├úo",
+    "created_at": "2026-07-29T18:26:07+00:00",
+    "posted_at": "2026-07-29T18:26:07+00:00",
+    "date_posted": "2026-07-29T18:26:07.000Z"
+  },
+  {
+    "id": "2691b704-5d70-44c2-86e4-2529ce58e77f",
+    "title": "Gestor de Clientes  Com ou Sem Experiência",
+    "location": "Portugal",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782077/gestor-de-clientes-com-ou-sem-experiencia/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:26:09+00:00",
+    "posted_at": "2026-07-29T18:26:09+00:00",
+    "date_posted": "2026-07-29T18:26:09.000Z"
+  },
+  {
     "id": "8d42b110-6240-48b8-8090-eae289781a13",
     "title": "Repositor de Loja Inditex (m/f)",
     "location": "Porto",
@@ -46726,6 +43966,162 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-12T11:42:31.883+00:00",
     "posted_at": "2026-07-12T11:42:31.883+00:00",
     "date_posted": "2026-07-12T11:42:31.883Z"
+  },
+  {
+    "id": "502377ac-8a2c-49fd-a7a5-8b3085d465fa",
+    "title": "Assistente Administrativa (Freelancer/Pombal)",
+    "location": "Leiria",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782076/assistente-administrativa-freelancer-pombal/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T18:50:08+00:00",
+    "posted_at": "2026-07-29T18:50:08+00:00",
+    "date_posted": "2026-07-29T18:50:08.000Z"
+  },
+  {
+    "id": "80b11fa7-f588-484e-a91f-07d89e1fcdac",
+    "title": "Responsável de Expansão",
+    "location": "Portugal",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782075/responsavel-de-expansao/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:26:09+00:00",
+    "posted_at": "2026-07-29T18:26:09+00:00",
+    "date_posted": "2026-07-29T18:26:09.000Z"
+  },
+  {
+    "id": "9a15b450-6977-4cd7-a49e-1ad0e7256ba6",
+    "title": "Técnico/a de Compras",
+    "location": "Viseu",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782074/tecnico-a-de-compras/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:21:02+00:00",
+    "posted_at": "2026-07-29T18:21:02+00:00",
+    "date_posted": "2026-07-29T18:21:02.000Z"
+  },
+  {
+    "id": "d7bf7f88-0b0a-4fa3-8eb7-548e08231a19",
+    "title": "Operador de Armazém Noturno - Maia [320-000673-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782073/operador-de-armazem-noturno-maia-320-000673-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "2fa912c3-40f5-4c06-92dc-27849c75efeb",
+    "title": "Operador de Armazém - Maia [320-000635-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782072/operador-de-armazem-maia-320-000635-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "7b7250ed-7c69-4d26-b3f0-b8a7d333562e",
+    "title": "Operador de Empilhador | Pontual - Maia [320-000686-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782071/operador-de-empilhador-pontual-maia-320-000686-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "d8fb2e2b-2b8a-4481-af38-35e0f244dd76",
+    "title": "Técnico de Manutenção Eletromecânico - M/F - Viana do Castelo",
+    "location": "Viana do Castelo",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782070/tecnico-de-manutencao-eletromecanico-m-f-viana-do-castelo/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:26:13+00:00",
+    "posted_at": "2026-07-29T18:26:13+00:00",
+    "date_posted": "2026-07-29T18:26:13.000Z"
+  },
+  {
+    "id": "8b6f0574-c5de-4236-b8b6-0e53cd0a820b",
+    "title": "We Are Pasta Rebels. Falta-nos o próximo Supervisor.",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782069/we-are-pasta-rebels-falta-nos-o-proximo-supervisor/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:21:37+00:00",
+    "posted_at": "2026-07-29T18:21:37+00:00",
+    "date_posted": "2026-07-29T18:21:37.000Z"
+  },
+  {
+    "id": "c074c822-8958-4c39-9a79-7009223cf0c2",
+    "title": "Operador de Campo - Aeroporto do Porto [326-000065-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782067/operador-de-campo-aeroporto-do-porto-326-000065-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "24d914aa-2a0c-443b-bda1-5406509a0d3e",
+    "title": "Auxiliar de Obras Civis| Concessão Rodóviaria [327-000220-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782066/auxiliar-de-obras-civis-concessao-rodoviaria-327-000220-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Constru├º├úo Civil & Engenharia",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "7dbf4745-f4ea-4b36-b583-b1c0d40e5406",
+    "title": "Operador de CNC de Mobiliario| Santo Tirso [328-000056-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782065/operador-de-cnc-de-mobiliario-santo-tirso-328-000056-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "e3837228-6e30-409d-b630-dc9cc1940780",
+    "title": "Motorista de Pesados - Grijó | Distribuição HORECA",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782064/motorista-de-pesados-grijo-distribuicao-horeca/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:23:07+00:00",
+    "posted_at": "2026-07-29T18:23:07+00:00",
+    "date_posted": "2026-07-29T18:23:07.000Z"
+  },
+  {
+    "id": "1569963d-bb54-417e-9e3d-5bc0a88247ec",
+    "title": "Técnico de Construção| Pinhão [328-000052-1]",
+    "location": "Portugal",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782062/tecnico-de-construcao-pinhao-328-000052-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
   },
   {
     "id": "e4cfc546-003b-4099-982c-c9189523f359",
@@ -46932,6 +44328,54 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-12T11:42:31.883Z"
   },
   {
+    "id": "36d014cf-5ac5-45c3-8811-70f2b53d3fc8",
+    "title": "Eletricista de Pesados| Porto [326-000059-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782061/eletricista-de-pesados-porto-326-000059-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Constru├º├úo Civil & Engenharia",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "b1f0d5bb-3806-447c-be20-ad9800e354f2",
+    "title": "Técnico de Montagem de AVAC| Paredes [328-000048-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782060/tecnico-de-montagem-de-avac-paredes-328-000048-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "a7b8e180-e4ee-4490-a2e9-1393c0612fb3",
+    "title": "Técnico de Assistência de AVAC| Paredes [328-000047-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782059/tecnico-de-assistencia-de-avac-paredes-328-000047-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "80af3c4f-762b-431d-a9e6-8706eabdf0ff",
+    "title": "Mecânico de Pesados| Porto [326-000048-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782058/mecanico-de-pesados-porto-326-000048-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
     "id": "e9822251-fa03-4e9e-8b4e-4331e880eb68",
     "title": "Operador de Loja / Supermercado H&M (m/f)",
     "location": "Aveiro",
@@ -46980,6 +44424,30 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-12T11:42:31.887Z"
   },
   {
+    "id": "8db2c602-5516-4e73-9405-537666c5e81c",
+    "title": "Técnico de Manutenção de AVAC| Matosinhos [325-000100-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782057/tecnico-de-manutencao-de-avac-matosinhos-325-000100-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "c7892dab-8f89-43e8-9284-7ea77b2b3284",
+    "title": "Técnico de Manutenção Industrial| Amarante [328-000032-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782056/tecnico-de-manutencao-industrial-amarante-328-000032-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
     "id": "781bfe06-6c28-45b0-a77d-4ca2dd004d68",
     "title": "Subgerente de Loja H&M (m/f)",
     "location": "Faro",
@@ -46992,6 +44460,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T11:42:31.887Z"
   },
   {
+    "id": "8dcd1db3-a6dc-4151-80e9-539e16af7706",
+    "title": "Operador de CNC| Valongo [328-000029-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782055/operador-de-cnc-valongo-328-000029-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
     "id": "49514380-affd-43e5-9e6c-6dde258a89ee",
     "title": "Operador de Picking (21h às 6h) - Matosinhos",
     "location": "Porto",
@@ -47002,6 +44482,42 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-04T14:02:26+00:00",
     "posted_at": "2026-07-04T14:02:26+00:00",
     "date_posted": "2026-07-04T14:02:26.000Z"
+  },
+  {
+    "id": "e078b285-770a-43ff-9789-e474cd9d4ad7",
+    "title": "Operador de CNC| Paços de Ferreira [328-000033-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782054/operador-de-cnc-pacos-de-ferreira-328-000033-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "549b01dc-537f-42d2-8309-52ef0d6108fa",
+    "title": "Vendedor Externo (M/F/D)",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782053/vendedor-externo-m-f-d/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:21:13+00:00",
+    "posted_at": "2026-07-29T18:21:13+00:00",
+    "date_posted": "2026-07-29T18:21:13.000Z"
+  },
+  {
+    "id": "9cdcd762-ac7d-4709-8527-ffea4dff3690",
+    "title": "Colaboradores(as)  Limpezas M/F Grande Porto",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782052/colaboradores-as-limpezas-m-f-grande-porto/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Servi├ºos Dom├⌐sticos",
+    "created_at": "2026-07-29T18:21:43+00:00",
+    "posted_at": "2026-07-29T18:21:43+00:00",
+    "date_posted": "2026-07-29T18:21:43.000Z"
   },
   {
     "id": "92615743-ff50-4911-afbb-8a0f8046675d",
@@ -47026,6 +44542,18 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-12T11:42:31.887+00:00",
     "posted_at": "2026-07-12T11:42:31.887+00:00",
     "date_posted": "2026-07-12T11:42:31.887Z"
+  },
+  {
+    "id": "118bda22-1bf3-460a-a0c5-91c25075faa6",
+    "title": "German AML Transaction Monitoring Analyst | Lisbon [329-000305-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782051/german-aml-transaction-monitoring-analyst-lisbon-329-000305-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
   },
   {
     "id": "cfaffc42-67cf-4e88-9a0a-3784290a7cec",
@@ -47304,6 +44832,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.887Z"
   },
   {
+    "id": "0e49470e-c46f-4a08-a2d2-180879ccb114",
+    "title": "AML Transaction Monitoring Analyst | Lisbon [329-000304-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782050/aml-transaction-monitoring-analyst-lisbon-329-000304-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
     "id": "67ba688a-6925-475d-b9c0-381162f35ff4",
     "title": "Técnico(a) Auxiliar de Farmácia  - Junta-te à equipa da Farmácia do Cruzeiro (Ajuda-Lisboa)",
     "location": "Lisboa",
@@ -47314,6 +44854,18 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-02T20:29:25+00:00",
     "posted_at": "2026-07-02T20:29:25+00:00",
     "date_posted": "2026-07-02T20:29:25.000Z"
+  },
+  {
+    "id": "268e0482-e8dc-4aba-a49c-2c55cf9433d2",
+    "title": "Rental Billing Clerk | Oeiras [329-000287-1]",
+    "location": "Lisboa",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782048/rental-billing-clerk-oeiras-329-000287-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
   },
   {
     "id": "92c9508c-61dc-4ab2-9cb1-d6de86759f9e",
@@ -47338,6 +44890,18 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-02T19:18:03+00:00",
     "posted_at": "2026-07-02T19:18:03+00:00",
     "date_posted": "2026-07-02T19:18:03.000Z"
+  },
+  {
+    "id": "0eb91083-c08b-42bd-9882-d5b39d0ee6ea",
+    "title": "Técnico Eletromecânico| Gondomar [327-000222-1]",
+    "location": "Porto",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782047/tecnico-eletromecanico-gondomar-327-000222-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
   },
   {
     "id": "b096505a-716d-48fc-a3ff-e3cf1ae54806",
@@ -47400,6 +44964,54 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-02T19:14:07.000Z"
   },
   {
+    "id": "5e402514-df3a-4b0d-a1fb-e3c907c499ec",
+    "title": "Sales Coach (German Speaker) - Fully Remote [329-000276-1]",
+    "location": "Remote",
+    "source_name": "Net-Empregos",
+    "source_url": "https://www.net-empregos.com/15782045/sales-coach-german-speaker-fully-remote-329-000276-1/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Vendas & Comercial",
+    "created_at": "2026-07-29T18:25:02+00:00",
+    "posted_at": "2026-07-29T18:25:02+00:00",
+    "date_posted": "2026-07-29T18:25:02.000Z"
+  },
+  {
+    "id": "3a31dca8-312c-401a-9faf-1690241ecfff",
+    "title": "Grupo Nabeiro | Delta Cafés está a recrutar em várias áreas",
+    "location": "Portugal",
+    "source_name": "Feed Empregos",
+    "source_url": "https://www.feedempregos.pt/2020/09/grupo-nabeiro-esta-recrutar.html",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T04:00:00+00:00",
+    "posted_at": "2026-07-29T04:00:00+00:00",
+    "date_posted": "2026-07-29T04:00:00.000Z"
+  },
+  {
+    "id": "0ba74db7-e156-4c8d-9f80-1431733ddfba",
+    "title": "LIDL: recrutamento em várias áreas e funções (m/f)",
+    "location": "Portugal",
+    "source_name": "Feed Empregos",
+    "source_url": "https://www.feedempregos.pt/2024/08/alerta-emprego-o-lidl-esta-recrutar.html",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-28T17:00:00+00:00",
+    "posted_at": "2026-07-28T17:00:00+00:00",
+    "date_posted": "2026-07-28T17:00:00.000Z"
+  },
+  {
+    "id": "0ae09cfc-7329-4c05-b1c2-89d1682e1008",
+    "title": "Faz Cultura de Braga - recrutamento de Técnico/a de Contabilidade",
+    "location": "Braga",
+    "source_name": "Feed Empregos",
+    "source_url": "https://www.feedempregos.pt/2026/07/faz-cultura-de-braga-recrutamento.html",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-28T08:16:00+00:00",
+    "posted_at": "2026-07-28T08:16:00+00:00",
+    "date_posted": "2026-07-28T08:16:00.000Z"
+  },
+  {
     "id": "f1ac1cbe-3351-484d-8fbf-89e8d2d47799",
     "title": "Educadora de Infância",
     "location": "Porto",
@@ -47436,6 +45048,30 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-16T11:42:31.887Z"
   },
   {
+    "id": "604402eb-32e1-4098-998c-e06d985ad622",
+    "title": "Continente: recrutamento de Operadores de Loja",
+    "location": "Portugal",
+    "source_name": "Feed Empregos",
+    "source_url": "https://www.feedempregos.pt/2025/06/operadores-de-loja-continente.html",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-16T05:00:00+00:00",
+    "posted_at": "2026-07-16T05:00:00+00:00",
+    "date_posted": "2026-07-16T05:00:00.000Z"
+  },
+  {
+    "id": "88e285cb-bb20-48a9-8aa3-97c4f944e720",
+    "title": "AIG está a recrutar Especialista de Recursos Humanos",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/aig-esta-a-recrutar-especialista-de-recursos-humanos/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T16:20:32+00:00",
+    "posted_at": "2026-07-29T16:20:32+00:00",
+    "date_posted": "2026-07-29T16:20:32.000Z"
+  },
+  {
     "id": "d98504ae-03bc-422a-9710-e5ae57662887",
     "title": "Repositor de Loja H&M (m/f)",
     "location": "Lisboa",
@@ -47446,6 +45082,18 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-13T11:42:31.887+00:00",
     "posted_at": "2026-07-13T11:42:31.887+00:00",
     "date_posted": "2026-07-13T11:42:31.887Z"
+  },
+  {
+    "id": "cf3984ec-74dc-4bcc-88f1-65a61a0a329f",
+    "title": "TAP está a recrutar Copywriter (Customer Communication & UX Writing)",
+    "location": "Lisboa",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/tap-esta-a-recrutar-copywriter-customer-communication-ux-writing/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T15:02:20+00:00",
+    "posted_at": "2026-07-29T15:02:20+00:00",
+    "date_posted": "2026-07-29T15:02:20.000Z"
   },
   {
     "id": "84a17ed2-a37f-437e-b4fe-ea6e454b9d45",
@@ -47470,6 +45118,54 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-16T11:42:31.901+00:00",
     "posted_at": "2026-07-16T11:42:31.901+00:00",
     "date_posted": "2026-07-16T11:42:31.901Z"
+  },
+  {
+    "id": "be1965ee-fd0b-4c50-815b-0914ffef1889",
+    "title": "CP está a recrutar Operadores de Revisão e Venda (19 vagas)",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/cp-esta-a-recrutar-operadores-de-revisao-e-venda-19-vagas/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Log├¡stica & Produ├º├úo",
+    "created_at": "2026-07-29T14:56:03+00:00",
+    "posted_at": "2026-07-29T14:56:03+00:00",
+    "date_posted": "2026-07-29T14:56:03.000Z"
+  },
+  {
+    "id": "1745de7d-2e29-49fd-9b23-e26a25c33906",
+    "title": "Polícia de Segurança Pública está a recrutar para o Departamento de Logística",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/policia-de-seguranca-publica-esta-a-recrutar-para-o-departamento-de-logistica/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T14:48:24+00:00",
+    "posted_at": "2026-07-29T14:48:24+00:00",
+    "date_posted": "2026-07-29T14:48:24.000Z"
+  },
+  {
+    "id": "8709cc90-5b21-4fbc-a2c4-5ba897dd9c61",
+    "title": "EY está a recrutar Especialista em Gestão de Talento",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/ey-esta-a-recrutar-especialista-em-gestao-de-talento/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T14:07:02+00:00",
+    "posted_at": "2026-07-29T14:07:02+00:00",
+    "date_posted": "2026-07-29T14:07:02.000Z"
+  },
+  {
+    "id": "ddd4e0c5-5d45-4cfb-b9dd-cedd9fb129d2",
+    "title": "Culligan está a recrutar Administrativo de Frota",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/culligan-esta-a-recrutar-administrativo-de-frota/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T13:58:11+00:00",
+    "posted_at": "2026-07-29T13:58:11+00:00",
+    "date_posted": "2026-07-29T13:58:11.000Z"
   },
   {
     "id": "b8ea12f6-827a-436a-a0d4-b25011ffab5a",
@@ -47556,6 +45252,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.901Z"
   },
   {
+    "id": "760cacb0-5fa0-427a-aa77-8dcdcbef029a",
+    "title": "Airbus está a recrutar Especialista em Coordenação de Eventos",
+    "location": "Lisboa",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/airbus-esta-a-recrutar-especialista-em-coordenacao-de-eventos/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T13:47:46+00:00",
+    "posted_at": "2026-07-29T13:47:46+00:00",
+    "date_posted": "2026-07-29T13:47:46.000Z"
+  },
+  {
     "id": "c841d945-9e93-4be5-9df3-07d530f1ce21",
     "title": "Colaborador de Atendimento ao Cliente Primark",
     "location": "Braga",
@@ -47580,6 +45288,30 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-15T11:42:31.901Z"
   },
   {
+    "id": "4fb75325-ec7e-4ef1-b258-98cdbc6ba9d0",
+    "title": "Ageas está a recrutar Gestor de Prestadores Automóvel",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/ageas-esta-a-recrutar-gestor-de-prestadores-automovel/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T13:37:48+00:00",
+    "posted_at": "2026-07-29T13:37:48+00:00",
+    "date_posted": "2026-07-29T13:37:48.000Z"
+  },
+  {
+    "id": "429a33b7-9b1e-4009-8eeb-75043a184295",
+    "title": "IPMA está a recrutar para a área de Contratação Pública",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/ipma-esta-a-recrutar-para-a-area-de-contratacao-publica/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T13:07:53+00:00",
+    "posted_at": "2026-07-29T13:07:53+00:00",
+    "date_posted": "2026-07-29T13:07:53.000Z"
+  },
+  {
     "id": "251336e1-50c9-4f5c-a1f3-e56718af4530",
     "title": "Repositor de Loja Primark (m/f)",
     "location": "Faro",
@@ -47590,6 +45322,30 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-16T11:42:31.901+00:00",
     "posted_at": "2026-07-16T11:42:31.901+00:00",
     "date_posted": "2026-07-16T11:42:31.901Z"
+  },
+  {
+    "id": "dd5868fa-e564-4ba4-855f-fc5a5e7bf945",
+    "title": "Tesla está a recrutar Consultor de Fidelização e Propriedade",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/tesla-esta-a-recrutar-consultor-de-fidelizacao-e-propriedade/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T12:59:57+00:00",
+    "posted_at": "2026-07-29T12:59:57+00:00",
+    "date_posted": "2026-07-29T12:59:57.000Z"
+  },
+  {
+    "id": "dc1b28b6-7316-408f-b32f-3fed62d131f5",
+    "title": "Universidade de Lisboa está a recrutar para o Núcleo de Gestão de Recursos Humanos da Faculdade de Farmácia",
+    "location": "Lisboa",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/universidade-de-lisboa-esta-a-recrutar-para-o-nucleo-de-gestao-de-recursos-humanos-da-faculdade-de-farmacia/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T10:02:12+00:00",
+    "posted_at": "2026-07-29T10:02:12+00:00",
+    "date_posted": "2026-07-29T10:02:12.000Z"
   },
   {
     "id": "9835b400-6462-421b-8552-8a79b54c9f72",
@@ -47616,6 +45372,18 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-16T11:42:31.901Z"
   },
   {
+    "id": "00552813-858d-49b9-b933-8793ce04b7f8",
+    "title": "LATAM Airlines está a recrutar Supervisor para o Aeroporto de Lisboa",
+    "location": "Lisboa",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/latam-airlines-esta-a-recrutar-supervisor-para-o-aeroporto-de-lisboa/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T09:32:02+00:00",
+    "posted_at": "2026-07-29T09:32:02+00:00",
+    "date_posted": "2026-07-29T09:32:02.000Z"
+  },
+  {
     "id": "413f7174-0e09-4a8d-b38f-f5b185211d94",
     "title": "Subgerente de Loja Primark (m/f)",
     "location": "Setúbal",
@@ -47628,6 +45396,42 @@ export const PROTECTED_JOBS = [
     "date_posted": "2026-07-13T11:42:31.901Z"
   },
   {
+    "id": "6785ed4c-ee84-43b5-be2f-17da5f23957e",
+    "title": "Crédito Agrícola está a recrutar Gestor de Projetos para a área de Segurança Física",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/credito-agricola-esta-a-recrutar-gestor-de-projetos-para-a-area-de-seguranca-fisica/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T09:27:16+00:00",
+    "posted_at": "2026-07-29T09:27:16+00:00",
+    "date_posted": "2026-07-29T09:27:16.000Z"
+  },
+  {
+    "id": "4b52df38-2c62-47fe-9420-b12a36a6fe25",
+    "title": "Worten está a recrutar Gestor de Campanhas",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/worten-esta-a-recrutar-gestor-de-campanhas/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Administra├º├úo & Finan├ºas",
+    "created_at": "2026-07-29T09:22:10+00:00",
+    "posted_at": "2026-07-29T09:22:10+00:00",
+    "date_posted": "2026-07-29T09:22:10.000Z"
+  },
+  {
+    "id": "ffbb1fb7-92e5-424a-a55b-369107b3dab3",
+    "title": "IPMA recruta Assistente Técnico para o Departamento de Meteorologia e Geofísica",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/ipma-recruta-assistente-tecnico-para-o-departamento-de-meteorologia-e-geofisica/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T09:11:48+00:00",
+    "posted_at": "2026-07-29T09:11:48+00:00",
+    "date_posted": "2026-07-29T09:11:48.000Z"
+  },
+  {
     "id": "78aafe12-d7e9-4f0b-9624-0b2d68403255",
     "title": "Colaborador de Atendimento ao Cliente Primark",
     "location": "Lisboa",
@@ -47638,6 +45442,18 @@ export const PROTECTED_JOBS = [
     "created_at": "2026-07-15T11:42:31.901+00:00",
     "posted_at": "2026-07-15T11:42:31.901+00:00",
     "date_posted": "2026-07-15T11:42:31.901Z"
+  },
+  {
+    "id": "f49da296-9300-4aef-bc50-bf968b5c89ae",
+    "title": "Património Cultural está a recrutar para a Divisão de Comunicação, Relações Internacionais e Protocolo",
+    "location": "Portugal",
+    "source_name": "Emprego Estágios",
+    "source_url": "https://www.empregoestagios.com/patrimonio-cultural-esta-a-recrutar-para-a-divisao-de-comunicacao-relacoes-internacionais-e-protocolo/",
+    "category": "Trabalho & Carreira",
+    "work_topic": "Outros",
+    "created_at": "2026-07-29T08:50:38+00:00",
+    "posted_at": "2026-07-29T08:50:38+00:00",
+    "date_posted": "2026-07-29T08:50:38.000Z"
   },
   {
     "id": "52c4e8e2-c235-4cd1-b3e3-ae5f1e31a010",
