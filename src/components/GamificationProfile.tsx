@@ -7,6 +7,7 @@ import { PREDEFINED_AVATARS } from '../constants';
 import { authService } from '../services/authService';
 import { useToast } from './Toast';
 import { t } from '../utils/translations';
+import { MiraBadgeSeal } from './MiraBadgeSeal';
 
 interface GamificationProfileProps {
     user: User | null; // The user whose profile is being viewed
@@ -770,13 +771,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                                                 : 'bg-slate-50/80 border-slate-100 opacity-60 hover:opacity-80'
                                         }`}
                                     >
-                                        <div className={`w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-[1.2rem] sm:rounded-[1.6rem] flex items-center justify-center mb-2 shadow-sm border transition-transform duration-300 group-hover:scale-110 ${
-                                            unlocked 
-                                                ? 'bg-gradient-to-tr from-[#FF8C00] to-[#FFD700] border-amber-300 shadow-orange-500/20' 
-                                                : 'bg-slate-200/80 border-slate-300/50'
-                                        }`}>
-                                            <BadgeIcon icon={badge.icon} unlocked={unlocked} emoji={badge.icon_emoji} />
-                                        </div>
+                                        <MiraBadgeSeal id={badge.id} unlocked={unlocked} size="md" className="mb-2" />
                                         
                                         <h5 className={`text-[10px] sm:text-[11px] font-black uppercase text-center leading-tight tracking-tight px-1 line-clamp-2 ${
                                             unlocked ? 'text-slate-800' : 'text-slate-500'
@@ -928,11 +923,9 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                             
                             <div className="relative p-10 flex flex-col items-center text-center">
                                 {/* Badge Showcase with Flare */}
-                                <div className="relative mb-10">
+                                <div className="relative mb-6">
                                     <div className={`absolute inset-0 rounded-full blur-2xl opacity-50 ${colors.bg}`} />
-                                    <div className={`w-28 h-28 ${colors.bg} ${colors.border} border-2 rounded-[3rem] flex items-center justify-center relative z-10 shadow-2xl`}>
-                                        <BadgeIcon icon={selectedBadge.icon} unlocked={true} emoji={selectedBadge.icon_emoji} />
-                                    </div>
+                                    <MiraBadgeSeal id={selectedBadge.id} unlocked={selectedBadge.unlocked} size="xl" />
                                 </div>
 
                                 <span className={`text-[8px] font-black uppercase tracking-[0.4em] mb-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 ${colors.text}`}>
