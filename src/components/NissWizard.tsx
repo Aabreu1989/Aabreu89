@@ -811,13 +811,13 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                     <span className="text-2xl">📊</span>
                                     <div>
                                         <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">
-                                            Hack #4: Isenção de Retenção de IRS até 14.500€
+                                            Hack #4: Isenção de Retenção de IRS e IVA até 15.000€
                                         </h3>
-                                        <p className="text-[10px] text-amber-600 font-bold uppercase">Artigo 101.º, n.º 1 do CIRS (2026)</p>
+                                        <p className="text-[10px] text-amber-600 font-bold uppercase">Artigo 101.º, n.º 1 do CIRS & Art. 53.º do CIVA (2025/2026)</p>
                                     </div>
                                 </div>
                                 <p className="text-xs text-slate-600 leading-relaxed">
-                                    Se estima faturar menos de <strong>14.500€ em 2026</strong>, pode selecionar a opção <em>"Sem retenção - art. 101.º, n.º 1 do CIRS"</em> ao emitir faturas-recibos verdes, evitando retenções de imposto na fonte no arranque.
+                                    Se estima faturar menos de <strong>15.000€ em 2026</strong>, pode selecionar a opção <em>"Sem retenção - art. 101.º, n.º 1 do CIRS"</em> ao emitir faturas-recibos verdes e usufruir da isenção de IVA do Artigo 53.º do CIVA, evitando retenções de imposto na fonte no arranque.
                                 </p>
                             </div>
                         </div>

@@ -121,7 +121,7 @@ export const EntrepreneurWizard: React.FC<EntrepreneurWizardProps> = ({
             checklist = [
                 'Como Abrir: Aceder ao Portal das Finanças ➔ Entrar ➔ Início de Atividade.',
                 'Como Abrir: Escolher os códigos CAE/CIRS adequados à sua profissão (ex: 1519 Outros Prestadores).',
-                'Como Abrir: Declarar volume de negócios estimado (Isenção de IVA pelo Artigo 53º se < €14.500/ano).',
+                'Como Abrir: Declarar volume de negócios estimado (Isenção de IVA pelo Artigo 53º se < €15.000/ano em 2025/2026).',
                 'Segurança Social: Enquadramento automático com isenção no 1º ano de descontos.',
                 'Como Fechar: Portal das Finanças ➔ Cessação de Atividade (não ter faturas ativas em rascunho).',
                 'Encerrar Segurança Social: Confirmar nas semanas seguintes que o vínculo foi atualizado para inativo.'
@@ -130,7 +130,7 @@ export const EntrepreneurWizard: React.FC<EntrepreneurWizardProps> = ({
             checklist = [
                 'Cómo Abrir: Acceder al Portal das Finanças ➔ Iniciar Sesión ➔ Inicio de Actividad.',
                 'Cómo Abrir: Elegir los códigos CAE/CIRS adecuados a su profesión (ej: 1519 Otros Prestadores).',
-                'Cómo Abrir: Declarar ingresos estimados (Exención de IVA por Art. 53º si < €14.500/año).',
+                'Cómo Abrir: Declarar ingresos estimados (Exención de IVA por Art. 53º si < €15.000/año en 2025/2026).',
                 'Seguridad Social: Encuadre automático con exención en el primer año de aportaciones.',
                 'Cómo Cerrar: Portal das Finanças ➔ Cierre de Actividad (sin facturas activas en borrador).',
                 'Cerrar Seguridad Social: Confirmar en las siguientes semanas que el vínculo pasó a inactivo.'
@@ -139,7 +139,7 @@ export const EntrepreneurWizard: React.FC<EntrepreneurWizardProps> = ({
             checklist = [
                 'Comment Ouvrir : Accéder au Portal das Finanças ➔ Se connecter ➔ Début d\'Activité.',
                 'Comment Ouvrir : Choisir les codes CAE/CIRS adaptés à votre profession (ex : 1519 Autres Prestataires).',
-                'Comment Ouvrir : Déclarer le chiffre d\'affaires estimé (Exonération de TVA Art. 53 si < 14 500 €/an).',
+                'Comment Ouvrir : Déclarer le chiffre d\'affaires estimé (Exonération de TVA Art. 53 si < 15 000 €/an en 2025/2026).',
                 'Sécurité Sociale : Affiliation automatique avec exonération de cotisations la première année.',
                 'Comment Fermer : Portal das Finanças ➔ Cessation d\'Activité (aucune facture en projet active).',
                 'Clôture Sécurité Sociale : Confirmer dans les semaines suivantes que le statut est mis à jour.'
@@ -148,7 +148,7 @@ export const EntrepreneurWizard: React.FC<EntrepreneurWizardProps> = ({
             checklist = [
                 'How to Open: Go to Portal das Finanças ➔ Login ➔ Start of Activity.',
                 'How to Open: Choose the appropriate CAE/CIRS business codes for your job (e.g. 1519 Other Providers).',
-                'How to Open: Declare estimated business volume (VAT Exemption Art. 53 if < €14,500/year).',
+                'How to Open: Declare estimated business volume (VAT Exemption Art. 53 if < €15,000/year in 2025/2026).',
                 'Social Security: Automatic enrollment with exemption from payments in the 1st year.',
                 'How to Close: Portal das Finanças ➔ Cessation of Activity (must have no active draft invoices).',
                 'Terminate Social Security: Verify in the following weeks that your status is updated to inactive.'

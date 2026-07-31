@@ -9,7 +9,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
       "at_inicio_atividade_draft_desc": "Minuta de preparação com todos os dados para preenchimento oficial no Portal das Finanças.",
       "at_inicio_atividade_draft_expl": "Utilize este rascunho para estruturar os seus dados (códigos CAE, volume estimado, regime de IVA) antes de submeter no Portal das Finanças oficial.",
       "at_inicio_atividade_draft_purpose": "Preparação e conferência de dados para abertura de atividade fiscal em Portugal.",
-      "at_inicio_atividade_draft_tips": "Verifique se a sua atividade permite isenção de IVA ao abrigo do artigo 53.º (limite de 14.500 €/ano).",
+      "at_inicio_atividade_draft_tips": "Verifique se a sua atividade permite isenção de IVA ao abrigo do artigo 53.º (limite de 15.000 €/ano em 2025/2026).",
       "estatutos_lda_minuta": "Minuta de Estatutos - Sociedade Lda.",
       "estatutos_lda_minuta_desc": "Modelo base de pacto social para constituição de uma sociedade por quotas em Portugal.",
       "estatutos_lda_minuta_expl": "Modelo padrão de estatutos sociais para definição da firma, objeto, sede, capital social e gerência da sua empresa de responsabilidade limitada.",
