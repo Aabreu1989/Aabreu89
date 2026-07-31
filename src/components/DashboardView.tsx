@@ -317,12 +317,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
 
             const jobsToUpsert = [];
 
-            for (const job of PROTECTED_JOBS) {
-                let finalUrl = job.sourceUrl || '#';
+            for (const job of (PROTECTED_JOBS as any[])) {
+                let finalUrl = job.source_url || job.sourceUrl || '#';
 
                 // 2. TRATAMENTO DE LINKS RELATIVOS
                 if (finalUrl.startsWith('/')) {
-                    const baseDomain = DOMAIN_MAP[job.sourceName] || 'https://www.net-empregos.com'; // Defaulting to generic se desconhecido
+                    const baseDomain = DOMAIN_MAP[job.source_name || job.sourceName] || 'https://www.net-empregos.com'; // Defaulting to generic se desconhecido
                     finalUrl = `${baseDomain}${finalUrl}`;
                 }
 
@@ -346,12 +346,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                         id: job.id, // ID local
                         title: job.title,
                         location: job.location,
-                        source_name: job.sourceName,
+                        source_name: job.source_name || job.sourceName || 'MIRA',
                         source_url: finalUrl, // URL Tratado (Absoluto e validado)
-                        date_posted: job.datePosted,
-                        tags: job.tags,
+                        date_posted: job.date_posted || job.datePosted || new Date().toISOString(),
+                        tags: Array.isArray(job.tags) ? job.tags : [],
                         category: job.category,
-                        work_topic: job.workTopic
+                        work_topic: job.work_topic || job.workTopic || 'Outros'
                     });
                 }
             }

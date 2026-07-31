@@ -29,14 +29,13 @@ function isSpamOrBlog(title: string, url: string): boolean {
 
   // 2. Blog Posts / Advice Articles / Non-job guides
   const blogKeywords = [
-    'salario-enfermeiro', 'salario-auxiliar', 'qualidade-vida', 'google_vignette',
+    'salario-enfermeiro', 'salario-auxiliar', 'google_vignette',
     'modelo-carta', 'carta-despedimento', 'carta-cobranca', 'carta-motivacao', 'carta-apresentacao',
-    'como-recusar', 'como-mudar', 'como-fazer', 'como-escrever', 'rescisao-periodo', 'periodo-experimental',
-    'viver-na-holanda', 'viver-na-suica', 'viver-no-', 'trabalhar-na-holanda', 'trabalhar-na-suica',
+    'como-recusar', 'como-mudar', 'como-escrever', 'rescisao-periodo', 'periodo-experimental',
     'subsidio-desemprego', 'feriados-2026', 'feriados-2025', 'codigo-trabalho', 'direitos-dos',
     'dicas-para-entrevista', 'dicas-entrevista', 'modelo-curriculo', 'como-elaborar', 'perguntas-entrevista',
-    'erros-curriculo', 'guia-de-emprego', 'viver-na-', 'viver-no-', 'trabalhar-na-', 'trabalhar-no-',
-    'minuta-carta', 'carta-de-demissao', 'trabalhar-ao-domingo', 'direitos-e-acrescimos'
+    'erros-curriculo', 'guia-de-emprego',
+    'minuta-carta', 'carta-de-demissao', 'direitos-e-acrescimos'
   ];
   if (blogKeywords.some(kw => lowerUrl.includes(kw) || lowerTitle.includes(kw))) {
     return true;
@@ -44,10 +43,10 @@ function isSpamOrBlog(title: string, url: string): boolean {
 
   // Path-specific blog keywords (safe from matching common job titles/locations)
   const blogUrlPatterns = [
-    '/como-', '/salario-', '/salarios-', '/carta-de-', '/dicas-', '/guia-de-', '/guia-para-', 
-    '/guia-completo-', '/guia-pratico-', '/modelo-', '/viver-', '/trabalhar-', '/rescisao-', 
-    '/direitos-', '/feriados-', '/subsidio-', '/periodo-experimental', '/contrato-trabalho', 
-    '/profissao-', '/o-que-e', '/o-que-faz', '/quanto-ganha', '/artigo/', '/blog/', 
+    '/salarios-', '/carta-de-', '/dicas-', '/guia-de-', '/guia-para-', 
+    '/guia-completo-', '/guia-pratico-', '/modelo-', '/rescisao-', 
+    '/direitos-', '/feriados-', '/subsidio-', '/periodo-experimental',
+    '/o-que-e', '/o-que-faz', '/quanto-ganha', '/artigo/', '/blog/', 
     '/categoria/', '/opiniao/', '/minuta-', '/curriculo/'
   ];
   if (blogUrlPatterns.some(pattern => lowerUrl.includes(pattern))) {
@@ -160,7 +159,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
   const [isVisaGuideOpen, setIsVisaGuideOpen] = useState(false);
   // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms)
   const initialJobs = React.useMemo(() => {
-    return (PROTECTED_JOBS || [])
+    return ((PROTECTED_JOBS as any[]) || [])
       .filter(pj => {
         const url = pj.source_url || pj.sourceUrl;
         return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url);
@@ -172,10 +171,10 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
         sourceName: pj.source_name || pj.sourceName || 'MIRA',
         sourceUrl: pj.source_url || pj.sourceUrl,
         datePosted: pj.date_posted || pj.datePosted || t('jobs_today', language),
-        posted_at: (pj as any).posted_at || (pj as any).postedAt || (pj as any).created_at || new Date().toISOString(),
+        posted_at: pj.posted_at || pj.postedAt || pj.created_at || new Date().toISOString(),
         tags: Array.isArray(pj.tags) ? pj.tags : (pj.title && pj.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
         category: normalizeCategory(pj.category || 'Trabalho & Carreira'),
-        workTopic: normalizeWorkTopic(pj.work_topic || (pj as any).workTopic, pj.title)
+        workTopic: normalizeWorkTopic(pj.work_topic || pj.workTopic, pj.title)
       } as any));
   }, [language]);
 

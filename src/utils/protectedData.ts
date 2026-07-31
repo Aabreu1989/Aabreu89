@@ -1509,10 +1509,4 @@ export const PROTECTED_SERVICES: MapAlert[] = [
 
 ];
 
-export const PROTECTED_JOBS: JobPost[] = [
-    ,
-    ,
-    ,
-    ,
-    
-];
+export { PROTECTED_JOBS } from './massiveJobsDatabase';
