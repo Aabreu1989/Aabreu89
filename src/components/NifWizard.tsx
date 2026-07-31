@@ -281,7 +281,7 @@ export const NifWizard: React.FC<NifWizardProps> = ({ language, onBack, onSelect
                                         </div>
                                         <div>
                                             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
-                                                {lang === 'pt' ? 'Fiscalidade' : lang === 'es' ? 'Fiscalidad' : lang === 'fr' ? 'Fiscalité' : 'Taxation'}
+                                                {t('nif_taxation_header', lang)}
                                             </h4>
                                             <h3 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-snug">
                                                 {t('nif_rep_fiscal_title', lang)}
@@ -297,7 +297,7 @@ export const NifWizard: React.FC<NifWizardProps> = ({ language, onBack, onSelect
                                 {isRepOpen && (
                                     <div className="p-6 pt-0 border-t border-slate-50 text-[11px] text-slate-650 font-semibold leading-relaxed space-y-4 bg-white animate-in slide-in-from-top-2 duration-300">
                                         <div className="text-slate-500 font-bold uppercase tracking-wider text-[9px] mb-1">
-                                            {lang === 'pt' ? '💡 Guia Completo & Life Hacks' : lang === 'es' ? '💡 Guía Completa y Trucos' : lang === 'fr' ? '💡 Guide Complet & Astuces' : '💡 Complete Guide & Life Hacks'}
+                                            {t('nif_guide_hacks_title', lang)}
                                         </div>
                                         
                                         <div className="space-y-2">
@@ -307,35 +307,35 @@ export const NifWizard: React.FC<NifWizardProps> = ({ language, onBack, onSelect
                                                     title: t('nif_rep_viactt_title', lang),
                                                     desc: t('nif_rep_viactt_desc', lang),
                                                     icon: '⚡',
-                                                    badge: lang === 'pt' ? 'Opcional' : lang === 'es' ? 'Opcional' : lang === 'fr' ? 'Optionnel' : 'Optional'
+                                                    badge: t('nif_badge_optional', lang)
                                                 },
                                                 {
                                                     id: 'address',
                                                     title: t('nif_rep_address_title', lang),
                                                     desc: t('nif_rep_address_desc', lang),
                                                     icon: '🏠',
-                                                    badge: lang === 'pt' ? 'Morada Hack' : lang === 'es' ? 'Dirección Hack' : lang === 'fr' ? 'Adresse Hack' : 'Address Hack'
+                                                    badge: t('nif_badge_address', lang)
                                                 },
                                                 {
                                                     id: 'friend',
                                                     title: t('nif_rep_friend_title', lang),
                                                     desc: t('nif_rep_friend_desc', lang),
                                                     icon: '👥',
-                                                    badge: lang === 'pt' ? 'Gratuito' : lang === 'es' ? 'Gratis' : lang === 'fr' ? 'Gratuit' : 'Free'
+                                                    badge: t('nif_badge_free', lang)
                                                 },
                                                 {
                                                     id: 'alert',
                                                     title: t('nif_rep_alert_title', lang),
                                                     desc: t('nif_rep_alert_desc', lang),
                                                     icon: '🛡️',
-                                                    badge: lang === 'pt' ? 'Responsabilidade' : lang === 'es' ? 'Responsabilidad' : lang === 'fr' ? 'Responsabilité' : 'Liability'
+                                                    badge: t('nif_badge_liability', lang)
                                                 },
                                                 {
                                                     id: 'steps',
                                                     title: t('nif_rep_steps_title', lang),
                                                     desc: t('nif_rep_steps_desc', lang),
                                                     icon: '📋',
-                                                    badge: lang === 'pt' ? 'Passo-a-passo' : lang === 'es' ? 'Paso a paso' : lang === 'fr' ? 'Étape par Étape' : 'Step-by-step'
+                                                    badge: t('nif_badge_step_by_step', lang)
                                                 }
                                             ].map((tip) => {
                                                 const isTipOpen = activeTip === tip.id;
