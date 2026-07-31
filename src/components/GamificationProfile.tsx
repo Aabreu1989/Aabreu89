@@ -359,13 +359,30 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
     const [editBio, setEditBio] = useState(user?.bio || '');
     const [editAvatar, setEditAvatar] = useState(user?.avatar || '');
     const [isSaving, setIsSaving] = useState(false);
+
+    const [profileUser, setProfileUser] = useState<User | null>(user);
+    const [allBadges, setAllBadges] = useState<Badge[]>([]);
+
+    // Consolidate stats for display - MIRA V2026.GOLD: High Resilience Mapping
+    const stats = {
+        reputation: profileUser?.reputation || user?.reputation || 0,
+        activities: activitiesCount || profileUser?.completedCoursesCount || 0,
+        impact: profileUser?.totalLikesReceived || user?.totalLikesReceived || 0 
+    };
+
+    // 📊 MIRA LEVEL PROGRESSION CALCULATOR
+    const repPoints = stats.reputation || profileUser?.reputation || 0;
+    const levelInfo = React.useMemo(() => {
+        if (repPoints >= 350) return { level: 5, title: 'Soberano MIRA', min: 350, max: 500, percent: 100, color: 'from-amber-400 to-orange-500', badge: '👑' };
+        if (repPoints >= 200) return { level: 4, title: 'Mestre da Comunidade', min: 200, max: 349, percent: Math.min(100, Math.round(((repPoints - 200) / 150) * 100)), color: 'from-purple-500 to-indigo-600', badge: '💎' };
+        if (repPoints >= 100) return { level: 3, title: 'Guardião Ativo', min: 100, max: 199, percent: Math.min(100, Math.round(((repPoints - 100) / 100) * 100)), color: 'from-blue-500 to-cyan-500', badge: '🛡️' };
+        if (repPoints >= 50)  return { level: 2, title: 'Colaborador', min: 50, max: 99, percent: Math.min(100, Math.round(((repPoints - 50) / 50) * 100)), color: 'from-emerald-500 to-teal-500', badge: '🌱' };
+        return { level: 1, title: 'Explorador', min: 0, max: 49, percent: Math.min(100, Math.round((repPoints / 50) * 100)), color: 'from-orange-500 to-amber-400', badge: '🧭' };
+    }, [repPoints]);
     const [isDeleting, setIsDeleting] = useState(false);
     const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
     const [localFollowersCount, setLocalFollowersCount] = useState(user?.followersCount || 0);
     const [documentDownloadsCount, setDocumentDownloadsCount] = useState(0);
-
-    const [profileUser, setProfileUser] = useState<User | null>(user);
-    const [allBadges, setAllBadges] = useState<Badge[]>([]);
 
     // SOBERANIA V500: Carregar medalhas dinâmicas do disco
     useEffect(() => {
@@ -467,11 +484,6 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
     }, [allBadges, checkIsUnlocked, language]);
 
     // Consolidate stats for display - MIRA V2026.GOLD: High Resilience Mapping
-    const stats = {
-        reputation: profileUser?.reputation || user?.reputation || 0,
-        activities: activitiesCount || profileUser?.completedCoursesCount || 0,
-        impact: profileUser?.totalLikesReceived || user?.totalLikesReceived || 0 
-    };
 
 
 
@@ -706,6 +718,37 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
 
                         </div>
                     )}
+
+                    {/* 📊 LEVEL PROGRESSION CARD */}
+                    <div className="bg-slate-900 text-white rounded-[2rem] p-5 mb-6 border border-slate-800 shadow-2xl relative overflow-hidden">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                                <span className="text-3xl">{levelInfo.badge}</span>
+                                <div>
+                                    <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest block">
+                                        NÍVEL {levelInfo.level}
+                                    </span>
+                                    <h4 className="text-sm font-black uppercase tracking-tight text-white">
+                                        {levelInfo.title}
+                                    </h4>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-xs font-black text-amber-400">{repPoints} <span className="text-[10px] text-slate-400 font-normal">/ {levelInfo.max} pts</span></span>
+                            </div>
+                        </div>
+                        
+                        <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                            <div 
+                                className={`h-full rounded-full bg-gradient-to-r ${levelInfo.color} transition-all duration-1000 shadow-md`}
+                                style={{ width: `${levelInfo.percent}%` }}
+                            />
+                        </div>
+                        <div className="flex justify-between items-center mt-2 text-[9px] font-bold text-slate-400 uppercase">
+                            <span>{levelInfo.percent}% concluído</span>
+                            <span>Próximo nível aos {levelInfo.max} pts</span>
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-2 gap-3 mb-8 relative z-10">
                         {/* Reputação */}
