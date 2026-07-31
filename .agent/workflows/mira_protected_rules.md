@@ -25,3 +25,8 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
 ## Login:
 - SEMPRE email + password
 - NUNCA OTP / passwordless / magic link
+
+## Vagas de Emprego (REGRA PERMANENTE):
+- **SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS DE ATÉ 60 DIAS (MÁXIMO 60 DIAS DE IDADE)**
+- Vagas com mais de 60 dias da data de publicação NUNCA devem ser apresentadas aos utilizadores e DEVEM SER PURGADAS AUTOMATICAMENTE do código, queries e rotinas de sync em `JobBoard.tsx` e `api/sync-jobs.js`.
+

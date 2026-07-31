@@ -86,11 +86,20 @@ export default async function handler(req, res) {
 
   console.log('🔄 MIRA Sync de Vagas iniciado —', new Date().toISOString());
 
-  // 1. Buscar URLs já existentes nos últimos 30 dias para evitar duplicados
+  // 0. REGRA PERMANENTE MIRA: Eliminar automaticamente vagas com mais de 60 dias
+  const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
+  const { error: purgeErr } = await supabase
+    .from('job_posts')
+    .delete()
+    .lt('created_at', sixtyDaysAgo);
+  if (purgeErr) console.warn('⚠️ MIRA Job Purge warning:', purgeErr.message);
+  else console.log('🧹 Purge de vagas com mais de 60 dias executado com sucesso.');
+
+  // 1. Buscar URLs já existentes nos últimos 60 dias para evitar duplicados
   const { data: existing } = await supabase
     .from('job_posts')
     .select('source_url')
-    .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+    .gte('created_at', sixtyDaysAgo);
 
   const existingUrls = new Set((existing || []).map(j => j.source_url?.toLowerCase()));
   console.log(`📦 ${existingUrls.size} URLs já existentes.`);

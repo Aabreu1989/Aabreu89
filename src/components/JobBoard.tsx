@@ -148,6 +148,20 @@ const LOCATIONS = (lang: string) => [
 
 
 
+const MAX_JOB_AGE_DAYS = 60;
+
+function isWithin60Days(dateStr?: string): boolean {
+  if (!dateStr) return true;
+  try {
+    const postDate = new Date(dateStr);
+    if (isNaN(postDate.getTime())) return true;
+    const diffDays = (Date.now() - postDate.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays <= MAX_JOB_AGE_DAYS;
+  } catch (e) {
+    return true;
+  }
+}
+
 export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewChange, initialTab }) => {
   const [activeTab, setActiveTab] = useState<'jobs' | 'trends'>(initialTab || 'jobs');
   const [searchQuery, setSearchQuery] = useState('');
@@ -157,12 +171,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
   const [selectedDateRange, setSelectedDateRange] = useState('all');
   const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(null);
   const [isVisaGuideOpen, setIsVisaGuideOpen] = useState(false);
-  // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms)
+  // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms) - Strictly <= 60 days
   const initialJobs = React.useMemo(() => {
     return ((PROTECTED_JOBS as any[]) || [])
       .filter(pj => {
         const url = pj.source_url || pj.sourceUrl;
-        return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url);
+        const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
+        return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin60Days(dateStr);
       })
       .map(pj => ({
         id: pj.id,
@@ -386,10 +401,12 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
           setJobsGrowth(computedGrowth);
       }
 
-      // ⚡ OTIMIZAÇÃO CRÍTICA MIRA: Selecionar apenas colunas usadas na lista para reduzir tráfego de dados em 95%
+      // ⚡ OTIMIZAÇÃO CRÍTICA MIRA: Selecionar apenas colunas usadas na lista para reduzir tráfego de dados (Filtrar estritamente <= 60 dias)
+      const sixtyDaysAgoISO = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase
         .from('job_posts')
         .select('id, title, location, source_name, source_url, date_posted, posted_at, created_at, category, work_topic')
+        .gte('created_at', sixtyDaysAgoISO)
         .order('created_at', { ascending: false })
         .limit(300);
 
@@ -398,7 +415,10 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
       let formattedJobs: JobPost[] = [];
       if (data && data.length > 0) {
         formattedJobs = data
-          .filter(dbJob => dbJob.source_url && dbJob.source_url !== '#' && dbJob.title && dbJob.title.length > 3 && !isSpamOrBlog(dbJob.title, dbJob.source_url))
+          .filter(dbJob => {
+            const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at || (dbJob as any).date_posted;
+            return dbJob.source_url && dbJob.source_url !== '#' && dbJob.title && dbJob.title.length > 3 && !isSpamOrBlog(dbJob.title, dbJob.source_url) && isWithin60Days(rawTime);
+          })
           .map(dbJob => {
             const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at || (dbJob as any).date_posted;
             const now = new Date();
@@ -427,7 +447,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
           });
       }
 
-      // 👑 SOBERANIA MIRA: Carregamento Dinâmico (Lazy Load) da Base Massiva de 13.000+ Vagas Locais!
+      // 👑 SOBERANIA MIRA: Carregamento Dinâmico (Lazy Load) da Base Massiva de Vagas Locais!
       let fallbackJobs: any[] = [];
       try {
         const massiveModule = await import('../utils/massiveJobsDatabase');
@@ -444,7 +464,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
       fallbackJobs
         .filter(pj => {
           const url = pj.source_url || pj.sourceUrl;
-          return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url);
+          const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
+          return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin60Days(dateStr);
         })
         .forEach((pj, idx) => {
           if (!existingIds.has(pj.id)) {
