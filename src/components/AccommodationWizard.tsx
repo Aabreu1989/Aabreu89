@@ -519,9 +519,9 @@ export const AccommodationWizard: React.FC<AccommodationWizardProps> = ({
         }
     }
 
-    const docIds = situation === 'shared'
-        ? ['at_declaracao_cedencia', 'junta_atestado_residencia']
-        : ['junta_atestado_residencia'];
+    const docIds = situation === 'nocontract' || situation === 'shared'
+        ? ['junta_declaracao_alojamento_testemunhas', 'at_declaracao_cedencia', 'junta_atestado_residencia']
+        : ['junta_declaracao_alojamento_testemunhas', 'junta_atestado_residencia'];
 
     return (
         <div className="flex flex-col h-full bg-slate-950 overflow-hidden">

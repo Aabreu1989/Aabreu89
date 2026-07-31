@@ -209,6 +209,22 @@ export async function generateOfficialPDF(
     const empPer = getSafe(data.employment_periods);
     narrative = `Ao abrigo dos acordos e convenções internacionais de segurança social aplicáveis (Convenção Multilateral da CPLP / Acordo Bilateral), venho requerer a contagem e agregação de tempo de descontos efetuados no estrangeiro, indicando para o efeito o meu número de identificação de segurança social estrangeiro ${fSsNum} no país ${fCountry}, correspondente aos períodos de trabalho: ${empPer}.\n\n` +
       `${L.honor}`;
+  } else if (data.templateId === 'junta_declaracao_alojamento_testemunhas') {
+    const hostName = getSafe(data.host_name);
+    const hostNif = getSafe(data.host_nif);
+    const w1Name = getSafe(data.witness_1_name);
+    const w1Nif = getSafe(data.witness_1_nif);
+    const w2Name = getSafe(data.witness_2_name);
+    const w2Nif = getSafe(data.witness_2_nif);
+    narrative = `DECLARAÇÃO DE ALOJAMENTO E COMPROVATIVO DE RESIDÊNCIA (REGULAMENTAÇÃO JUNTA DE FREGUESIA / AIMA 2026)\n\n` +
+      `I. DECLARAÇÃO DO ALOJANTE / TITULAR:\n` +
+      `Eu, ${hostName}, NIF ${hostNif}, residente na morada ${morada}, declaro sob compromisso de honra que o(a) Requerente ${n}, titular do passaporte/documento n.º ${id}, reside efetivamente e a título habitual na minha habitação no endereço acima indicado.\n\n` +
+      `II. ATESTAMENTO DAS TESTEMUNHAS RECENSEADAS NA FREGUESIA:\n` +
+      `Nós, os abaixo assinados:\n` +
+      `1. ${w1Name}, NIF/CC ${w1Nif}, eleitor(a) e residente recenseado(a) nesta Junta de Freguesia;\n` +
+      `2. ${w2Name}, NIF/CC ${w2Nif}, eleitor(a) e residente recenseado(a) nesta Junta de Freguesia;\n` +
+      `atestamos e confirmamos expressamente perante a Junta de Freguesia e demais autoridades competentes que o(a) Requerente ${n} reside no imóvel indicado, assumindo inteira responsabilidade legal pelas presentes declarações.\n\n` +
+      `${L.honor}`;
   } else {
     narrative = `${L.i}, ${n}, ${L.nationality} ${nac}, ${L.id} ${id}, ${L.nif} ${nif} e ${L.niss} ${niss}, ${L.resident} ${morada}, ${L.hereby} ${translatedTitle}.`;
 

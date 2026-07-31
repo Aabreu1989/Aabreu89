@@ -418,6 +418,23 @@ export const templates: DocumentTemplate[] = [
         requirements: ['req_id', 'req_residence_proof'],
         fields: [...standardFields]
     },
+    {
+        id: 'junta_declaracao_alojamento_testemunhas', title: 'junta_declaracao_alojamento_testemunhas', category: CATEGORIES.HOUSING, complexity: 'Medium', authority: 'Junta Freguesia / AIMA', location: 'loc_junta',
+        description: 'junta_declaracao_alojamento_testemunhas_desc',
+        explanation: 'expl_junta_declaracao_alojamento_testemunhas',
+        purpose: 'junta_declaracao_alojamento_testemunhas_purpose',
+        tips: 'junta_declaracao_alojamento_testemunhas_tips',
+        requirements: ['req_id', 'req_host_id', 'req_2_witnesses'],
+        fields: [
+            ...standardFields,
+            { id: 'host_name', label: 'field_host_name', placeholder: 'place_host_name', type: 'text' },
+            { id: 'host_nif', label: 'field_host_nif', placeholder: 'place_host_nif', type: 'text' },
+            { id: 'witness_1_name', label: 'field_witness_1_name', placeholder: 'place_witness_1_name', type: 'text' },
+            { id: 'witness_1_nif', label: 'field_witness_1_nif', placeholder: 'place_witness_1_nif', type: 'text' },
+            { id: 'witness_2_name', label: 'field_witness_2_name', placeholder: 'place_witness_2_name', type: 'text' },
+            { id: 'witness_2_nif', label: 'field_witness_2_nif', placeholder: 'place_witness_2_nif', type: 'text' }
+        ]
+    },
 
     // --- TÁTICOS MIRA (SOBREVIVÊNCIA E DEFESA LEGAIS) ---
     {
