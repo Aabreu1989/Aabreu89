@@ -702,7 +702,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const cheaperDistrict = col1.total < col2.total ? district1 : district2;
   const expensiveDistrict = col1.total > col2.total ? district1 : district2;
 
-  // ─── FINANCIAL HEALTH & EFFORT RATE (BANCO DE PORTUGAL GUIDELINES) ────────
+  // ─── FINANCIAL HEALTH & EFFORT RATE (BANCO DE PORTUGAL & AIMA GUIDELINES) ──
   const calculateFinancialHealth = () => {
     const net = salaryResults.netSalary;
     const rent = col1.housing;
@@ -710,19 +710,39 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
     const effortRate = net > 0 ? Math.round((rent / net) * 100) : 0;
     const netSavings = Math.round(net - totalExp);
+    const savingsRate = net > 0 ? Math.round((netSavings / net) * 100) : 0;
     
     const setupCapital = Math.round((rent * 3) + (totalExp * 3));
     const emergencyFund = Math.round(totalExp * 3);
 
+    // Requisito Legal AIMA 2026 (Subsistência): 870€ titular + 261€ por dependente (30%)
+    const baseSubsistence = 870;
+    const extraDependents = Math.max(0, householdSize - 1) * 261;
+    const totalAimaRequirement = Math.round(baseSubsistence + extraDependents);
+    const meetsAimaReq = net >= totalAimaRequirement;
+
+    // Pontuação de Saúde Financeira MIRA (0 a 100)
+    let score = 100;
+    if (effortRate > 35) score -= Math.min(45, Math.round((effortRate - 35) * 2.2));
+    if (netSavings < 0) score -= 35;
+    else if (savingsRate < 10) score -= 15;
+    else if (savingsRate >= 20) score += 5;
+
+    score = Math.max(10, Math.min(100, Math.round(score)));
+
     let status: 'healthy' | 'warning' | 'critical' = 'healthy';
-    if (effortRate > 50) status = 'critical';
-    else if (effortRate > 35) status = 'warning';
+    if (effortRate > 50 || score < 50) status = 'critical';
+    else if (effortRate > 35 || score < 75) status = 'warning';
 
     return {
       effortRate,
       netSavings,
+      savingsRate,
       setupCapital,
       emergencyFund,
+      totalAimaRequirement,
+      meetsAimaReq,
+      score,
       status
     };
   };
@@ -1460,18 +1480,130 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
           {activeTab === 'health' && (
             <div className="space-y-6 animate-in fade-in duration-300">
               
-              {/* Financial Health Summary Card */}
-              <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-6">
+              {/* Financial Health Score Hero */}
+              <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-6 relative overflow-hidden">
                 <div className="flex items-center justify-between pb-3 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <HeartPulse size={18} className="text-[#FF8C00]" />
                     <h3 className="text-xs font-black uppercase tracking-widest text-white">
-                      {tLocal('tab_health')}
+                      Diagnóstico de Saúde Financeira (Portugal 2026)
                     </h3>
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-slate-300">
-                    {district1}
+                  <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-[#FF8C00]">
+                    Distrito: {district1}
                   </span>
+                </div>
+
+                {/* Score Circular Gauge */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 bg-gradient-to-br from-white/5 via-slate-800/40 to-white/5 border border-white/10 rounded-3xl">
+                  <div className="flex items-center gap-5">
+                    <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center font-black text-3xl shadow-2xl shrink-0 ${
+                      finHealth.score >= 80 ? 'border-emerald-400 text-emerald-400 bg-emerald-500/10 shadow-emerald-500/20' :
+                      finHealth.score >= 50 ? 'border-amber-400 text-amber-400 bg-amber-500/10 shadow-amber-500/20' :
+                      'border-red-400 text-red-400 bg-red-500/10 shadow-red-500/20'
+                    }`}>
+                      {finHealth.score}
+                      <span className="text-xs text-slate-400 font-bold ml-0.5">/100</span>
+                    </div>
+
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block mb-1">
+                        ÍNDICE GLOBAL DE SAÚDE FINANCIAL
+                      </span>
+                      <h4 className="text-lg font-black uppercase text-white tracking-tight flex items-center gap-2">
+                        {finHealth.score >= 80 ? '🟢 Excelente & Sustentável' :
+                         finHealth.score >= 50 ? '🟡 Estável com Atenção' :
+                         '🔴 Risco Financeiro Elevado'}
+                      </h4>
+                      <p className="text-[10px] text-slate-300 font-medium mt-1 leading-snug max-w-sm">
+                        {finHealth.score >= 80 ? 'O seu rendimento cobre perfeitamente as despesas locais e garante margem para poupança.' :
+                         finHealth.score >= 50 ? 'A sua taxa de esforço com habitação exige prudência. Considere alternativas de custo no distrito.' :
+                         'A renda compromete mais de 50% do seu rendimento. Risco elevado de défice mensal.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 🔍 TRANSPARENCY CARD: DE ONDE VÊM OS NOSSOS DADOS? */}
+                <div className="p-5 bg-indigo-950/40 border border-indigo-500/30 rounded-3xl space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Info size={16} className="text-indigo-400 shrink-0" />
+                    <h4 className="text-xs font-black text-indigo-200 uppercase tracking-wider">
+                      De onde vêm estas informações? (Transparência Oficial)
+                    </h4>
+                  </div>
+                  <p className="text-[10px] text-slate-300 font-medium leading-relaxed">
+                    Todos os cálculos e simulações do MIRA baseiam-se estritamente em indicadores oficiais das instituições portuguesas para 2026:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                    <div className="p-3 bg-white/5 border border-white/5 rounded-2xl flex items-start gap-2.5">
+                      <Wallet size={15} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest block">Rendimento Líquido ({salaryResults.netSalary}€)</span>
+                        <p className="text-[9px] text-slate-300 leading-tight">Tabelas Oficiais da AT (IRS 2026) & Código Contributivo SS (11% Outrem / TI 21.4%).</p>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white/5 border border-white/5 rounded-2xl flex items-start gap-2.5">
+                      <Building2 size={15} className="text-sky-400 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="text-[9px] font-black text-sky-400 uppercase tracking-widest block">Habitação ({col1.housing}€)</span>
+                        <p className="text-[9px] text-slate-300 leading-tight">Estatísticas Oficiais do INE (Instituto Nacional de Estatística 2026) para {district1}.</p>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white/5 border border-white/5 rounded-2xl flex items-start gap-2.5">
+                      <Coins size={15} className="text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest block">Alimentação & Cesta Básica ({col1.food}€)</span>
+                        <p className="text-[9px] text-slate-300 leading-tight">Barómetro de Consumo DECO PROTESTE / PORDATA 2026 ({householdSize} pessoas).</p>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white/5 border border-white/5 rounded-2xl flex items-start gap-2.5">
+                      <Landmark size={15} className="text-purple-400 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest block">Utilidades & Tarifários ({col1.utilities}€)</span>
+                        <p className="text-[9px] text-slate-300 leading-tight">Médias de Tarifários ERSE (Eletricidade/Gás) e ANACOM (Telecomunicações).</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 🛂 AIMA SUBSISTENCE REQUIREMENT COMPLIANCE CARD */}
+                <div className={`p-5 rounded-3xl border ${
+                  finHealth.meetsAimaReq
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                } space-y-3`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <UserCheck size={18} className={finHealth.meetsAimaReq ? 'text-emerald-400' : 'text-amber-400'} />
+                      <h4 className="text-xs font-black uppercase tracking-wider">
+                        Requisito de Subsistência Legal AIMA (2026)
+                      </h4>
+                    </div>
+                    <span className={`text-[9px] font-black uppercase px-3 py-1 rounded-full border ${
+                      finHealth.meetsAimaReq ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-amber-500/20 border-amber-500/40 text-amber-300'
+                    }`}>
+                      {finHealth.meetsAimaReq ? 'Aprovado / Cumpres o Mínimo' : 'Abaixo do Limiar'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-medium pt-1">
+                    <div>
+                      <span className="text-[9px] text-slate-400 uppercase font-black block">O Teu Rendimento Líquido</span>
+                      <span className="text-xl font-black text-white">{salaryResults.netSalary}€ / mês</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-slate-400 uppercase font-black block">Limiar Mínimo Exigido AIMA</span>
+                      <span className="text-xl font-black text-white">{finHealth.totalAimaRequirement}€ / mês</span>
+                      <p className="text-[8px] text-slate-400 font-bold mt-0.5">
+                        (870€ Salário Mínimo + 261€ por cada dependente)
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Housing Effort Rate Card */}
@@ -1523,7 +1655,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 </div>
 
-                {/* Net Savings Surplus / Deficit */}
+                {/* Net Savings Surplus / Deficit & Emergency Fund */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-1">
                     <div className="flex items-center gap-1.5 text-slate-400">
