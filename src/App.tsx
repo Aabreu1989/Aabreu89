@@ -255,16 +255,14 @@ const AppContent: React.FC = () => {
             setCourses(prev => prev.length === 0 ? IEFP_MASSIVE_DATABASE : prev);
         });
 
-        // 🚀 MIRA: Initial load of community posts (Bulletproof)
         import('./services/communityService').then(({ communityService }) => {
             communityService.fetchPosts(user?.id).then(fetchedPosts => {
                 if (fetchedPosts && fetchedPosts.length > 0) {
                     setMasterPosts(prev => {
-                        if (prev.length === 0) return fetchedPosts;
-                        // Merge and deduplicate
                         const map = new Map();
-                        prev.forEach(p => map.set(p.id, p));
-                        fetchedPosts.forEach(p => {
+                        // Fresh posts from database take precedence
+                        fetchedPosts.forEach(p => map.set(p.id, p));
+                        prev.forEach(p => {
                             if (!map.has(p.id)) map.set(p.id, p);
                         });
                         return Array.from(map.values());
