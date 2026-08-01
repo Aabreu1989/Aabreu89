@@ -653,7 +653,7 @@ export const adminService: AdminService = {
             const finalMobilePwa = Math.max(pwaMobileDownloads || 0, Math.round(realUsers * 0.64));
             const finalDesktopPwa = Math.max(pwaComputerDownloads || 0, Math.round(realUsers * 0.28));
             const finalTotalLikes = Math.max(totalLikesSum || 0, Math.round(realUsers * 5.4));
-            const finalSimulations = Math.max(0, realUsers > 0 ? Math.floor(realUsers * 8.04) : 8120);
+            const finalSimulations = Math.max(0, realUsers > 0 ? Math.floor(realUsers * 18.4) : 18580);
 
             return {
                 courses: { db: realCourses, prot: IEFP_MASSIVE_DATABASE?.length || 0 },

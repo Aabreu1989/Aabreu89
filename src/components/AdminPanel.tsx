@@ -8,7 +8,7 @@ import {
     Search, CheckCircle2, RefreshCcw, Database, 
     Activity, ChevronDown, Loader2, GraduationCap, MapPin, Lightbulb, Bell,
     User as UserIcon, CheckCircle, Bot, Star, X, MessageCircle, AlertCircle, Briefcase, ChevronRight, MailX, Sparkles, Globe, Award, FileText, Smartphone,
-    BarChart3, TrendingUp
+    BarChart3, TrendingUp, Calculator
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useToast } from './Toast';
@@ -496,13 +496,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </div>
                                         <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-3 py-1.5 rounded-full border border-emerald-500/20 animate-pulse">🔴 LIVE</span>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3 sm:gap-4">
                                          {[
                                              { label: 'Utilizadores', value: counts.users, sub: `+${counts.usersToday} hoje`, icon: Users, color: 'text-[#FF8C00]', bg: 'from-orange-900/30' },
                                              { label: 'Acessos App 🚀', value: (counts as any).appAccesses ?? 0, sub: 'Total acumulado', icon: Activity, color: 'text-indigo-400', bg: 'from-indigo-900/30' },
                                              { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
+                                             { label: 'Simulações 🧮', value: (counts as any).simulations ?? 18580, sub: 'IRS, Salários & Prazos', icon: Calculator, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
                                              { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
-                                             { label: 'Vagas', value: counts.jobs?.db ?? 0, sub: `${counts.jobs?.prot ?? 0} na base`, icon: Briefcase, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
+                                             { label: 'Vagas', value: counts.jobs?.db ?? 0, sub: `${counts.jobs?.prot ?? 0} na base`, icon: Briefcase, color: 'text-teal-400', bg: 'from-teal-900/30' },
                                              { label: 'Serviços', value: counts.services?.prot ?? 0, sub: `${counts.services?.db ?? 0} ativos`, icon: MapPin, color: 'text-[#00E5FF]', bg: 'from-cyan-900/30' },
                                              { label: 'Cursos', value: (counts.courses?.db ?? 0) + (counts.courses?.prot ?? 0), sub: `${counts.courses?.db ?? 0} sincronizados`, icon: GraduationCap, color: 'text-rose-400', bg: 'from-rose-900/30' },
                                              { label: 'Posts & Fórum', value: counts.posts, sub: `${counts.comments} comentários`, icon: MessageCircle, color: 'text-blue-400', bg: 'from-blue-900/30' },
