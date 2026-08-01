@@ -518,13 +518,13 @@ export const adminService: AdminService = {
                 getCount('user_documents'),
                 supabase.from('activity_logs').select('id', { count: 'exact', head: true })
                     .in('action', ['generate_document', 'doc_generated', 'download_document', 'pdf_download', 'guide_download'])
-                    .gte('created_at', since).then(r => r.count || 0),
+                    .gte('created_at', since).then(r => r.count || 0).catch(() => 0),
                 supabase.from('activity_logs').select('id', { count: 'exact', head: true })
-                    .in('action', ['app_launch', 'view_changed', 'app_access'])
-                    .gte('created_at', since).then(r => r.count || 0),
+                    .in('action', ['app_launch', 'view_changed', 'app_access', 'session_start'])
+                    .gte('created_at', since).then(r => r.count || 0).catch(() => 0),
                 supabase.from('activity_logs').select('id', { count: 'exact', head: true })
                     .or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)')
-                    .gte('created_at', since).then(r => r.count || 0)
+                    .gte('created_at', since).then(r => r.count || 0).catch(() => 0)
             ]);
 
             const docDownloads = Math.max(userDocPeriod, activityDocPeriod);
@@ -615,7 +615,7 @@ export const adminService: AdminService = {
                 totalLikesSum
             ] = await Promise.all([
                 getCount('profiles'),
-                supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString()).then(res => res.count || 0),
+                supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString()).then(res => res.count || 0).catch(() => 0),
                 getCount('services'),
                 getCount('job_posts'),
                 getCount('courses'),
@@ -624,17 +624,12 @@ export const adminService: AdminService = {
                 getCount('posts'),
                 getCount('comments'),
                 getCount('user_documents'),
-                supabase.from('posts').select('id', { count: 'exact', head: true }).eq('is_verified', true).then(res => res.count || 0),
-                supabase.from('posts').select('id', { count: 'exact', head: true }).eq('validation_status', 'fraud').then(res => res.count || 0),
-                supabase.from('activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'ai_query').then(res => res.count || 0),
-                supabase.from('activity_logs').select('id', { count: 'exact', head: true })
-                    .in('action', ['app_launch', 'view_changed', 'app_access'])
-                    .not('user_id', 'ilike', '%admin%')
-                    .not('user_id', 'ilike', '%amandasabreu89%')
-                    .not('user_id', 'ilike', '%antigravity%')
-                    .then(res => res.count || 0),
-                supabase.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)').then(res => res.count || 0),
-                supabase.from('posts').select('likes').then(res => res.data ? res.data.reduce((acc, curr) => acc + (curr.likes || 0), 0) : 0)
+                supabase.from('posts').select('id', { count: 'exact', head: true }).eq('is_verified', true).then(res => res.count || 0).catch(() => 0),
+                supabase.from('posts').select('id', { count: 'exact', head: true }).eq('validation_status', 'fraud').then(res => res.count || 0).catch(() => 0),
+                supabase.from('activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'ai_query').then(res => res.count || 0).catch(() => 0),
+                supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['app_launch', 'view_changed', 'app_access', 'session_start']).then(res => res.count || 0).catch(() => 0),
+                supabase.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)').then(res => res.count || 0).catch(() => 0),
+                supabase.from('posts').select('likes').then(res => res.data ? res.data.reduce((acc, curr) => acc + (curr.likes || 0), 0) : 0).catch(() => 0)
             ]);
 
             // ✅ MIRA V2026: Valores 100% reais da BD — sem floors artificiais
