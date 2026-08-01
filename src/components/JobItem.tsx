@@ -63,7 +63,7 @@ const formatFriendlyJobDate = (rawDate: string | undefined, language: string): s
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffHours < 1) return t('jobs_today', language);
+    if (diffHours < 2) return language.toLowerCase() === 'en' ? 'Just now' : 'Hoje (Recente)';
     if (diffHours < 24) return `Há ${diffHours}h`;
     if (diffDays === 1) return language.toLowerCase() === 'en' ? 'Yesterday' : 'Ontem';
     if (diffDays <= 7) return `Há ${diffDays} dias`;

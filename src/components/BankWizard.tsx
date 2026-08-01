@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
     ArrowLeft, Landmark, CheckCircle2, ChevronRight, Info, FileText,
-    Sparkles, RotateCcw, ShieldCheck, DollarSign, Globe, ExternalLink
+    Sparkles, RotateCcw, Globe, ExternalLink
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
@@ -79,11 +79,23 @@ export const BankWizard: React.FC<BankWizardProps> = ({
         }
     ];
 
-    // Build checklist based on selection
-    const checklistDocs = [
+    // Build checklist based on residency selection
+    const checklistDocs = residency === 'resident' ? [
+        { icon: '🛂', text: t('req_passport', lang) },
+        { icon: '📋', text: t('bnk_doc_nif_address', lang) + ' (NIF obrigatório para residentes)' },
+        { icon: '🏠', text: t('req_residence_proof', lang) + ' — comprovativo de morada em Portugal (contrato arrendamento ou fatura recente)' },
+        { icon: '💼', text: t('req_income_proof_bank', lang) },
+        { icon: '💶', text: t('req_deposit', lang) }
+    ] : residency === 'nonresident' ? [
+        { icon: '🛂', text: t('req_passport', lang) + ' (válido por mais de 6 meses)' },
+        { icon: '📋', text: 'NIF Português — obtido nas Finanças ou Consulado com representante fiscal' },
+        { icon: '🏠', text: t('bnk_doc_utility_origin', lang) + ' — comprovativo de morada no país de origem' },
+        { icon: '📄', text: 'Declaração de Não-Residente Fiscal (assinada no balcão do banco)' },
+        { icon: '💶', text: t('req_deposit', lang) + ' — depósito inicial (valor varia por banco, habitualmente 0–250€)' }
+    ] : [
         { icon: '🛂', text: t('req_passport', lang) },
         { icon: '📋', text: t('bnk_doc_nif_address', lang) },
-        { icon: '🏠', text: t('req_residence_proof', lang) + t('bnk_doc_utility_origin', lang) },
+        { icon: '🏠', text: t('req_residence_proof', lang) },
         { icon: '💼', text: t('req_income_proof_bank', lang) },
         { icon: '💶', text: t('req_deposit', lang) }
     ];

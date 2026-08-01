@@ -1,7 +1,7 @@
 // src/components/MetroCardWizard.tsx
 import React, { useState } from 'react';
 import {
-    ArrowLeft, ChevronRight, CheckCircle2, FileText, Info,
+    ArrowLeft, ChevronRight, CheckCircle2, Info,
     Train, RotateCcw, Compass, MapPin, ExternalLink, Globe, Sparkles, AlertTriangle
 } from 'lucide-react';
 import { t } from '../utils/translations';

@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import { audioService } from '../services/audioService';
 import {
-    ArrowLeft, Landmark, ChevronRight, Sparkles, RotateCcw, Calculator, ExternalLink,
+    ArrowLeft, Landmark, ChevronRight, Sparkles, Calculator, ExternalLink,
     AlertTriangle, ShieldCheck, HelpCircle, Gift, Info, CheckCircle2, ChevronDown, ChevronUp,
-    User, GraduationCap, Briefcase, TrendingUp, DollarSign, FileText
+    User, GraduationCap, Briefcase, TrendingUp, FileText
 } from 'lucide-react';
 import { templates } from '../utils/documentsDatabase';
 import { TranslatedText } from './TranslatedText';

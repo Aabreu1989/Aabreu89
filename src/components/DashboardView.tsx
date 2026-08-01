@@ -70,26 +70,26 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         retentionRate: number;
         aiQueries: number;
     }>({ 
-        jobs: 5326, 
-        jobSources: 66, 
-        courses: 156, 
-        services: 238, 
-        users: 999, 
+        jobs: 0, 
+        jobSources: 0, 
+        courses: 0, 
+        services: 0, 
+        users: 0, 
         reports: 0, 
         downloads: 0, 
         comments: 0, 
-        posts: 8, 
+        posts: 0, 
         verifiedPosts: 0, 
         fakePosts: 0, 
         totalLikes: 0, 
         totalComments: 0, 
         totalUseful: 0,
-        appAccesses: 49592,
-        articleViews: 3240,
+        appAccesses: 0,
+        articleViews: 0,
         pwaMobileDownloads: 0,
         pwaComputerDownloads: 0,
-        retentionRate: 82.0,
-        aiQueries: 18642
+        retentionRate: 0,
+        aiQueries: 0
     });
 
     useEffect(() => {
@@ -99,16 +99,16 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                 const stats = await adminService.fetchSyncStatus();
 
                 setCounts({
-                    jobs: stats.jobs?.db ?? 5326,
-                    jobSources: stats.jobs?.sources ?? 66,
-                    courses: stats.courses?.db ?? 156,
-                    services: stats.services?.db ?? 238,
-                    users: Math.max(999, stats.users || 999),
+                    jobs: stats.jobs?.db ?? 0,
+                    jobSources: stats.jobs?.sources ?? 0,
+                    courses: stats.courses?.db ?? 0,
+                    services: stats.services?.db ?? 0,
+                    users: stats.users || 0,
                     reports: stats.reports ?? 0,
-                    downloads: stats.downloads ?? 1420,
-                    posts: stats.posts ?? 8,
-                    appAccesses: Math.max(49592, stats.appAccesses || 49592),
-                    articleViews: stats.articleViews || 3240,
+                    downloads: stats.downloads ?? 0,
+                    posts: stats.posts ?? 0,
+                    appAccesses: stats.appAccesses || 0,
+                    articleViews: stats.articleViews || 0,
                     totalLikes: stats.totalLikes ?? 0,
                     comments: stats.comments ?? 0,
                     totalComments: stats.comments ?? 0,
@@ -117,11 +117,11 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                     totalUseful: stats.verifiedPosts ?? 0,
                     pwaMobileDownloads: stats.pwaMobileDownloads ?? 0,
                     pwaComputerDownloads: stats.pwaComputerDownloads ?? 0,
-                    retentionRate: stats.retentionRate ?? 82.0,
-                    aiQueries: stats.aiQueries || 18642
+                    retentionRate: stats.retentionRate ?? 0,
+                    aiQueries: stats.aiQueries ?? 0
                 });
                 
-                setTotalUsers(Math.max(999, stats.users || 999));
+                setTotalUsers(stats.users || 0);
 
             } catch (err) {
                 console.error("MIRA: Error loading dashboard counts:", err);
@@ -130,15 +130,18 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
 
         loadCounts();
         
-        // ⚡ Supabase Real-Time Channel for instant live updates on activity & access logs
+        // ⚡ Supabase Real-Time: atualiza cada vez que há nova atividade na BD
         const channel = supabase
             .channel('realtime_app_access_counts')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_logs' }, () => {
-                loadCounts();
-            })
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_logs' }, () => loadCounts())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => loadCounts())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => loadCounts())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, () => loadCounts())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'job_posts' }, () => loadCounts())
             .subscribe();
 
-        const interval = setInterval(loadCounts, 5000);
+        // Polling a cada 15 segundos como backup
+        const interval = setInterval(loadCounts, 15000);
         return () => {
             clearInterval(interval);
             supabase.removeChannel(channel);

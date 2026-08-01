@@ -65,55 +65,117 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
 
     const lang = language?.toLowerCase() || 'pt';
 
-    const pathways = [
+    // ── Vias exclusivas CPLP (Brasil, Angola, Cabo Verde, etc.)
+    const cplpPathways = [
         {
             id: 'residence',
-            title: t('citz_pathway_residence', lang),
+            title: 'Naturalização por Residência Legal — CPLP',
             icon: '⏱️',
-            tag: 'CPLP 7y / 10y',
-            tagColor: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-            glow: 'hover:shadow-orange-500/5',
-            ring: 'hover:ring-orange-400/30',
+            tag: '7 ANOS (CPLP)',
+            tagColor: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
+            glow: 'hover:shadow-sky-500/5',
+            ring: 'hover:ring-sky-400/30',
+            sub: 'Cidadãos de países CPLP: Brasil, Angola, Cabo Verde, Moçambique, etc. 7 anos de residência legal (cartão emitido, tempo de espera não conta).'
         },
         {
             id: 'marriage',
-            title: t('citz_pathway_marriage', lang),
+            title: 'Casamento ou União de Facto com Cidadão Português',
             icon: '💍',
             tag: '3 ANOS',
             tagColor: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
             glow: 'hover:shadow-pink-500/5',
             ring: 'hover:ring-pink-400/30',
+            sub: '3 anos de casamento/união de facto reconhecida com cidadão português.'
         },
         {
             id: 'ancestry',
-            title: t('citz_pathway_ancestry', lang),
+            title: 'Descendência de Cidadão Português',
             icon: '🧬',
             tag: 'DESCENDÊNCIA',
-            tagColor: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-            glow: 'hover:shadow-sky-500/5',
-            ring: 'hover:ring-sky-400/30',
+            tagColor: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
+            glow: 'hover:shadow-violet-500/5',
+            ring: 'hover:ring-violet-400/30',
+            sub: 'Filho ou neto de cidadão português. Não exige residência em Portugal.'
         },
         {
-            id: 'sephardic',
-            title: t('citz_pathway_sephardic', lang),
-            icon: '🕍',
-            tag: 'ESPECIAL',
-            tagColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-            glow: 'hover:shadow-purple-500/5',
-            ring: 'hover:ring-purple-400/30',
+            id: 'filho_nascido_portugal',
+            title: 'Filho Nascido em Portugal (Filhos de Estrangeiros)',
+            icon: '👶',
+            tag: 'LEI 2026',
+            tagColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+            glow: 'hover:shadow-amber-500/5',
+            ring: 'hover:ring-amber-400/30',
+            sub: 'Antes de 19/05/2026: 1 ano residência dos pais. Após 19/05/2026: 5 anos de residência legal de um dos pais à data do nascimento.'
         },
         {
             id: 'equality_status',
-            title: 'Estatuto de Direitos Iguais (Civis & Políticos) e Cartão de Cidadão',
+            title: 'Estatuto de Direitos Iguais + Cartão de Cidadão (Brasil)',
             icon: '🪪',
             tag: 'TRATADO PORTO SEGURO',
             tagColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
             glow: 'hover:shadow-emerald-500/5',
             ring: 'hover:ring-emerald-400/30',
+            sub: 'Exclusivo para brasileiros. Dá igualdade de direitos civis e políticos em Portugal. Não é nacionalidade mas permite Cartão de Cidadão.'
+        },
+    ];
+
+    // ── Vias para Resto do Mundo (não-CPLP)
+    const otherPathways = [
+        {
+            id: 'residence',
+            title: 'Naturalização por Residência Legal — Padrão',
+            icon: '⏱️',
+            tag: '10 ANOS',
+            tagColor: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+            glow: 'hover:shadow-orange-500/5',
+            ring: 'hover:ring-orange-400/30',
+            sub: 'Para cidadãos de países não-CPLP. Exige 10 anos de residência legal com cartão emitido (tempo de espera não conta).'
+        },
+        {
+            id: 'marriage',
+            title: 'Casamento ou União de Facto com Cidadão Português',
+            icon: '💍',
+            tag: '3 ANOS',
+            tagColor: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+            glow: 'hover:shadow-pink-500/5',
+            ring: 'hover:ring-pink-400/30',
+            sub: '3 anos de casamento/união de facto reconhecida com cidadão português.'
+        },
+        {
+            id: 'ancestry',
+            title: 'Descendência de Cidadão Português',
+            icon: '🧬',
+            tag: 'DESCENDÊNCIA',
+            tagColor: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
+            glow: 'hover:shadow-violet-500/5',
+            ring: 'hover:ring-violet-400/30',
+            sub: 'Filho ou neto de cidadão português. Não exige residência em Portugal.'
+        },
+        {
+            id: 'sephardic',
+            title: 'Descendência Judaica Sefardita',
+            icon: '🕍',
+            tag: 'ESPECIAL',
+            tagColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+            glow: 'hover:shadow-purple-500/5',
+            ring: 'hover:ring-purple-400/30',
+            sub: 'Para descendentes de judeus sefarditas portugueses expulsos em 1496. Requer prova de ligação histórica.'
+        },
+        {
+            id: 'filho_nascido_portugal',
+            title: 'Filho Nascido em Portugal (Filhos de Estrangeiros)',
+            icon: '👶',
+            tag: 'LEI 2026',
+            tagColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+            glow: 'hover:shadow-amber-500/5',
+            ring: 'hover:ring-amber-400/30',
+            sub: 'Antes de 19/05/2026: 1 ano residência dos pais. Após 19/05/2026: 5 anos de residência legal de um dos pais à data do nascimento.'
         },
     ];
 
     const isCPLP = cplp === true;
+
+    const activePathways = isCPLP ? cplpPathways : otherPathways;
 
     const checklistDocs = pathway === 'equality_status' ? [
         'Certificado de Nacionalidade e Pleno Gozo de Direitos (Consulado do Brasil)',
@@ -121,6 +183,16 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
         'Estatuto Tipo 1: Direitos Civis (Concursos públicos, empresas, saúde SNS e igualdade laboral)',
         'Estatuto Tipo 2: Direitos Políticos (Votar e ser votado em eleições em Portugal - 3 anos residência)',
         'Emissão de Cartão de Cidadão para Estrangeiro no IRN + Chave Móvel Digital (CMD)'
+    ] : pathway === 'filho_nascido_portugal' ? [
+        '📅 Verifique a data de nascimento do filho (ANTES ou APÓS 19/05/2026)',
+        '✅ ANTES de 19/05/2026 (Lei 2/2020): 1 ano de residência legal de um dos pais à data do nascimento',
+        '✅ APÓS 19/05/2026 (Lei 1/2026): 5 anos de residência legal de um dos pais à data do nascimento',
+        'Certidão de Nascimento do Filho (emitida pela maternidade/hospital — registar no IRN em 20 dias)',
+        'Título de Residência do(s) progenitor(es) — com carimbos que comprovem a duração da residência legal',
+        'Passaportes dos progenitores',
+        'Declaração de Vontade (formulário IRN) — necessária para a nacionalidade',
+        '⚠️ Mesmo sem direito à nacionalidade: registar o nascimento no IRN é OBRIGATÓRIO',
+        'Onde submeter: IRN (irn.justica.gov.pt) ou Nacionalidade Online (nacionalidade.justica.gov.pt)',
     ] : [
         t('citz_doc_birth', lang),
         t('citz_doc_criminal_origin', lang),
@@ -266,7 +338,14 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
                     {/* ════ STEP 2 — Pathway selection ══════════════════════════ */}
                     {step === 2 && (
                         <div className="space-y-3.5 animate-in slide-in-from-bottom-4 duration-500">
-                            {pathways.map((p, idx) => (
+                            {/* Context label */}
+                            <div className="flex items-center gap-2 px-1 pb-1">
+                                <div className={`w-2 h-2 rounded-full ${isCPLP ? 'bg-sky-400' : 'bg-orange-400'}`} />
+                                <span className={`text-[10px] font-black uppercase tracking-widest ${isCPLP ? 'text-sky-500' : 'text-orange-400'}`}>
+                                    {isCPLP ? '🌍 Via CPLP — Brasil, Angola, Cabo Verde...' : '🌐 Via Padrão — Resto do Mundo'}
+                                </span>
+                            </div>
+                            {activePathways.map((p, idx) => (
                                 <button
                                     key={p.id}
                                     onClick={() => { setPathway(p.id); handleNext(); }}
@@ -282,9 +361,14 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
                                                 {p.tag}
                                             </span>
                                         </div>
-                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-slate-955 transition-colors">
+                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-slate-950 transition-colors">
                                             {p.title}
                                         </h4>
+                                        {p.sub && (
+                                            <p className="text-[10px] text-slate-400 font-medium mt-1 leading-normal line-clamp-2">
+                                                {p.sub}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white group-hover:border-slate-900 transition-all duration-300">
                                         <ChevronRight size={14} />
@@ -372,6 +456,30 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
                                 </div>
                             </div>
 
+                            {/* Special Alert for Filho Nascido em Portugal */}
+                            {pathway === 'filho_nascido_portugal' && (
+                                <div className="bg-amber-50 border-2 border-amber-300/60 rounded-[2rem] p-5 space-y-3 animate-in fade-in duration-500">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">⚠️</span>
+                                        <h3 className="text-xs font-black text-amber-700 uppercase tracking-tight">Lei Orgânica n.º 1/2026 — Nova Regra para Filhos</h3>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        <div className="bg-white/80 rounded-2xl p-3.5 border border-emerald-200">
+                                            <p className="text-[10px] font-black text-emerald-700 uppercase tracking-wider mb-1">📅 Nascido ANTES de 19 Maio 2026</p>
+                                            <p className="text-xs text-slate-600 leading-snug">Lei 2/2020 aplica-se. Basta que <strong>um dos pais</strong> residisse legalmente em Portugal há <strong>1 ano</strong> à data do nascimento.</p>
+                                        </div>
+                                        <div className="bg-white/80 rounded-2xl p-3.5 border border-amber-200">
+                                            <p className="text-[10px] font-black text-amber-700 uppercase tracking-wider mb-1">📅 Nascido APÓS 19 Maio 2026</p>
+                                            <p className="text-xs text-slate-600 leading-snug">Lei 1/2026 aplica-se. Exige que <strong>um dos pais</strong> resida legalmente em Portugal há <strong>5 anos</strong> à data do nascimento.</p>
+                                        </div>
+                                        <div className="bg-sky-50 rounded-2xl p-3.5 border border-sky-200">
+                                            <p className="text-[10px] font-black text-sky-700 uppercase tracking-wider mb-1">✅ Sempre garantido</p>
+                                            <p className="text-xs text-slate-600 leading-snug">Mesmo sem direito à nacionalidade, o filho tem <strong>sempre direito a certidão de nascimento portuguesa</strong> e não fica sem documentação.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Recommended Forms */}
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 px-1">
@@ -384,6 +492,8 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
                                 <div className="space-y-2.5">
                                     {(pathway === 'equality_status'
                                         ? ['g_estatuto_igualdade_cartao_cidadao', 'g_estatuto_igualdade', 'certidao_civil_req']
+                                        : pathway === 'filho_nascido_portugal'
+                                        ? ['nacionalidade_filhos', 'certidao_civil_req', 'nif_req']
                                         : pathway === 'marriage'
                                         ? ['irn_nacionalidade_casamento', 'certidao_civil_req', 'nif_req']
                                         : ['irn_nacionalidade_residencia', 'certidao_civil_req', 'nif_req']

@@ -1,7 +1,7 @@
 // src/components/EntrepreneurWizard.tsx
 import React, { useState } from 'react';
 import {
-    ArrowLeft, Briefcase, Building2, Store,
+    ArrowLeft, Briefcase, Building2,
     CheckCircle2, ChevronRight, Info, FileText,
     Sparkles, RotateCcw, TrendingUp, Globe, ExternalLink
 } from 'lucide-react';

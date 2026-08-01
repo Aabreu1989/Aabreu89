@@ -78,6 +78,16 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
         initialTab === 'visa_job_search' ? 'visa_job_search' : (initialTab === 'retirement' ? 'retirement' : undefined)
     );
 
+    // ── State declarations — must be ABOVE useEffect that calls these setters ──
+    const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
+    const [selectedGuide, setSelectedGuide] = useState<any | null>(null);
+    const [formData, setFormData] = useState<Record<string, string>>({});
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedFile, setGeneratedFile] = useState<any | null>(null);
+    const [searchFilter, setSearchFilter] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState<string>('Todos');
+    const [entityFilter, setEntityFilter] = useState<string>('Todos');
+
     // Sync activeScreen ONLY on first mount (deep linking) — never on re-renders
     // Using a ref ensures the wizard is never reset mid-flow when parent re-renders
     const didInitRef = React.useRef(false);
@@ -123,14 +133,6 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
     }, []); // Empty deps: run only once on mount, never reset wizard mid-flow
 
 
-    const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
-    const [selectedGuide, setSelectedGuide] = useState<any | null>(null);
-    const [formData, setFormData] = useState<Record<string, string>>({});
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [generatedFile, setGeneratedFile] = useState<any | null>(null);
-    const [searchFilter, setSearchFilter] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState<string>('Todos');
-    const [entityFilter, setEntityFilter] = useState<string>('Todos');
 
 
 

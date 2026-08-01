@@ -635,7 +635,8 @@ export const RetirementWizard: React.FC<RetirementWizardProps> = ({ language, on
                                 {[
                                     { label: tr.calc_age, value: age, min: 18, max: 80, setter: setAge },
                                     { label: tr.calc_pt_years, value: ptYears, min: 0, max: 50, setter: setPtYears },
-                                    { label: tr.calc_foreign_years, value: foreignYears, min: 0, max: 50, setter: setForeignYears },
+                                    // Only show foreign years slider for expat profile
+                                    ...(profile === 'expat' ? [{ label: tr.calc_foreign_years, value: foreignYears, min: 0, max: 50, setter: setForeignYears }] : []),
                                 ].map(({ label, value, min, max, setter }) => (
                                     <div key={label}>
                                         <div className="flex justify-between items-center mb-2">
@@ -841,7 +842,10 @@ export const RetirementWizard: React.FC<RetirementWizardProps> = ({ language, on
                                     </h3>
                                     <div className="grid gap-3">
                                         {(() => {
-                                            const docIds = ['ss_pensao_velhice_req', 'ss_contagem_tempo_estrangeiro'];
+                                            // ss_contagem_tempo_estrangeiro only relevant for expat profile
+                                            const docIds = profile === 'expat'
+                                                ? ['ss_pensao_velhice_req', 'ss_contagem_tempo_estrangeiro']
+                                                : ['ss_pensao_velhice_req'];
                                             return docIds.map((docId) => {
                                                 const template = templates.find(t => t.id === docId);
                                                 if (!template) return null;

@@ -131,6 +131,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         pwaComputerDownloads?: number;
         horasPoupadas?: number;
         processosAjudados?: number;
+        aiQueries?: number;
     }>({ 
         courses: { db: 0, prot: 0 }, 
         services: { db: 0, prot: 0 }, 
@@ -146,13 +147,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         pwaMobileDownloads: 0,
         pwaComputerDownloads: 0,
         horasPoupadas: 0,
-        processosAjudados: 0
+        processosAjudados: 0,
+        aiQueries: 0
     });
     const [userSearchTerm, setUserSearchTerm] = useState('');
     const [knowledgeSearch, setKnowledgeSearch] = useState('');
     const [isSyncing, setIsSyncing] = useState(false);
     const [dashboardPeriod, setDashboardPeriod] = useState<24 | 168 | 720>(24);
-    const [periodCounts, setPeriodCounts] = useState<{ newUsers: number; newPosts: number; newComments: number; newJobs: number; docDownloads: number; appAccesses: number; articleViews: number }>({ newUsers: 0, newPosts: 0, newComments: 0, newJobs: 0, docDownloads: 0, appAccesses: 0, articleViews: 0 });
+    const [periodCounts, setPeriodCounts] = useState<{ newUsers: number; newPosts: number; newComments: number; newJobs: number; docDownloads: number; appAccesses: number; articleViews: number; newAiQueries: number }>({ newUsers: 0, newPosts: 0, newComments: 0, newJobs: 0, docDownloads: 0, appAccesses: 0, articleViews: 0, newAiQueries: 0 });
     const [userSortBy, setUserSortBy] = useState<'name' | 'created' | 'status'>('created');
     const [userFilterStatus, setUserFilterStatus] = useState<'all' | 'active' | 'blocked' | 'verified'>('all');
 
@@ -198,6 +200,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, () => loadData(true))
             .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => loadData(true))
             .on('postgres_changes', { event: '*', schema: 'public', table: 'app_suggestions' }, () => loadData(true))
+            // 🤖 PERGUNTAS DO MIRA: Escuta em tempo real cada nova query ao assistente
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_logs' }, () => loadData(true))
             .subscribe();
 
         return () => {
@@ -232,21 +236,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     const newCounts = { 
                         courses: status.courses || { db: 0, prot: 0 }, 
                         services: status.services || { db: 0, prot: 0 }, 
-                        users: Math.max(999, status.users || 999), 
+                        // ✅ 100% valores reais da BD
+                        users: status.users || 0, 
                         usersToday: status.usersToday || 0,
-                        appAccesses: Math.max(49592, status.appAccesses || 49592),
+                        appAccesses: status.appAccesses || 0,
                         jobs: status.jobs || { db: 0, prot: 0 }, 
                         reports: status.reports || 0,
                         suggestions: status.suggestions || 0,
                         posts: status.posts || 0,
                         comments: status.comments || 0,
-                        downloads: Math.max(1420, status.downloads || 1420),
-                        retentionRate: status.retentionRate || 82.0,
-                        returningUsers: status.returningUsers || 819,
+                        downloads: status.downloads || 0,
+                        retentionRate: status.retentionRate || 0,
+                        returningUsers: status.returningUsers || 0,
                         pwaMobileDownloads: status.pwaMobileDownloads || 0,
                         pwaComputerDownloads: status.pwaComputerDownloads || 0,
-                        horasPoupadas: status.horasPoupadas ?? 4495,
-                        processosAjudados: status.processosAjudados ?? 999
+                        horasPoupadas: status.horasPoupadas || 0,
+                        processosAjudados: status.processosAjudados || 0,
+                        aiQueries: status.aiQueries || 0
                     };
                     setCounts(newCounts);
                     setDataCache(prev => ({ ...prev, dashboard: { timestamp: now, data: newCounts } }));
@@ -490,13 +496,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </div>
                                         <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-3 py-1.5 rounded-full border border-emerald-500/20 animate-pulse">🔴 LIVE</span>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
                                         {[
                                             { label: 'Utilizadores', value: counts.users, sub: `+${counts.usersToday} hoje`, icon: Users, color: 'text-[#FF8C00]', bg: 'from-orange-900/30' },
                                             { label: 'Posts', value: counts.posts, sub: `${counts.comments} comentários`, icon: MessageCircle, color: 'text-blue-400', bg: 'from-blue-900/30' },
                                             { label: 'Vagas', value: counts.jobs?.db ?? 0, sub: `${counts.jobs?.prot ?? 0} na base`, icon: Briefcase, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
                                             { label: 'Serviços', value: counts.services?.prot ?? 0, sub: `${counts.services?.db ?? 0} ativos`, icon: MapPin, color: 'text-purple-400', bg: 'from-purple-900/30' },
                                             { label: 'Cursos', value: (counts.courses?.db ?? 0) + (counts.courses?.prot ?? 0), sub: `${counts.courses?.db ?? 0} sincronizados`, icon: GraduationCap, color: 'text-amber-400', bg: 'from-amber-900/30' },
+                                            { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
                                         ].map(({ label, value, sub, icon: Icon, color, bg }) => (
                                             <div key={label} className={`p-5 bg-gradient-to-br ${bg} to-transparent border border-white/10 rounded-3xl relative overflow-hidden group hover:border-white/25 transition-all`}>
                                                 <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">{label}</p>
@@ -562,7 +569,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
                                         {[
                                             { label: 'Novos Utilizadores', value: periodCounts.newUsers, color: 'text-[#FF8C00]' },
                                             { label: 'Novos Posts', value: periodCounts.newPosts, color: 'text-blue-400' },
@@ -571,6 +578,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             { label: 'Docs Gerados', value: periodCounts.docDownloads, color: 'text-amber-400' },
                                             { label: 'Acessos App', value: periodCounts.appAccesses, color: 'text-indigo-400' },
                                             { label: 'Leituras Artigos', value: periodCounts.articleViews, color: 'text-rose-400' },
+                                            { label: 'Perguntas MIRA 🤖', value: (periodCounts as any).newAiQueries ?? 0, color: 'text-violet-400' },
                                         ].map(({ label, value, color }) => (
                                             <div key={label} className="p-4 sm:p-5 bg-white/5 border border-white/10 rounded-3xl hover:border-white/20 transition-all">
                                                 <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1.5">{label}</p>

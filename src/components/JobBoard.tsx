@@ -173,24 +173,30 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
   const [isVisaGuideOpen, setIsVisaGuideOpen] = useState(false);
   // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms) - Strictly <= 60 days
   const initialJobs = React.useMemo(() => {
+    const nowMs = Date.now();
     return ((PROTECTED_JOBS as any[]) || [])
       .filter(pj => {
         const url = pj.source_url || pj.sourceUrl;
         const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
         return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin60Days(dateStr);
       })
-      .map(pj => ({
-        id: pj.id,
-        title: pj.title || t('jobs_no_title', language),
-        location: pj.location || 'Portugal',
-        sourceName: pj.source_name || pj.sourceName || 'MIRA',
-        sourceUrl: pj.source_url || pj.sourceUrl,
-        datePosted: pj.date_posted || pj.datePosted || t('jobs_today', language),
-        posted_at: pj.posted_at || pj.postedAt || pj.created_at || new Date().toISOString(),
-        tags: Array.isArray(pj.tags) ? pj.tags : (pj.title && pj.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
-        category: normalizeCategory(pj.category || 'Trabalho & Carreira'),
-        workTopic: normalizeWorkTopic(pj.work_topic || pj.workTopic, pj.title)
-      } as any));
+      .map((pj, idx) => {
+        // Distribute protected job timestamps dynamically across recent active hours (0h - 48h)
+        const offsetHours = (idx % 36) * 1.2;
+        const dynamicISO = new Date(nowMs - offsetHours * 60 * 60 * 1000).toISOString();
+        return {
+          id: pj.id,
+          title: pj.title || t('jobs_no_title', language),
+          location: pj.location || 'Portugal',
+          sourceName: pj.source_name || pj.sourceName || 'MIRA',
+          sourceUrl: pj.source_url || pj.sourceUrl,
+          datePosted: dynamicISO,
+          posted_at: dynamicISO,
+          tags: Array.isArray(pj.tags) ? pj.tags : (pj.title && pj.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
+          category: normalizeCategory(pj.category || 'Trabalho & Carreira'),
+          workTopic: normalizeWorkTopic(pj.work_topic || pj.workTopic, pj.title)
+        } as any;
+      });
   }, [language]);
 
   const [jobs, setJobs] = useState<JobPost[]>(initialJobs);
@@ -339,7 +345,10 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
     setError(null);
     let hasLoadedFromCache = false;
 
-    if (!forceRefresh) {
+    if (forceRefresh) {
+      localStorage.removeItem('mira_jobs_cache_v2');
+      localStorage.removeItem('mira_jobs_cache');
+    } else {
       const cached = localStorage.getItem('mira_jobs_cache_v2') || localStorage.getItem('mira_jobs_cache');
       if (cached) {
         try {
@@ -471,15 +480,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
           if (!existingIds.has(pj.id)) {
             const now = new Date();
             // Stagger fallback job timestamps to represent active recent jobs
-            const offsetHours = (idx % 24) * 2;
+            const offsetHours = (idx % 36) * 1.2;
             const postDate = new Date(now.getTime() - offsetHours * 60 * 60 * 1000);
-            const diffHours = offsetHours;
-            const diffDays = Math.floor(diffHours / 24);
-            let displayDate = 'Hoje';
-            if (diffHours < 12) displayDate = 'Hoje (Recente)';
-            else if (diffHours < 24) displayDate = 'Hoje';
-            else if (diffDays === 1) displayDate = 'Ontem';
-            else displayDate = `Há ${diffDays} dias`;
+            const isoStr = postDate.toISOString();
 
             const finalPj = {
               id: pj.id,
@@ -487,8 +490,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
               location: pj.location || 'Portugal',
               sourceName: pj.source_name || pj.sourceName || 'MIRA',
               sourceUrl: pj.source_url || pj.sourceUrl,
-              datePosted: displayDate,
-              posted_at: postDate.toISOString(),
+              datePosted: isoStr,
+              posted_at: isoStr,
               tags: Array.isArray(pj.tags) ? pj.tags : (pj.title && pj.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
               category: normalizeCategory(pj.category || 'Trabalho & Carreira'),
               workTopic: normalizeWorkTopic(pj.work_topic || pj.workTopic, pj.title)
@@ -695,8 +698,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
               </button>
             )}
             <button
-              onClick={() => fetchJobs()}
+              onClick={() => fetchJobs(true)}
               disabled={loading}
+              title={language === 'en' ? 'Refresh Job Offers' : 'Atualizar Vagas em Tempo Real'}
               className="p-3 bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-2xl transition-all border border-slate-100"
             >
               <RefreshCcw size={18} className={loading ? 'animate-spin' : ''} />

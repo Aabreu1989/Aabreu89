@@ -8,8 +8,6 @@ import {
 } from "lucide-react";
 import { t } from "../utils/translations";
 import { audioService } from "../services/audioService";
-import { templates } from "../utils/documentsDatabase";
-import { TranslatedText } from "./TranslatedText";
 import { PATHWAY_DOCS_DETAIL_GUIDE } from "../utils/visaDocumentsDatabase";
 
 interface WizardProps {
@@ -144,6 +142,16 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [activeDocTip, setActiveDocTip] = useState<string | null>(null);
 
+    const handleAnswer = (key: string, value: string) => {
+        setAnswers(prev => ({ ...prev, [key]: value }));
+        audioService.playClick();
+        if (key === 'situation' && (value === 'asylum' || value === 'voluntary_return' || value === 'retirement')) {
+            setStep(4);
+        } else {
+            setStep(prev => prev + 1);
+        }
+    };
+
     React.useEffect(() => {
         if (initialChoice && step === 1) {
             if (initialChoice === 'visa_job_search') {
@@ -161,15 +169,6 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
         }
     }, [initialChoice, step]);
 
-    const handleAnswer = (key: string, value: string) => {
-        setAnswers(prev => ({ ...prev, [key]: value }));
-        audioService.playClick();
-        if (key === 'situation' && (value === 'asylum' || value === 'voluntary_return' || value === 'retirement')) {
-            setStep(4);
-        } else {
-            setStep(prev => prev + 1);
-        }
-    };
 
     const handleBack = () => {
         if (step > 1) {

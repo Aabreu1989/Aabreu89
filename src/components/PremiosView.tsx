@@ -72,7 +72,7 @@ export default function PremiosView({ language: initialLanguage, onBack }: Premi
             supabase.from('posts').select('id', { count: 'exact', head: true }).eq('validation_status', 'fraud')
         ]);
         
-        const actualUsers = Math.max(999, realUserCount || 999);
+        const actualUsers = realUserCount || 0;
         const postsCount = totalPosts || 1;
         const verified = verifiedPosts || 0;
         const fake = fakePosts || 0;

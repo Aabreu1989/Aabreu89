@@ -637,64 +637,67 @@ export const adminService: AdminService = {
                 supabase.from('posts').select('likes').then(res => res.data ? res.data.reduce((acc, curr) => acc + (curr.likes || 0), 0) : 0)
             ]);
 
-            const realUsers = Math.max(999, userCount || 999);
-            const realJobs = jobCount || 5326;
-            const realCourses = courseCount || 156;
-            const realServices = serviceCount || 238;
-            const realRetention = 82.0;
+            // ✅ MIRA V2026: Valores 100% reais da BD — sem floors artificiais
+            const realUsers = userCount || 0;
+            const realJobs = jobCount || 0;
+            const realCourses = courseCount || 0;
+            const realServices = serviceCount || 0;
 
-            const userGrowthAccesses = Math.max(0, (realUsers - 999) * 35);
-            const { analytics } = await import('./analyticsService');
-            const localAccesses = analytics.getLocalAccessCount();
-            const realAccesses = 49592 + userGrowthAccesses + (appAccessesCount || 0) + localAccesses;
+            // Taxa de retenção real baseada em utilizadores que regressaram
+            const realRetentionRate = realUsers > 0
+                ? Math.round((returningUsersCount / realUsers) * 100 * 10) / 10
+                : 0;
 
             return {
-                courses: { db: realCourses, prot: IEFP_MASSIVE_DATABASE?.length || 156 },
-                services: { db: realServices, prot: PROTECTED_SERVICES?.length || 238 },
+                courses: { db: realCourses, prot: IEFP_MASSIVE_DATABASE?.length || 0 },
+                services: { db: realServices, prot: PROTECTED_SERVICES?.length || 0 },
                 users: realUsers,
-                usersToday: usersTodayCount,
-                retentionRate: realRetention,
-                returningUsers: returningUsersCount || Math.floor(realUsers * 0.82),
-                jobs: { db: realJobs, prot: (await import('../utils/massiveJobsDatabase')).PROTECTED_JOBS?.length || 5326, sources: 66 },
-                reports: reportCount,
-                suggestions: suggCount,
-                posts: postCount,
-                comments: commentCount,
-                downloads: Math.max(docCount || 0, 1420),
-                totalLikes: totalLikesSum,
-                verifiedPosts: verifiedPostsCount,
-                fakePosts: fakePostsCount,
-                appAccesses: realAccesses,
-                aiQueries: Math.max(aiQueriesCount || 0, 18642),
-                articleViews: Math.max(articleViewsCount || 0, 3240),
-                pwaMobileDownloads,
-                pwaComputerDownloads,
+                usersToday: usersTodayCount || 0,
+                retentionRate: realRetentionRate,
+                returningUsers: returningUsersCount || 0,
+                jobs: { db: realJobs, prot: (await import('../utils/massiveJobsDatabase')).PROTECTED_JOBS?.length || 0, sources: 66 },
+                reports: reportCount || 0,
+                suggestions: suggCount || 0,
+                posts: postCount || 0,
+                comments: commentCount || 0,
+                downloads: docCount || 0,
+                totalLikes: totalLikesSum || 0,
+                verifiedPosts: verifiedPostsCount || 0,
+                fakePosts: fakePostsCount || 0,
+                appAccesses: appAccessesCount || 0,
+                aiQueries: aiQueriesCount || 0,
+                articleViews: articleViewsCount || 0,
+                pwaMobileDownloads: pwaMobileDownloads || 0,
+                pwaComputerDownloads: pwaComputerDownloads || 0,
                 horasPoupadas: Math.floor(realUsers * 4.5),
                 processosAjudados: realUsers
             };
         } catch (err) {
             console.error("MIRA: Sync Status Critical Error:", err);
+            // ✅ Em caso de erro, retorna zeros — nunca números falsos
             return {
-                jobs: { db: 5326, sources: 66 },
-                courses: { db: 156 },
-                services: { db: 238 },
-                users: 999,
+                jobs: { db: 0, sources: 0 },
+                courses: { db: 0, prot: 0 },
+                services: { db: 0, prot: 0 },
+                users: 0,
                 usersToday: 0,
                 reports: 0,
+                suggestions: 0,
                 comments: 0,
-                downloads: 1420,
-                posts: 8,
+                downloads: 0,
+                posts: 0,
                 verifiedPosts: 0,
                 fakePosts: 0,
-                appAccesses: 49592,
-                aiQueries: 18642,
-                articleViews: 3240,
-                retentionRate: 82.0,
-                returningUsers: 819,
-                horasPoupadas: 4495,
-                processosAjudados: 999,
+                appAccesses: 0,
+                aiQueries: 0,
+                articleViews: 0,
+                retentionRate: 0,
+                returningUsers: 0,
+                horasPoupadas: 0,
+                processosAjudados: 0,
                 pwaMobileDownloads: 0,
-                pwaComputerDownloads: 0
+                pwaComputerDownloads: 0,
+                totalLikes: 0
             };
         }
     },
@@ -923,7 +926,8 @@ export const adminService: AdminService = {
                 supabase.from('services').select('id, category')
             ]);
 
-            const totalQueries = Math.max(dbQueryRes.count || 0, 18642);
+            // ✅ Valor 100% real da BD
+            const totalQueries = dbQueryRes.count || 0;
             const realLogs = realLogsRes.data || [];
             const posts = postsRes.data || [];
             const services = servicesRes.data || [];
@@ -1160,13 +1164,13 @@ export const adminService: AdminService = {
         } catch (err) {
             console.error('MIRA: fetchAiQueryCategorization error:', err);
             return {
-                totalQueries: 18642,
+                totalQueries: 0,
                 categories: [],
                 topPainPoints: [],
                 fundingSummary: {
                     primaryNeedArea: 'Regularização Documental AIMA',
-                    unresolvedRatioPercentage: 60,
-                    legalVulnerabilityIndex: 'Elevada',
+                    unresolvedRatioPercentage: 0,
+                    legalVulnerabilityIndex: 'Desconhecida',
                     grantJustification: 'Diagnóstico auditável MIRA Chat 2026.'
                 },
                 queryCatalog: []
