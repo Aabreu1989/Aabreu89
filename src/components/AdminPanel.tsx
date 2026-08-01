@@ -496,22 +496,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </div>
                                         <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-3 py-1.5 rounded-full border border-emerald-500/20 animate-pulse">🔴 LIVE</span>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-                                        {[
-                                            { label: 'Utilizadores', value: counts.users, sub: `+${counts.usersToday} hoje`, icon: Users, color: 'text-[#FF8C00]', bg: 'from-orange-900/30' },
-                                            { label: 'Acessos App 🚀', value: (counts as any).appAccesses ?? 0, sub: 'Total acumulado', icon: Activity, color: 'text-indigo-400', bg: 'from-indigo-900/30' },
-                                            { label: 'Posts', value: counts.posts, sub: `${counts.comments} comentários`, icon: MessageCircle, color: 'text-blue-400', bg: 'from-blue-900/30' },
-                                            { label: 'Vagas', value: counts.jobs?.db ?? 0, sub: `${counts.jobs?.prot ?? 0} na base`, icon: Briefcase, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
-                                            { label: 'Serviços', value: counts.services?.prot ?? 0, sub: `${counts.services?.db ?? 0} ativos`, icon: MapPin, color: 'text-[#00E5FF]', bg: 'from-cyan-900/30' },
-                                            { label: 'Cursos', value: (counts.courses?.db ?? 0) + (counts.courses?.prot ?? 0), sub: `${counts.courses?.db ?? 0} sincronizados`, icon: GraduationCap, color: 'text-amber-400', bg: 'from-amber-900/30' },
-                                            { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
-                                        ].map(({ label, value, sub, icon: Icon, color, bg }) => (
-                                            <div key={label} className={`p-5 bg-gradient-to-br ${bg} to-transparent border border-white/10 rounded-3xl relative overflow-hidden group hover:border-white/25 transition-all`}>
-                                                <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">{label}</p>
-                                                <p className={`text-3xl font-black ${color}`}>{typeof value === 'number' ? value.toLocaleString() : value}</p>
-                                                <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">{sub}</p>
-                                            </div>
-                                        ))}
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
+                                         {[
+                                             { label: 'Utilizadores', value: counts.users, sub: `+${counts.usersToday} hoje`, icon: Users, color: 'text-[#FF8C00]', bg: 'from-orange-900/30' },
+                                             { label: 'Acessos App 🚀', value: (counts as any).appAccesses ?? 0, sub: 'Total acumulado', icon: Activity, color: 'text-indigo-400', bg: 'from-indigo-900/30' },
+                                             { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
+                                             { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
+                                             { label: 'Vagas', value: counts.jobs?.db ?? 0, sub: `${counts.jobs?.prot ?? 0} na base`, icon: Briefcase, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
+                                             { label: 'Serviços', value: counts.services?.prot ?? 0, sub: `${counts.services?.db ?? 0} ativos`, icon: MapPin, color: 'text-[#00E5FF]', bg: 'from-cyan-900/30' },
+                                             { label: 'Cursos', value: (counts.courses?.db ?? 0) + (counts.courses?.prot ?? 0), sub: `${counts.courses?.db ?? 0} sincronizados`, icon: GraduationCap, color: 'text-rose-400', bg: 'from-rose-900/30' },
+                                             { label: 'Posts & Fórum', value: counts.posts, sub: `${counts.comments} comentários`, icon: MessageCircle, color: 'text-blue-400', bg: 'from-blue-900/30' },
+                                         ].map(({ label, value, sub, icon: Icon, color, bg }) => (
+                                             <div key={label} className={`p-5 bg-gradient-to-br ${bg} to-transparent border border-white/10 rounded-3xl relative overflow-hidden group hover:border-white/25 transition-all`}>
+                                                 <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">{label}</p>
+                                                 <p className={`text-3xl font-black ${color}`}>{typeof value === 'number' ? value.toLocaleString() : value}</p>
+                                                 <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">{sub}</p>
+                                             </div>
+                                         ))}
                                     </div>
                                 </div>
 
