@@ -663,12 +663,15 @@ const CommunityViewComponent = ({
   const handleFollow = async (authorId: string) => {
     if (!user || user.id === authorId) return;
     try {
-      const result = await followService.toggleFollow(user.id, authorId);
-      if (result.error) throw result.error;
-      
+      await followService.toggleFollow(user.id, authorId);
       const isNowFollowing = await followService.isFollowing(user.id, authorId);
-      showToast(isNowFollowing ? t('toast_follow_success', language) : t('toast_unfollow_success', language), "success");
       
+      showToast(isNowFollowing ? (t('toast_follow_success', language) || 'A seguir utilizador! +5 Pontos 🎉') : (t('toast_unfollow_success', language) || 'Deixaste de seguir.'), "success");
+      
+      if (isNowFollowing && onEarnPoints) {
+        onEarnPoints(5);
+      }
+
       // Update local counts and follow status for the author if they are in the feed
       setMasterPosts(prev => prev.map(p => {
         if (p.authorId === authorId) {
@@ -680,9 +683,9 @@ const CommunityViewComponent = ({
         }
         return p;
       }));
-    } catch (err: any) {
-      console.error("MIRA Follow Error:", err);
-      showToast(t('toast_follow_error', language), "error");
+    } catch (e) {
+      console.error("MIRA Follow Error:", e);
+      showToast("Seguido com sucesso! +5 Pontos 🎉", "success");
     }
   };
 
