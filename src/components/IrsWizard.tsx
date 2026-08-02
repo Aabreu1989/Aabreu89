@@ -647,7 +647,7 @@ export const IrsWizard: React.FC<IrsWizardProps> = ({ language, onBack, onSelect
 
             {/* ── SCROLLABLE BODY ──────────────────────────────────────────── */}
             <div className="flex-1 overflow-y-auto bg-slate-50 no-scrollbar">
-                <div className="p-5 space-y-5 pb-32">
+                <div className="p-5 space-y-5 pb-12">
                     
                     {/* STEP 1: Profile Selection Grid */}
                     {step === 1 && (
@@ -916,17 +916,6 @@ export const IrsWizard: React.FC<IrsWizardProps> = ({ language, onBack, onSelect
                 </div>
             </div>
 
-            {/* Bottom Floating Navigation bar */}
-            <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent pointer-events-none z-30 flex items-center justify-between gap-4 shrink-0">
-                <div className="w-full max-w-md mx-auto flex items-center justify-between gap-4 pointer-events-auto">
-                    <button
-                        onClick={handleBack}
-                        className="w-full py-4 bg-slate-900 border border-slate-700 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-black/50"
-                    >
-                        {tLocal('back')}
-                    </button>
-                </div>
-            </div>
         </div>
     );
 };
