@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
     ArrowLeft, Landmark, CheckCircle2, ChevronRight, Info, FileText,
-    Sparkles, RotateCcw, Globe, ExternalLink
+    Sparkles, RotateCcw, Globe, ExternalLink, DollarSign
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
