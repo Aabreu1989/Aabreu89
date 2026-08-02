@@ -410,19 +410,29 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
         if (!user?.id) return;
 
         const isOwner = currentUser?.id === user?.id;
-        const isAdmin = currentUser?.role === 'admin' || ['amandasabreu89@gmail.com'].includes(currentUser?.email?.toLowerCase() || '');
+        const isAdmin = currentUser?.role === 'admin' || ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'].includes(currentUser?.email?.toLowerCase() || '');
 
         // Fetch full profile including badges
-        authService.fetchFullProfile(user.id).then(fullProfile => {
-            if (fullProfile) {
-                const sanitized = { ...fullProfile };
-                // Hide email if user is not admin and not the owner
-                if (!isAdmin && !isOwner) {
-                    sanitized.email = undefined;
-                }
-                setProfileUser(sanitized);
+        authService.fetchFullProfile(user.id).then(async (fullProfile) => {
+            const baseUser = fullProfile || user;
+            const sanitized = { ...baseUser };
+
+            if (isAdmin && !sanitized.email) {
+                try {
+                    const { data: profileDb } = await supabase.from('profiles').select('email').eq('id', user.id).maybeSingle();
+                    if (profileDb?.email) {
+                        sanitized.email = profileDb.email;
+                    }
+                } catch (e) {}
             }
+
+            // Hide email if user is not admin and not the owner
+            if (!isAdmin && !isOwner) {
+                sanitized.email = undefined;
+            }
+            setProfileUser(sanitized);
         });
+
 
         // 🛡️ MIRA SOBERANIA: Sincronização Real-Time de Métricas (Evita contagem estagnada)
         followService.getFollowerCount(user.id).then(count => {
@@ -615,7 +625,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                             </div>
                         ) : (
                             <div className="mt-6 text-center animate-in fade-in slide-in-from-top-4 duration-700">
-                                {((currentUser?.role === 'admin') || (currentUser?.id === profileUser?.id)) && profileUser?.email && (
+                                {((currentUser?.role === 'admin') || ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'].includes(currentUser?.email?.toLowerCase() || '') || (currentUser?.id === profileUser?.id)) && profileUser?.email && (
                                     <div className="flex flex-col items-center gap-2 mb-4">
                                         <div className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl shadow-black/20 flex items-center gap-2 group">
                                             <Mail size={14} className="text-[#FF8C00] group-hover:scale-110 transition-transform" />
@@ -627,14 +637,15 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                                             <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.3em] bg-slate-100 px-3 py-1 rounded-full border border-slate-200 shadow-sm">
                                                 ID: {profileUser.id.substring(0, 12).toUpperCase()}
                                             </span>
-                                            {currentUser?.role === 'admin' && (
+                                            {(currentUser?.role === 'admin' || ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'].includes(currentUser?.email?.toLowerCase() || '')) && (
                                                 <span className="text-[8px] font-black text-[#FF8C00] uppercase tracking-[0.3em] bg-orange-50 px-3 py-1 rounded-full border border-orange-100 shadow-sm">
-                                                    ACESSO ADMIN
+                                                    ACESSO ADMIN — EMAIL VISÍVEL
                                                 </span>
                                             )}
                                         </div>
                                     </div>
                                 )}
+
                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2 italic px-8 max-w-xs mx-auto leading-relaxed">{profileUser?.bio || getT('member_of', language)}</p>
                                 <div className="flex items-center justify-center gap-2">
                                     <span className={`text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full border transition-all ${profileUser?.role === 'admin' ? 'bg-slate-900 text-white border-slate-800 shadow-xl' : 'bg-[#FF8C00]/10 text-[#FF8C00] border-[#FF8C00]/20'}`}>

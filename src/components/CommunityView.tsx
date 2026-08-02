@@ -103,6 +103,13 @@ const CommunityViewComponent = ({
   const [replyToComment, setReplyToComment] = useState<{ id: string; name: string } | null>(null);
   const [commentContent, setCommentContent] = useState('');
   const [isCommenting, setIsCommenting] = useState(false);
+  const [followedUserIds, setFollowedUserIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (user?.id) {
+      followService.getFollowingSet(user.id).then(set => setFollowedUserIds(set));
+    }
+  }, [user?.id]);
 
   // 🧬 1. MEMO DE POSTS COM REGRAS DE SOBERANIA
   const masterPostsWithLocal = useMemo(() => {
@@ -148,12 +155,14 @@ const CommunityViewComponent = ({
             const isLocalLiked = likedPosts.has(p.id);
             const isLocalSaved = savedPostsIds.has(p.id);
             const localV = userVotes[p.id];
+            const isFollowingAuthor = followedUserIds.has(p.authorId);
             
             return {
                 ...p,
                 isLikedByUser: isLocalLiked,
                 userVote: localV,
                 isSaved: isLocalSaved,
+                isFollowing: isFollowingAuthor,
                 likes: isLocalLiked ? Math.max(1, p.likes || 0) : (p.likes || 0),
                 usefulVotes: localV === 'true' ? Math.max(1, p.usefulVotes || 0) : (p.usefulVotes || 0),
                 fakeVotes: localV === 'false' ? Math.max(1, p.fakeVotes || 0) : (p.fakeVotes || 0)
@@ -174,7 +183,8 @@ const CommunityViewComponent = ({
 
             return (b.nobelScore || 0) - (a.nobelScore || 0);
         });
-  }, [masterPosts, likedPosts, userVotes, savedPostsIds, syncQueueSize, user]);
+  }, [masterPosts, likedPosts, userVotes, savedPostsIds, followedUserIds, syncQueueSize, user]);
+
 
   // 🧬 MIRA STORIES: Cálculo Reativo via useMemo (Prevenção de Loops de Render)
   const stories = useMemo(() => {
@@ -663,8 +673,18 @@ const CommunityViewComponent = ({
   const handleFollow = async (authorId: string) => {
     if (!user || user.id === authorId) return;
     try {
+      const isCurrentlyFollowing = followedUserIds.has(authorId);
+      const isNowFollowing = !isCurrentlyFollowing;
+
+      // Optimistic update for set
+      setFollowedUserIds(prev => {
+        const next = new Set(prev);
+        if (isNowFollowing) next.add(authorId);
+        else next.delete(authorId);
+        return next;
+      });
+
       await followService.toggleFollow(user.id, authorId);
-      const isNowFollowing = await followService.isFollowing(user.id, authorId);
       
       showToast(isNowFollowing ? (t('toast_follow_success', language) || 'A seguir utilizador! +5 Pontos 🎉') : (t('toast_unfollow_success', language) || 'Deixaste de seguir.'), "success");
       
@@ -688,6 +708,7 @@ const CommunityViewComponent = ({
       showToast("Seguido com sucesso! +5 Pontos 🎉", "success");
     }
   };
+
 
   // MIRA: Tradução removida por ordem da CEO para simplificação total.
 

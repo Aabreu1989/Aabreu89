@@ -710,16 +710,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                 .map(u => (
                                                 <tr key={u.id} className="hover:bg-white/4 transition-colors">
                                                     <td className="px-6 py-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 ${u.role === 'admin' ? 'bg-[#FF8C00] text-white' : 'bg-white/10 text-white/50'}`}>
+                                                        <div 
+                                                            onClick={() => onViewChange && onViewChange('profile', { profileUser: { id: u.id, name: u.name, avatar: u.avatar, email: u.email, role: u.role, isVerified: u.isVerified, isBlocked: u.isBlocked } })} 
+                                                            className="flex items-center gap-3 cursor-pointer group/user flex-1 min-w-0"
+                                                            title="Clique para ver o perfil completo do utilizador"
+                                                        >
+                                                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 transition-transform group-hover/user:scale-105 ${u.role === 'admin' ? 'bg-[#FF8C00] text-white' : 'bg-white/10 text-white/50'}`}>
                                                                 {u.name?.charAt(0).toUpperCase() || '?'}
                                                             </div>
                                                             <div>
-                                                                <p className="text-[12px] font-black text-white uppercase tracking-tight flex items-center gap-1.5">
+                                                                <p className="text-[12px] font-black text-white uppercase tracking-tight flex items-center gap-1.5 group-hover/user:text-[#FF8C00] transition-colors">
                                                                     {u.name || 'Sem nome'}
                                                                     {u.role === 'admin' && <ShieldCheck size={11} className="text-[#FF8C00]" />}
                                                                     {u.isVerified && <CheckCircle2 size={11} className="text-blue-400" />}
                                                                 </p>
+                                                                <span className="text-[8px] font-bold text-[#FF8C00] uppercase tracking-widest opacity-0 group-hover/user:opacity-100 transition-opacity">Ver Perfil ➔</span>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -738,6 +743,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                     </td>
                                                     <td className="px-4 py-4">
                                                         <div className="flex items-center justify-end gap-2">
+                                                            <button
+                                                                onClick={() => onViewChange && onViewChange('profile', { profileUser: { id: u.id, name: u.name, avatar: u.avatar, email: u.email, role: u.role, isVerified: u.isVerified, isBlocked: u.isBlocked } })}
+                                                                title="Ver Perfil Completo"
+                                                                className="p-2 rounded-xl bg-[#FF8C00]/20 text-[#FF8C00] border border-[#FF8C00]/30 hover:bg-[#FF8C00] hover:text-white transition-all"
+                                                            >
+                                                                <UserIcon size={14} />
+                                                            </button>
                                                             <button
                                                                 onClick={() => handleAction(() => adminService.toggleBlockUser(u.id, !u.isBlocked), `block-${u.id}`, () => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, isBlocked: !u.isBlocked } : x)))}
                                                                 title={u.isBlocked ? 'Ativar' : 'Bloquear'}
@@ -781,12 +793,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         .filter(u => userFilterStatus === 'all' || (userFilterStatus === 'active' && !u.isBlocked) || (userFilterStatus === 'blocked' && u.isBlocked) || (userFilterStatus === 'verified' && u.isVerified))
                                         .map(u => (
                                         <div key={u.id} className="p-4 bg-white/5 border border-white/10 rounded-3xl space-y-3">
-                                            <div className="flex items-center gap-3">
+                                            <div 
+                                                onClick={() => onViewChange && onViewChange('profile', { profileUser: { id: u.id, name: u.name, avatar: u.avatar, email: u.email, role: u.role, isVerified: u.isVerified, isBlocked: u.isBlocked } })}
+                                                className="flex items-center gap-3 cursor-pointer group"
+                                            >
                                                 <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-base shrink-0 ${ u.role === 'admin' ? 'bg-[#FF8C00] text-white' : 'bg-white/10 text-white/50'}`}>
                                                     {u.name?.charAt(0).toUpperCase() || '?'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-black text-[13px] text-white uppercase tracking-tight truncate flex items-center gap-1.5">
+                                                    <p className="font-black text-[13px] text-white uppercase tracking-tight truncate flex items-center gap-1.5 group-hover:text-[#FF8C00]">
                                                         {u.name || 'Sem nome'}
                                                         {u.role === 'admin' && <ShieldCheck size={11} className="text-[#FF8C00]" />}
                                                         {u.isVerified && <CheckCircle2 size={11} className="text-blue-400" />}
@@ -801,7 +816,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                     {u.isBlocked ? 'Bloqueado' : 'Ativo'}
                                                 </span>
                                             </div>
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+                                                <button
+                                                    onClick={() => onViewChange && onViewChange('profile', { profileUser: { id: u.id, name: u.name, avatar: u.avatar, email: u.email, role: u.role, isVerified: u.isVerified, isBlocked: u.isBlocked } })}
+                                                    className="px-3 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all bg-[#FF8C00]/20 text-[#FF8C00] border border-[#FF8C00]/30 hover:bg-[#FF8C00] hover:text-white flex items-center justify-center gap-1"
+                                                >
+                                                    <UserIcon size={13} />
+                                                    Perfil
+                                                </button>
                                                 <button
                                                     onClick={() => handleAction(() => adminService.toggleBlockUser(u.id, !u.isBlocked), `block-${u.id}`, () => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, isBlocked: !u.isBlocked } : x)))}
                                                     className={`flex-1 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border flex items-center justify-center gap-1.5 ${ u.isBlocked ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-white/40 border-white/10'}`}
@@ -832,6 +854,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </div>
                                     ))}
                                 </div>
+
 
                                 {totalUsers > 20 && (
                                     <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 bg-white/5 p-6 rounded-3xl border border-white/10">

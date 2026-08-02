@@ -1,21 +1,26 @@
 import { supabase } from '../lib/supabase';
 
 export const followService = {
+    getLocalKey(followerId: string) {
+        return `mira_follows_${followerId}`;
+    },
+
     async followUser(followerId: string, followedId: string) {
         if (!followerId || !followedId || followerId === followedId) {
             return { error: null };
         }
 
-        // 1. Persistência Local Garantida
+        // 1. Persistência Local Garantida e Escopada por Utilizador
         try {
-            const localFollows = JSON.parse(localStorage.getItem('mira_follows') || '[]');
+            const key = this.getLocalKey(followerId);
+            const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
             if (!localFollows.includes(followedId)) {
                 localFollows.push(followedId);
-                localStorage.setItem('mira_follows', JSON.stringify(localFollows));
+                localStorage.setItem(key, JSON.stringify(localFollows));
             }
         } catch (e) {}
 
-        // 2. Registos remotos resilientes (DB)
+        // 2. Registos remotos na tabela user_follows
         try {
             await supabase.from('user_follows').insert([{ follower_id: followerId, following_id: followedId }]);
         } catch (e) {}
@@ -45,10 +50,13 @@ export const followService = {
     },
 
     async unfollowUser(followerId: string, followedId: string) {
+        if (!followerId || !followedId) return { error: null };
+
         try {
-            const localFollows = JSON.parse(localStorage.getItem('mira_follows') || '[]');
+            const key = this.getLocalKey(followerId);
+            const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
             const updated = localFollows.filter((id: string) => id !== followedId);
-            localStorage.setItem('mira_follows', JSON.stringify(updated));
+            localStorage.setItem(key, JSON.stringify(updated));
         } catch (e) {}
 
         try {
@@ -58,27 +66,63 @@ export const followService = {
         return { error: null };
     },
 
-    async isFollowing(followerId: string, followedId: string) {
+    async isFollowing(followerId: string, followedId: string): Promise<boolean> {
         if (!followerId || !followedId) return false;
         try {
-            const localFollows = JSON.parse(localStorage.getItem('mira_follows') || '[]');
+            const key = this.getLocalKey(followerId);
+            const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
             if (localFollows.includes(followedId)) return true;
         } catch (e) {}
 
         try {
             const { data } = await supabase
                 .from('user_follows')
-                .select('*')
+                .select('id')
                 .eq('follower_id', followerId)
                 .eq('following_id', followedId)
                 .maybeSingle();
-            return !!data;
+            if (data) {
+                // Update local cache if missing
+                try {
+                    const key = this.getLocalKey(followerId);
+                    const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
+                    if (!localFollows.includes(followedId)) {
+                        localFollows.push(followedId);
+                        localStorage.setItem(key, JSON.stringify(localFollows));
+                    }
+                } catch (e) {}
+                return true;
+            }
+            return false;
         } catch {
             return false;
         }
     },
 
-    async getFollowerCount(userId: string) {
+    async getFollowingSet(followerId: string): Promise<Set<string>> {
+        const set = new Set<string>();
+        if (!followerId) return set;
+
+        try {
+            const key = this.getLocalKey(followerId);
+            const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
+            localFollows.forEach((id: string) => set.add(id));
+        } catch (e) {}
+
+        try {
+            const { data } = await supabase
+                .from('user_follows')
+                .select('following_id')
+                .eq('follower_id', followerId);
+            if (data) {
+                data.forEach(d => set.add(d.following_id));
+            }
+        } catch (e) {}
+
+        return set;
+    },
+
+    async getFollowerCount(userId: string): Promise<number> {
         try {
             const { count, error } = await supabase
                 .from('user_follows')
@@ -100,10 +144,10 @@ export const followService = {
         }
     },
     
-    async getFollowingCount(userId: string) {
+    async getFollowingCount(userId: string): Promise<number> {
         try {
-            const localFollows = JSON.parse(localStorage.getItem('mira_follows') || '[]');
-            if (localFollows.length > 0) return localFollows.length;
+            const set = await this.getFollowingSet(userId);
+            if (set.size > 0) return set.size;
         } catch (e) {}
 
         try {
@@ -129,22 +173,22 @@ export const followService = {
 
     async getFollowersProfiles(userId: string) {
         const { data, error } = await supabase
-            .from('follows')
-            .select('follower_id, profiles!follows_follower_id_fkey(*)')
+            .from('user_follows')
+            .select('follower_id, profiles!user_follows_follower_id_fkey(*)')
             .eq('following_id', userId);
         
-        if (error) return { data: [], error };
-        return { data: (data as any[]).map(d => d.profiles), error: null };
+        if (error || !data) return { data: [], error };
+        return { data: (data as any[]).map(d => d.profiles).filter(Boolean), error: null };
     },
 
     async getFollowingProfiles(userId: string) {
         const { data, error } = await supabase
-            .from('follows')
-            .select('following_id, profiles!follows_following_id_fkey(*)')
+            .from('user_follows')
+            .select('following_id, profiles!user_follows_following_id_fkey(*)')
             .eq('follower_id', userId);
 
-        if (error) return { data: [], error };
-        return { data: (data as any[]).map(d => d.profiles), error: null };
+        if (error || !data) return { data: [], error };
+        return { data: (data as any[]).map(d => d.profiles).filter(Boolean), error: null };
     },
 
     async toggleFollow(followerId: string, followedId: string) {
@@ -156,3 +200,4 @@ export const followService = {
         }
     }
 };
+
