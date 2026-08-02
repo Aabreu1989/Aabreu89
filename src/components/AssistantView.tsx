@@ -208,17 +208,35 @@ const MiraChatMessage = React.memo(({
           {/* 🔗 MODULE NAVIGATION BUTTONS & EXTERNAL LINKS (V26.GOLD) */}
           {(msg.text.includes('[view:') || msg.text.includes('[BUTTON|')) && (
              <div className="mt-4 flex flex-col gap-3">
-                {/* Native Module Links */}
-                {Array.from(msg.text.matchAll(/\[view:([A-Z_]+):(.+?)\]/g)).map((match: any, i) => (
-                  <button
-                    key={`view-${i}`}
-                    onClick={() => onViewChange(match[1])}
-                    className="w-full py-3.5 px-5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-[1.5rem] flex items-center justify-between group transition-all active:scale-95 shadow-lg backdrop-blur-sm"
-                  >
-                    <span className="text-[11px] font-black uppercase tracking-widest text-white">{match[2]}</span>
-                    <ArrowRight size={16} className="text-orange-400 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                ))}
+                {/* Native Module Links [view:VIEW_TYPE:LABEL] or [view:VIEW_TYPE:SUB_TAB:LABEL] */}
+                {Array.from(msg.text.matchAll(/\[view:([A-Z_]+)(?::([a-z0-9_]+))?:(.+?)\]/g)).map((match: any, i) => {
+                  const rawTarget = match[1];
+                  const subTab = match[2];
+                  const label = match[3] || match[2] || rawTarget;
+
+                  const handleClick = () => {
+                    if (rawTarget === 'SIMULATORS' && label?.toLowerCase().includes('irs')) {
+                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs' });
+                    } else if (rawTarget === 'IRS' || subTab === 'irs') {
+                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs' });
+                    } else if (subTab) {
+                      onViewChange(rawTarget as ViewType, { tab: subTab });
+                    } else {
+                      onViewChange(rawTarget as ViewType);
+                    }
+                  };
+
+                  return (
+                    <button
+                      key={`view-${i}`}
+                      onClick={handleClick}
+                      className="w-full py-3.5 px-5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-[1.5rem] flex items-center justify-between group transition-all active:scale-95 shadow-lg backdrop-blur-sm"
+                    >
+                      <span className="text-[11px] font-black uppercase tracking-widest text-white">{label}</span>
+                      <ArrowRight size={16} className="text-orange-400 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  );
+                })}
 
                 {/* External Link Buttons [BUTTON|Name|URL] */}
                 {Array.from(msg.text.matchAll(/\[BUTTON\|(.+?)\|(.+?)\]/g)).map((match: any, i) => (

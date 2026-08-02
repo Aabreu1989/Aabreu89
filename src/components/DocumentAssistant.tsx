@@ -72,7 +72,16 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
     const { showToast } = useToast();
     const lang = language?.toLowerCase() || 'pt';
     const [activeScreen, setActiveScreen] = useState<'menu' | 'gallery' | 'form' | 'success' | 'guide_view' | 'regularize' | 'citizenship' | 'entrepreneur' | 'revalidation' | 'nif' | 'niss' | 'utente' | 'driving' | 'accommodation' | 'bank' | 'metro' | 'irs' | 'retirement_local'>(
-        (initialTab === 'regularize' || initialTab === 'visa_job_search' || initialTab === 'retirement') ? 'regularize' : (initialTab === 'accommodation' ? 'accommodation' : (initialTab === 'docs' ? 'gallery' : 'menu'))
+        initialTab === 'irs' ? 'irs' :
+        initialTab === 'niss' ? 'niss' :
+        initialTab === 'nif' ? 'nif' :
+        initialTab === 'utente' ? 'utente' :
+        initialTab === 'driving' ? 'driving' :
+        initialTab === 'bank' ? 'bank' :
+        initialTab === 'metro' ? 'metro' :
+        initialTab === 'accommodation' ? 'accommodation' :
+        (initialTab === 'regularize' || initialTab === 'visa_job_search' || initialTab === 'retirement') ? 'regularize' :
+        (initialTab === 'docs' ? 'gallery' : 'menu')
     );
     const [wizardChoice, setWizardChoice] = useState<string | undefined>(
         initialTab === 'visa_job_search' ? 'visa_job_search' : (initialTab === 'retirement' ? 'retirement' : undefined)
@@ -99,7 +108,19 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
         const params = new URLSearchParams(window.location.search);
         const urlTab = params.get('tab');
         
-        if (urlTab === 'regularize' || initialTab === 'regularize' || urlTab === 'visa_job_search' || initialTab === 'visa_job_search' || urlTab === 'retirement' || initialTab === 'retirement') {
+        if (urlTab === 'irs' || initialTab === 'irs') {
+            setActiveScreen('irs');
+        } else if (urlTab === 'niss' || initialTab === 'niss') {
+            setActiveScreen('niss');
+        } else if (urlTab === 'utente' || initialTab === 'utente') {
+            setActiveScreen('utente');
+        } else if (urlTab === 'driving' || initialTab === 'driving') {
+            setActiveScreen('driving');
+        } else if (urlTab === 'bank' || initialTab === 'bank') {
+            setActiveScreen('bank');
+        } else if (urlTab === 'metro' || initialTab === 'metro') {
+            setActiveScreen('metro');
+        } else if (urlTab === 'regularize' || initialTab === 'regularize' || urlTab === 'visa_job_search' || initialTab === 'visa_job_search' || urlTab === 'retirement' || initialTab === 'retirement') {
             if (urlTab === 'retirement' || initialTab === 'retirement') {
                 setWizardChoice('retirement');
             } else if (urlTab === 'visa_job_search' || initialTab === 'visa_job_search') {
