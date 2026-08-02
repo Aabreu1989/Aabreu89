@@ -179,6 +179,16 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
         return Array.from(new Set(all)).filter(Boolean).sort();
     }, [combinedItems]);
 
+    const categoryCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        combinedItems.forEach((t: any) => {
+            if (t.category) {
+                counts[t.category] = (counts[t.category] || 0) + 1;
+            }
+        });
+        return counts;
+    }, [combinedItems]);
+
     const filteredItems = useMemo(() => {
         const list = combinedItems;
         const term = searchFilter.toLowerCase().trim();
@@ -632,10 +642,14 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                                         <select
                                             value={categoryFilter}
                                             onChange={e => setCategoryFilter(e.target.value)}
-                                            className="w-full pl-4 pr-10 py-3 bg-slate-100 border-none rounded-xl text-[10px] font-black uppercase tracking-widest appearance-none outline-none focus:ring-2 focus:ring-mira-orange-pastel"
+                                            className="w-full pl-4 pr-10 py-3 bg-slate-100 border-none rounded-xl text-[10px] font-black uppercase tracking-widest appearance-none outline-none focus:ring-2 focus:ring-mira-orange-pastel cursor-pointer"
                                         >
-                                            <option value="Todos">{t('doc_category', language)}</option>
-                                            {availableCategories.map(c => <option key={c} value={c}>{t(c, language)}</option>)}
+                                            <option value="Todos">{t('doc_category', language)} ({combinedItems.length})</option>
+                                            {availableCategories.map(c => (
+                                                <option key={c} value={c}>
+                                                    {t(c, language)} ({categoryCounts[c] || 0})
+                                                </option>
+                                            ))}
                                         </select>
                                         <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                     </div>

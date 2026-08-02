@@ -739,14 +739,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                     <td className="px-4 py-4">
                                                         <div className="flex items-center justify-end gap-2">
                                                             <button
-                                                                onClick={() => handleAction(() => adminService.toggleBlockUser(u.id, !u.isBlocked))}
+                                                                onClick={() => handleAction(() => adminService.toggleBlockUser(u.id, !u.isBlocked), `block-${u.id}`, () => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, isBlocked: !u.isBlocked } : x)))}
                                                                 title={u.isBlocked ? 'Ativar' : 'Bloquear'}
                                                                 className={`p-2 rounded-xl text-[9px] font-black transition-all border ${ u.isBlocked ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500 hover:text-white' : 'bg-white/5 text-white/40 border-white/10 hover:bg-orange-500/20 hover:text-orange-400'}`}
                                                             >
                                                                 {u.isBlocked ? <CheckCircle size={14} /> : <Ban size={14} />}
                                                             </button>
                                                             <button
-                                                                onClick={() => handleAction(() => adminService.verifyUserProfile(u.id, !u.isVerified))}
+                                                                onClick={() => handleAction(() => adminService.verifyUserProfile(u.id, !u.isVerified), `verify-${u.id}`, () => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, isVerified: !u.isVerified } : x)))}
                                                                 title="Verificar"
                                                                 className={`p-2 rounded-xl transition-all border ${ u.isVerified ? 'bg-blue-500/15 text-blue-400 border-blue-500/20 hover:bg-blue-500 hover:text-white' : 'bg-white/5 text-white/40 border-white/10 hover:bg-blue-500/20 hover:text-blue-400'}`}
                                                             >
@@ -803,14 +803,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             </div>
                                             <div className="flex gap-2">
                                                 <button
-                                                    onClick={() => handleAction(() => adminService.toggleBlockUser(u.id, !u.isBlocked))}
+                                                    onClick={() => handleAction(() => adminService.toggleBlockUser(u.id, !u.isBlocked), `block-${u.id}`, () => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, isBlocked: !u.isBlocked } : x)))}
                                                     className={`flex-1 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border flex items-center justify-center gap-1.5 ${ u.isBlocked ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-white/40 border-white/10'}`}
                                                 >
                                                     {u.isBlocked ? <CheckCircle size={13} /> : <Ban size={13} />}
                                                     {u.isBlocked ? 'Ativar' : 'Bloquear'}
                                                 </button>
                                                 <button
-                                                    onClick={() => handleAction(() => adminService.verifyUserProfile(u.id, !u.isVerified))}
+                                                    onClick={() => handleAction(() => adminService.verifyUserProfile(u.id, !u.isVerified), `verify-${u.id}`, () => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, isVerified: !u.isVerified } : x)))}
                                                     className={`flex-1 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border flex items-center justify-center gap-1.5 ${ u.isVerified ? 'bg-blue-500/15 text-blue-400 border-blue-500/20' : 'bg-white/5 text-white/40 border-white/10'}`}
                                                 >
                                                     <Sparkles size={13} />

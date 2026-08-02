@@ -94,8 +94,8 @@ export const adminService: AdminService = {
                 }
             }
 
-            // Robust query - prioritize 'full_name' (MIRA SOBERANIA V2026)
-            const columns = 'id, full_name, username, email, role, avatar_url';
+            // Robust query - include is_verified and is_blocked (MIRA SOBERANIA V2026)
+            const columns = 'id, full_name, username, email, role, avatar_url, is_verified, is_blocked, reputation, trust_level';
             const { data, error, count } = await supabase
                 .from('profiles')
                 .select(columns, { count: 'exact' })
@@ -104,17 +104,18 @@ export const adminService: AdminService = {
 
             if (error) {
                 console.warn("fetchUsers: Column mismatch fallback", error);
-                const { data: fallbackData } = await supabase.from('profiles').select('id, email, role').range(from, to);
+                const { data: fallbackData } = await supabase.from('profiles').select('id, email, role, is_verified, is_blocked').range(from, to);
                 return { 
                     users: (fallbackData || []).map((u: any) => ({
                         id: u.id,
                         name: u.full_name || u.name || u.username || u.email || 'Membro',
                         email: u.email || '---',
                         role: u.role || 'member',
-                        reputation: 0,
-                        trustLevel: 'Observador',
-                        isMuted: false,
-                        isBlocked: false,
+                        reputation: u.reputation || 0,
+                        trustLevel: u.trust_level || 'Observador',
+                        isMuted: u.is_muted || false,
+                        isBlocked: u.is_blocked || false,
+                        isVerified: u.is_verified || false,
                         sovereignty_score: 0,
                         followersCount: 0,
                         followingCount: 0,
@@ -131,20 +132,21 @@ export const adminService: AdminService = {
                     name: u.full_name || u.username || u.email || 'Membro',
                     email: u.email || '---',
                     avatar: u.avatar_url,
-                    reputation: 0,
-                    trustLevel: 'Observador',
+                    reputation: u.reputation || 0,
+                    trustLevel: u.trust_level || 'Observador',
                     role: u.role || 'member',
-                    isMuted: false,
-                    isBlocked: false,
-                    isVerified: false,
+                    isMuted: u.is_muted || false,
+                    isBlocked: u.is_blocked || false,
+                    isVerified: u.is_verified || false,
                     sovereignty_score: 0,
                     followersCount: 0,
                     followingCount: 0,
                     verifiedPostsCount: 0,
                     totalLikesReceived: 0
                 })), 
-                total: count || (data?.length || 0) 
+                total: count || 0 
             };
+
         } catch (e) {
             console.error("fetchUsers Critical Fallback:", e);
             return { users: [], total: 0 };
