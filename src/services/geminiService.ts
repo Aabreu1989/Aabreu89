@@ -157,6 +157,25 @@ const MIRA_LOCAL_KB_FR: Record<string, string> = {
 const getMiraLocalResponse = (prompt: string, language: string = 'PT'): string | null => {
   const p = prompt.toLowerCase();
   const lang = (language || 'PT').toUpperCase();
+
+  // 🛡️ DISCLAIMER PRIORITÁRIO: Perguntas sobre aconselhamento jurídico, assessoria, cobrança/vender serviços
+  const isLegalOrAdvisoryQuery = [
+    'aconselhamento', 'juridico', 'jurídico', 'advogado', 'advogados', 'assessoria', 'pagar', 'pagamento',
+    'vender', 'consulta', 'consultoria', 'legal advice', 'lawyer', 'advisory', 'asesoramiento',
+    'asesoría', 'conseil juridique', 'cobram', 'preço', 'preco', 'custa', 'serviço pago', 'servicos pagos'
+  ].some(k => p.includes(k));
+
+  if (isLegalOrAdvisoryQuery) {
+    if (lang === 'EN') {
+      return "⚠️ DISCLAIMER & OFFICIAL LEGAL NOTICE:\nMIRA is a 100% FREE information and digital triage platform. WE DO NOT PROVIDE INDIVIDUAL LEGAL ADVICE NOR DO WE SELL PRIVATE IMMIGRATION ADVISORY SERVICES.\n\nWe do not replace professional lawyers or solicitadores. For individual legal advice or representation in court, consult a lawyer registered with the Portuguese Bar Association (oa.pt) or contact official free support centers (CNAIM / CLAIM).\n[view:LOCAL_SERVICES:View Official Free Support Centers]";
+    } else if (lang === 'ES') {
+      return "⚠️ AVISO LEGAL Y DISCLAIMER OFICIAL:\nMIRA es una plataforma 100% GRATUITA de información y triaje digital. NO OFRECEMOS ASESORAMIENTO JURÍDICO INDIVIDUAL NI VENDEMOS SERVICIOS DE ASESORÍA DE EXTRANJERÍA.\n\nNo reemplazamos a abogados ni solicitadores. Para asesoramiento legal personalizado, consulta a un abogado colegiado en la Ordem dos Advogados (oa.pt) o acude a los centros oficiales de apoyo gratuito (CNAIM / CLAIM).\n[view:LOCAL_SERVICES:Ver Centros Oficiales de Apoyo]";
+    } else if (lang === 'FR') {
+      return "⚠️ AVERTISSEMENT ET NOTICE JURIDIQUE OFFICIELLE :\nMIRA est une plateforme 100% GRATUITE d'information et de tri numérique. NOUS NE FOURNISSONS PAS DE CONSEIL JURIDIQUE INDIVIDUEL ET NOUS NE VENDONS PAS DE SERVICES D'ACCOMPAGNEMENT PRIVÉ.\n\nPour un conseil juridique personnalisé, consultez un avocat inscrit à l'Ordre des Avocats Portugais (oa.pt) ou rendez-vous dans les centres d'aide officiels (CNAIM / CLAIM).\n[view:LOCAL_SERVICES:Voir les Centres d'Aide Officiels]";
+    }
+    return "⚠️ AVISO LEGAL E DISCLAIMER OFICIAL DA PLATAFORMA:\n\n1. O MIRA NÃO PRESTA ACONSELHAMENTO JURÍDICO INDIVIDUALIZADO NEM VENDE SERVIÇOS DE ASSESSORIA DE IMIGRAÇÃO.\n\n2. O MIRA é uma plataforma 100% gratuita de cidadania, informação e triagem digital para orientar os cidadãos sobre os seus direitos em Portugal.\n\n3. Não somos um escritório de advogados nem cobramos por qualquer serviço de regularização. Para apoio jurídico individualizado ou representação formal, deves consultar um advogado inscrito na Ordem dos Advogados (oa.pt) ou recorrer aos gabinetes de apoio oficial gratuito do CNAIM / CLAIM.\n[view:LOCAL_SERVICES:Ver Mapa de Apoio Oficial e Serviços]";
+  }
+
   const kb = lang === 'EN' ? MIRA_LOCAL_KB_EN :
              lang === 'ES' ? MIRA_LOCAL_KB_ES :
              lang === 'FR' ? MIRA_LOCAL_KB_FR : MIRA_LOCAL_KB;
