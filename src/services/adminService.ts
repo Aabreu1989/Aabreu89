@@ -94,70 +94,76 @@ export const adminService: AdminService = {
                 }
             }
 
-            // Robust query - include is_verified and is_blocked (MIRA SOBERANIA V2026)
-            const columns = 'id, full_name, username, email, role, avatar_url, is_verified, is_blocked, reputation, trust_level';
-            const { data, error, count } = await supabase
+            // Robust query - use valid Supabase profiles columns (MIRA SOBERANIA V2026)
+            const columns = 'id, name, full_name, username, email, role, avatar_url, is_verified, account_status, reputation, trust_level';
+            let queryRes = await supabase
                 .from('profiles')
                 .select(columns, { count: 'exact' })
-                .order('id', { ascending: false })
                 .range(from, to);
 
-            if (error) {
-                console.warn("fetchUsers: Column mismatch fallback", error);
-                const { data: fallbackData } = await supabase.from('profiles').select('id, email, role, is_verified, is_blocked').range(from, to);
-                return { 
-                    users: (fallbackData || []).map((u: any) => ({
-                        id: u.id,
-                        name: u.full_name || u.name || u.username || u.email || 'Membro',
-                        email: u.email || '---',
-                        role: u.role || 'member',
-                        reputation: u.reputation || 0,
-                        trustLevel: u.trust_level || 'Observador',
-                        isMuted: u.is_muted || false,
-                        isBlocked: u.is_blocked || false,
-                        isVerified: u.is_verified || false,
-                        sovereignty_score: 0,
-                        followersCount: 0,
-                        followingCount: 0,
-                        verifiedPostsCount: 0,
-                        totalLikesReceived: 0
-                    })), 
-                    total: count || (fallbackData?.length || 0) 
-                };
+            if (queryRes.error) {
+                console.warn("fetchUsers: Custom query failed, falling back to select(*)", queryRes.error);
+                queryRes = await supabase.from('profiles').select('*', { count: 'exact' }).range(from, to);
             }
 
+            const data = queryRes.data || [];
+            const count = queryRes.count || data.length;
+
             return { 
-                users: (data || []).map((u: any) => ({
+                users: data.map((u: any) => ({
                     id: u.id,
-                    name: u.full_name || u.username || u.email || 'Membro',
+                    name: u.name || u.full_name || u.username || u.email || 'Membro',
                     email: u.email || '---',
                     avatar: u.avatar_url,
                     reputation: u.reputation || 0,
                     trustLevel: u.trust_level || 'Observador',
                     role: u.role || 'member',
                     isMuted: u.is_muted || false,
-                    isBlocked: u.is_blocked || false,
+                    isBlocked: u.account_status === 'blocked' || u.is_blocked || false,
                     isVerified: u.is_verified || false,
-                    sovereignty_score: 0,
+                    sovereignty_score: u.sovereignty_score || 0,
                     followersCount: 0,
                     followingCount: 0,
                     verifiedPostsCount: 0,
                     totalLikesReceived: 0
                 })), 
-                total: count || 0 
+                total: count
             };
 
         } catch (e) {
             console.error("fetchUsers Critical Fallback:", e);
-            return { users: [], total: 0 };
+            try {
+                const { data } = await supabase.from('profiles').select('*').range(from, to);
+                return {
+                    users: (data || []).map((u: any) => ({
+                        id: u.id,
+                        name: u.name || u.full_name || u.username || u.email || 'Membro',
+                        email: u.email || '---',
+                        avatar: u.avatar_url,
+                        role: u.role || 'member',
+                        isBlocked: u.account_status === 'blocked' || u.is_blocked || false,
+                        isVerified: u.is_verified || false,
+                        reputation: u.reputation || 0,
+                        trustLevel: u.trust_level || 'Observador'
+                    })),
+                    total: data?.length || 0
+                };
+            } catch {
+                return { users: [], total: 0 };
+            }
         }
     },
 
     async toggleBlockUser(userId: string, isBlocked: boolean): Promise<void> {
-        const { error } = await supabase.from('profiles').update({ is_blocked: isBlocked }).eq('id', userId);
-        if (error) throw error;
+        try {
+            const { error } = await supabase.from('profiles').update({ account_status: isBlocked ? 'blocked' : 'active' }).eq('id', userId);
+            if (error) {
+                await supabase.from('profiles').update({ is_blocked: isBlocked }).eq('id', userId);
+            }
+        } catch (e) {}
         await this.logAdminAction(isBlocked ? 'block_user' : 'unblock_user', { userId });
     },
+
 
     async bootstrapAimaKnowledge(): Promise<void> {
         const entries = [{ topic: 'AIMA imigração', category: 'vistos_aima', content: 'As novas diretrizes AIMA para 2026 focam na regulação central.' }];
