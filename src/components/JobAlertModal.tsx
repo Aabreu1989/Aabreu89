@@ -195,9 +195,11 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 mt-2"
+              className="w-full py-4 bg-gradient-to-r from-[#FF8C00] via-amber-500 to-[#FF8C00] hover:from-amber-500 hover:to-orange-600 text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-xl shadow-orange-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 mt-2 border border-orange-400/40 relative overflow-hidden group"
             >
-              <Bell size={16} /> Ativar Alerta de Vagas
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+              <Bell size={18} className="animate-bounce text-white shrink-0 drop-shadow" />
+              <span className="drop-shadow-sm font-black">Ativar Alerta de Vagas</span>
             </button>
           </form>
 

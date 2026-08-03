@@ -737,12 +737,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
           <button
             onClick={() => setIsAlertModalOpen(true)}
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2.5 shadow-xl shadow-amber-500/20 transition-all active:scale-95 border border-amber-400/30"
+            className="w-full bg-gradient-to-r from-[#FF8C00] via-amber-500 to-[#FF8C00] hover:from-amber-500 hover:to-orange-600 text-white py-4 px-6 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2.5 shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.02] active:scale-95 border border-orange-400/40 relative overflow-hidden group"
           >
-            <Bell size={18} className="animate-pulse text-slate-950 shrink-0" />
-            <span>Criar Alerta de Vagas</span>
+            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+            <Bell size={18} className="animate-bounce text-white shrink-0 drop-shadow" />
+            <span className="drop-shadow-sm font-black text-white">Criar Alerta de Vagas</span>
             {activeAlertsCount > 0 && (
-              <span className="bg-slate-950 text-amber-400 text-[9px] font-black px-2 py-0.5 rounded-full border border-amber-400/40 ml-1">
+              <span className="bg-white text-[#FF8C00] text-[9px] font-black px-2.5 py-0.5 rounded-full border border-white/40 shadow-sm ml-1">
                 {activeAlertsCount}
               </span>
             )}

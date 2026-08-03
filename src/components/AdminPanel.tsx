@@ -852,38 +852,105 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 </div>
 
 
-                                {totalUsers > 20 && (
-                                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 bg-white/5 p-6 rounded-3xl border border-white/10">
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                disabled={usersPage === 0}
-                                                onClick={() => setUsersPage(p => p - 1)}
-                                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF8C00] hover:text-white disabled:opacity-20 transition-all"
-                                            >
-                                                <ChevronDown className="rotate-90" size={18} />
-                                            </button>
-                                            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-[200px] sm:max-w-none">
-                                                {Array.from({ length: Math.ceil(totalUsers / 20) }).map((_, i) => (
-                                                    <button
-                                                        key={i}
-                                                        onClick={() => setUsersPage(i)}
-                                                        className={`w-9 h-9 flex items-center justify-center rounded-xl font-black text-[10px] transition-all border ${ usersPage === i ? 'bg-[#FF8C00] border-[#FF8C00] text-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'}`}
-                                                    >
-                                                        {i + 1}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                            <button
-                                                disabled={usersPage >= Math.ceil(totalUsers / 20) - 1}
-                                                onClick={() => setUsersPage(p => p + 1)}
-                                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF8C00] hover:text-white disabled:opacity-20 transition-all"
-                                            >
-                                                <ChevronDown className="-rotate-90" size={18} />
-                                            </button>
-                                        </div>
-                                        <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{totalUsers} utilizadores no total</span>
-                                    </div>
-                                )}
+                                 {totalUsers > 20 && (() => {
+                                     const totalPages = Math.ceil(totalUsers / 20);
+                                     const getVisiblePages = () => {
+                                         const pages: (number | string)[] = [];
+                                         if (totalPages <= 5) {
+                                             for (let i = 0; i < totalPages; i++) pages.push(i);
+                                         } else {
+                                             pages.push(0);
+                                             if (usersPage > 2) pages.push('...');
+                                             
+                                             const start = Math.max(1, usersPage - 1);
+                                             const end = Math.min(totalPages - 2, usersPage + 1);
+                                             for (let i = start; i <= end; i++) {
+                                                 if (!pages.includes(i)) pages.push(i);
+                                             }
+                                             
+                                             if (usersPage < totalPages - 3) pages.push('...');
+                                             pages.push(totalPages - 1);
+                                         }
+                                         return pages;
+                                     };
+
+                                     return (
+                                         <div className="flex flex-col items-center gap-4 mt-6 bg-white/5 backdrop-blur-xl p-5 sm:p-6 rounded-3xl border border-white/10">
+                                             {/* Mobile Touch View */}
+                                             <div className="flex items-center justify-between w-full sm:hidden gap-2">
+                                                 <button
+                                                     disabled={usersPage === 0}
+                                                     onClick={() => setUsersPage(p => p - 1)}
+                                                     className="px-3.5 py-2.5 rounded-2xl bg-white/10 border border-white/15 text-white font-black text-[11px] uppercase tracking-wider flex items-center gap-1.5 disabled:opacity-20 active:scale-95 transition-all shrink-0"
+                                                 >
+                                                     <ChevronDown className="rotate-90" size={15} /> Ant.
+                                                 </button>
+                                                 
+                                                 <div className="text-center min-w-0 flex-1">
+                                                     <p className="text-xs font-black text-white tracking-tight">Pág. <span className="text-[#FF8C00]">{usersPage + 1}</span> de {totalPages}</p>
+                                                     <p className="text-[9px] font-black text-white/40 uppercase tracking-widest truncate">{totalUsers} utilizadores</p>
+                                                 </div>
+
+                                                 <button
+                                                     disabled={usersPage >= totalPages - 1}
+                                                     onClick={() => setUsersPage(p => p + 1)}
+                                                     className="px-3.5 py-2.5 rounded-2xl bg-white/10 border border-white/15 text-white font-black text-[11px] uppercase tracking-wider flex items-center gap-1.5 disabled:opacity-20 active:scale-95 transition-all shrink-0"
+                                                 >
+                                                     Seg. <ChevronDown className="-rotate-90" size={15} />
+                                                 </button>
+                                             </div>
+
+                                             {/* Desktop / Tablet View */}
+                                             <div className="hidden sm:flex flex-row justify-between items-center gap-4 w-full">
+                                                 <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">
+                                                     Mostrando <span className="text-white">{usersPage * 20 + 1}-{Math.min((usersPage + 1) * 20, totalUsers)}</span> de <span className="text-white">{totalUsers}</span> utilizadores
+                                                 </span>
+
+                                                 <div className="flex items-center gap-2">
+                                                     <button
+                                                         disabled={usersPage === 0}
+                                                         onClick={() => setUsersPage(p => p - 1)}
+                                                         className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF8C00] hover:text-white disabled:opacity-20 transition-all text-white"
+                                                         title="Página Anterior"
+                                                     >
+                                                         <ChevronDown className="rotate-90" size={18} />
+                                                     </button>
+
+                                                     <div className="flex items-center gap-1.5">
+                                                         {getVisiblePages().map((pageItem, idx) => (
+                                                             typeof pageItem === 'number' ? (
+                                                                 <button
+                                                                     key={idx}
+                                                                     onClick={() => setUsersPage(pageItem)}
+                                                                     className={`w-9 h-9 flex items-center justify-center rounded-xl font-black text-[11px] transition-all border ${
+                                                                         usersPage === pageItem 
+                                                                             ? 'bg-[#FF8C00] border-[#FF8C00] text-white shadow-lg shadow-orange-500/20' 
+                                                                             : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'
+                                                                     }`}
+                                                                 >
+                                                                     {pageItem + 1}
+                                                                 </button>
+                                                             ) : (
+                                                                 <span key={idx} className="w-6 text-center text-white/40 font-black text-xs select-none">
+                                                                     ...
+                                                                 </span>
+                                                             )
+                                                         ))}
+                                                     </div>
+
+                                                     <button
+                                                         disabled={usersPage >= totalPages - 1}
+                                                         onClick={() => setUsersPage(p => p + 1)}
+                                                         className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF8C00] hover:text-white disabled:opacity-20 transition-all text-white"
+                                                         title="Próxima Página"
+                                                     >
+                                                         <ChevronDown className="-rotate-90" size={18} />
+                                                     </button>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     );
+                                 })()}
                             </div>
                         )}
 
