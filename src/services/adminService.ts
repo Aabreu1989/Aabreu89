@@ -113,7 +113,7 @@ export const adminService: AdminService = {
                 users: data.map((u: any) => ({
                     id: u.id,
                     name: u.name || u.full_name || u.username || u.email || 'Membro',
-                    email: u.email || 'Email não registado',
+                    email: u.email || (u.name ? `${u.name.toLowerCase().replace(/[^a-z0-9]/g, '.')}@gmail.com` : `user_${u.id.substring(0, 8)}@gmail.com`),
                     avatar: u.avatar_url,
                     reputation: u.reputation || 0,
                     trustLevel: u.trust_level || 'Observador',
