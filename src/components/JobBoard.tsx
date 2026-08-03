@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { JobPost, WORK_TOPICS, CATEGORIES, ViewType } from '../types';
-import { Search, Briefcase, ExternalLink, MapPin, Building2, TrendingUp, TrendingDown, Minus, ChevronDown, Filter, X, SlidersHorizontal, Map as MapIcon, Globe, FileText, RefreshCcw, AlertTriangle, Volume2, AlertCircle, Activity, CheckCircle2, Sparkles, ChevronRight } from 'lucide-react';
+import { Search, Briefcase, ExternalLink, MapPin, Building2, TrendingUp, TrendingDown, Minus, ChevronDown, Filter, X, SlidersHorizontal, Map as MapIcon, Globe, FileText, RefreshCcw, AlertTriangle, Volume2, AlertCircle, Activity, CheckCircle2, Sparkles, ChevronRight, Bell } from 'lucide-react';
 import { analytics } from '../services/analyticsService';
 import { supabase } from '../lib/supabase';
 import { t } from '../utils/translations';
@@ -9,6 +9,8 @@ import { PROTECTED_JOBS } from '../utils/protectedData';
 import { getImageUrl } from '../utils/imageUtils';
 import { normalizeCategory, normalizeWorkTopic, getWorkTopicKey } from '../utils/categoryUtils';
 import JobItem from './JobItem';
+import { JobAlertModal } from './JobAlertModal';
+import { jobAlertService } from '../services/jobAlertService';
 
 function isSpamOrBlog(title: string, url: string): boolean {
   if (!url) return false;
@@ -207,6 +209,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
   
   const [totalPlatformJobs, setTotalPlatformJobs] = useState<number>(0);
   const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts().filter(a => a.isActive).length);
+
+  const refreshAlertsCount = () => {
+    setActiveAlertsCount(jobAlertService.getAlerts().filter(a => a.isActive).length);
+  };
+
 
   // Dynamic Insights calculation based on jobs database (MIRA V2026.ELITE)
   const dynamicTrends = React.useMemo(() => {
@@ -502,6 +511,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
         });
 
       setJobs(finalJobs);
+      jobAlertService.checkAlertsAndNotify(finalJobs);
       
       // Guardar estrutura completa em cache local com timestamp TTL
       const cacheObj = {
@@ -724,15 +734,30 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
           </button>
         </div>
         
-        <button
-          onClick={() => {
-            analytics.track('europass_click', 'u1');
-            window.open('https://europa.eu/europass/eportfolio/screen/cv-editor/legacy-cv-editor?lang=pt', '_blank');
-          }}
-          className="w-full bg-[#003399] text-white py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 shadow-xl hover:bg-[#001F3F] transition-all active:scale-95"
-        >
-          <FileText size={18} /> {t('jobs_create_cv', language)}
-        </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
+          <button
+            onClick={() => setIsAlertModalOpen(true)}
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2.5 shadow-xl shadow-amber-500/20 transition-all active:scale-95 border border-amber-400/30"
+          >
+            <Bell size={18} className="animate-pulse text-slate-950 shrink-0" />
+            <span>Criar Alerta de Vagas</span>
+            {activeAlertsCount > 0 && (
+              <span className="bg-slate-950 text-amber-400 text-[9px] font-black px-2 py-0.5 rounded-full border border-amber-400/40 ml-1">
+                {activeAlertsCount}
+              </span>
+            )}
+          </button>
+          
+          <button
+            onClick={() => {
+              analytics.track('europass_click', 'u1');
+              window.open('https://europa.eu/europass/eportfolio/screen/cv-editor/legacy-cv-editor?lang=pt', '_blank');
+            }}
+            className="w-full bg-[#003399] text-white py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 shadow-xl hover:bg-[#001F3F] transition-all active:scale-95"
+          >
+            <FileText size={18} /> {t('jobs_create_cv', language)}
+          </button>
+        </div>
 
         {activeTab === 'jobs' && (
           <div className="space-y-6 animate-in fade-in duration-500">
@@ -1171,6 +1196,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
           </div>
         )}
       </div>
+
+      <JobAlertModal
+        isOpen={isAlertModalOpen}
+        onClose={() => setIsAlertModalOpen(false)}
+        language={language}
+        onAlertsChanged={refreshAlertsCount}
+      />
     </div>
   );
 };
