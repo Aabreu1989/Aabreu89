@@ -1,11 +1,12 @@
 // src/components/SimulatorsView.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Calculator, Coins, TrendingUp, Landmark, ShieldCheck, 
   MapPin, AlertTriangle, BarChart3, Info, CheckCircle2, 
   Wallet, HeartPulse, PiggyBank, Sparkles, Building2, UserCheck, Briefcase
 } from 'lucide-react';
 import { ViewType } from '../types';
+import { analytics } from '../services/analyticsService';
 
 interface SimulatorsViewProps {
   language: string;
@@ -480,6 +481,21 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
   // ─── REGIME SELECTOR: CONTA OUTREM VS RECIBOS VERDES ─────────────────────
   const [salaryRegime, setSalaryRegime] = useState<'outrem' | 'recibos'>('outrem');
+
+  useEffect(() => {
+    let userId = 'guest';
+    try {
+      const currentUserStr = localStorage.getItem('mira_user');
+      if (currentUserStr) {
+        const u = JSON.parse(currentUserStr);
+        if (u && u.id) userId = u.id;
+      }
+    } catch (e) {}
+    const simName = activeTab === 'salary' 
+      ? (salaryRegime === 'outrem' ? 'Simulador Salário Líquido (Recibos Verdes vs TI)' : 'Simulador IRS Jovem & Escalões')
+      : activeTab === 'cost' ? 'Simulador Custo de Vida em Portugal' : 'Saúde Financeira & Taxa de Esforço';
+    analytics.track('use_simulator', userId, 'Finanças & Impostos', { simulatorId: simName });
+  }, [activeTab, salaryRegime]);
 
   // ─── CONTA DE OUTREM SIMULATOR STATE ──────────────────────────────────────
   const [grossSalary, setGrossSalary] = useState<number>(1050);

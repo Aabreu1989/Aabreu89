@@ -647,21 +647,34 @@ export const adminService: AdminService = {
             const realCourses = courseCount || 0;
             const realServices = serviceCount || 0;
 
-            // Taxa de retenção e contadores de retorno
+            // Taxa de retenção e contadores de retorno reais
             const realRetentionRate = realUsers > 0
                 ? Math.round((returningUsersCount / realUsers) * 100 * 10) / 10
                 : 0;
 
-            const finalRetention = Math.max(realRetentionRate, 82.4);
-            const finalReturning = Math.max(returningUsersCount, Math.round(realUsers * 0.824));
-            const realAccesses = Math.max(appAccessesCount || 0, realUsers > 0 ? Math.floor(realUsers * 49.1) : 49592);
-            const finalDocCount = Math.max(docCount || 0, realUsers > 0 ? Math.floor(realUsers * 6.61) : 6680);
-            const finalAiQueries = Math.max(aiQueriesCount || 0, realUsers > 0 ? Math.floor(realUsers * 18.45) : 18642);
-            const finalArticleViews = Math.max(articleViewsCount || 0, Math.round(realUsers * 8.4));
-            const finalMobilePwa = Math.max(pwaMobileDownloads || 0, Math.round(realUsers * 0.64));
-            const finalDesktopPwa = Math.max(pwaComputerDownloads || 0, Math.round(realUsers * 0.28));
-            const finalTotalLikes = Math.max(totalLikesSum || 0, Math.round(realUsers * 5.4));
-            const finalSimulations = Math.max(0, realUsers > 0 ? Math.floor(realUsers * 18.4) : 18580);
+            let localSims = 0;
+            let localDocs = 0;
+            let localAccesses = 0;
+            if (typeof window !== 'undefined') {
+              try {
+                localSims = parseInt(localStorage.getItem('mira_realtime_simulations_count') || '0', 10);
+                localDocs = parseInt(localStorage.getItem('mira_realtime_documents_count') || '0', 10);
+                localAccesses = parseInt(localStorage.getItem('mira_realtime_accesses_count') || '0', 10);
+              } catch (e) {}
+            }
+
+            const simLogsRes = await supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_run']).then(res => res.count || 0).catch(() => 0);
+
+            const finalRetention = realRetentionRate;
+            const finalReturning = returningUsersCount;
+            const realAccesses = Math.max(appAccessesCount || 0, localAccesses);
+            const finalDocCount = Math.max(docCount || 0, localDocs);
+            const finalAiQueries = aiQueriesCount || 0;
+            const finalArticleViews = articleViewsCount || 0;
+            const finalMobilePwa = pwaMobileDownloads || 0;
+            const finalDesktopPwa = pwaComputerDownloads || 0;
+            const finalTotalLikes = totalLikesSum || 0;
+            const finalSimulations = Math.max(simLogsRes, localSims);
 
             return {
                 courses: { db: realCourses, prot: IEFP_MASSIVE_DATABASE?.length || 0 },
@@ -685,7 +698,7 @@ export const adminService: AdminService = {
                 simulations: finalSimulations,
                 pwaMobileDownloads: finalMobilePwa,
                 pwaComputerDownloads: finalDesktopPwa,
-                horasPoupadas: Math.max(Math.floor(realUsers * 4.5), 4545),
+                horasPoupadas: Math.floor(realUsers * 4.5),
                 processosAjudados: realUsers
             };
         } catch (err) {
@@ -1051,9 +1064,9 @@ export const adminService: AdminService = {
                     topSubtopics: conf.topSubtopics,
                     crossRef: {
                         chatQueries: catCount,
-                        communityPosts: catPosts || Math.round(catCount * 0.08),
-                        localServices: catServices || Math.round(catCount * 0.03),
-                        iefpCourses: Math.round(catCount * 0.02)
+                        communityPosts: catPosts,
+                        localServices: catServices,
+                        iefpCourses: 0
                     }
                 };
             });

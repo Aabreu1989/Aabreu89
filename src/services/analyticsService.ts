@@ -73,13 +73,31 @@ class AnalyticsService {
     // Log in development console
     console.debug('[MIRA Analytics]', log);
 
-    // ⚡ Real-Time Access Telemetry Counter
-    if (typeof window !== 'undefined' && (action === 'app_access' || action === 'app_launch' || action === 'view_changed')) {
+    // ⚡ Real-Time Access & Telemetry Counters
+    if (typeof window !== 'undefined') {
       try {
-        const currentCount = parseInt(localStorage.getItem('mira_realtime_accesses_count') || '0', 10);
-        const newCount = currentCount + 1;
-        localStorage.setItem('mira_realtime_accesses_count', newCount.toString());
-        window.dispatchEvent(new CustomEvent('mira-access-recorded', { detail: { count: newCount } }));
+        if (action === 'app_access' || action === 'app_launch' || action === 'view_changed') {
+          const currentCount = parseInt(localStorage.getItem('mira_realtime_accesses_count') || '0', 10);
+          const newCount = currentCount + 1;
+          localStorage.setItem('mira_realtime_accesses_count', newCount.toString());
+          window.dispatchEvent(new CustomEvent('mira-access-recorded', { detail: { count: newCount } }));
+        } else if (action === 'use_simulator' || (action as string) === 'simulation_run') {
+          const currentCount = parseInt(localStorage.getItem('mira_realtime_simulations_count') || '0', 10);
+          localStorage.setItem('mira_realtime_simulations_count', (currentCount + 1).toString());
+          if (metadata?.simulatorId || metadata?.name) {
+            const key = `mira_sim_count_${metadata.simulatorId || metadata.name}`;
+            const itemVal = parseInt(localStorage.getItem(key) || '0', 10);
+            localStorage.setItem(key, (itemVal + 1).toString());
+          }
+        } else if (action === 'generate_document') {
+          const currentCount = parseInt(localStorage.getItem('mira_realtime_documents_count') || '0', 10);
+          localStorage.setItem('mira_realtime_documents_count', (currentCount + 1).toString());
+          if (metadata?.templateId || metadata?.title || metadata?.name) {
+            const key = `mira_doc_count_${metadata.templateId || metadata.title || metadata.name}`;
+            const itemVal = parseInt(localStorage.getItem(key) || '0', 10);
+            localStorage.setItem(key, (itemVal + 1).toString());
+          }
+        }
       } catch (e) {}
     }
 
