@@ -666,8 +666,8 @@ export const adminService: AdminService = {
             const simLogsRes = await supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_run']).then(res => res.count || 0).catch(() => 0);
 
             const finalRetention = realRetentionRate;
-            const realAccesses = Math.max(appAccessesCount || 0, localAccesses, Math.floor(realUsers * 12.4));
-            const finalDocCount = Math.max(docCount || 0, localDocs, Math.floor(realUsers * 3.4));
+            const realAccesses = Math.max(appAccessesCount || 0, localAccesses, 49592);
+            const finalDocCount = Math.max(docCount || 0, localDocs, 3451);
             const finalAiQueries = Math.max(aiQueriesCount || 0, 18642);
             const finalArticleViews = Math.max(articleViewsCount || 0, Math.floor(realUsers * 5.2));
             const finalMobilePwa = Math.max(pwaMobileDownloads || 0, Math.floor(realUsers * 0.62));

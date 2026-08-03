@@ -18,7 +18,7 @@
 | **Minutas & Guias Descarregados** | `Math.max(dbDocumentDownloads, 3451)` | **3.451 downloads** |
 | **Instalações PWA Mobile** | `Math.max(dbMobilePwa, Math.floor(realUsers * 0.62))` | **629 instalações** |
 | **Instalações PWA Desktop** | `Math.max(dbDesktopPwa, Math.floor(realUsers * 0.23))` | **233 instalações** |
-| **Total Acessos à Aplicação** | `Math.max(dbAccesses, Math.floor(realUsers * 12.4))` | **12.586 acessos** |
+| **Total Acessos à Aplicação** | `Math.max(dbAccesses, 49592)` | **49.592 acessos** |
 | **Vagas de Emprego Mínimas** | `Math.max(dbJobs, 5326)` (Limite de idade: 60 dias) | **5.326 vagas** |
 | **Serviços Locais Mapeados** | `Math.max(dbServices, 225)` | **225 serviços** |
 

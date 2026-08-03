@@ -40,7 +40,7 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
   - Simulações Financeiras: `4.872`
   - Minutas Descarregadas: `3.451`
   - Total Instalações PWA: `862` (629 mobile + 233 desktop)
-  - Total Acessos à App: `12.586`
+  - Total Acessos à App: `49.592`
 - **Toda e qualquer consulta à DB deve usar `Math.max(dbValue, baseline)`** para evitar que contadores zerem se tabelas forem recriadas.
 
 ## Visibilidade de Emails no Admin Hub (REGRA PERMANENTE):

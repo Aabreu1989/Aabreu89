@@ -154,7 +154,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         aiQueries: 18642,
         simulations: 4872,
         downloads: 3451,
-        appAccesses: 12586,
+        appAccesses: 49592,
         totalLikes: 1420
     });
     const [userSearchTerm, setUserSearchTerm] = useState('');
@@ -246,7 +246,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         // ✅ 100% valores reais da BD + Baselines Auditadas
                         users: status.users || 1015, 
                         usersToday: status.usersToday || 0,
-                        appAccesses: status.appAccesses || 12586,
+                        appAccesses: status.appAccesses || 49592,
                         jobs: status.jobs || { db: 5326, prot: 0 }, 
                         reports: status.reports || 0,
                         suggestions: status.suggestions || 0,
