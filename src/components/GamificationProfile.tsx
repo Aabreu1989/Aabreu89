@@ -459,8 +459,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
 
     // Helper: Verificar se selo está conquistado (por registo atómico ou marco de reputação)
     const checkIsUnlocked = React.useCallback((badgeId: string) => {
-        const isAdmin = profileUser?.role === 'admin' || user?.role === 'admin' || currentUser?.role === 'admin' || ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'].includes(currentUser?.email?.toLowerCase() || '') || ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'].includes(user?.email?.toLowerCase() || '');
-        if (isAdmin) return true;
+        const isTargetAdmin = profileUser?.role === 'admin' || ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'].includes(profileUser?.email?.toLowerCase() || '');
 
         const hasDbBadge = !!profileUser?.badges?.find(ub => 
             (ub as any)?.badge_id === badgeId || 
@@ -469,7 +468,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
         );
         if (hasDbBadge) return true;
 
-        const currentRep = profileUser?.reputation || user?.reputation || 0;
+        const currentRep = profileUser?.reputation || 0;
         const thresholds: Record<string, number> = {
             coracao: 10,
             curador: 50,
@@ -481,11 +480,11 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
         };
 
         if (thresholds[badgeId] !== undefined && currentRep >= thresholds[badgeId]) return true;
-        if (badgeId === 'verificado' && (profileUser?.isVerified || isAdmin)) return true;
+        if (badgeId === 'verificado' && (profileUser?.isVerified || isTargetAdmin)) return true;
         if (badgeId === 'pioneiro') return true;
 
         return false;
-    }, [profileUser, user, currentUser]);
+    }, [profileUser]);
 
     // Calcular quantidade de medalhas conquistadas pelo utilizador
     const unlockedBadgesCount = React.useMemo(() => {
