@@ -642,38 +642,26 @@ export const adminService: AdminService = {
                 supabase.from('posts').select('likes').then(res => res.data ? res.data.reduce((acc, curr) => acc + (curr.likes || 0), 0) : 0).catch(() => 0)
             ]);
 
-            // ✅ MIRA V2026: Valores 100% reais da BD e auditoria de plataforma com suporte a base histórica
-            const realUsers = Math.max(userCount || 0, 1015);
-            const realJobs = Math.max(jobCount || 0, 5326);
+            // ✅ MIRA: Valores 100% reais extraídos diretamente da BD Supabase sem baselines artificiais
+            const realUsers = userCount || 0;
+            const realJobs = jobCount || 0;
             const realCourses = courseCount || 0;
-            const realServices = Math.max(serviceCount || 0, 225);
+            const realServices = serviceCount || 0;
 
-            // Taxa de retenção e contadores de retorno reais (Benchmark auditado de 82.0%)
-            const finalReturning = Math.max(returningUsersCount, Math.floor(realUsers * 0.82));
-            const realRetentionRate = 82.0;
-
-            let localSims = 0;
-            let localDocs = 0;
-            let localAccesses = 0;
-            if (typeof window !== 'undefined') {
-              try {
-                localSims = parseInt(localStorage.getItem('mira_realtime_simulations_count') || '0', 10);
-                localDocs = parseInt(localStorage.getItem('mira_realtime_documents_count') || '0', 10);
-                localAccesses = parseInt(localStorage.getItem('mira_realtime_accesses_count') || '0', 10);
-              } catch (e) {}
-            }
+            const finalReturning = returningUsersCount || 0;
+            const realRetentionRate = realUsers > 0 ? Math.round((finalReturning / realUsers) * 100) : 0;
 
             const simLogsRes = await supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_run']).then(res => res.count || 0).catch(() => 0);
 
             const finalRetention = realRetentionRate;
-            const realAccesses = Math.max(appAccessesCount || 0, localAccesses, 49592);
-            const finalDocCount = Math.max(docCount || 0, localDocs, 3451);
-            const finalAiQueries = Math.max(aiQueriesCount || 0, 18642);
-            const finalArticleViews = Math.max(articleViewsCount || 0, Math.floor(realUsers * 5.2));
-            const finalMobilePwa = Math.max(pwaMobileDownloads || 0, Math.floor(realUsers * 0.62));
-            const finalDesktopPwa = Math.max(pwaComputerDownloads || 0, Math.floor(realUsers * 0.23));
+            const realAccesses = appAccessesCount || 0;
+            const finalDocCount = docCount || 0;
+            const finalAiQueries = aiQueriesCount || 0;
+            const finalArticleViews = articleViewsCount || 0;
+            const finalMobilePwa = pwaMobileDownloads || 0;
+            const finalDesktopPwa = pwaComputerDownloads || 0;
             const finalTotalLikes = totalLikesSum || 0;
-            const finalSimulations = Math.max(simLogsRes, localSims, Math.floor(realUsers * 4.8));
+            const finalSimulations = simLogsRes || 0;
 
             return {
                 courses: { db: realCourses, prot: IEFP_MASSIVE_DATABASE?.length || 0 },
@@ -697,35 +685,34 @@ export const adminService: AdminService = {
                 simulations: finalSimulations,
                 pwaMobileDownloads: finalMobilePwa,
                 pwaComputerDownloads: finalDesktopPwa,
-                horasPoupadas: Math.floor(realUsers * 4.5),
+                horasPoupadas: Math.floor(realUsers * 2),
                 processosAjudados: realUsers
             };
         } catch (err) {
             console.error("MIRA: Sync Status Critical Error:", err);
-            // ✅ Em caso de erro de rede, retorna as baselines auditadas — NUNCA ZERA
             return {
-                jobs: { db: 5326, sources: 12 },
-                courses: { db: 18, prot: 0 },
-                services: { db: 225, prot: 0 },
-                users: 1015,
+                jobs: { db: 0, sources: 0 },
+                courses: { db: 0, prot: 0 },
+                services: { db: 0, prot: 0 },
+                users: 0,
                 usersToday: 0,
                 reports: 0,
                 suggestions: 0,
                 comments: 0,
-                downloads: 3451,
+                downloads: 0,
                 posts: 0,
                 verifiedPosts: 0,
                 fakePosts: 0,
-                appAccesses: 49592,
-                aiQueries: 18642,
+                appAccesses: 0,
+                aiQueries: 0,
                 articleViews: 0,
-                retentionRate: 82.0,
-                returningUsers: 832,
-                horasPoupadas: 4567,
-                processosAjudados: 1015,
-                pwaMobileDownloads: 629,
-                pwaComputerDownloads: 233,
-                totalLikes: 1420
+                retentionRate: 0,
+                returningUsers: 0,
+                horasPoupadas: 0,
+                processosAjudados: 0,
+                pwaMobileDownloads: 0,
+                pwaComputerDownloads: 0,
+                totalLikes: 0
             };
         }
     },
