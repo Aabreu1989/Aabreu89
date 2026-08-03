@@ -616,6 +616,9 @@ const AppContent: React.FC = () => {
                     }
 
                     if (profile && mounted) {
+                        if (session.user.email && profile.email !== session.user.email) {
+                            supabase.from('profiles').update({ email: session.user.email }).eq('id', profile.id).then(() => {});
+                        }
                         // VERIFICAÇÃO DE SEGURANÇA: Bloqueio de sessão sem confirmação de email
                         // V11000: Permissivo em isRecoveryMode, Provedores OAuth (Google) ou Admin Amanda
                         const isOAuth = session.user.app_metadata.provider !== 'email';

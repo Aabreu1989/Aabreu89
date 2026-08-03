@@ -415,7 +415,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
         // Fetch full profile including badges
         authService.fetchFullProfile(user.id).then(async (fullProfile) => {
             const baseUser = fullProfile || user;
-            const sanitized = { ...baseUser };
+            const sanitized = { ...baseUser, email: user?.email || baseUser?.email };
 
             if (isAdmin && !sanitized.email) {
                 try {

@@ -113,7 +113,7 @@ export const adminService: AdminService = {
                 users: data.map((u: any) => ({
                     id: u.id,
                     name: u.name || u.full_name || u.username || u.email || 'Membro',
-                    email: u.email || (u.name || u.username ? `${(u.name || u.username || 'membro').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "")}@miraimigrante.pt` : 'membro@miraimigrante.pt'),
+                    email: u.email || 'Email não registado',
                     avatar: u.avatar_url,
                     reputation: u.reputation || 0,
                     trustLevel: u.trust_level || 'Observador',
