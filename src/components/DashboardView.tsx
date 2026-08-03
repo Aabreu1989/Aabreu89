@@ -70,26 +70,26 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         retentionRate: number;
         aiQueries: number;
     }>({ 
-        jobs: 0, 
-        jobSources: 0, 
-        courses: 0, 
-        services: 0, 
-        users: 0, 
+        jobs: 5326, 
+        jobSources: 66, 
+        courses: 156, 
+        services: 225, 
+        users: 1015, 
         reports: 0, 
-        downloads: 0, 
+        downloads: 3451, 
         comments: 0, 
-        posts: 0, 
+        posts: 8, 
         verifiedPosts: 0, 
         fakePosts: 0, 
-        totalLikes: 0, 
+        totalLikes: 1420, 
         totalComments: 0, 
         totalUseful: 0,
-        appAccesses: 0,
-        articleViews: 0,
-        pwaMobileDownloads: 0,
-        pwaComputerDownloads: 0,
-        retentionRate: 0,
-        aiQueries: 0
+        appAccesses: 49592,
+        articleViews: 5278,
+        pwaMobileDownloads: 629,
+        pwaComputerDownloads: 233,
+        retentionRate: 82.0,
+        aiQueries: 18642
     });
 
     useEffect(() => {
