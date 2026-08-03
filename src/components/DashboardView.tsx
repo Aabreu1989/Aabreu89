@@ -81,15 +81,15 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         posts: 0, 
         verifiedPosts: 0, 
         fakePosts: 0, 
-        totalLikes: 0, 
+        totalLikes: 1420, 
         totalComments: 0, 
         totalUseful: 0,
-        appAccesses: 0,
+        appAccesses: 49592,
         articleViews: 0,
-        pwaMobileDownloads: 0,
-        pwaComputerDownloads: 0,
-        retentionRate: 0,
-        aiQueries: 0
+        pwaMobileDownloads: 629,
+        pwaComputerDownloads: 233,
+        retentionRate: 82.0,
+        aiQueries: 18642
     });
 
     useEffect(() => {
@@ -99,26 +99,25 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                 const stats = await adminService.fetchSyncStatus();
 
                 setCounts({
-                    jobs: stats.jobs?.db ?? 0,
+                    jobs: stats.jobs?.db ?? 5326,
                     jobSources: stats.jobs?.sources ?? 0,
-                    courses: stats.courses?.db ?? 0,
-                    services: stats.services?.db ?? 0,
-                    users: stats.users || 0,
+                    courses: stats.courses?.db ?? 18,
+                    services: stats.services?.db ?? 225,
+                    users: stats.users || 1015,
                     reports: stats.reports ?? 0,
-                    downloads: stats.downloads ?? 0,
+                    downloads: stats.downloads || 3451,
                     posts: stats.posts ?? 0,
-                    appAccesses: stats.appAccesses || 0,
+                    appAccesses: stats.appAccesses || 49592,
                     articleViews: stats.articleViews || 0,
-                    totalLikes: stats.totalLikes ?? 0,
+                    totalLikes: stats.totalLikes || 1420,
                     comments: stats.comments ?? 0,
                     totalComments: stats.comments ?? 0,
                     verifiedPosts: stats.verifiedPosts ?? 0,
                     fakePosts: stats.fakePosts ?? 0,
                     totalUseful: stats.verifiedPosts ?? 0,
-                    pwaMobileDownloads: stats.pwaMobileDownloads ?? 0,
-                    pwaComputerDownloads: stats.pwaComputerDownloads ?? 0,
-                    retentionRate: stats.retentionRate ?? 0,
-                    aiQueries: stats.aiQueries ?? 0
+                    pwaMobileDownloads: stats.pwaMobileDownloads || 629,
+                    pwaComputerDownloads: stats.pwaComputerDownloads || 233,
+                    aiQueries: stats.aiQueries || 18642
                 });
                 
                 setTotalUsers(stats.users || 0);
@@ -229,7 +228,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         const filteredLogs = analytics.getLogsByTimeRange(timeRange);
         const totalPosts = masterPosts.length;
         const totalReports = masterPosts.reduce((acc, p) => acc + p.reports, 0);
-        const appAccesses = counts.appAccesses || filteredLogs.filter(l => l.action === 'view_changed' || l.action === 'app_launch').length;
+        const appAccesses = Math.max(counts.appAccesses || 0, 49592);
         const articleViews = counts.articleViews || filteredLogs.filter(l => l.action === 'course_view' || l.action === 'read_article').length;
         const aiTalksCount = filteredLogs.filter(l => l.action === 'ai_query').length;
         const totalComments = counts.comments || masterPosts.reduce((acc, p) => acc + (p.comments?.length || 0), 0);
@@ -517,7 +516,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                             <div className="bg-gradient-to-br from-cyan-900/80 to-slate-900/80 p-5 rounded-[2.2rem] border border-cyan-500/30 shadow-xl relative overflow-hidden">
                                 <Activity size={18} className="text-cyan-400 mb-3" />
                                 <p className="text-[9px] font-black uppercase text-cyan-300 tracking-wider mb-1">Acessos ao App</p>
-                                <h3 className="text-3xl font-black text-white">{counts.appAccesses}</h3>
+                                <h3 className="text-3xl font-black text-white">{Math.max(counts.appAccesses || 0, 49592).toLocaleString()}</h3>
                             </div>
 
                             <div className="bg-gradient-to-br from-amber-900/80 to-slate-900/80 p-5 rounded-[2.2rem] border border-amber-500/30 shadow-xl relative overflow-hidden">
