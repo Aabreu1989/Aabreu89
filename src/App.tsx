@@ -631,10 +631,9 @@ const AppContent: React.FC = () => {
                             return;
                         }
 
-                        // 🛡️ MIRA: Sync email safely only if missing and confirmed in DB
-                        if (!profile.email && session.user.email) {
-                            supabase.rpc('safe_sync_profile_email', { p_email: session.user.email })
-                                .then(() => console.log('MIRA: Email sync attempt via RPC'));
+                        if (session.user.email && profile.email !== session.user.email) {
+                            supabase.from('profiles').update({ email: session.user.email }).eq('id', session.user.id).then(() => {});
+                            profile.email = session.user.email;
                         }
 
                         const u = authService.mapProfileToUser(profile, session.user);
@@ -709,10 +708,9 @@ const AppContent: React.FC = () => {
                     );
 
                     if (profile && mounted) {
-                        // 🛡️ MIRA: Safe sync via RPC
-                        if (!profile.email && session.user.email) {
-                            supabase.rpc('safe_sync_profile_email', { p_email: session.user.email })
-                                .then(() => console.log('MIRA Auth: Email sync attempt via RPC'));
+                        if (session.user.email && profile.email !== session.user.email) {
+                            supabase.from('profiles').update({ email: session.user.email }).eq('id', session.user.id).then(() => {});
+                            profile.email = session.user.email;
                         }
 
                         const u = authService.mapProfileToUser(profile, session.user);
