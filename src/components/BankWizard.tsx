@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import {
     ArrowLeft, Landmark, CheckCircle2, ChevronRight, Info, FileText,
-    Sparkles, RotateCcw, Globe, ExternalLink, DollarSign
+    Sparkles, RotateCcw, Globe, ExternalLink, DollarSign, Building2,
+    AlertTriangle, ShieldCheck, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
@@ -241,6 +242,71 @@ export const BankWizard: React.FC<BankWizardProps> = ({
                                         <Globe size={11} />
                                         Banco de Portugal (Direitos do Cliente)
                                         <ExternalLink size={10} />
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Informative Cards Section: Physical vs Digital, Tips & SMB Rights */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                {/* Card 1: Bancos Tradicionais vs Digitais */}
+                                <div className="bg-white border border-slate-100 rounded-[2rem] p-4 shadow-sm hover:border-teal-200 transition-all flex flex-col justify-between space-y-3">
+                                    <div className="space-y-2">
+                                        <div className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 font-bold">
+                                            <Building2 size={18} />
+                                        </div>
+                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight">
+                                            Opções Bancárias
+                                        </h4>
+                                        <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
+                                            <strong className="text-slate-700">Físicos (CGD, BCP, Santander):</strong> Exigem agendamento e comprovativo de morada físico, mas oferecem atendimento presencial.<br/>
+                                            <strong className="text-slate-700">Digitais/Híbridos (ActivoBank, Revolut, Wise):</strong> Abertura por app, taxas reduzidas ou nulas.
+                                        </p>
+                                    </div>
+                                    <span className="inline-block text-[9px] font-black uppercase tracking-wider text-teal-600 bg-teal-50 px-2.5 py-1 rounded-lg w-fit">
+                                        Físicos + Digitais
+                                    </span>
+                                </div>
+
+                                {/* Card 2: Dicas Práticas para Evitar Rejeição */}
+                                <div className="bg-white border border-slate-100 rounded-[2rem] p-4 shadow-sm hover:border-amber-200 transition-all flex flex-col justify-between space-y-3">
+                                    <div className="space-y-2">
+                                        <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 font-bold">
+                                            <AlertTriangle size={18} />
+                                        </div>
+                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight">
+                                            Dicas & Cuidados
+                                        </h4>
+                                        <ul className="text-[11px] text-slate-500 leading-relaxed space-y-1 font-medium list-disc list-inside">
+                                            <li>Comprovativo de morada com menos de 90 dias.</li>
+                                            <li>Atestado de Junta de Freguesia se não tiver faturas.</li>
+                                            <li>Depósito inicial obrigatório (normalmente €50-€250).</li>
+                                        </ul>
+                                    </div>
+                                    <span className="inline-block text-[9px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg w-fit">
+                                        Requisitos Importantes
+                                    </span>
+                                </div>
+
+                                {/* Card 3: Direitos de Serviços Mínimos Bancários (SMB) */}
+                                <div className="bg-white border border-slate-100 rounded-[2rem] p-4 shadow-sm hover:border-emerald-200 transition-all flex flex-col justify-between space-y-3">
+                                    <div className="space-y-2">
+                                        <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">
+                                            <ShieldCheck size={18} />
+                                        </div>
+                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight">
+                                            Conta Mínima (SMB)
+                                        </h4>
+                                        <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
+                                            Direito por lei em Portugal para quem não possui outra conta à ordem. Inclui cartão de débito, transferências e MB Way com comissão anual reduzida (máx. ~€5/ano).
+                                        </p>
+                                    </div>
+                                    <a 
+                                        href="https://www.bportugal.pt/page/servicos-minimos-bancarios" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition-colors w-fit"
+                                    >
+                                        Saber mais no BdP <ExternalLink size={10} />
                                     </a>
                                 </div>
                             </div>
