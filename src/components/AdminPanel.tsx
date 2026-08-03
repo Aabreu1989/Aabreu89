@@ -46,9 +46,8 @@ const UserCard = React.memo(({ user, isAdmin, isSuperViewer, onToggleBlock, onTo
                         {isAdmin && <ShieldCheck size={14} className="text-mira-orange" />}
                         {user.isVerified && <CheckCircle2 size={14} className="text-blue-400" />}
                     </div>
-                    {/* 🕵️ PROTOCOLO AMANDA: Email visível apenas para soberania administrativa (Visualizador SuperAdmin) */}
-                    <p className={`text-[10px] sm:text-[11px] font-black uppercase tracking-widest truncate ${isDark ? 'text-white/40' : 'text-slate-500'}`}>
-                        {isSuperViewer ? user.email : '••••••••@••••.•••'}
+                    <p className={`text-[10px] sm:text-[11px] font-black tracking-widest truncate ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
+                        {user.email}
                     </p>
                 </div>
             </div>
@@ -727,8 +726,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-4 text-[10px] font-bold text-white/40">
-                                                        {isSuperAdmin ? u.email : '••••@••••'}
+                                                    <td className="px-4 py-4 text-[11px] font-bold text-white/75 font-mono">
+                                                        {u.email}
                                                     </td>
                                                     <td className="px-4 py-4">
                                                         <span className={`text-[8px] font-black uppercase px-2.5 py-1 rounded-full ${
@@ -802,8 +801,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                         {u.role === 'admin' && <ShieldCheck size={11} className="text-[#FF8C00]" />}
                                                         {u.isVerified && <CheckCircle2 size={11} className="text-blue-400" />}
                                                     </p>
-                                                    <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest truncate">
-                                                        {isSuperAdmin ? u.email : '••••@••••'}
+                                                    <p className="text-[10px] font-bold text-white/60 tracking-wider truncate font-mono">
+                                                        {u.email}
                                                     </p>
                                                 </div>
                                                 <span className={`shrink-0 text-[7px] font-black uppercase px-2 py-1 rounded-full ${
