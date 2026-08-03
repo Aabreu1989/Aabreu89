@@ -112,6 +112,14 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
     } catch (e) { return 0; }
   };
 
+  const getServiceClickCount = (serviceName: string) => {
+    if (typeof window === 'undefined') return 0;
+    try {
+      const val = localStorage.getItem(`mira_service_click_${serviceName}`);
+      return val ? parseInt(val, 10) : 0;
+    } catch (e) { return 0; }
+  };
+
   // Expanded analytics across all app modules linked to UNIFIED_CATEGORIES
   const moduleMetrics = useMemo(() => {
     const totalSims = (platformCounts as any)?.simulations || 0;
@@ -214,13 +222,17 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
         { district: 'Leiria & Centro', avgRent: '580€/mês', friction: 'Menor Oferta Disponível' },
       ],
       clickedServices: [
-        { service: 'Balcões AIMA / Conservatórias', clicks: Math.round(totalServices * 0.35), category: 'Residência & Vistos', urgency: 'Crítica' },
-        { service: 'Lojas do Cidadão & Espaços Cidadão', clicks: Math.round(totalServices * 0.25), category: 'Direitos & Apoio Social', urgency: 'Alta' },
-        { service: 'Serviço de Finanças (AT)', clicks: Math.round(totalServices * 0.18), category: 'Finanças & Impostos', urgency: 'Média' },
-        { service: 'Segurança Social (ISS)', clicks: Math.round(totalServices * 0.12), category: 'Direitos & Apoio Social', urgency: 'Alta' },
-        { service: 'Centros de Saúde SNS & USF', clicks: Math.round(totalServices * 0.06), category: 'Saúde & SNS', urgency: 'Média' },
-        { service: 'Centros de Emprego IEFP', clicks: Math.round(totalServices * 0.04), category: 'Educação & Formação', urgency: 'Normal' },
-      ],
+        { service: 'Balcões AIMA / Conservatórias', category: 'Residência & Vistos', urgency: 'Crítica', weight: 0.35 },
+        { service: 'Lojas do Cidadão & Espaços Cidadão', category: 'Direitos & Apoio Social', urgency: 'Alta', weight: 0.25 },
+        { service: 'Serviço de Finanças (AT)', category: 'Finanças & Impostos', urgency: 'Média', weight: 0.18 },
+        { service: 'Segurança Social (ISS)', category: 'Direitos & Apoio Social', urgency: 'Alta', weight: 0.12 },
+        { service: 'Centros de Saúde SNS & USF', category: 'Saúde & SNS', urgency: 'Média', weight: 0.06 },
+        { service: 'Centros de Emprego IEFP', category: 'Educação & Formação', urgency: 'Normal', weight: 0.04 },
+      ].map(item => {
+        const tracked = getServiceClickCount(item.service);
+        const clicks = tracked > 0 ? tracked : Math.round(totalServices * item.weight);
+        return { service: item.service, clicks, category: item.category, urgency: item.urgency };
+      }),
       simulations: computedSimulations,
       downloads: computedDownloads
     };

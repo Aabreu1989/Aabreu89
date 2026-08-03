@@ -475,7 +475,30 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
 
                                         <div className="flex flex-wrap gap-2">
                                             {service.phone && (
-                                                <a href={`tel:${service.phone}`} className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:border-[#0ea5e9] hover:text-[#0ea5e9] transition-all">
+                                                <a
+                                                    href={`tel:${service.phone}`}
+                                                    onClick={() => {
+                                                        try {
+                                                            const nameLower = (service.name || '').toLowerCase();
+                                                            let matchedGroup = 'Lojas do Cidadão & Espaços Cidadão';
+                                                            if (nameLower.includes('aima') || nameLower.includes('conservatóri') || nameLower.includes('irn') || nameLower.includes('sef')) {
+                                                                matchedGroup = 'Balcões AIMA / Conservatórias';
+                                                            } else if (nameLower.includes('finança') || nameLower.includes('at')) {
+                                                                matchedGroup = 'Serviço de Finanças (AT)';
+                                                            } else if (nameLower.includes('segurança social') || nameLower.includes('iss')) {
+                                                                matchedGroup = 'Segurança Social (ISS)';
+                                                            } else if (nameLower.includes('saúde') || nameLower.includes('sns') || nameLower.includes('usf')) {
+                                                                matchedGroup = 'Centros de Saúde SNS & USF';
+                                                            } else if (nameLower.includes('iefp') || nameLower.includes('emprego')) {
+                                                                matchedGroup = 'Centros de Emprego IEFP';
+                                                            }
+                                                            const current = parseInt(localStorage.getItem(`mira_service_click_${matchedGroup}`) || '0', 10);
+                                                            localStorage.setItem(`mira_service_click_${matchedGroup}`, (current + 1).toString());
+                                                            analyticsService.logActivity('click_service', { serviceName: matchedGroup });
+                                                        } catch (err) {}
+                                                    }}
+                                                    className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:border-[#0ea5e9] hover:text-[#0ea5e9] transition-all"
+                                                >
                                                     <Phone size={14} className="shrink-0" />
                                                     <span className="text-[9px] font-black tracking-widest">{service.phone}</span>
                                                 </a>
@@ -483,6 +506,24 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
+                                                    try {
+                                                        const nameLower = (service.name || '').toLowerCase();
+                                                        let matchedGroup = 'Lojas do Cidadão & Espaços Cidadão';
+                                                        if (nameLower.includes('aima') || nameLower.includes('conservatóri') || nameLower.includes('irn') || nameLower.includes('sef')) {
+                                                            matchedGroup = 'Balcões AIMA / Conservatórias';
+                                                        } else if (nameLower.includes('finança') || nameLower.includes('at')) {
+                                                            matchedGroup = 'Serviço de Finanças (AT)';
+                                                        } else if (nameLower.includes('segurança social') || nameLower.includes('iss')) {
+                                                            matchedGroup = 'Segurança Social (ISS)';
+                                                        } else if (nameLower.includes('saúde') || nameLower.includes('sns') || nameLower.includes('usf')) {
+                                                            matchedGroup = 'Centros de Saúde SNS & USF';
+                                                        } else if (nameLower.includes('iefp') || nameLower.includes('emprego')) {
+                                                            matchedGroup = 'Centros de Emprego IEFP';
+                                                        }
+                                                        const current = parseInt(localStorage.getItem(`mira_service_click_${matchedGroup}`) || '0', 10);
+                                                        localStorage.setItem(`mira_service_click_${matchedGroup}`, (current + 1).toString());
+                                                        analyticsService.logActivity('click_service', { serviceName: matchedGroup });
+                                                    } catch (err) {}
                                                     const finalUrl = getServiceWebsite(service);
                                                     window.open(finalUrl, '_blank');
                                                 }}
