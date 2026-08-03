@@ -177,7 +177,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const [allBadges, setAllBadges] = useState<any[]>([]);
     const [selectedUserForMedals, setSelectedUserForMedals] = useState<User | null>(null);
     const [userMedals, setUserMedals] = useState<string[]>([]);
-    const [policyAnalytics, setPolicyAnalytics] = useState<{ totalInteractions: number; categories: any[] }>({ totalInteractions: 0, categories: [] });
+    const [userFilterCounts, setUserFilterCounts] = useState<{ total: number; active: number; blocked: number; verified: number }>({ total: 0, active: 0, blocked: 0, verified: 0 });
     const { showToast } = useToast();
 
     useEffect(() => {
@@ -185,7 +185,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         // 🚀 MIRA: Polling estabilizado para 10 segundos com sincronização forçada (Real-time auto update)
         const interval = setInterval(() => loadData(true), 10000);
         return () => clearInterval(interval);
-    }, [activeTab, usersPage, knowledgePage]);
+    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus]);
 
 
     // 🛡️ MIRA REAL-TIME: Escuta mudanças globais no banco para atualizar o Dashboard instantaneamente
@@ -268,9 +268,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             }
             
             if (activeTab === 'users') {
-                tasks.push(adminService.fetchUsers(usersPage, 20).then(result => {
+                tasks.push(adminService.fetchUsers(usersPage, 20, userSearchTerm, userFilterStatus).then(result => {
                     setUsers(result.users || []);
                     setTotalUsers(result.total || 0);
+                }));
+                tasks.push(adminService.fetchUserFilterCounts().then(fc => {
+                    if (fc) setUserFilterCounts(fc);
                 }));
             } else if (activeTab === 'knowledge') {
                 tasks.push(adminService.fetchAIKnowledgePaginated(knowledgePage, 20).then(kbRes => {
@@ -288,7 +291,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         } finally {
             setLoading(false);
         }
-    }, [activeTab, usersPage, knowledgePage, counts, users.length, aiKnowledge.length, dataCache, schemaHealth, dashboardPeriod]);
+    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, counts, users.length, aiKnowledge.length, dataCache, schemaHealth, dashboardPeriod]);
 
     const handleAction = async (action: () => Promise<void>, actionId?: string, optimisticUpdate?: () => void) => {
         if (processing) return;
@@ -647,15 +650,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         )}
 
                         {activeTab === 'users' && (
-                            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
+                            <div className="space-y-6 animate-in fade-in duration-500">
                                 {/* Stats bar */}
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     {[
-                                        { label: 'Total', value: totalUsers, color: 'text-[#FF8C00]' },
-                                        { label: 'Ativos', value: users.filter(u => !u.isBlocked).length, color: 'text-emerald-400' },
-                                        { label: 'Bloqueados', value: users.filter(u => u.isBlocked).length, color: 'text-red-400' },
-                                        { label: 'Verificados', value: users.filter(u => u.isVerified).length, color: 'text-blue-400' },
+                                        { label: 'Total', value: userFilterCounts.total || totalUsers, color: 'text-[#FF8C00]' },
+                                        { label: 'Ativos', value: userFilterCounts.active, color: 'text-emerald-400' },
+                                        { label: 'Bloqueados', value: userFilterCounts.blocked, color: 'text-red-400' },
+                                        { label: 'Verificados', value: userFilterCounts.verified, color: 'text-blue-400' },
                                     ].map(({ label, value, color }) => (
                                         <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
                                             <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">{label}</p>
@@ -672,7 +674,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             type="text"
                                             placeholder="Pesquisar por nome ou email..."
                                             value={userSearchTerm}
-                                            onChange={(e) => setUserSearchTerm(e.target.value)}
+                                            onChange={(e) => { setUserSearchTerm(e.target.value); setUsersPage(0); }}
                                             className="w-full pl-11 pr-5 py-3.5 bg-white/8 border border-white/15 rounded-2xl text-sm font-bold text-white placeholder:text-white/25 outline-none focus:border-[#FF8C00]/50 transition-all"
                                         />
                                     </div>
@@ -680,7 +682,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         {(['all', 'active', 'blocked', 'verified'] as const).map(f => (
                                             <button
                                                 key={f}
-                                                onClick={() => setUserFilterStatus(f)}
+                                                onClick={() => { setUserFilterStatus(f); setUsersPage(0); }}
                                                 className={`px-4 py-3.5 rounded-2xl text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${
                                                     userFilterStatus === f ? 'bg-[#FF8C00] text-white shadow-lg shadow-orange-500/20' : 'bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10'
                                                 }`}
@@ -704,10 +706,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-white/5">
-                                            {users
-                                                .filter(u => !userSearchTerm || u.name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.email?.toLowerCase().includes(userSearchTerm.toLowerCase()))
-                                                .filter(u => userFilterStatus === 'all' || (userFilterStatus === 'active' && !u.isBlocked) || (userFilterStatus === 'blocked' && u.isBlocked) || (userFilterStatus === 'verified' && u.isVerified))
-                                                .map(u => (
+                                            {users.map(u => (
                                                 <tr key={u.id} className="hover:bg-white/4 transition-colors">
                                                     <td className="px-6 py-4">
                                                         <div 
@@ -788,10 +787,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                                 {/* Mobile cards */}
                                 <div className="grid grid-cols-1 gap-3 lg:hidden">
-                                    {users
-                                        .filter(u => !userSearchTerm || u.name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.email?.toLowerCase().includes(userSearchTerm.toLowerCase()))
-                                        .filter(u => userFilterStatus === 'all' || (userFilterStatus === 'active' && !u.isBlocked) || (userFilterStatus === 'blocked' && u.isBlocked) || (userFilterStatus === 'verified' && u.isVerified))
-                                        .map(u => (
+                                    {users.map(u => (
                                         <div key={u.id} className="p-4 bg-white/5 border border-white/10 rounded-3xl space-y-3">
                                             <div 
                                                 onClick={() => onViewChange && onViewChange('profile', { profileUser: { id: u.id, name: u.name, avatar: u.avatar, email: u.email, role: u.role, isVerified: u.isVerified, isBlocked: u.isBlocked } })}
@@ -861,7 +857,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         <div className="flex items-center gap-2">
                                             <button
                                                 disabled={usersPage === 0}
-                                                onClick={() => { setUsersPage(p => p - 1); loadData(true); }}
+                                                onClick={() => setUsersPage(p => p - 1)}
                                                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF8C00] hover:text-white disabled:opacity-20 transition-all"
                                             >
                                                 <ChevronDown className="rotate-90" size={18} />
@@ -870,7 +866,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                 {Array.from({ length: Math.ceil(totalUsers / 20) }).map((_, i) => (
                                                     <button
                                                         key={i}
-                                                        onClick={() => { setUsersPage(i); loadData(true); }}
+                                                        onClick={() => setUsersPage(i)}
                                                         className={`w-9 h-9 flex items-center justify-center rounded-xl font-black text-[10px] transition-all border ${ usersPage === i ? 'bg-[#FF8C00] border-[#FF8C00] text-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'}`}
                                                     >
                                                         {i + 1}
@@ -879,7 +875,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             </div>
                                             <button
                                                 disabled={usersPage >= Math.ceil(totalUsers / 20) - 1}
-                                                onClick={() => { setUsersPage(p => p + 1); loadData(true); }}
+                                                onClick={() => setUsersPage(p => p + 1)}
                                                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF8C00] hover:text-white disabled:opacity-20 transition-all"
                                             >
                                                 <ChevronDown className="-rotate-90" size={18} />

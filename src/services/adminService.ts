@@ -5,7 +5,8 @@ import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
 
 export interface AdminService {
 
-    fetchUsers(page?: number, pageSize?: number, searchTerm?: string): Promise<{ users: User[], total: number }>;
+    fetchUsers(page?: number, pageSize?: number, searchTerm?: string, statusFilter?: 'all' | 'active' | 'blocked' | 'verified'): Promise<{ users: User[], total: number }>;
+    fetchUserFilterCounts(): Promise<{ total: number; active: number; blocked: number; verified: number }>;
     toggleBlockUser(userId: string, isBlocked: boolean): Promise<void>;
     deleteUser(userId: string, email?: string, block?: boolean): Promise<void>;
     updateUserRole(userId: string, role: string): Promise<void>;
@@ -59,51 +60,50 @@ let cachedAiQueryCategorization: any = null;
 let lastAiQueryCategorizationTime: number = 0;
 
 export const adminService: AdminService = {
-    async fetchUsers(page: number = 0, pageSize: number = 20, searchTerm: string = ''): Promise<{ users: User[], total: number }> {
+    async fetchUsers(
+        page: number = 0, 
+        pageSize: number = 20, 
+        searchTerm: string = '', 
+        statusFilter: 'all' | 'active' | 'blocked' | 'verified' = 'all'
+    ): Promise<{ users: User[], total: number }> {
         const from = page * pageSize;
         const to = from + pageSize - 1;
 
         try {
+            const columns = 'id, name, full_name, username, email, role, avatar_url, is_verified, account_status, reputation, trust_level';
+            
+            let query = supabase.from('profiles').select(columns, { count: 'exact' });
+
             if (searchTerm) {
-                const { data, error } = await supabase.rpc('search_profiles_unaccent', { 
-                    search_term: searchTerm, 
-                    page_size: pageSize, 
-                    page_offset: from 
-                });
-                if (!error && data) {
-                    return { 
-                        users: data.map((u: any) => ({
-                            id: u.id,
-                            name: u.full_name || u.name || 'Membro',
-                            email: u.email || '---',
-                            avatar: u.avatar_url,
-                            reputation: u.reputation || 0,
-                            trustLevel: u.trust_level || 'Observador',
-                            role: u.role || 'member',
-                            isMuted: u.is_muted || false,
-                            isBlocked: u.is_blocked || false,
-                            isVerified: u.is_verified || false,
-                            sovereignty_score: u.sovereignty_score || 0,
-                            followersCount: 0,
-                            followingCount: 0,
-                            verifiedPostsCount: 0,
-                            totalLikesReceived: 0
-                        })), 
-                        total: data[0]?.total_count || 0 
-                    };
-                }
+                const term = `%${searchTerm.trim()}%`;
+                query = query.or(`name.ilike.${term},full_name.ilike.${term},email.ilike.${term},username.ilike.${term}`);
             }
 
-            // Robust query - use valid Supabase profiles columns (MIRA SOBERANIA V2026)
-            const columns = 'id, name, full_name, username, email, role, avatar_url, is_verified, account_status, reputation, trust_level';
-            let queryRes = await supabase
-                .from('profiles')
-                .select(columns, { count: 'exact' })
-                .range(from, to);
+            if (statusFilter === 'active') {
+                query = query.or('account_status.neq.blocked,account_status.is.null');
+            } else if (statusFilter === 'blocked') {
+                query = query.eq('account_status', 'blocked');
+            } else if (statusFilter === 'verified') {
+                query = query.eq('is_verified', true);
+            }
+
+            let queryRes = await query.order('created_at', { ascending: false }).range(from, to);
 
             if (queryRes.error) {
                 console.warn("fetchUsers: Custom query failed, falling back to select(*)", queryRes.error);
-                queryRes = await supabase.from('profiles').select('*', { count: 'exact' }).range(from, to);
+                let fbQuery = supabase.from('profiles').select('*', { count: 'exact' });
+                if (searchTerm) {
+                    const term = `%${searchTerm.trim()}%`;
+                    fbQuery = fbQuery.or(`name.ilike.${term},full_name.ilike.${term},email.ilike.${term},username.ilike.${term}`);
+                }
+                if (statusFilter === 'active') {
+                    fbQuery = fbQuery.or('account_status.neq.blocked,account_status.is.null');
+                } else if (statusFilter === 'blocked') {
+                    fbQuery = fbQuery.eq('account_status', 'blocked');
+                } else if (statusFilter === 'verified') {
+                    fbQuery = fbQuery.eq('is_verified', true);
+                }
+                queryRes = await fbQuery.order('created_at', { ascending: false }).range(from, to);
             }
 
             const data = queryRes.data || [];
@@ -132,25 +132,26 @@ export const adminService: AdminService = {
 
         } catch (e) {
             console.error("fetchUsers Critical Fallback:", e);
-            try {
-                const { data } = await supabase.from('profiles').select('*').range(from, to);
-                return {
-                    users: (data || []).map((u: any) => ({
-                        id: u.id,
-                        name: u.name || u.full_name || u.username || u.email || 'Membro',
-                        email: u.email || '---',
-                        avatar: u.avatar_url,
-                        role: u.role || 'member',
-                        isBlocked: u.account_status === 'blocked' || u.is_blocked || false,
-                        isVerified: u.is_verified || false,
-                        reputation: u.reputation || 0,
-                        trustLevel: u.trust_level || 'Observador'
-                    })),
-                    total: data?.length || 0
-                };
-            } catch {
-                return { users: [], total: 0 };
-            }
+            return { users: [], total: 0 };
+        }
+    },
+
+    async fetchUserFilterCounts(): Promise<{ total: number; active: number; blocked: number; verified: number }> {
+        try {
+            const [totalRes, blockedRes, verifiedRes] = await Promise.all([
+                supabase.from('profiles').select('id', { count: 'exact', head: true }),
+                supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('account_status', 'blocked'),
+                supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_verified', true)
+            ]);
+
+            const total = totalRes.count || 0;
+            const blocked = blockedRes.count || 0;
+            const verified = verifiedRes.count || 0;
+            const active = Math.max(0, total - blocked);
+
+            return { total, active, blocked, verified };
+        } catch (e) {
+            return { total: 0, active: 0, blocked: 0, verified: 0 };
         }
     },
 
