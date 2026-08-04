@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Check, Trash2, Sparkles, MapPin, Briefcase, Tag, Clock, CheckCircle2 } from 'lucide-react';
+import { Bell, X, Check, Trash2, Sparkles, MapPin, Briefcase, Tag, Clock, CheckCircle2, ChevronDown } from 'lucide-react';
 import { WORK_TOPICS } from '../types';
 import { jobAlertService, JobAlert } from '../services/jobAlertService';
 import { t } from '../utils/translations';
-import { getWorkTopicKey } from '../utils/categoryUtils';
 
 interface JobAlertModalProps {
   isOpen: boolean;
@@ -70,24 +69,24 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
       {/* Backdrop overlay click to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Main Modal Container */}
-      <div className="bg-white text-slate-900 border border-slate-200/90 w-full max-w-xl rounded-t-[2.2rem] sm:rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 relative z-10">
+      <div className="bg-white text-slate-900 border border-slate-200/80 w-full max-w-lg sm:max-w-xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.35)] overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[85vh] animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 relative z-10 font-['Plus_Jakarta_Sans']">
         
-        {/* Mobile Pull Handle Indicator */}
-        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-2.5 mb-1 sm:hidden shrink-0" />
+        {/* Mobile Grab Bar Indicator */}
+        <div className="w-14 h-1.5 bg-slate-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0 shadow-inner cursor-grab" />
 
         {/* Modal Header */}
-        <div className="p-4 sm:p-6 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white flex items-center justify-between border-b border-slate-800 relative overflow-hidden shrink-0">
+        <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 relative overflow-hidden shrink-0">
           <div className="absolute top-0 right-0 w-36 h-36 bg-[#FF8C00]/20 rounded-full blur-3xl pointer-events-none" />
           
           <div className="flex items-center gap-3 relative z-10 min-w-0 pr-2">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF8C00] to-[#FF5500] p-0.5 shadow-lg shadow-orange-500/30 shrink-0 flex items-center justify-center">
-              <div className="w-full h-full bg-slate-950 rounded-[0.9rem] flex items-center justify-center">
-                <Bell size={22} className="text-[#FF8C00] animate-pulse" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF8C00] to-[#FF5500] p-0.5 shadow-lg shadow-orange-500/30 shrink-0 flex items-center justify-center">
+              <div className="w-full h-full bg-slate-950 rounded-[0.85rem] flex items-center justify-center">
+                <Bell size={20} className="text-[#FF8C00] animate-pulse" />
               </div>
             </div>
             <div className="min-w-0">
@@ -102,14 +101,14 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center border border-slate-700/60 active:scale-95 transition-all relative z-10 shrink-0"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center border border-slate-700/60 active:scale-95 transition-all relative z-10 shrink-0 cursor-pointer"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 custom-scrollbar bg-slate-50/50">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 custom-scrollbar bg-slate-50/60">
           {successToast && (
             <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top duration-300 shadow-sm">
               <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
@@ -132,16 +131,19 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                 <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                   <Briefcase size={12} className="text-sky-500 shrink-0" /> Área de Atuação
                 </label>
-                <select
-                  value={workTopic}
-                  onChange={(e) => setWorkTopic(e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold uppercase text-slate-900 outline-none focus:border-[#FF8C00] focus:ring-4 focus:ring-[#FF8C00]/10 transition-all cursor-pointer truncate shadow-sm"
-                >
-                  <option value="Todos">🌐 Todas as Áreas</option>
-                  {WORK_TOPICS.map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={workTopic}
+                    onChange={(e) => setWorkTopic(e.target.value)}
+                    className="w-full px-3.5 py-3 pr-9 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 outline-none focus:bg-white focus:border-[#FF8C00] focus:ring-4 focus:ring-[#FF8C00]/10 transition-all cursor-pointer appearance-none shadow-sm truncate"
+                  >
+                    <option value="Todos">🌐 Todas as Áreas</option>
+                    {WORK_TOPICS.map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
               </div>
 
               {/* Select Location */}
@@ -149,15 +151,18 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                 <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                   <MapPin size={12} className="text-[#FF8C00] shrink-0" /> Distrito / Cidade
                 </label>
-                <select
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold uppercase text-slate-900 outline-none focus:border-[#FF8C00] focus:ring-4 focus:ring-[#FF8C00]/10 transition-all cursor-pointer shadow-sm"
-                >
-                  {LOCATIONS_LIST.map(loc => (
-                    <option key={loc} value={loc}>{loc}</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full px-3.5 py-3 pr-9 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 outline-none focus:bg-white focus:border-[#FF8C00] focus:ring-4 focus:ring-[#FF8C00]/10 transition-all cursor-pointer appearance-none shadow-sm"
+                  >
+                    {LOCATIONS_LIST.map(loc => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
               </div>
             </div>
 
@@ -171,7 +176,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                 placeholder="Ex: Cozinheiro, Enfermeiro, Motorista..."
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
-                className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:border-[#FF8C00] focus:ring-4 focus:ring-[#FF8C00]/10 transition-all placeholder:text-slate-400 shadow-sm"
+                className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#FF8C00] focus:ring-4 focus:ring-[#FF8C00]/10 transition-all placeholder:text-slate-400 shadow-sm"
               />
             </div>
 
@@ -180,7 +185,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
               <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                 <Clock size={12} className="text-teal-500 shrink-0" /> Frequência de Alertas
               </label>
-              <div className="bg-slate-100/80 p-1 rounded-2xl grid grid-cols-3 gap-1 border border-slate-200/60">
+              <div className="bg-slate-100 p-1 rounded-2xl grid grid-cols-3 gap-1 border border-slate-200/80">
                 {[
                   { id: 'instant', label: 'Instantânea' },
                   { id: 'daily', label: 'Diária' },
@@ -190,9 +195,9 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                     type="button"
                     key={freq.id}
                     onClick={() => setFrequency(freq.id as any)}
-                    className={`py-2.5 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all text-center truncate ${
+                    className={`py-2.5 px-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all text-center truncate cursor-pointer ${
                       frequency === freq.id
-                        ? 'bg-gradient-to-r from-[#FF8C00] to-[#FF5500] text-white shadow-md shadow-orange-500/20'
+                        ? 'bg-gradient-to-r from-[#FF8C00] to-[#FF5500] text-white shadow-md shadow-orange-500/25'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
                     }`}
                   >
@@ -204,7 +209,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-4 bg-gradient-to-r from-[#FF8C00] via-amber-500 to-[#FF5500] hover:brightness-105 text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-xl shadow-orange-500/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 border border-orange-400/30 cursor-pointer mt-2"
+              className="w-full py-4 bg-gradient-to-r from-[#FF8C00] via-amber-500 to-[#FF5500] hover:brightness-110 text-white font-black uppercase tracking-[0.2em] text-xs sm:text-sm rounded-2xl shadow-xl shadow-orange-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 border border-orange-400/30 cursor-pointer mt-2"
             >
               <Bell size={18} className="animate-bounce text-white shrink-0 drop-shadow" />
               <span className="drop-shadow-sm font-black">Ativar Alerta de Vagas</span>
@@ -224,21 +229,21 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                     key={alert.id}
                     className="p-4 bg-white border border-slate-200/90 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-slate-300 transition-all"
                   >
-                    <div className="space-y-1.5 min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2.5 py-0.5 bg-orange-50 text-[#FF8C00] text-[9px] font-black uppercase rounded-full border border-orange-200 max-w-full truncate">
+                    <div className="space-y-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="px-2.5 py-1 bg-orange-50 text-[#FF8C00] text-[9px] sm:text-[10px] font-black uppercase rounded-xl border border-orange-200/80 max-w-full truncate">
                           {alert.workTopic}
                         </span>
-                        <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-[9px] font-black uppercase rounded-full border border-slate-200">
+                        <span className="px-2.5 py-1 bg-sky-50 text-sky-700 text-[9px] sm:text-[10px] font-black uppercase rounded-xl border border-sky-200/80">
                           {alert.location}
                         </span>
                         {alert.keywords && (
-                          <span className="px-2 py-0.5 bg-purple-50 text-purple-700 text-[9px] font-black uppercase rounded-full border border-purple-200 truncate">
+                          <span className="px-2.5 py-1 bg-purple-50 text-purple-700 text-[9px] sm:text-[10px] font-black uppercase rounded-xl border border-purple-200/80 truncate">
                             "{alert.keywords}"
                           </span>
                         )}
                       </div>
-                      <p className="text-[9px] text-slate-500 font-bold tracking-wider uppercase">
+                      <p className="text-[9px] text-slate-400 font-bold tracking-wider uppercase !mb-0">
                         Criado em {new Date(alert.createdAt).toLocaleDateString('pt-PT')} • {alert.frequency === 'instant' ? 'Instantâneo' : alert.frequency === 'daily' ? 'Diário' : 'Semanal'}
                       </p>
                     </div>
@@ -246,9 +251,9 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                     <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pt-2 sm:pt-0 border-t border-slate-100 sm:border-0 w-full sm:w-auto">
                       <button
                         onClick={() => handleToggle(alert.id, alert.isActive)}
-                        className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider border transition-all text-center ${
+                        className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all text-center cursor-pointer ${
                           alert.isActive
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 shadow-xs'
                             : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
                         }`}
                       >
@@ -256,7 +261,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                       </button>
                       <button
                         onClick={() => handleDelete(alert.id)}
-                        className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-slate-200 hover:border-red-200 shrink-0"
+                        className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-slate-200 hover:border-red-200 shrink-0 cursor-pointer"
                         title="Eliminar Alerta"
                       >
                         <Trash2 size={15} />
