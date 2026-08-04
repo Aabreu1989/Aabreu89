@@ -688,51 +688,52 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-['Plus_Jakarta_Sans']">
-      {/* Header Sticky Section - IMPERIAL */}
-      <div className="bg-white/95 backdrop-blur-3xl px-6 pt-8 pb-4 space-y-6 z-30 border-b border-slate-100 sticky top-0 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">{t('jobs_title', language)}</h2>
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-mira-orange animate-pulse shadow-[0_0_10px_#FF8C00]"></div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] !mb-0">{t('jobs_subtitle', language)}</p>
+      {/* Header Sticky Section - SLIM & RESPONSIVE */}
+      <div className="bg-white/95 backdrop-blur-xl px-4 sm:px-6 pt-4 pb-3 space-y-3 z-30 border-b border-slate-200/80 sticky top-0 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="space-y-0.5 min-w-0">
+            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-slate-900 truncate">{t('jobs_title', language)}</h2>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-mira-orange animate-pulse shadow-[0_0_10px_#FF8C00] shrink-0" />
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] !mb-0 truncate">{t('jobs_subtitle', language)}</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 shrink-0">
             {hasActiveFilters && (
               <button
                 onClick={resetFilters}
-                className="p-3 bg-red-50 text-red-500 hover:bg-red-100 rounded-2xl transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border border-red-100"
+                className="p-2.5 sm:p-3 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl sm:rounded-2xl transition-all flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest border border-red-100"
               >
-                <X size={16} /> <span className="hidden sm:inline">{t('jobs_reset_filters_btn', language)}</span>
+                <X size={15} /> <span className="hidden sm:inline">{t('jobs_reset_filters_btn', language)}</span>
               </button>
             )}
             <button
               onClick={() => fetchJobs(true)}
               disabled={loading}
               title={language === 'en' ? 'Refresh Job Offers' : 'Atualizar Vagas em Tempo Real'}
-              className="p-3 bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-2xl transition-all border border-slate-100"
+              className="p-2.5 sm:p-3 bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded-xl sm:rounded-2xl transition-all border border-slate-200"
             >
-              <RefreshCcw size={18} className={loading ? 'animate-spin' : ''} />
+              <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
         </div>
 
         {/* Tab Switcher - LIGHT/DARK DYNAMIC STYLING */}
-        <div className="flex bg-white p-1.5 rounded-[2rem] w-full border border-slate-200 shadow-sm relative overflow-hidden">
+        <div className="flex bg-slate-100/90 p-1 rounded-2xl w-full border border-slate-200/80 shadow-inner relative overflow-hidden">
           <button
             onClick={() => setActiveTab('jobs')}
-            className={`flex-1 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${activeTab === 'jobs' ? 'bg-[#0A0A0A] text-white shadow-xl' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+            className={`flex-1 py-2.5 sm:py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${activeTab === 'jobs' ? 'bg-[#0A0A0A] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
           >
-            <Briefcase size={15} className={activeTab === 'jobs' ? 'animate-mira-blink-modern' : ''} /> {t('nav_vagas', language)}
+            <Briefcase size={14} className={activeTab === 'jobs' ? 'animate-mira-blink-modern' : ''} /> {t('nav_vagas', language)}
           </button>
           <button
             onClick={() => setActiveTab('trends')}
-            className={`flex-1 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${activeTab === 'trends' ? 'bg-[#0A0A0A] text-white shadow-xl' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+            className={`flex-1 py-2.5 sm:py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${activeTab === 'trends' ? 'bg-[#0A0A0A] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
           >
-            <Activity size={15} className={activeTab === 'trends' ? 'animate-mira-blink-modern' : ''} /> {t('jobs_insight_title', language)}
+            <Activity size={14} className={activeTab === 'trends' ? 'animate-mira-blink-modern' : ''} /> {t('jobs_insight_title', language)}
           </button>
         </div>
+      </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
           <button
@@ -956,7 +957,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
             </div>
           </div>
         )}
-      </div>
 
       <div className="px-6 space-y-6 pb-10 mt-4">
         {loading ? (
