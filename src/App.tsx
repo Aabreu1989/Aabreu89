@@ -160,26 +160,75 @@ const AppContent: React.FC = () => {
         'amandajhonnes@yahoo.com.br',
         'amandasabreu89@gmail.com'
     ].includes(user?.email?.toLowerCase() || '') || user?.role === 'admin';
-    const [savedPostsIds, setSavedPostsIds] = useState<Set<string>>(() => {
-        const userId = user?.id || 'guest';
-        const saved = localStorage.getItem(`mira_saved_posts_${userId}`) || localStorage.getItem('mira_saved_posts');
-        try { return saved ? new Set(JSON.parse(saved)) : new Set(); } catch { return new Set(); }
-    });
-    const [likedPostsIds, setLikedPostsIds] = useState<Set<string>>(() => {
-        const userId = user?.id || 'guest';
-        const saved = localStorage.getItem(`mira_liked_posts_${userId}`) || localStorage.getItem('mira_liked_posts');
-        try { return saved ? new Set(JSON.parse(saved)) : new Set(); } catch { return new Set(); }
-    });
-    const [likedCommentsIds, setLikedCommentsIds] = useState<Set<string>>(() => {
-        const userId = user?.id || 'guest';
-        const saved = localStorage.getItem(`mira_liked_comments_${userId}`) || localStorage.getItem('mira_liked_comments');
-        try { return saved ? new Set(JSON.parse(saved)) : new Set(); } catch { return new Set(); }
-    });
-    const [userVotes, setUserVotes] = useState<Record<string, 'true' | 'false'>>(() => {
-        const userId = user?.id || 'guest';
-        const saved = localStorage.getItem(`mira_user_votes_${userId}`) || localStorage.getItem('mira_user_votes');
-        try { return saved ? JSON.parse(saved) : {}; } catch { return {}; }
-    });
+    // Helper functions for bulletproof interaction persistence across user sessions
+    const loadSavedLikes = (): Set<string> => {
+        try {
+            const merged = new Set<string>();
+            Object.keys(localStorage).forEach(k => {
+                if (k.startsWith('mira_liked_posts')) {
+                    const val = localStorage.getItem(k);
+                    if (val) {
+                        const parsed = JSON.parse(val);
+                        if (Array.isArray(parsed)) parsed.forEach(id => merged.add(String(id)));
+                    }
+                }
+            });
+            return merged;
+        } catch { return new Set(); }
+    };
+
+    const loadSavedPostsList = (): Set<string> => {
+        try {
+            const merged = new Set<string>();
+            Object.keys(localStorage).forEach(k => {
+                if (k.startsWith('mira_saved_posts')) {
+                    const val = localStorage.getItem(k);
+                    if (val) {
+                        const parsed = JSON.parse(val);
+                        if (Array.isArray(parsed)) parsed.forEach(id => merged.add(String(id)));
+                    }
+                }
+            });
+            return merged;
+        } catch { return new Set(); }
+    };
+
+    const loadSavedCommentLikes = (): Set<string> => {
+        try {
+            const merged = new Set<string>();
+            Object.keys(localStorage).forEach(k => {
+                if (k.startsWith('mira_liked_comments')) {
+                    const val = localStorage.getItem(k);
+                    if (val) {
+                        const parsed = JSON.parse(val);
+                        if (Array.isArray(parsed)) parsed.forEach(id => merged.add(String(id)));
+                    }
+                }
+            });
+            return merged;
+        } catch { return new Set(); }
+    };
+
+    const loadSavedVotes = (): Record<string, 'true' | 'false'> => {
+        try {
+            const merged: Record<string, 'true' | 'false'> = {};
+            Object.keys(localStorage).forEach(k => {
+                if (k.startsWith('mira_user_votes')) {
+                    const val = localStorage.getItem(k);
+                    if (val) {
+                        const parsed = JSON.parse(val);
+                        if (parsed && typeof parsed === 'object') Object.assign(merged, parsed);
+                    }
+                }
+            });
+            return merged;
+        } catch { return {}; }
+    };
+
+    const [savedPostsIds, setSavedPostsIds] = useState<Set<string>>(() => loadSavedPostsList());
+    const [likedPostsIds, setLikedPostsIds] = useState<Set<string>>(() => loadSavedLikes());
+    const [likedCommentsIds, setLikedCommentsIds] = useState<Set<string>>(() => loadSavedCommentLikes());
+    const [userVotes, setUserVotes] = useState<Record<string, 'true' | 'false'>>(() => loadSavedVotes());
     const [activeChat, setActiveChat] = useState<{ id: string; otherUser: any } | null>(null);
     const [courses, setCourses] = useState<Course[]>([]);
     const [commOffset, setCommOffset] = useState(0);
@@ -366,32 +415,28 @@ const AppContent: React.FC = () => {
     const fetchSavedPosts = async (userId: string): Promise<Set<string>> => {
         try {
             console.log("💎 [MIRA] Sincronizando Posts Guardados...");
-            const cachedSaved = localStorage.getItem(`mira_saved_posts_${userId}`) || localStorage.getItem('mira_saved_posts');
-            const localSaved = new Set<string>(cachedSaved ? JSON.parse(cachedSaved) : []);
+            const localSaved = loadSavedPostsList();
 
             const { data, error } = await supabase.from('saved_posts').select('post_id').eq('user_id', userId);
             if (!error && data) {
                 data.forEach(d => localSaved.add(String(d.post_id)));
             }
-            setSavedPostsIds(localSaved); 
+            setSavedPostsIds(prev => new Set([...prev, ...localSaved])); 
             localStorage.setItem('mira_saved_posts', JSON.stringify([...localSaved]));
             localStorage.setItem(`mira_saved_posts_${userId}`, JSON.stringify([...localSaved]));
             persistence.set('saved_posts', [...localSaved]);
             return localSaved;
         } catch (e) { 
             console.error('MIRA: Saved posts catch error:', e); 
-            const cachedSaved = localStorage.getItem(`mira_saved_posts_${userId}`) || localStorage.getItem('mira_saved_posts');
-            return new Set(cachedSaved ? JSON.parse(cachedSaved) : []);
+            return loadSavedPostsList();
         }
     };
 
     const fetchUserInteractions = async (userId: string) => {
         try {
-            const cachedLikes = localStorage.getItem(`mira_liked_posts_${userId}`) || localStorage.getItem('mira_liked_posts');
-            const cachedVotes = localStorage.getItem(`mira_user_votes_${userId}`) || localStorage.getItem('mira_user_votes');
-            
-            const likeSet = new Set<string>(cachedLikes ? JSON.parse(cachedLikes) : []);
-            const voteMap: Record<string, 'true' | 'false'> = cachedVotes ? JSON.parse(cachedVotes) : {};
+            const likeSet = loadSavedLikes();
+            const commentLikeSet = loadSavedCommentLikes();
+            const voteMap = loadSavedVotes();
 
             // 🛡️ MIRA SOVEREIGN: Merge with pending actions to prevent state regression
             const pendingActions = syncService.getPendingActions();
@@ -407,18 +452,16 @@ const AppContent: React.FC = () => {
                 likeSet.add(String(a.payload.postId));
             });
             
-            setLikedPostsIds(likeSet);
+            setLikedPostsIds(prev => new Set([...prev, ...likeSet]));
             localStorage.setItem('mira_liked_posts', JSON.stringify([...likeSet]));
             localStorage.setItem(`mira_liked_posts_${userId}`, JSON.stringify([...likeSet]));
 
             // Fetch Comment Likes
-            const cachedcLikes = localStorage.getItem(`mira_liked_comments_${userId}`) || localStorage.getItem('mira_liked_comments');
-            const commentLikeSet = new Set<string>(cachedcLikes ? JSON.parse(cachedcLikes) : []);
             const { data: cLikes, error: cLikesErr } = await supabase.from('comment_likes').select('comment_id').eq('user_id', userId);
             if (!cLikesErr && cLikes) {
                 cLikes.forEach(cl => commentLikeSet.add(String(cl.comment_id)));
             }
-            setLikedCommentsIds(commentLikeSet);
+            setLikedCommentsIds(prev => new Set([...prev, ...commentLikeSet]));
             localStorage.setItem('mira_liked_comments', JSON.stringify([...commentLikeSet]));
             localStorage.setItem(`mira_liked_comments_${userId}`, JSON.stringify([...commentLikeSet]));
 
@@ -435,7 +478,7 @@ const AppContent: React.FC = () => {
                 voteMap[String(a.payload.postId)] = a.payload.voteType === 'useful' ? 'true' : 'false';
             });
 
-            setUserVotes(voteMap);
+            setUserVotes(prev => ({ ...prev, ...voteMap }));
             localStorage.setItem('mira_user_votes', JSON.stringify(voteMap));
             localStorage.setItem(`mira_user_votes_${userId}`, JSON.stringify(voteMap));
 
@@ -446,12 +489,10 @@ const AppContent: React.FC = () => {
             };
         } catch (e) {
             console.error("MIRA: Error fetching interactions:", e);
-            const cachedLikes = localStorage.getItem(`mira_liked_posts_${userId}`) || localStorage.getItem('mira_liked_posts');
-            const cachedVotes = localStorage.getItem(`mira_user_votes_${userId}`) || localStorage.getItem('mira_user_votes');
             return { 
-                likes: new Set(cachedLikes ? JSON.parse(cachedLikes) : []), 
-                comments: new Set(), 
-                votes: cachedVotes ? JSON.parse(cachedVotes) : {} 
+                likes: loadSavedLikes(), 
+                comments: loadSavedCommentLikes(), 
+                votes: loadSavedVotes() 
             };
         }
     };
