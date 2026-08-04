@@ -161,19 +161,23 @@ const AppContent: React.FC = () => {
         'amandasabreu89@gmail.com'
     ].includes(user?.email?.toLowerCase() || '') || user?.role === 'admin';
     const [savedPostsIds, setSavedPostsIds] = useState<Set<string>>(() => {
-        const saved = localStorage.getItem('mira_saved_posts');
+        const userId = user?.id || 'guest';
+        const saved = localStorage.getItem(`mira_saved_posts_${userId}`) || localStorage.getItem('mira_saved_posts');
         try { return saved ? new Set(JSON.parse(saved)) : new Set(); } catch { return new Set(); }
     });
     const [likedPostsIds, setLikedPostsIds] = useState<Set<string>>(() => {
-        const saved = localStorage.getItem('mira_liked_posts');
+        const userId = user?.id || 'guest';
+        const saved = localStorage.getItem(`mira_liked_posts_${userId}`) || localStorage.getItem('mira_liked_posts');
         try { return saved ? new Set(JSON.parse(saved)) : new Set(); } catch { return new Set(); }
     });
     const [likedCommentsIds, setLikedCommentsIds] = useState<Set<string>>(() => {
-        const saved = localStorage.getItem('mira_liked_comments');
+        const userId = user?.id || 'guest';
+        const saved = localStorage.getItem(`mira_liked_comments_${userId}`) || localStorage.getItem('mira_liked_comments');
         try { return saved ? new Set(JSON.parse(saved)) : new Set(); } catch { return new Set(); }
     });
     const [userVotes, setUserVotes] = useState<Record<string, 'true' | 'false'>>(() => {
-        const saved = localStorage.getItem('mira_user_votes');
+        const userId = user?.id || 'guest';
+        const saved = localStorage.getItem(`mira_user_votes_${userId}`) || localStorage.getItem('mira_user_votes');
         try { return saved ? JSON.parse(saved) : {}; } catch { return {}; }
     });
     const [activeChat, setActiveChat] = useState<{ id: string; otherUser: any } | null>(null);
@@ -259,13 +263,33 @@ const AppContent: React.FC = () => {
             communityService.fetchPosts(user?.id).then(fetchedPosts => {
                 if (fetchedPosts && fetchedPosts.length > 0) {
                     setMasterPosts(prev => {
-                        const map = new Map();
-                        // Fresh posts from database take precedence
-                        fetchedPosts.forEach(p => map.set(p.id, p));
-                        prev.forEach(p => {
-                            if (!map.has(p.id)) map.set(p.id, p);
+                        const prevMap = new Map(prev.map(p => [p.id, p]));
+                        const merged = fetchedPosts.map(remotePost => {
+                            const localPost = prevMap.get(remotePost.id);
+                            if (!localPost) return remotePost;
+                            
+                            // Merge comments: include remote comments + any local comments created by user that aren't in remote
+                            const remoteCommentIds = new Set((remotePost.comments || []).map(c => c.id));
+                            const extraLocalComments = (localPost.comments || []).filter(c => !remoteCommentIds.has(c.id));
+                            const mergedComments = [...(remotePost.comments || []), ...extraLocalComments];
+
+                            return {
+                                ...remotePost,
+                                likes: Math.max(remotePost.likes || 0, localPost.likes || 0),
+                                usefulVotes: Math.max(remotePost.usefulVotes || 0, localPost.usefulVotes || 0),
+                                fakeVotes: Math.max(remotePost.fakeVotes || 0, localPost.fakeVotes || 0),
+                                comments: mergedComments
+                            };
                         });
-                        return Array.from(map.values());
+
+                        // Keep local-only posts (e.g. pending offline posts starting with local-)
+                        prev.forEach(p => {
+                            if (!merged.some(m => m.id === p.id) && String(p.id).startsWith('local-')) {
+                                merged.unshift(p);
+                            }
+                        });
+
+                        return merged;
                     });
                 }
             });
@@ -311,18 +335,38 @@ const AppContent: React.FC = () => {
         }
     }, [user?.id]);
 
-    useEffect(() => { localStorage.setItem('mira_liked_posts', JSON.stringify([...likedPostsIds])); }, [likedPostsIds]);
-    useEffect(() => { localStorage.setItem('mira_liked_comments', JSON.stringify([...likedCommentsIds])); }, [likedCommentsIds]);
-    useEffect(() => { localStorage.setItem('mira_user_votes', JSON.stringify(userVotes)); }, [userVotes]);
+    useEffect(() => {
+        const uId = user?.id || 'guest';
+        const arr = [...likedPostsIds];
+        localStorage.setItem('mira_liked_posts', JSON.stringify(arr));
+        localStorage.setItem(`mira_liked_posts_${uId}`, JSON.stringify(arr));
+    }, [likedPostsIds, user?.id]);
+
+    useEffect(() => {
+        const uId = user?.id || 'guest';
+        const arr = [...likedCommentsIds];
+        localStorage.setItem('mira_liked_comments', JSON.stringify(arr));
+        localStorage.setItem(`mira_liked_comments_${uId}`, JSON.stringify(arr));
+    }, [likedCommentsIds, user?.id]);
+
+    useEffect(() => {
+        const uId = user?.id || 'guest';
+        localStorage.setItem('mira_user_votes', JSON.stringify(userVotes));
+        localStorage.setItem(`mira_user_votes_${uId}`, JSON.stringify(userVotes));
+    }, [userVotes, user?.id]);
+
     useEffect(() => { 
-        localStorage.setItem('mira_saved_posts', JSON.stringify([...savedPostsIds])); 
-        persistence.set('saved_posts', [...savedPostsIds]); // V2026.PRO: Iron Persistence
-    }, [savedPostsIds]); 
+        const uId = user?.id || 'guest';
+        const arr = [...savedPostsIds];
+        localStorage.setItem('mira_saved_posts', JSON.stringify(arr)); 
+        localStorage.setItem(`mira_saved_posts_${uId}`, JSON.stringify(arr)); 
+        persistence.set('saved_posts', arr); // V2026.PRO: Iron Persistence
+    }, [savedPostsIds, user?.id]); 
 
     const fetchSavedPosts = async (userId: string): Promise<Set<string>> => {
         try {
             console.log("💎 [MIRA] Sincronizando Posts Guardados...");
-            const cachedSaved = localStorage.getItem('mira_saved_posts');
+            const cachedSaved = localStorage.getItem(`mira_saved_posts_${userId}`) || localStorage.getItem('mira_saved_posts');
             const localSaved = new Set<string>(cachedSaved ? JSON.parse(cachedSaved) : []);
 
             const { data, error } = await supabase.from('saved_posts').select('post_id').eq('user_id', userId);
@@ -331,19 +375,20 @@ const AppContent: React.FC = () => {
             }
             setSavedPostsIds(localSaved); 
             localStorage.setItem('mira_saved_posts', JSON.stringify([...localSaved]));
+            localStorage.setItem(`mira_saved_posts_${userId}`, JSON.stringify([...localSaved]));
             persistence.set('saved_posts', [...localSaved]);
             return localSaved;
         } catch (e) { 
             console.error('MIRA: Saved posts catch error:', e); 
-            const cachedSaved = localStorage.getItem('mira_saved_posts');
+            const cachedSaved = localStorage.getItem(`mira_saved_posts_${userId}`) || localStorage.getItem('mira_saved_posts');
             return new Set(cachedSaved ? JSON.parse(cachedSaved) : []);
         }
     };
 
     const fetchUserInteractions = async (userId: string) => {
         try {
-            const cachedLikes = localStorage.getItem('mira_liked_posts');
-            const cachedVotes = localStorage.getItem('mira_user_votes');
+            const cachedLikes = localStorage.getItem(`mira_liked_posts_${userId}`) || localStorage.getItem('mira_liked_posts');
+            const cachedVotes = localStorage.getItem(`mira_user_votes_${userId}`) || localStorage.getItem('mira_user_votes');
             
             const likeSet = new Set<string>(cachedLikes ? JSON.parse(cachedLikes) : []);
             const voteMap: Record<string, 'true' | 'false'> = cachedVotes ? JSON.parse(cachedVotes) : {};
@@ -352,8 +397,8 @@ const AppContent: React.FC = () => {
             const pendingActions = syncService.getPendingActions();
             
             // Fetch Likes from DB
-            const { data: likes } = await supabase.from('post_votes').select('post_id').eq('user_id', userId).eq('vote_type', 'like');
-            if (likes) {
+            const { data: likes, error: likesErr } = await supabase.from('post_votes').select('post_id').eq('user_id', userId).eq('vote_type', 'like');
+            if (!likesErr && likes) {
                 likes.forEach(l => likeSet.add(String(l.post_id)));
             }
             
@@ -364,20 +409,22 @@ const AppContent: React.FC = () => {
             
             setLikedPostsIds(likeSet);
             localStorage.setItem('mira_liked_posts', JSON.stringify([...likeSet]));
+            localStorage.setItem(`mira_liked_posts_${userId}`, JSON.stringify([...likeSet]));
 
             // Fetch Comment Likes
-            const cachedcLikes = localStorage.getItem('mira_liked_comments');
+            const cachedcLikes = localStorage.getItem(`mira_liked_comments_${userId}`) || localStorage.getItem('mira_liked_comments');
             const commentLikeSet = new Set<string>(cachedcLikes ? JSON.parse(cachedcLikes) : []);
-            const { data: cLikes } = await supabase.from('comment_likes').select('comment_id').eq('user_id', userId);
-            if (cLikes) {
+            const { data: cLikes, error: cLikesErr } = await supabase.from('comment_likes').select('comment_id').eq('user_id', userId);
+            if (!cLikesErr && cLikes) {
                 cLikes.forEach(cl => commentLikeSet.add(String(cl.comment_id)));
             }
             setLikedCommentsIds(commentLikeSet);
             localStorage.setItem('mira_liked_comments', JSON.stringify([...commentLikeSet]));
+            localStorage.setItem(`mira_liked_comments_${userId}`, JSON.stringify([...commentLikeSet]));
 
             // Fetch Votes
-            const { data: votes } = await supabase.from('post_votes').select('post_id, vote_type').eq('user_id', userId).in('vote_type', ['useful', 'fake']);
-            if (votes) {
+            const { data: votes, error: votesErr } = await supabase.from('post_votes').select('post_id, vote_type').eq('user_id', userId).in('vote_type', ['useful', 'fake']);
+            if (!votesErr && votes) {
                 votes.forEach(v => {
                     voteMap[String(v.post_id)] = v.vote_type === 'useful' ? 'true' : 'false';
                 });
@@ -390,6 +437,7 @@ const AppContent: React.FC = () => {
 
             setUserVotes(voteMap);
             localStorage.setItem('mira_user_votes', JSON.stringify(voteMap));
+            localStorage.setItem(`mira_user_votes_${userId}`, JSON.stringify(voteMap));
 
             return {
                 likes: likeSet,
@@ -398,8 +446,8 @@ const AppContent: React.FC = () => {
             };
         } catch (e) {
             console.error("MIRA: Error fetching interactions:", e);
-            const cachedLikes = localStorage.getItem('mira_liked_posts');
-            const cachedVotes = localStorage.getItem('mira_user_votes');
+            const cachedLikes = localStorage.getItem(`mira_liked_posts_${userId}`) || localStorage.getItem('mira_liked_posts');
+            const cachedVotes = localStorage.getItem(`mira_user_votes_${userId}`) || localStorage.getItem('mira_user_votes');
             return { 
                 likes: new Set(cachedLikes ? JSON.parse(cachedLikes) : []), 
                 comments: new Set(), 

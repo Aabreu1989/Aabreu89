@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { followService } from '../services/followService';
+import { isUserAdmin } from '../utils/adminUtils';
 import { User, Comment, ForumPost, ViewType, Badge, Post } from '../types';
 import { FileText, Bookmark, Shield, CheckCircle2, Heart, Zap, Star, X, LogOut, Award, Flame, UserCheck, ShieldAlert, Book, MapPin, Activity, Edit2, Check, CalendarCheck, Trash2, Lock, Users, MessageSquare, Mail, Map, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -410,56 +411,70 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
         if (!user?.id) return;
 
         const isOwner = currentUser?.id === user?.id;
-        const isAdmin = currentUser?.role === 'admin' || ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'].includes(currentUser?.email?.toLowerCase() || '');
+        const isAdmin = isUserAdmin(currentUser);
 
-        // Fetch full profile including badges
-        authService.fetchFullProfile(user.id).then(async (fullProfile) => {
-            const baseUser = fullProfile || user;
-            const sanitized = { ...baseUser, email: user?.email || baseUser?.email };
+        let isMounted = true;
 
-            if (isAdmin && !sanitized.email) {
-                try {
-                    const { data: profileDb } = await supabase.from('profiles').select('email').eq('id', user.id).maybeSingle();
-                    if (profileDb?.email) {
-                        sanitized.email = profileDb.email;
-                    }
-                } catch (e) {}
+        async function syncProfileData() {
+            try {
+                const fullProfile = await authService.fetchFullProfile(user.id);
+                if (!isMounted) return;
+
+                const baseUser = fullProfile || user;
+                const sanitized = { ...baseUser, email: user?.email || baseUser?.email };
+
+                if (isAdmin && !sanitized.email) {
+                    try {
+                        const { data: profileDb } = await supabase.from('profiles').select('email').eq('id', user.id).maybeSingle();
+                        if (profileDb?.email) {
+                            sanitized.email = profileDb.email;
+                        }
+                    } catch (e) {}
+                }
+
+                if (!isAdmin && !isOwner) {
+                    sanitized.email = undefined;
+                }
+
+                const [realFollowers, realFollowing] = await Promise.all([
+                    followService.getFollowerCount(user.id),
+                    followService.getFollowingCount(user.id)
+                ]);
+
+                if (!isMounted) return;
+
+                sanitized.followersCount = realFollowers;
+                sanitized.followingCount = realFollowing;
+
+                setProfileUser(sanitized);
+                setLocalFollowersCount(realFollowers);
+            } catch (err) {
+                console.error("Error syncing profile data:", err);
             }
+        }
 
-            // Hide email if user is not admin and not the owner
-            if (!isAdmin && !isOwner) {
-                sanitized.email = undefined;
-            }
-            setProfileUser(sanitized);
-        });
+        syncProfileData();
 
-
-        // 🛡️ MIRA SOBERANIA: Sincronização Real-Time de Métricas (Evita contagem estagnada)
-        followService.getFollowerCount(user.id).then(count => {
-            setLocalFollowersCount(count);
-            setProfileUser(prev => prev ? { ...prev, followersCount: count } : prev);
-        });
-        followService.getFollowingCount(user.id).then(count => {
-            setProfileUser(prev => prev ? { ...prev, followingCount: count } : prev);
-        });
-        
         // 📊 MIRA: Buscar contagem real de downloads de documentos do utilizador
         supabase
             .from('user_documents')
             .select('id', { count: 'exact', head: true })
             .eq('user_id', user.id)
             .then(({ count, error }) => {
-                if (!error && count !== null) {
+                if (isMounted && !error && count !== null) {
                     setDocumentDownloadsCount(count);
                 }
             });
 
-    }, [user?.id, currentUser?.role, currentUser?.id]);
+        return () => {
+            isMounted = false;
+        };
+    }, [user?.id, currentUser?.id, currentUser?.role, currentUser?.email]);
 
 
     // Helper: Verificar se selo está conquistado (por registo atómico ou marco de reputação)
     const checkIsUnlocked = React.useCallback((badgeId: string) => {
-        const isTargetAdmin = profileUser?.role === 'admin' || ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'].includes(profileUser?.email?.toLowerCase() || '');
+        const isTargetAdmin = isUserAdmin(profileUser);
 
         const hasDbBadge = !!profileUser?.badges?.find(ub => 
             (ub as any)?.badge_id === badgeId || 

@@ -109,11 +109,11 @@ export const adminService: AdminService = {
             const data = queryRes.data || [];
             const count = queryRes.count || data.length;
 
-            return { 
+            return {
                 users: data.map((u: any) => ({
                     id: u.id,
-                    name: u.name || u.full_name || u.username || u.email || 'Membro',
-                    email: u.email || (u.name ? `${u.name.toLowerCase().replace(/[^a-z0-9]/g, '.')}@gmail.com` : `user_${u.id.substring(0, 8)}@gmail.com`),
+                    name: u.full_name || u.name || u.username || u.email || 'Membro',
+                    email: u.email || '',
                     avatar: u.avatar_url,
                     reputation: u.reputation || 0,
                     trustLevel: u.trust_level || 'Observador',

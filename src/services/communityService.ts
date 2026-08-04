@@ -268,8 +268,8 @@ export const communityService = {
         return { success: true, action: 'added' };
       }
     } catch (err: any) {
-      console.error('🚨 Erro na interação:', err.message);
-      throw err;
+      console.warn('🚨 Erro na interação em nuvem (mantido localmente):', err?.message || err);
+      return { success: false, action: 'local_only' };
     }
   },
 
@@ -292,8 +292,8 @@ export const communityService = {
       }
       return true;
     } catch (err) {
-      console.error('🚨 Erro ao guardar post:', err);
-      throw err;
+      console.warn('🚨 Erro ao guardar post em nuvem (mantido localmente):', err);
+      return false;
     }
   },
 
@@ -311,8 +311,8 @@ export const communityService = {
       if (error) throw error;
       return data;
     } catch (err) {
-      console.error('🚨 Erro ao comentar:', err);
-      throw err;
+      console.warn('🚨 Erro ao comentar em nuvem (mantido localmente):', err);
+      return null;
     }
   },
 
