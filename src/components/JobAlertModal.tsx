@@ -69,12 +69,12 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-300">
       {/* Backdrop overlay click to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Main Modal Container */}
-      <div className="bg-white text-slate-900 border border-slate-200/80 w-full max-w-lg sm:max-w-xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.35)] overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[85vh] animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 relative z-10 font-['Plus_Jakarta_Sans']">
+      <div className="bg-white text-slate-900 border border-slate-200/80 w-full max-w-lg sm:max-w-xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 relative z-10 font-['Plus_Jakarta_Sans'] mb-0">
         
         {/* Mobile Grab Bar Indicator */}
         <div className="w-14 h-1.5 bg-slate-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0 shadow-inner cursor-grab" />
@@ -100,6 +100,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
           </div>
 
           <button
+            type="button"
             onClick={onClose}
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center border border-slate-700/60 active:scale-95 transition-all relative z-10 shrink-0 cursor-pointer"
           >
@@ -107,8 +108,8 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 custom-scrollbar bg-slate-50/60">
+        {/* Modal Body with Extra Bottom Clearance (pb-32) for Mobile Navbar */}
+        <div className="p-4 sm:p-6 overflow-y-auto overscroll-contain touch-pan-y space-y-4 sm:space-y-6 flex-1 custom-scrollbar bg-slate-50/70 pb-32 sm:pb-8">
           {successToast && (
             <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top duration-300 shadow-sm">
               <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
@@ -180,39 +181,42 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
               />
             </div>
 
-            {/* Frequency Selection Pills */}
+            {/* Frequency Selection Pills with High Contrast Guarantee */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                 <Clock size={12} className="text-teal-500 shrink-0" /> Frequência de Alertas
               </label>
-              <div className="bg-slate-100 p-1 rounded-2xl grid grid-cols-3 gap-1 border border-slate-200/80">
+              <div className="bg-slate-100 p-1.5 rounded-2xl grid grid-cols-3 gap-1.5 border border-slate-200/80">
                 {[
                   { id: 'instant', label: 'Instantânea' },
                   { id: 'daily', label: 'Diária' },
                   { id: 'weekly', label: 'Semanal' },
-                ].map(freq => (
-                  <button
-                    type="button"
-                    key={freq.id}
-                    onClick={() => setFrequency(freq.id as any)}
-                    className={`py-2.5 px-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all text-center truncate cursor-pointer ${
-                      frequency === freq.id
-                        ? 'bg-gradient-to-r from-[#FF8C00] to-[#FF5500] text-white shadow-md shadow-orange-500/25'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-                    }`}
-                  >
-                    {freq.label}
-                  </button>
-                ))}
+                ].map(freq => {
+                  const isSelected = frequency === freq.id;
+                  return (
+                    <button
+                      type="button"
+                      key={freq.id}
+                      onClick={() => setFrequency(freq.id as any)}
+                      className={`py-2.5 px-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all text-center truncate cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#FF8C00] !text-white shadow-md shadow-orange-500/30 border border-orange-500 font-extrabold scale-[1.02]'
+                          : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200/70 font-bold'
+                      }`}
+                    >
+                      {freq.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-4 bg-gradient-to-r from-[#FF8C00] via-amber-500 to-[#FF5500] hover:brightness-110 text-white font-black uppercase tracking-[0.2em] text-xs sm:text-sm rounded-2xl shadow-xl shadow-orange-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 border border-orange-400/30 cursor-pointer mt-2"
+              className="w-full py-4 bg-gradient-to-r from-[#FF8C00] via-amber-500 to-[#FF5500] hover:brightness-110 !text-white font-black uppercase tracking-[0.2em] text-xs sm:text-sm rounded-2xl shadow-xl shadow-orange-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 border border-orange-400/30 cursor-pointer mt-2"
             >
-              <Bell size={18} className="animate-bounce text-white shrink-0 drop-shadow" />
-              <span className="drop-shadow-sm font-black">Ativar Alerta de Vagas</span>
+              <Bell size={18} className="animate-bounce !text-white shrink-0 drop-shadow" />
+              <span className="drop-shadow-sm font-black !text-white">Ativar Alerta de Vagas</span>
             </button>
           </form>
 
@@ -250,6 +254,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
 
                     <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pt-2 sm:pt-0 border-t border-slate-100 sm:border-0 w-full sm:w-auto">
                       <button
+                        type="button"
                         onClick={() => handleToggle(alert.id, alert.isActive)}
                         className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all text-center cursor-pointer ${
                           alert.isActive
@@ -260,6 +265,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                         {alert.isActive ? 'Ativo' : 'Pausado'}
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(alert.id)}
                         className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-slate-200 hover:border-red-200 shrink-0 cursor-pointer"
                         title="Eliminar Alerta"
