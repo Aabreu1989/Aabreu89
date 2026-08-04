@@ -472,9 +472,10 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
     }, [user?.id, currentUser?.id, currentUser?.role, currentUser?.email]);
 
 
-    // Helper: Verificar se selo está conquistado (por registo atómico ou marco de reputação)
+    // Helper: Verificar se selo está conquistado (por registo atómico, marco de reputação ou Admin)
     const checkIsUnlocked = React.useCallback((badgeId: string) => {
         const isTargetAdmin = isUserAdmin(profileUser);
+        if (isTargetAdmin) return true; // 👑 SOBERANIA AMANDA: Administradores possuem todos os selos desbloqueados
 
         const hasDbBadge = !!profileUser?.badges?.find(ub => 
             (ub as any)?.badge_id === badgeId || 
