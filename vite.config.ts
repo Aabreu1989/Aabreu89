@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
     root: path.resolve(__dirname),
     server: {
       port: 3333,
-      host: '127.0.0.1',
-      strictPort: true, 
+      host: true,
+      strictPort: false, 
       hmr: {
         overlay: true,           // Show errors as overlay instead of crashing
         timeout: 60000,          // 60s timeout before giving up on HMR connection

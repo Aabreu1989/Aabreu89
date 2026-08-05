@@ -35,15 +35,17 @@ function log(prefix, color, msg) {
 // ─── LIBERTA PORTAS OCUPADAS ─────────────────────────────────────────────────
 function freePort(port) {
     try {
-        // Windows: find and kill process on port
-        const result = execSync(
-            `for /f "tokens=5" %a in ('netstat -aon ^| findstr :${port}') do taskkill /F /PID %a`,
-            { shell: 'cmd.exe', stdio: 'pipe', timeout: 3000 }
-        );
-        log('SYS', COLORS.sys, `✅ Porto ${port} libertado.`);
-    } catch (err) {
-        // Port was already free or taskkill failed silently — that's fine
-        log('SYS', COLORS.sys, `ℹ️  Porto ${port} verificado / libertado.`);
+        if (process.platform === 'win32') {
+            execSync(
+                `powershell -Command "Get-NetTCPConnection -LocalPort ${port} -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }"`,
+                { stdio: 'ignore', timeout: 4000 }
+            );
+        } else {
+            execSync(`fuser -k ${port}/tcp`, { stdio: 'ignore', timeout: 4000 });
+        }
+        log('SYS', COLORS.sys, `✅ Porto ${port} verificado e livre.`);
+    } catch {
+        log('SYS', COLORS.sys, `ℹ️  Porto ${port} pronto.`);
     }
 }
 
