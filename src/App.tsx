@@ -639,31 +639,39 @@ const AppContent: React.FC = () => {
 
                     if (accessToken) {
                         try {
+                            let targetUser: any = null;
                             const { data: setSessionRes, error: setSessionErr } = await supabase.auth.setSession({
                                 access_token: accessToken,
                                 refresh_token: refreshToken || ''
                             });
-                            if (setSessionErr) {
-                                console.error("🔑 [MIRA AUTH] setSession error:", setSessionErr);
-                            } else if (setSessionRes?.session?.user) {
-                                console.log("✅ [MIRA AUTH] Session restored via token for:", setSessionRes.session.user.email);
+
+                            if (setSessionRes?.session?.user) {
+                                targetUser = setSessionRes.session.user;
+                            } else {
+                                console.warn("🔑 [MIRA AUTH] setSession failed, attempting direct token verification...", setSessionErr);
+                                const { data: userData } = await supabase.auth.getUser(accessToken);
+                                if (userData?.user) targetUser = userData.user;
+                            }
+
+                            if (targetUser) {
+                                console.log("✅ [MIRA AUTH] Session restored via token for:", targetUser.email);
                                 let profile = await authService.fetchProfileWithRetry(
-                                    setSessionRes.session.user.id,
-                                    setSessionRes.session.user.email || '',
-                                    setSessionRes.session.user.user_metadata?.name || setSessionRes.session.user.user_metadata?.full_name
+                                    targetUser.id,
+                                    targetUser.email || '',
+                                    targetUser.user_metadata?.name || targetUser.user_metadata?.full_name
                                 );
 
                                 if (!profile) {
                                     console.log("🔑 [MIRA AUTH] Profile not found, creating fallback profile...");
                                     profile = await authService.createFallbackProfile(
-                                        setSessionRes.session.user.id,
-                                        setSessionRes.session.user.email || '',
-                                        setSessionRes.session.user.user_metadata?.name || setSessionRes.session.user.user_metadata?.full_name
+                                        targetUser.id,
+                                        targetUser.email || '',
+                                        targetUser.user_metadata?.name || targetUser.user_metadata?.full_name
                                     );
                                 }
 
                                 if (profile && mounted) {
-                                    const u = authService.mapProfileToUser(profile, setSessionRes.session.user);
+                                    const u = authService.mapProfileToUser(profile, targetUser);
                                     setUser(u);
                                     localStorage.setItem('mira_user', JSON.stringify(u));
                                     setShowSplash(false);

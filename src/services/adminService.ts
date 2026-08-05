@@ -638,8 +638,7 @@ export const adminService: AdminService = {
                 supabase.from('posts').select('id', { count: 'exact', head: true }).eq('validation_status', 'fraud').then(res => res.count || 0).catch(() => 0),
                 supabase.from('activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'ai_query').then(res => res.count || 0).catch(() => 0),
                 supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['app_launch', 'view_changed', 'app_access', 'session_start']).then(res => res.count || 0).catch(() => 0),
-                supabase.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)').then(res => res.count || 0).catch(() => 0),
-                supabase.from('posts').select('likes').then(res => res.data ? res.data.reduce((acc, curr) => acc + (curr.likes || 0), 0) : 0).catch(() => 0)
+                supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'like').then(res => res.count || 0).catch(() => 0)
             ]);
 
             // ✅ MIRA: Contagens de base de dados e totais cumulativos dinamicos de telemetria da plataforma (REAL-TIME MOVEMENT)
