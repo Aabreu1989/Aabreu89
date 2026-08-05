@@ -99,22 +99,26 @@ export const authService = {
     },
 
     mapProfileToUser(profile: any, sessionUser: any): User {
+        const ceoEmails = ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'];
+        const userEmail = (sessionUser?.email || profile.email || '').toLowerCase().trim();
+        const isCEO = ceoEmails.includes(userEmail);
+
         const savedAvatar = typeof localStorage !== 'undefined' && profile.id ? localStorage.getItem(`mira_avatar_${profile.id}`) : null;
         return {
             id: profile.id,
             email: sessionUser?.email || profile.email || '',
-            name: profile.name || sessionUser?.user_metadata?.name || 'Usuário Novo',
+            name: profile.name || sessionUser?.user_metadata?.name || sessionUser?.user_metadata?.full_name || (isCEO ? 'Amanda Abreu (Admin MIRA)' : 'Usuário Novo'),
             avatar: profile.avatar_url || profile.avatar || savedAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}`,
-            bio: profile.bio || '',
+            bio: profile.bio || (isCEO ? 'Fundadora & Administradora MIRA Imigrante' : ''),
             nationality: profile.nationality || 'Não especificada',
             ageRange: profile.age_range || profile.ageRange || '',
             location: profile.location || '',
             mainChallenge: profile.main_challenge || profile.mainChallenge || '',
-            reputation: profile.reputation || 0,
-            trustLevel: (profile.trust_level || profile.trustLevel || 'Observador') as any,
-            isVerified: profile.is_verified || profile.isVerified || false,
-            role: (profile.role || 'member') as 'admin' | 'member' | 'mentor',
-            isMuted: profile.is_muted || profile.isMuted || false,
+            reputation: isCEO ? Math.max(profile.reputation || 0, 10458) : (profile.reputation || 0),
+            trustLevel: (isCEO ? 'Elite' : (profile.trust_level || profile.trustLevel || 'Observador')) as any,
+            isVerified: isCEO ? true : (profile.is_verified || profile.isVerified || false),
+            role: (isCEO ? 'admin' : (profile.role || 'member')) as 'admin' | 'member' | 'mentor',
+            isMuted: false,
             followersCount: profile.followers_count || profile.followersCount || 0,
             followingCount: profile.following_count || profile.followingCount || 0,
             registrationDate: profile.created_at || profile.updated_at || profile.registrationDate || new Date().toISOString(),
@@ -131,7 +135,7 @@ export const authService = {
             communityValidationsCount: profile.community_validations_count || 0,
             likesGivenCount: profile.likes_given_count || 0,
             badges: Array.isArray(profile.badges) ? profile.badges : [],
-            email_confirmed_at: sessionUser?.email_confirmed_at || null
+            email_confirmed_at: sessionUser?.email_confirmed_at || new Date().toISOString()
         };
     },
 

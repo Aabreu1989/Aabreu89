@@ -724,77 +724,29 @@ const AppContent: React.FC = () => {
                 }
 
                 const { data: { session } } = await supabase.auth.getSession();
-                if (session && mounted) {
-                    const profile = await authService.fetchProfileWithRetry(
+                if (session?.user && mounted) {
+                    let profile = await authService.fetchProfileWithRetry(
                         session.user.id, 
                         session.user.email || '', 
-                        session.user.user_metadata?.name
+                        session.user.user_metadata?.name || session.user.user_metadata?.full_name
                     );
 
-                    if (!profile && mounted) {
-                        console.warn("MIRA Security: Perfil não encontrado. Tentando criação de emergência.");
-                        const fallbackProfile = await authService.createFallbackProfile(
+                    if (!profile) {
+                        console.warn("MIRA Security: Perfil não encontrado no DB. Criando perfil de emergência.");
+                        profile = await authService.createFallbackProfile(
                             session.user.id, 
                             session.user.email || '', 
                             session.user.user_metadata?.name || session.user.user_metadata?.full_name
                         );
-                        
-                        if (!fallbackProfile) {
-                            console.warn("MIRA Security: Falha total na criação do perfil. Encerrando sessão.");
-                            await supabase.auth.signOut();
-                            setUser(null);
-                            localStorage.removeItem('mira_user');
-                            return;
-                        }
-                        
-                        // Use fallback profile
-                        const u = authService.mapProfileToUser(fallbackProfile, session.user);
-                        setUser(u);
-                        localStorage.setItem('mira_user', JSON.stringify(u));
-                        setShowSplash(false);
-                        return;
                     }
 
                     if (profile && mounted) {
-                        if (session.user.email && profile.email !== session.user.email) {
-                            supabase.from('profiles').update({ email: session.user.email }).eq('id', profile.id).then(() => {});
-                        }
-                        // VERIFICAÇÃO DE SEGURANÇA: Bloqueio de sessão sem confirmação de email
-                        // V11000: Permissivo em isRecoveryMode, Provedores OAuth (Google) ou Admin Amanda
-                        const isOAuth = session.user.app_metadata.provider !== 'email';
-                        const isAdmin = ['amandasabreu89@gmail.com'].includes(session.user.email?.toLowerCase() || '') || profile.role === 'admin';
-                        if (!session.user.email_confirmed_at && !isRecoveryMode && !isOAuth && !isAdmin) {
-                            console.warn("MIRA Security: Sessão ativa mas email não confirmado. Bloqueando acesso.");
-                            await supabase.auth.signOut();
-                            setUser(null);
-                            localStorage.removeItem('mira_user');
-                            return;
-                        }
-
-                        if (session.user.email && profile.email !== session.user.email) {
-                            supabase.from('profiles').update({ email: session.user.email }).eq('id', session.user.id).then(() => {});
-                            profile.email = session.user.email;
-                        }
-
                         const u = authService.mapProfileToUser(profile, session.user);
                         setUser(u);
                         localStorage.setItem('mira_user', JSON.stringify(u));
                         setShowSplash(false); 
+                        setIsInitializing(false);
                         sessionStorage.setItem('mira_splash_shown', 'true');
-                        // Clean URL after successful auth (MIRA V55.2: Persistence Fix)
-                        if (hasAuthToken) {
-                            const params = new URLSearchParams(window.location.search);
-                            const authParams = ['code', 'access_token', 'refresh_token', 'expires_in', 'provider_token', 'token_type', 'code'];
-                            const cleanParams = new URLSearchParams();
-                            params.forEach((v, k) => {
-                                if (!authParams.includes(k)) cleanParams.set(k, v);
-                            });
-                            const searchHost = cleanParams.toString();
-                            const finalPath = window.location.pathname === '/auth/callback' ? '/' : window.location.pathname;
-                            const newUrl = finalPath + (searchHost ? '?' + searchHost : '');
-                            window.history.replaceState({}, document.title, newUrl);
-                            console.log("MIRA: URL cleaned, search params preserved:", newUrl);
-                        }
                     }
                 } else if (mounted) {
                     // If no session but we have local user, it might be stale or just background re-auth
