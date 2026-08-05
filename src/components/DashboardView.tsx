@@ -81,7 +81,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         posts: 8, 
         verifiedPosts: 0, 
         fakePosts: 0, 
-        totalLikes: 1420, 
+        totalLikes: 0, 
         totalComments: 0, 
         totalUseful: 0,
         appAccesses: 49592,

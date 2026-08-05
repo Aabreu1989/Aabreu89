@@ -635,6 +635,47 @@ const AppContent: React.FC = () => {
 
         const checkSession = async () => {
             try {
+                // 🛡️ MIRA: Direct Hash Token Extractor (Fix for localhost & OAuth redirects)
+                if (window.location.hash.includes('access_token')) {
+                    console.log("🔑 [MIRA AUTH] Extracting OAuth access_token from URL hash...");
+                    const rawHash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
+                    const hashParams = new URLSearchParams(rawHash);
+                    const accessToken = hashParams.get('access_token');
+                    const refreshToken = hashParams.get('refresh_token');
+
+                    if (accessToken) {
+                        try {
+                            const { data: setSessionRes, error: setSessionErr } = await supabase.auth.setSession({
+                                access_token: accessToken,
+                                refresh_token: refreshToken || ''
+                            });
+                            if (setSessionErr) {
+                                console.error("🔑 [MIRA AUTH] setSession error:", setSessionErr);
+                            } else if (setSessionRes?.session?.user) {
+                                console.log("✅ [MIRA AUTH] Session restored via hash token!");
+                                const profile = await authService.fetchProfileWithRetry(
+                                    setSessionRes.session.user.id,
+                                    setSessionRes.session.user.email || '',
+                                    setSessionRes.session.user.user_metadata?.name
+                                );
+                                if (profile && mounted) {
+                                    const u = authService.mapProfileToUser(profile, setSessionRes.session.user);
+                                    setUser(u);
+                                    localStorage.setItem('mira_user', JSON.stringify(u));
+                                    setShowSplash(false);
+                                    setIsInitializing(false);
+                                    sessionStorage.setItem('mira_splash_shown', 'true');
+                                    // Clean hash after setting session
+                                    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+                                    return;
+                                }
+                            }
+                        } catch (e) {
+                            console.error("🔑 [MIRA AUTH] Hash token processing error:", e);
+                        }
+                    }
+                }
+
                 // 🛡️ MIRA: Se o bypass global acabou de ser aplicado, não verificamos nada!
                 if (sessionStorage.getItem('mira_bypass_applied') === 'true') {
                     console.log("👑 [MIRA] Bypass session confirmed.");

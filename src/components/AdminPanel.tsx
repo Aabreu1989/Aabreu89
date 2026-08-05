@@ -156,7 +156,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         simulations: 4872,
         downloads: 3451,
         appAccesses: 49592,
-        totalLikes: 1420
+        totalLikes: 0
     });
     const [userSearchTerm, setUserSearchTerm] = useState('');
     const [knowledgeSearch, setKnowledgeSearch] = useState('');

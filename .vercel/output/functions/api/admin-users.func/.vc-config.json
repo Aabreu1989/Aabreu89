@@ -1,0 +1,14 @@
+{
+  "handler": "api/admin-users.js",
+  "runtime": "nodejs24.x",
+  "architecture": "x86_64",
+  "environment": {},
+  "shouldDisableAutomaticFetchInstrumentation": false,
+  "launcherType": "Nodejs",
+  "shouldAddHelpers": true,
+  "shouldAddSourcemapSupport": false,
+  "awsLambdaHandler": "",
+  "filePathMap": {
+    "": ""
+  }
+}

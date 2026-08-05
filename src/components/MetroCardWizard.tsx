@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import {
     ArrowLeft, ChevronRight, CheckCircle2, Info,
-    Train, RotateCcw, Compass, MapPin, ExternalLink, Globe, Sparkles, AlertTriangle
+    Train, RotateCcw, Compass, MapPin, ExternalLink, Globe, Sparkles, AlertTriangle,
+    CreditCard, Bus, Ticket, Building2, Map, ShieldCheck, FileText, Check, Navigation
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
@@ -12,371 +13,675 @@ interface MetroCardWizardProps {
     onBack: () => void;
 }
 
-const StepDots: React.FC<{ total: number; current: number }> = ({ total, current }) => (
-    <div className="flex items-center justify-center gap-2">
-        {Array.from({ length: total }).map((_, i) => (
-            <div
-                key={i}
-                className={`rounded-full transition-all duration-500 ${
-                    i + 1 === current
-                        ? 'w-6 h-2 bg-violet-400 shadow-md shadow-violet-400/50'
-                        : i + 1 < current
-                        ? 'w-2 h-2 bg-violet-400/60'
-                        : 'w-2 h-2 bg-white/20'
-                }`}
-            />
-        ))}
-    </div>
-);
+interface CityTransportData {
+    id: string;
+    name: string;
+    region: string;
+    emoji: string;
+    cardName: string;
+    cardPrice: string;
+    urgentCardPrice: string;
+    passes: {
+        name: string;
+        price: string;
+        scope: string;
+        desc: string;
+        badge?: string;
+    }[];
+    transportTypes: {
+        type: string;
+        operators: string;
+        icon: string;
+    }[];
+    individualTickets: {
+        ticket: string;
+        price: string;
+        notes: string;
+    }[];
+    whereToGet: {
+        mode: string;
+        time: string;
+        cost: string;
+        locations: string[];
+    }[];
+    officialWebsites: {
+        name: string;
+        url: string;
+    }[];
+}
 
-const BadgePill: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, text }) => (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md">
-        <span className="text-violet-400">{icon}</span>
-        <span className="text-[9px] font-black uppercase tracking-widest text-slate-200">{text}</span>
-    </div>
-);
+const CITY_DATA: Record<string, CityTransportData> = {
+    lisboa: {
+        id: 'lisboa',
+        name: 'Lisboa (Área Metropolitana)',
+        region: 'Lisboa, Sintra, Cascais, Margem Sul, Setúbal',
+        emoji: '🟡',
+        cardName: 'Cartão Navegante (Físico / Digital)',
+        cardPrice: '6,00€ (Emissão Normal - 10 dias)',
+        urgentCardPrice: '12,00€ (Emissão Urgente na Hora - Mesmo Dia)',
+        passes: [
+            {
+                name: 'Navegante Metropolitano',
+                price: '40,00€ / mês',
+                scope: 'Todos os 18 municípios da Área Metropolitana de Lisboa',
+                desc: 'Acesso ilimitado a todos os transportes (Metro, Carris, CP, Fertagus, Barcos Transtejo, TST, Carris Metropolitana, Rodoviária de Lisboa, Scotturb).',
+                badge: 'Mais Popular'
+            },
+            {
+                name: 'Navegante Municipal',
+                price: '30,00€ / mês',
+                scope: '1 único município escolhido (ex: apenas Lisboa ou apenas Sintra)',
+                desc: 'Válido para todos os operadores dentro dos limites daquele concelho específico.',
+            },
+            {
+                name: 'Navegante Sub-23 (Estudante)',
+                price: '0,00€ (GRATUITO)',
+                scope: 'Toda a Área Metropolitana de Lisboa (18 Municípios)',
+                desc: 'Gratuito para todos os jovens dos 4 aos 23 anos (e estudantes do Ensino Superior até aos 24 anos com comprovativo de matrícula).',
+                badge: '100% Grátis'
+            },
+            {
+                name: 'Navegante 65+ (Sénior)',
+                price: '20,00€ / mês',
+                scope: 'Toda a Área Metropolitana de Lisboa',
+                desc: 'Passe com desconto especial para cidadãos a partir dos 65 anos de idade.'
+            },
+            {
+                name: 'Navegante Família',
+                price: 'Máx. 80,00€ / mês',
+                scope: 'Agregado Familiar completo de morada fiscal comum',
+                desc: 'Pague no máximo o valor equivalente a 2 passes metropolitanos (80€) ou 2 municipais (60€) para toda a família.'
+            }
+        ],
+        transportTypes: [
+            { type: 'Metro de Lisboa', operators: 'Linhas Azul, Amarela, Verde, Vermelha', icon: '🚇' },
+            { type: 'Autocarros Urbanos', operators: 'Carris (Lisboa concelho)', icon: '🚌' },
+            { type: 'Elétricos Tradicionais & Ascensores', operators: 'Carris (ex: Elétrico 28E, Bica, Glória, Lavra)', icon: '🚃' },
+            { type: 'Comboios Urbanos', operators: 'CP (Linha de Sintra, Cascais, Azambuja, Sado)', icon: '🚆' },
+            { type: 'Comboio Ponte 25 de Abril', operators: 'Fertagus (Lisboa ↔ Margem Sul / Setúbal)', icon: '🚄' },
+            { type: 'Barcos / Cacilheiros', operators: 'Transtejo / Soflusa (Cais Sodré ↔ Cacilhas, Seixal, Montijo, Barreiro)', icon: '⛴️' },
+            { type: 'Autocarros Intermunicipais', operators: 'Carris Metropolitana (Margem Sul e Norte)', icon: '🚐' },
+            { type: 'Metro Ligeiro Margem Sul', operators: 'MST — Metro do Sul do Tejo (Almada / Seixal)', icon: '🚋' }
+        ],
+        individualTickets: [
+            { ticket: 'Cartão Recarregável Viva Viagem / Navegante Otimista', price: '0,50€', notes: 'Reutilizável durante 1 ano' },
+            { ticket: 'Viagem Zapping (Metro/Carris/CP/Barco/Fertagus)', price: '1,81€', notes: 'Descontado do saldo do cartão por viagem' },
+            { ticket: 'Bilhete Simples de 1 Viagem (Metro / Carris)', price: '1,80€', notes: 'Válido por 60 minutos após validação' },
+            { ticket: 'Bilhete Diário 24 Horas (Metro + Carris)', price: '6,80€', notes: 'Viagens ilimitadas por 24h' },
+            { ticket: 'Bilhete a Bordo no Autocarro (Carris)', price: '2,10€', notes: 'Comprado diretamente ao motorista' },
+            { ticket: 'Bilhete a Bordo no Elétrico Histórico (28E)', price: '3,10€', notes: 'Comprado no elétrico' },
+            { ticket: 'Bilhete Elevador de Santa Justa', price: '6,00€', notes: 'Inclui acesso ao miradouro' }
+        ],
+        whereToGet: [
+            {
+                mode: 'Emissão Urgente na Hora (Mesmo Dia)',
+                time: 'Imediato (10 a 20 minutos)',
+                cost: '12,00€',
+                locations: [
+                    'Espace Navegante Marquês de Pombal (Estação de Metro)',
+                    'Espace Navegante Campo Grande (Estação de Metro)',
+                    'Estação de Metro Cais do Sodré',
+                    'Estação CP / Metro Entrecampos',
+                    'Loja do Cidadão das Laranjeiras / Saldanha'
+                ]
+            },
+            {
+                mode: 'Quiosque Ponto Navegante (Self-Service 24/7)',
+                time: '2 minutos (Autosserviço)',
+                cost: '12,00€',
+                locations: [
+                    'Máquinas Ponto Navegante em estações de metro e comboio',
+                    'Lojas do Cidadão e Juntas de Freguesia aderentes',
+                    'Centros Comerciais (ex: Colombo, Vasco da Gama)'
+                ]
+            },
+            {
+                mode: 'Emissão Normal nas Bilheteiras / Postos',
+                time: 'Até 10 dias úteis',
+                cost: '6,00€',
+                locations: [
+                    'Qualquer bilheteira do Metro de Lisboa ou CP',
+                    'Lojas de atendimento Carris Metropolitana',
+                    'Juntas de Freguesia da Área Metropolitana de Lisboa'
+                ]
+            },
+            {
+                mode: 'Pedido Online (Portal / App Navegante)',
+                time: 'Entregue em casa em 5-7 dias',
+                cost: '6,00€ + Porte de envio',
+                locations: [
+                    'Site Oficial: www.o-navegante.pt',
+                    'Aplicação Móvel Navegante (Android & iOS)'
+                ]
+            }
+        ],
+        officialWebsites: [
+            { name: 'Portal Oficial Navegante', url: 'https://www.o-navegante.pt' },
+            { name: 'Metropolitano de Lisboa', url: 'https://www.metrolisboa.pt' },
+            { name: 'CP — Comboios de Portugal', url: 'https://www.cp.pt' },
+            { name: 'Carris Metropolitana', url: 'https://www.carrismetropolitana.pt' }
+        ]
+    },
+
+    porto: {
+        id: 'porto',
+        name: 'Porto (Área Metropolitana)',
+        region: 'Porto, Vila Nova de Gaia, Matosinhos, Maia, Gondomar',
+        emoji: '🔵',
+        cardName: 'Cartão Andante (Físico / App)',
+        cardPrice: '6,00€ (Emissão Normal)',
+        urgentCardPrice: '12,00€ (Emissão Urgente no próprio dia)',
+        passes: [
+            {
+                name: 'Andante Metropolitano',
+                price: '40,00€ / mês',
+                scope: 'Todos os 17 municípios da Área Metropolitana do Porto',
+                desc: 'Acesso ilimitado ao Metro do Porto, autocarros STCP, comboios urbanos CP e rede UNIR.',
+                badge: 'Mais Popular'
+            },
+            {
+                name: 'Andante Municipal / 3Z',
+                price: '30,00€ / mês',
+                scope: 'Até 3 zonas contíguas ou 1 município selecionado',
+                desc: 'Ideal para quem viaja apenas na cidade do Porto ou entre 2 concelhos vizinhos.',
+            },
+            {
+                name: 'Andante Sub-23 (Estudante)',
+                price: '0,00€ (GRATUITO)',
+                scope: 'Toda a Área Metropolitana do Porto',
+                desc: 'Gratuito para todos os estudantes dos 4 aos 23 anos (e 24 anos para ensino superior).',
+                badge: '100% Grátis'
+            },
+            {
+                name: 'Andante 65+ (Sénior)',
+                price: '20,00€ / mês',
+                scope: 'Toda a Área Metropolitana do Porto',
+                desc: 'Passe com tarifa social reduzida para seniores a partir dos 65 anos.'
+            }
+        ],
+        transportTypes: [
+            { type: 'Metro do Porto', operators: 'Linhas A, B, C, D, E, F', icon: '🚇' },
+            { type: 'Autocarros Urbanos', operators: 'STCP (Porto, Gaia, Matosinhos)', icon: '🚌' },
+            { type: 'Comboios Urbanos Porto', operators: 'CP (Linha de Guimarães, Braga, Aveiro, Marco)', icon: '🚆' },
+            { type: 'Autocarros Metropolitanos', operators: 'Rede UNIR (em toda a AMP)', icon: '🚐' },
+            { type: 'Elétricos Históricos', operators: 'STCP Elétricos (Linha 1, 18, 22)', icon: '🚃' },
+            { type: 'Funicular dos Guindais', operators: 'Funicular da Batalha à Ribeira', icon: '🚡' }
+        ],
+        individualTickets: [
+            { ticket: 'Cartão Recarregável Andante Azul', price: '0,60€', notes: 'Reutilizável durante 1 ano' },
+            { ticket: 'Viagem Ocasional Z2', price: '1,40€', notes: 'Válido por 1 hora dentro de 2 zonas' },
+            { ticket: 'Viagem Ocasional Z3', price: '1,80€', notes: 'Válido por 1h15' },
+            { ticket: 'Viagem Ocasional Z4', price: '2,25€', notes: 'Válido por 1h30' },
+            { ticket: 'Andante 24 Horas (Z2)', price: '5,50€', notes: 'Viagens ilimitadas em 2 zonas por 24h' },
+            { ticket: 'Andante Tour 1 Dia (Toda a Rede)', price: '7,50€', notes: 'Ilimitado em todas as zonas por 24h' }
+        ],
+        whereToGet: [
+            {
+                mode: 'Lojas Andante (Emissão na Hora)',
+                time: 'No próprio dia (15 minutos)',
+                cost: '6,00€ / 12,00€',
+                locations: [
+                    'Loja Andante Trindade (Estação de Metro Central)',
+                    'Loja Andante Campanhã (Interface de Transportes)',
+                    'Loja Andante Casa da Música',
+                    'Loja Andante São Bento (Estação CP)',
+                    'Loja Andante Aeroporto Francisco Sá Carneiro'
+                ]
+            },
+            {
+                mode: 'Lojas do Cidadão & Bilheteiras CP',
+                time: 'Até 5 a 10 dias',
+                cost: '6,00€',
+                locations: [
+                    'Loja do Cidadão do Porto (Passos Manuel)',
+                    'Loja do Cidadão de Vila Nova de Gaia / Matosinhos',
+                    'Bilheteiras da CP Urbanos do Porto'
+                ]
+            },
+            {
+                mode: 'App Anda / Anda Digital (Telemóvel)',
+                time: 'Imediato (Sem cartão físico)',
+                cost: 'Gratuito',
+                locations: [
+                    'Aplicação Anda no telemóvel Android com NFC',
+                    'Calcula automaticamente a tarifa mais barata no fim do mês'
+                ]
+            }
+        ],
+        officialWebsites: [
+            { name: 'Portal Oficial Andante', url: 'https://www.linhandante.pt' },
+            { name: 'Metro do Porto', url: 'https://www.metrodoporto.pt' },
+            { name: 'STCP Autocarros', url: 'https://www.stcp.pt' }
+        ]
+    },
+
+    coimbra: {
+        id: 'coimbra',
+        name: 'Coimbra (Região Centro)',
+        region: 'Coimbra, Figueira da Foz, Cantanhede',
+        emoji: '🟢',
+        cardName: 'Cartão SMTUC / CIM Região de Coimbra',
+        cardPrice: '5,00€ (Cartão Físico)',
+        urgentCardPrice: '10,00€ (Urgente)',
+        passes: [
+            {
+                name: 'Passe SMTUC Urbano Geral',
+                price: '30,00€ / mês',
+                scope: 'Rede Urbana de Coimbra',
+                desc: 'Acesso a toda a rede de autocarros e ecovias SMTUC na cidade de Coimbra.',
+                badge: 'Mais Popular'
+            },
+            {
+                name: 'Passe Intermunicipal CIM Coimbra',
+                price: '40,00€ / mês',
+                scope: 'Todos os 19 municípios da Região de Coimbra',
+                desc: 'Válido para transportes regionais, comboios CP regionais e ligação à Figueira da Foz.'
+            },
+            {
+                name: 'Passe Estudante Coimbra (Sub-23)',
+                price: '0,00€ (GRATUITO)',
+                scope: 'Rede SMTUC / Região de Coimbra',
+                desc: 'Gratuito para estudantes inscritos no ensino básico, secundário ou Universidade de Coimbra.'
+            }
+        ],
+        transportTypes: [
+            { type: 'Autocarros Urbanos', operators: 'SMTUC Coimbra', icon: '🚌' },
+            { type: 'Metrobus Coimbra (Sistema Mondego)', operators: 'Metro Mondego (Lousã ↔ Coimbra B)', icon: '🚊' },
+            { type: 'Comboios Regionais', operators: 'CP (Linha do Norte / Figueira da Foz)', icon: '🚆' }
+        ],
+        individualTickets: [
+            { ticket: 'Cartão Recarregável SMTUC', price: '0,50€', notes: 'Reutilizável' },
+            { ticket: 'Viagem Pré-Comprada (Zapping SMTUC)', price: '0,85€', notes: 'Descontado no cartão' },
+            { ticket: 'Bilhete de 1 Viagem Comprado a Bordo', price: '1,60€', notes: 'Ao motorista' },
+            { ticket: 'Bilhete Diário 24h SMTUC', price: '3,80€', notes: 'Viagens ilimitadas por 24h' }
+        ],
+        whereToGet: [
+            {
+                mode: 'Lojas SMTUC & Praça da República',
+                time: 'Mesmo dia ou até 5 dias',
+                cost: '5,00€',
+                locations: [
+                    'Loja SMTUC Praça da República',
+                    'Loja SMTUC Mercado D. Pedro V',
+                    'Estação CP Coimbra-A / Coimbra-B'
+                ]
+            }
+        ],
+        officialWebsites: [
+            { name: 'SMTUC Coimbra', url: 'https://www.smtuc.pt' }
+        ]
+    },
+
+    braga: {
+        id: 'braga',
+        name: 'Braga (Região Norte)',
+        region: 'Braga, Guimarães, Famalicão, Barcelos',
+        emoji: '🔴',
+        cardName: 'Cartão TUB (Transportes Urbanos de Braga)',
+        cardPrice: '5,00€',
+        urgentCardPrice: '10,00€',
+        passes: [
+            {
+                name: 'Passe TUB Urbano Braga',
+                price: '30,00€ / mês',
+                scope: 'Concelho de Braga',
+                desc: 'Viagens ilimitadas em todos os autocarros urbanos de Braga.',
+                badge: 'Mais Popular'
+            },
+            {
+                name: 'Passe Cimbru / Cávado',
+                price: '40,00€ / mês',
+                scope: 'Região do Cávado (Braga, Barcelos, Esposende, Verde)',
+                desc: 'Válido para deslocações intermunicipais na comunidade do Cávado.'
+            },
+            {
+                name: 'Passe Estudante TUB Sub-23',
+                price: '0,00€ (GRATUITO)',
+                scope: 'Concelho de Braga / Universidade do Minho',
+                desc: 'Passe 100% gratuito para estudantes residentes ou matriculados em Braga.'
+            }
+        ],
+        transportTypes: [
+            { type: 'Autocarros Urbanos', operators: 'TUB (Transportes Urbanos de Braga)', icon: '🚌' },
+            { type: 'Funicular do Bom Jesus', operators: 'Elevador do Bom Jesus do Monte (Movido a Água)', icon: '🚡' },
+            { type: 'Comboios Urbanos CP', operators: 'CP (Linha de Braga ↔ Porto)', icon: '🚆' }
+        ],
+        individualTickets: [
+            { ticket: 'Cartão TUB Recarregável', price: '0,50€', notes: 'Reutilizável' },
+            { ticket: 'Viagem Pré-Comprada TUB 1 Categoria', price: '0,90€', notes: 'Desconto no cartão' },
+            { ticket: 'Bilhete a Bordo no Autocarro', price: '1,55€', notes: 'Comprado ao motorista' },
+            { ticket: 'Funicular Bom Jesus (Ida e Volta)', price: '2,50€', notes: 'Histórico de 1882' }
+        ],
+        whereToGet: [
+            {
+                mode: 'Posto Central TUB Central de Camionagem',
+                time: 'Imediato ou 3 dias',
+                cost: '5,00€',
+                locations: [
+                    'Central de Camionagem de Braga (Avenida General Norton de Matos)',
+                    'Quiosque TUB na Universidade do Minho (Gualtar)'
+                ]
+            }
+        ],
+        officialWebsites: [
+            { name: 'TUB — Transportes Urbanos de Braga', url: 'https://www.tub.pt' }
+        ]
+    },
+
+    faro: {
+        id: 'faro',
+        name: 'Faro & Algarve (Região Sul)',
+        region: 'Faro, Portimão, Albufeira, Olhão, Loulé, Lagos',
+        emoji: '🟡',
+        cardName: 'Passe VAMUS Algarve / Próximo Faro',
+        cardPrice: '5,00€',
+        urgentCardPrice: '10,00€',
+        passes: [
+            {
+                name: 'Passe VAMUS Algarve Regional',
+                price: '40,00€ / mês',
+                scope: 'Todo o território da região do Algarve (16 Municípios)',
+                desc: 'Acesso a toda a rede de autocarros regionais VAMUS Algarve.',
+                badge: 'Mais Popular'
+            },
+            {
+                name: 'Passe Próximo Faro (Urbano)',
+                price: '30,00€ / mês',
+                scope: 'Rede urbana da cidade de Faro e Praias',
+                desc: 'Válido para todos os autocarros urbanos "Próximo" em Faro.'
+            },
+            {
+                name: 'Passe Estudante Algarve (Sub-23)',
+                price: '0,00€ (GRATUITO)',
+                scope: 'Todo o Algarve / Universidade do Algarve (UAlg)',
+                desc: 'Passe gratuito para alunos matriculados nas escolas e Universidade do Algarve.'
+            }
+        ],
+        transportTypes: [
+            { type: 'Autocarros Regionais', operators: 'VAMUS Algarve (Ligação entre todas as cidades)', icon: '🚌' },
+            { type: 'Autocarros Urbanos Faro', operators: 'Próximo (Rede Urbana de Faro)', icon: '🚐' },
+            { type: 'Comboio Regional do Algarve', operators: 'CP (Linha do Algarve: Vila Real Sto. António ↔ Lagos)', icon: '🚆' }
+        ],
+        individualTickets: [
+            { ticket: 'Cartão VAMUS / Próximo', price: '0,50€', notes: 'Reutilizável' },
+            { ticket: 'Viagem Urbana Faro (Próximo)', price: '1,15€', notes: 'Comprado no cartão' },
+            { ticket: 'Viagem a Bordo Urbano Faro', price: '2,25€', notes: 'Ao motorista' },
+            { ticket: 'Viagem Regional VAMUS (Faro ↔ Olhão)', price: '2,40€', notes: 'Variável por distância' }
+        ],
+        whereToGet: [
+            {
+                mode: 'Terminal Rodoviário de Faro & Portimão',
+                time: 'Mesmo dia ou 3 dias',
+                cost: '5,00€',
+                locations: [
+                    'Terminal Rodoviário de Faro (Avenida da República)',
+                    'Terminal Rodoviário de Portimão',
+                    'Quiosque UAlg no Campus de Gambelas'
+                ]
+            }
+        ],
+        officialWebsites: [
+            { name: 'VAMUS Algarve', url: 'https://www.vamusalgarve.pt' },
+            { name: 'CP — Linha do Algarve', url: 'https://www.cp.pt' }
+        ]
+    }
+};
 
 export const MetroCardWizard: React.FC<MetroCardWizardProps> = ({ language, onBack }) => {
-    const [step, setStep] = useState(1);
-    const [passType, setPassType] = useState<string>('');
+    const [selectedCity, setSelectedCity] = useState<string>('lisboa');
+    const [activeTab, setActiveTab] = useState<'passes' | 'transportes' | 'precos' | 'onde'>('passes');
 
-    const lang = language?.toLowerCase() || 'pt';
-
-    const handleBack = () => {
-        if (step > 1) setStep(s => s - 1);
-        else onBack();
-    };
-
-    const tLocalDict = {
-        pt: {
-            title: "Cartão de Metro / Navegante",
-            subtitle: "Guia Mobilidade Portugal 2026",
-            intro: "Aprenda a retirar o seu cartão de transporte público (Lisboa Navegante / Porto Andante) com todas as regras e passes gratuitos atualizados em 2026.",
-            step1_q: "Qual o seu perfil de passe?",
-            step1_desc: "Selecione a opção que melhor se adequa ao seu perfil para ver descontos e gratuidades",
-            step2_q: "Documentos e Procedimento",
-            step2_desc: "Veja a lista de documentos necessários e onde solicitar o seu cartão",
-            reset: "Reiniciar Guia",
-            type_normal: "Passe Metropolitano Padrão",
-            type_normal_sub: "Passe geral unificado para toda a área metropolitana por 30€ (Municipal) ou 40€ (Metropolitano).",
-            type_student: "Estudante Sub-23 / 24 (Gratuito)",
-            type_student_sub: "Passe 100% gratuito para todos os estudantes dos 4 aos 23 anos (e até aos 24 para cursos de Ensino Superior).",
-            type_family: "Navegante Família",
-            type_family_sub: "Pague no máximo 2 passes unificados (60€ ou 80€) para todo o agregado familiar de morada fiscal comum.",
-            type_senior: "Navegante 65+ / Sénior",
-            type_senior_sub: "Desconto especial de 20€ mensais para seniores a partir dos 65 anos de idade.",
-            docs_title: "Documentos Obrigatórios (2026)",
-            doc_id: "Passaporte / Título de Residência / Cartão de Cidadão",
-            doc_nif: "NIF (Número de Identificação Fiscal) ativo",
-            doc_photo: "1 Foto tipo passe (alguns postos tiram na hora)",
-            doc_student_proof: "Comprovativo de matrícula escolar (necessário apenas para passe gratuito de estudante)",
-            doc_family_proof: "Requerimento e Declaração da Autoridade Tributária com agregado familiar (apenas para passe família)",
-            where_title: "Onde e Como Solicitar?",
-            where_desc: "• Opção Urgente (Recomendado): Emitido no próprio dia em postos dedicados (ex: Marquês de Pombal, Campo Grande em Lisboa, ou Trindade no Porto) por 12€.\n\n• Opção Normal: Emitido em qualquer bilheteira ou posto de atendimento geral por 6€, com entrega estimada em até 10 dias úteis.\n\n• Novidade 2026: Passe Metropolitano digital direto no telemóvel via App Navegante (dispensa cartão físico).",
-            alert_warning: "Migrantes recém-chegados sem Título de Residência podem emitir o cartão Navegante Normal utilizando o Passaporte e NIF temporário."
-        },
-        en: {
-            title: "Metro & Transport Card",
-            subtitle: "Portugal Mobility Guide 2026",
-            intro: "Learn how to obtain your public transport pass (Lisbon Navegante / Porto Andante) with all the new 2026 rules, routes, and free fare templates.",
-            step1_q: "What is your pass profile?",
-            step1_desc: "Select the option that best fits you to view discounts and free fares",
-            step2_q: "Documents & Procedure",
-            step2_desc: "Check the mandatory documents and where to request your transport card",
-            reset: "Reset Guide",
-            type_normal: "Standard Metropolitan Pass",
-            type_normal_sub: "General unified pass for the metropolitan area costing 30€ (Municipal) or 40€ (Metropolitan).",
-            type_student: "Student Under-23 / 24 (Free)",
-            type_student_sub: "100% free pass for all students aged 4 to 23 (and up to 24 for Higher Education degree students).",
-            type_family: "Navegante Family",
-            type_family_sub: "Pay a maximum of 2 unified passes (60€ or 80€) for the entire fiscal family aggregate.",
-            type_senior: "Navegante 65+ / Senior",
-            type_senior_sub: "Special discounted fare of 20€ per month for senior citizens aged 65 or older.",
-            docs_title: "Mandatory Documents (2026)",
-            doc_id: "Passport / Residence Title / Citizen Card",
-            doc_nif: "Active NIF (Tax Identification Number)",
-            doc_photo: "1 Passport-size photo (some stations take it on the spot)",
-            doc_student_proof: "School enrollment proof (only required for free student pass)",
-            doc_family_proof: "Application form and Tax Authority declaration of household (only for family pass)",
-            where_title: "Where and How to Request?",
-            where_desc: "• Urgent Option (Recommended): Issued on the spot at customer spaces (e.g. Marquês de Pombal, Campo Grande in Lisbon, or Trindade in Porto) for 12€.\n\n• Standard Option: Issued at any regular ticket booth or service desk for 6€, with an estimated delivery time of 10 business days.\n\n• New in 2026: Mobile digital pass directly inside the Navegante App (no physical card needed).",
-            alert_warning: "Newly arrived migrants without a Residence Permit can still obtain the standard Navegante card using their Passport and a temporary NIF."
-        },
-        es: {
-            title: "Tarjeta de Metro / Navegante",
-            subtitle: "Guía de Movilidad Portugal 2026",
-            intro: "Aprenda a obtener su tarjeta de transporte público (Lisboa Navegante / Porto Andante) con todas las normas y abonos gratuitos actualizados en 2026.",
-            step1_q: "¿Cuál es su perfil de abono?",
-            step1_desc: "Seleccione la opción que mejor se adapte a su perfil para ver descuentos y gratuidades",
-            step2_q: "Documentos y Procedimiento",
-            step2_desc: "Consulte la lista de documentos necesarios y dónde solicitar su tarjeta",
-            reset: "Reiniciar Guía",
-            type_normal: "Abono Metropolitano Estándar",
-            type_normal_sub: "Abono general unificado para todo el área metropolitana por 30€ (Municipal) o 40€ (Metropolitano).",
-            type_student: "Estudiante Sub-23 / 24 (Gratuito)",
-            type_student_sub: "Abono 100% gratuito para todos los estudiantes de 4 a 23 años (y hasta los 24 para cursos de Educación Superior).",
-            type_family: "Navegante Familia",
-            type_family_sub: "Pague como máximo 2 abonos unificados (60€ o 80€) para todo el grupo familiar con domicilio fiscal común.",
-            type_senior: "Navegante 65+ / Sénior",
-            type_senior_sub: "Descuento especial de 20€ al mes para personas mayores a partir de los 65 años de edad.",
-            docs_title: "Documentos Obligatorios (2026)",
-            doc_id: "Pasaporte / Título de Residencia / Tarjeta de Identidad",
-            doc_nif: "NIF (Número de Identificación Fiscal) activo",
-            doc_photo: "1 Foto tamaño carné (algunas oficinas la hacen en el acto)",
-            doc_student_proof: "Comprobante de matrícula escolar (solo necesario para el abono gratuito de estudiante)",
-            doc_family_proof: "Solicitud y Declaración de la Autoridad Tributaria con el grupo familiar (solo para abono familiar)",
-            where_title: "¿Dónde y Cómo Solicitar?",
-            where_desc: "• Opción Urgente (Recomendado): Emitido en el mismo día en oficinas dedicadas (ej: Marquês de Pombal, Campo Grande en Lisboa o Trindade en Oporto) por 12€.\n\n• Opción Normal: Emitido en cualquier taquilla o puesto de atención general por 6€, con entrega estimada en hasta 10 días hábiles.\n\n• Novedad 2026: Abono Metropolitano digital directamente en el móvil a través de la App Navegante (sin tarjeta física).",
-            alert_warning: "Los inmigrantes recién llegados sin Título de Residencia pueden emitir la tarjeta Navegante Normal utilizando su Pasaporte y un NIF temporal."
-        },
-        fr: {
-            title: "Carte de Métro / Navegante",
-            subtitle: "Guide de Mobilité Portugal 2026",
-            intro: "Apprenez à obtenir votre carte de transport public (Lisbonne Navegante / Porto Andante) avec toutes les règles et abonnements gratuits mis à jour en 2026.",
-            step1_q: "Quel est votre profil d'abonnement ?",
-            step1_desc: "Sélectionnez l'option qui correspond le mieux à votre profil pour voir les réductions et la gratuité",
-            step2_q: "Documents et Procédure",
-            step2_desc: "Consultez les documents requis et l'endroit où demander votre carte de transport",
-            reset: "Réinitialiser le Guide",
-            type_normal: "Abonnement Métropolitain Standard",
-            type_normal_sub: "Abonnement général unifié pour toute l'aire métropolitaine pour 30€ (Municipal) ou 40€ (Métropolitain).",
-            type_student: "Étudiant Moins de 23 / 24 ans (Gratuit)",
-            type_student_sub: "Abonnement 100% gratuit pour tous les étudiants de 4 à 23 ans (et jusqu'à 24 ans pour les étudiants de l'Enseignement Supérieur).",
-            type_family: "Navegante Famille",
-            type_family_sub: "Payez un maximum de 2 abonnements unifiés (60€ ou 80€) pour l'ensemble du foyer fiscal commun.",
-            type_senior: "Navegante 65+ / Senior",
-            type_senior_sub: "Tarif réduit spécial de 20€ par mois pour les seniors à partir de 65 ans.",
-            docs_title: "Documents Obligatoires (2026)",
-            doc_id: "Passeport / Titre de Séjour / Carte d'Identité",
-            doc_nif: "NIF (Numéro d'Identification Fiscale) actif",
-            doc_photo: "1 Photo d'identité (certains guichets la prennent sur place)",
-            doc_student_proof: "Certificat de scolarité (requis uniquement pour l'abonnement étudiant gratuit)",
-            doc_family_proof: "Formulaire de demande et Déclaration de l'Administration Fiscale du foyer (uniquement pour l'abonnement famille)",
-            where_title: "Où et Comment Demander ?",
-            where_desc: "• Option Urgente (Recommandé) : Délivré le jour même dans les espaces clients dédiés (ex : Marquês de Pombal, Campo Grande à Lisbonne ou Trindade à Porto) pour 12€.\n\n• Option Normale : Délivré dans n'importe quel guichet ou point d'accueil général pour 6€, avec un délai de livraison estimé à 10 jours ouvrés.\n\n• Nouveauté 2026 : Abonnement métropolitain numérique directement sur smartphone via l'App Navegante (sans carte physique).",
-            alert_warning: "Les migrants nouvellement arrivés sans Titre de Séjour peuvent obtenir la carte Navegante Normale en utilisant leur Passeport et un NIF temporaire."
-        }
-    };
-
-    const tLocal = tLocalDict[lang as 'pt' | 'en' | 'es' | 'fr'] || tLocalDict.pt;
-
-    const types = [
-        { id: 'normal', emoji: '🚇', label: tLocal.type_normal, sub: tLocal.type_normal_sub },
-        { id: 'student', emoji: '🎓', label: tLocal.type_student, sub: tLocal.type_student_sub },
-        { id: 'family', emoji: '👨‍👩‍👧‍👦', label: tLocal.type_family, sub: tLocal.type_family_sub },
-        { id: 'senior', emoji: '👴', label: tLocal.type_senior, sub: tLocal.type_senior_sub },
-    ];
-
-    const checklistBase = [
-        { icon: '🛂', text: tLocal.doc_id },
-        { icon: '🔢', text: tLocal.doc_nif },
-        { icon: '📸', text: tLocal.doc_photo },
-    ];
-
-    const checklistExtra = passType === 'student'
-        ? [{ icon: '📄', text: tLocal.doc_student_proof }]
-        : passType === 'family'
-        ? [{ icon: '🏛️', text: tLocal.doc_family_proof }]
-        : [];
-
-    const checklist = [...checklistBase, ...checklistExtra];
+    const city = CITY_DATA[selectedCity] || CITY_DATA.lisboa;
 
     return (
         <div className="flex flex-col h-full bg-slate-950 overflow-hidden">
-            {/* STICKY HERO BANNER */}
-            <div className="relative shrink-0 overflow-hidden bg-gradient-to-b from-slate-950 via-violet-950/20 to-slate-950 px-6 pt-5 pb-8 border-b border-white/5">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/10 rounded-full blur-[90px] -mr-32 -mt-32 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] -ml-24 -mb-24 pointer-events-none" />
-
-                <div className="relative z-10 flex items-center justify-between mb-8">
+            {/* HERO HEADER */}
+            <div className="relative shrink-0 bg-gradient-to-b from-slate-950 via-indigo-950/30 to-slate-950 px-6 pt-5 pb-6 border-b border-white/10">
+                <div className="relative z-10 flex items-center justify-between mb-4">
                     <button
-                        onClick={handleBack}
+                        onClick={onBack}
                         className="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center border border-white/10 active:scale-90 transition-all hover:bg-white/20"
                     >
-                        <ArrowLeft size={16} />
+                        <ArrowLeft size={18} />
                     </button>
 
-                    <StepDots total={2} current={step} />
-
-                    <div className="flex items-center gap-1">
-                        <Sparkles size={12} className="text-violet-400 animate-pulse" />
-                        <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest bg-violet-500/10 px-2.5 py-1 rounded-full border border-violet-500/20">
-                            ✦ {step}/2
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 flex items-center gap-1.5">
+                            <Sparkles size={12} className="animate-pulse" /> Guia Oficial 2026
                         </span>
                     </div>
                 </div>
 
-                <div className="relative z-10 space-y-4">
-                    <div className="flex justify-between items-start">
-                        <BadgePill
-                            icon={<Train size={10} />}
-                            text={tLocal.title}
-                        />
-                    </div>
+                <div className="relative z-10 space-y-3">
+                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-2">
+                        <Train className="text-[#FF8C00]" size={26} /> Transportes Públicos & Passes
+                    </h2>
+                    <p className="text-xs text-slate-300 font-medium">
+                        Selecione a sua cidade para ver os passes, tarifários, transportes e onde tirar o cartão.
+                    </p>
 
-                    {step === 1 ? (
-                        <div className="animate-in slide-in-from-bottom-2 duration-400">
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">
-                                {tLocal.step1_q}
-                            </h2>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
-                                {tLocal.step1_desc}
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="animate-in slide-in-from-bottom-2 duration-400">
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">
-                                {types.find(t => t.id === passType)?.label}
-                            </h2>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
-                                {tLocal.step2_desc}
-                            </p>
-                        </div>
-                    )}
+                    {/* CITY SELECTOR PILLS */}
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-2 pb-1">
+                        {Object.values(CITY_DATA).map((c) => (
+                            <button
+                                key={c.id}
+                                onClick={() => setSelectedCity(c.id)}
+                                className={`px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap flex items-center gap-2 ${
+                                    selectedCity === c.id
+                                        ? 'bg-[#FF8C00] text-white shadow-lg shadow-orange-500/25 scale-[1.02]'
+                                        : 'bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white border border-white/10'
+                                }`}
+                            >
+                                <span>{c.emoji}</span>
+                                <span>{c.name.split(' ')[0]}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            {/* SCROLLABLE BODY */}
-            <div className="flex-1 overflow-y-auto bg-slate-50 no-scrollbar">
-                <div className="p-5 space-y-5 pb-32">
+            {/* TAB NAVIGATION */}
+            <div className="bg-slate-900 border-b border-white/10 px-4 py-2 flex items-center justify-around">
+                {[
+                    { id: 'passes', label: 'Passes & Alcance', icon: Ticket },
+                    { id: 'transportes', label: 'Tipos Transportes', icon: Bus },
+                    { id: 'precos', label: 'Preços & Bilhetes', icon: CreditCard },
+                    { id: 'onde', label: 'Onde Tirar', icon: MapPin },
+                ].map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as any)}
+                        className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all ${
+                            activeTab === tab.id
+                                ? 'text-[#FF8C00] font-black'
+                                : 'text-slate-400 hover:text-slate-200 font-medium'
+                        }`}
+                    >
+                        <tab.icon size={18} />
+                        <span className="text-[9px] uppercase tracking-wider">{tab.label}</span>
+                    </button>
+                ))}
+            </div>
 
-                    {/* STEP 1 */}
-                    {step === 1 && (
-                        <div className="space-y-3.5 animate-in slide-in-from-bottom-4 duration-500">
-                            {types.map((type, idx) => (
-                                <button
-                                    key={type.id}
-                                    onClick={() => { setPassType(type.id); setStep(2); }}
-                                    style={{ animationDelay: `${idx * 60}ms` }}
-                                    className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-5 flex items-center gap-4 text-left transition-all duration-500 hover:border-violet-400/30 hover:shadow-2xl hover:shadow-violet-500/5 active:scale-[0.97]"
-                                >
-                                    <div className="relative w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 group-hover:bg-white transition-all duration-500">
-                                        {type.emoji}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-slate-950 transition-colors">
-                                            {type.label}
-                                        </h4>
-                                        <p className="text-[10px] text-slate-400 font-medium mt-1 leading-normal">
-                                            {type.sub}
-                                        </p>
-                                    </div>
-                                    <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white group-hover:border-slate-900 transition-all duration-300">
-                                        <ChevronRight size={14} />
-                                    </div>
-                                </button>
-                            ))}
-
-                            <div className="bg-violet-50 border border-violet-100 rounded-2xl p-4 flex items-start gap-3">
-                                <Info size={16} className="text-violet-600 shrink-0 mt-0.5" />
-                                <p className="text-xs text-violet-800 font-medium leading-relaxed">
-                                    {tLocal.intro}
-                                </p>
-                            </div>
+            {/* MAIN CONTENT BODY */}
+            <div className="flex-1 overflow-y-auto bg-slate-50 no-scrollbar p-5 space-y-5 pb-32">
+                {/* CITY INFO BADGE */}
+                <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xl">{city.emoji}</span>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{city.name}</h3>
                         </div>
-                    )}
-
-                    {/* STEP 2 */}
-                    {step === 2 && (
-                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                            {/* Where */}
-                            <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-4">
-                                <div className="flex items-start gap-3.5">
-                                    <div className="w-10 h-10 rounded-2xl bg-violet-500/10 flex items-center justify-center text-violet-500 shrink-0">
-                                        <Compass size={18} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            {tLocal.where_title}
-                                        </h4>
-                                        <p className="text-xs text-slate-600 font-bold leading-relaxed whitespace-pre-wrap">
-                                            {tLocal.where_desc}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="pt-2 flex items-center gap-2 border-t border-slate-100">
-                                    <a
-                                        href="https://www.metrolisboa.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-violet-600 text-[9px] font-black uppercase tracking-widest hover:text-violet-700 transition-colors"
-                                    >
-                                        <Globe size={11} />
-                                        Lisboa Metro
-                                    </a>
-                                    <span className="text-slate-300">|</span>
-                                    <a
-                                        href="https://www.metrodoporto.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-violet-600 text-[9px] font-black uppercase tracking-widest hover:text-violet-700 transition-colors"
-                                    >
-                                        <Globe size={11} />
-                                        Porto Metro
-                                    </a>
-                                    <span className="text-slate-300">|</span>
-                                    <a
-                                        href="https://www.o-navegante.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-violet-600 text-[9px] font-black uppercase tracking-widest hover:text-violet-700 transition-colors"
-                                    >
-                                        <Globe size={11} />
-                                        Portal Navegante
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* Checklist */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 px-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-                                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                        {tLocal.docs_title}
-                                    </h3>
-                                </div>
-
-                                <div className="bg-white border border-slate-100 rounded-[2.25rem] shadow-sm overflow-hidden divide-y divide-slate-50">
-                                    {checklist.map((doc, idx) => (
-                                        <div
-                                            key={idx}
-                                            style={{ animationDelay: `${idx * 50}ms` }}
-                                            className="group flex items-center gap-4 p-5 hover:bg-slate-50/50 transition-colors animate-in slide-in-from-left-4 duration-500"
-                                        >
-                                            <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100/50 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                                {doc.icon}
-                                            </div>
-                                            <p className="flex-1 text-xs font-bold text-slate-700 leading-snug group-hover:text-slate-900 transition-colors">
-                                                {doc.text}
-                                            </p>
-                                            <div className="w-6 h-6 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-500">
-                                                <CheckCircle2 size={14} className="animate-in zoom-in duration-300" />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Warning Box */}
-                            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex items-start gap-3">
-                                <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
-                                <p className="text-xs text-amber-800 font-bold leading-relaxed">
-                                    {tLocal.alert_warning}
-                                </p>
-                            </div>
-
-                            {/* Reset Button */}
-                            <button
-                                onClick={() => { setStep(1); setPassType(''); }}
-                                className="group w-full py-5 rounded-[2.25rem] border-2 border-dashed border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:border-violet-500 hover:text-violet-500 active:scale-95 transition-all flex items-center justify-center gap-2"
-                            >
-                                <RotateCcw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
-                                {tLocal.reset}
-                            </button>
-                        </div>
-                    )}
-
+                        <p className="text-[11px] text-slate-500 font-bold mt-1">{city.region}</p>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                            {city.cardName}
+                        </span>
+                    </div>
                 </div>
+
+                {/* TAB 1: PASSES & ALCANCE GEOGRÁFICO */}
+                {activeTab === 'passes' && (
+                    <div className="space-y-4 animate-in slide-in-from-bottom-3 duration-400">
+                        <div className="bg-indigo-900 text-white rounded-3xl p-5 border border-indigo-700 shadow-md space-y-2">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-indigo-200 flex items-center gap-2">
+                                <ShieldCheck size={16} /> Regras de Gratuidade & Descontos 2026
+                            </h4>
+                            <p className="text-xs text-indigo-100 leading-relaxed">
+                                Em Portugal, o <strong>Passe de Estudante (Sub-23/24) é 100% gratuito</strong> para todos os jovens e estudantes do ensino superior. Seniores a partir de 65 anos pagam no máximo 20€/mês.
+                            </p>
+                        </div>
+
+                        <div className="space-y-3">
+                            {city.passes.map((p, idx) => (
+                                <div key={idx} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3 relative overflow-hidden">
+                                    {p.badge && (
+                                        <span className="absolute top-4 right-4 text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white px-3 py-1 rounded-full shadow-sm">
+                                            {p.badge}
+                                        </span>
+                                    )}
+                                    <div className="space-y-1">
+                                        <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">{p.name}</h4>
+                                        <p className="text-2xl font-black text-[#FF8C00]">{p.price}</p>
+                                    </div>
+
+                                    <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+                                        <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Até onde vale (Validade Geográfica):</p>
+                                        <p className="text-xs font-bold text-slate-800">{p.scope}</p>
+                                    </div>
+
+                                    <p className="text-xs text-slate-600 leading-relaxed">{p.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* TAB 2: TIPOS DE TRANSPORTES */}
+                {activeTab === 'transportes' && (
+                    <div className="space-y-4 animate-in slide-in-from-bottom-3 duration-400">
+                        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                <Bus size={18} className="text-indigo-600" /> Meios de Transporte Incluídos na Cidade
+                            </h4>
+                            <p className="text-xs text-slate-600 leading-relaxed">
+                                Com o passe mensal unificado de {city.name}, pode andar em todos estes meios de transporte sem pagar bilhete adicional:
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {city.transportTypes.map((t, idx) => (
+                                <div key={idx} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex items-start gap-4">
+                                    <span className="text-3xl shrink-0 p-2 bg-slate-50 rounded-2xl border border-slate-100">{t.icon}</span>
+                                    <div className="space-y-1">
+                                        <h5 className="text-xs font-black text-slate-900 uppercase tracking-tight">{t.type}</h5>
+                                        <p className="text-[11px] font-medium text-slate-600">{t.operators}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* TAB 3: PREÇOS INDIVIDUAIS & CARTÃO */}
+                {activeTab === 'precos' && (
+                    <div className="space-y-4 animate-in slide-in-from-bottom-3 duration-400">
+                        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                <CreditCard size={18} className="text-emerald-600" /> Tarifário de Bilhetes Ocasionais & Cartões
+                            </h4>
+                            <p className="text-xs text-slate-600 leading-relaxed">
+                                Se não tiver passe mensal, estes são os custos dos cartões físicos recarregáveis e viagens ocasionais:
+                            </p>
+                        </div>
+
+                        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+                            <div className="p-4 bg-slate-900 text-white flex justify-between items-center text-xs font-black uppercase tracking-wider">
+                                <span>Tipo de Bilhete / Cartão</span>
+                                <span>Preço Oficial 2026</span>
+                            </div>
+                            {city.individualTickets.map((it, idx) => (
+                                <div key={idx} className="p-4.5 flex justify-between items-center gap-3 hover:bg-slate-50 transition-colors">
+                                    <div>
+                                        <p className="text-xs font-black text-slate-900">{it.ticket}</p>
+                                        <p className="text-[10px] text-slate-500 font-medium">{it.notes}</p>
+                                    </div>
+                                    <span className="text-sm font-black text-[#FF8C00] shrink-0">{it.price}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 flex items-start gap-3 text-xs text-amber-900">
+                            <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+                            <div>
+                                <p className="font-black uppercase tracking-wider">Dica de Poupança MIRA:</p>
+                                <p className="mt-1 leading-relaxed">Comprar bilhetes a bordo diretamente ao motorista é sempre mais caro. Use sempre a opção <strong>Zapping</strong> no cartão recarregável para pagar a tarifa mínima por viagem!</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* TAB 4: ONDE TIRAR O PASSE */}
+                {activeTab === 'onde' && (
+                    <div className="space-y-4 animate-in slide-in-from-bottom-3 duration-400">
+                        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                <MapPin size={18} className="text-rose-600" /> Onde & Como Solicitar o Passe
+                            </h4>
+                            <p className="text-xs text-slate-600 leading-relaxed">
+                                Escolha a opção mais conveniente para emitir o seu cartão de transporte:
+                            </p>
+                        </div>
+
+                        <div className="space-y-3">
+                            {city.whereToGet.map((w, idx) => (
+                                <div key={idx} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <h5 className="text-xs font-black text-slate-900 uppercase tracking-tight">{w.mode}</h5>
+                                        <span className="text-[10px] font-black uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                                            {w.cost}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] font-bold text-slate-500">⏱ Tempo de Emissão: {w.time}</p>
+
+                                    <div className="space-y-1.5 pt-1">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Locais / Pontos de Atendimento:</p>
+                                        <ul className="space-y-1">
+                                            {w.locations.map((loc, lIdx) => (
+                                                <li key={lIdx} className="text-xs font-bold text-slate-700 flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF8C00] shrink-0" />
+                                                    <span>{loc}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* WEBSITES OFICIAIS */}
+                        <div className="bg-slate-900 text-white rounded-3xl p-6 border border-white/10 space-y-3">
+                            <h5 className="text-xs font-black uppercase tracking-widest text-[#FF8C00] flex items-center gap-2">
+                                <Globe size={16} /> Links & Portais Oficiais da Cidade
+                            </h5>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                {city.officialWebsites.map((web, wIdx) => (
+                                    <a
+                                        key={wIdx}
+                                        href={web.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-bold text-white flex items-center justify-between border border-white/10 transition-all"
+                                    >
+                                        <span>{web.name}</span>
+                                        <ExternalLink size={14} className="text-[#FF8C00]" />
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -576,176 +576,193 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
 
                     {/* ════ FLOW SIMULADOR SEGURANÇA SOCIAL ═════════════════════════ */}
                     {flow === 'simulador_ss' && (
-                        <div className="space-y-5 animate-in slide-in-from-bottom-4 duration-500">
-                            {/* Input Form */}
-                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
-                                <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                                    <Calculator className="text-amber-500" size={22} />
-                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">
-                                        Simulador de Contribuição SS (Recibos Verdes)
-                                    </h3>
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                            {/* Input Form Card */}
+                            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 font-black">
+                                            <Calculator size={20} />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">
+                                                Simulador de Contribuição Segurança Social
+                                            </h3>
+                                            <p className="text-xs text-slate-500 font-bold">Cálculo de Recibos Verdes & Trabalhadores Independentes (2026)</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full border border-emerald-300">
+                                        DGSS 2026
+                                    </span>
                                 </div>
 
                                 {/* Revenue Input */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-700 block">
+                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
                                         Rendimento Bruto Total do Trimestre (€):
                                     </label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">€</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-black text-lg">€</span>
                                         <input
                                             type="number"
                                             value={simRevenue}
                                             onChange={(e) => setSimRevenue(Number(e.target.value))}
                                             placeholder="Ex: 3000"
-                                            className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-black text-base focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                                            className="w-full pl-10 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-slate-900 font-black text-lg focus:ring-2 focus:ring-[#FF8C00] focus:border-[#FF8C00] focus:outline-none transition-all"
                                         />
                                     </div>
-                                    <p className="text-[10px] text-slate-400">Soma dos valores emitidos nos 3 meses do trimestre.</p>
+                                    <p className="text-[11px] font-medium text-slate-600">Soma de todas as faturas/recibos emitidos nos 3 meses do trimestre anterior.</p>
                                 </div>
 
                                 {/* Activity Type */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-700 block">
-                                        Tipo de Atividade:
+                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
+                                        Tipo de Atividade Profissional:
                                     </label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                         <button
                                             onClick={() => setSimActivity('servicos')}
-                                            className={`p-3 rounded-2xl border text-left text-xs font-bold transition-all ${
+                                            className={`p-4 rounded-2xl border text-left text-xs font-black transition-all flex flex-col justify-between ${
                                                 simActivity === 'servicos'
-                                                    ? 'bg-amber-500 text-white border-amber-600 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
                                             }`}
                                         >
-                                            💼 Prestação de Serviços (70%)
+                                            <span className="text-sm mb-1">💼 Prestação de Serviços</span>
+                                            <span className={`text-[10px] font-bold ${simActivity === 'servicos' ? 'text-indigo-100' : 'text-slate-500'}`}>70% Base de Incidência</span>
                                         </button>
                                         <button
                                             onClick={() => setSimActivity('vendas')}
-                                            className={`p-3 rounded-2xl border text-left text-xs font-bold transition-all ${
+                                            className={`p-4 rounded-2xl border text-left text-xs font-black transition-all flex flex-col justify-between ${
                                                 simActivity === 'vendas'
-                                                    ? 'bg-amber-500 text-white border-amber-600 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
                                             }`}
                                         >
-                                            🛍️ Venda / Comércio (20%)
+                                            <span className="text-sm mb-1">🛍️ Vendas / Comércio</span>
+                                            <span className={`text-[10px] font-bold ${simActivity === 'vendas' ? 'text-indigo-100' : 'text-slate-500'}`}>20% Base de Incidência</span>
                                         </button>
                                         <button
                                             onClick={() => setSimActivity('saude_producao')}
-                                            className={`p-3 rounded-2xl border text-left text-xs font-bold transition-all ${
+                                            className={`p-4 rounded-2xl border text-left text-xs font-black transition-all flex flex-col justify-between ${
                                                 simActivity === 'saude_producao'
-                                                    ? 'bg-amber-500 text-white border-amber-600 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
                                             }`}
                                         >
-                                            🩺 Saúde / Produção (50%)
+                                            <span className="text-sm mb-1">🩺 Saúde & Produção</span>
+                                            <span className={`text-[10px] font-bold ${simActivity === 'saude_producao' ? 'text-indigo-100' : 'text-slate-500'}`}>50% Base de Incidência</span>
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Adjustment Coeff */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-700 block">
-                                        Ajuste de Variação Escolhido:
+                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
+                                        Opção de Ajuste de Variação (Trimestral):
                                     </label>
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-3 gap-2.5">
                                         <button
                                             onClick={() => setSimAdjustment(-0.25)}
-                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
                                                 simAdjustment === -0.25
-                                                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-lg shadow-emerald-500/25 scale-[1.02]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
                                             }`}
                                         >
-                                            📉 -25% (Pagar Menos)
+                                            📉 -25% (Reduzir)
                                         </button>
                                         <button
                                             onClick={() => setSimAdjustment(0)}
-                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
                                                 simAdjustment === 0
-                                                    ? 'bg-blue-600 text-white border-blue-700 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
                                             }`}
                                         >
                                             ⚖️ 0% (Padrão)
                                         </button>
                                         <button
                                             onClick={() => setSimAdjustment(0.25)}
-                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
                                                 simAdjustment === 0.25
-                                                    ? 'bg-purple-600 text-white border-purple-700 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                                    ? 'bg-violet-600 text-white border-violet-700 shadow-lg shadow-violet-500/25 scale-[1.02]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
                                             }`}
                                         >
-                                            📈 +25% (Proteger Mais)
+                                            📈 +25% (Aumentar)
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Tax Rate */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-700 block">
+                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
                                         Taxa Contributiva Aplicável:
                                     </label>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         <button
                                             onClick={() => setSimTaxRate(0.214)}
-                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
                                                 simTaxRate === 0.214
-                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-lg scale-[1.01]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
                                             }`}
                                         >
-                                            21,4% (Trabalhador Independente)
+                                            21,4% — Trabalhador Independente
                                         </button>
                                         <button
                                             onClick={() => setSimTaxRate(0.252)}
-                                            className={`p-3 rounded-2xl border text-center text-xs font-bold transition-all ${
+                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
                                                 simTaxRate === 0.252
-                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-md'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-lg scale-[1.01]'
+                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
                                             }`}
                                         >
-                                            25,2% (Empresário Nome Individual)
+                                            25,2% — Empresário Nome Individual (ENI)
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Result Card */}
-                            <div className="bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-950 text-white rounded-3xl p-6 border border-amber-500/30 shadow-2xl space-y-4">
-                                <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                                    <span className="text-xs font-black uppercase tracking-widest text-amber-400">
-                                        📊 Resultado da Simulação
+                            {/* Result Card — Premium MIRA Theme */}
+                            <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-5">
+                                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                                    <span className="text-xs font-black uppercase tracking-widest text-[#FF8C00] flex items-center gap-2">
+                                        <Calculator size={16} /> Resultado da Simulação SS
                                     </span>
-                                    <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2.5 py-1 rounded-full border border-amber-500/30">
-                                        Cálculo Oficial DGSS 2026
+                                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-3 py-1 rounded-full border border-emerald-500/30">
+                                        Fórmula Oficial 2026
                                     </span>
                                 </div>
 
                                 <div className="space-y-1">
-                                    <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-                                        Contribuição Mensal a Pagar (durante 3 meses):
+                                    <p className="text-xs text-slate-300 font-bold uppercase tracking-wider">
+                                        Contribuição Mensal Fixa a Pagar (durante 3 meses):
                                     </p>
-                                    <p className="text-3xl font-black text-amber-400 tracking-tight">
-                                        € {computedMonthlyContrib.toFixed(2)} <span className="text-xs text-slate-400 font-normal">/ mês</span>
+                                    <p className="text-4xl font-black text-[#FF8C00] tracking-tight">
+                                        € {computedMonthlyContrib.toFixed(2)} <span className="text-sm text-slate-400 font-bold">/ mês</span>
                                     </p>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3 pt-2 text-xs border-t border-white/10">
-                                    <div>
+                                <div className="grid grid-cols-2 gap-4 pt-3 text-xs border-t border-white/10">
+                                    <div className="p-3.5 bg-white/5 rounded-2xl border border-white/10">
                                         <p className="text-[10px] text-slate-400 font-bold uppercase">Rendimento Relevante Apurado:</p>
-                                        <p className="font-black text-white">€ {relevantQuarterlyRevenue.toFixed(2)}</p>
+                                        <p className="text-lg font-black text-white mt-0.5">€ {relevantQuarterlyRevenue.toFixed(2)}</p>
                                     </div>
-                                    <div>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Total do Trimestre (3 meses):</p>
-                                        <p className="font-black text-amber-300">€ {computedQuarterlyTotal.toFixed(2)}</p>
+                                    <div className="p-3.5 bg-white/5 rounded-2xl border border-white/10">
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Total do Trimestre (3 Meses):</p>
+                                        <p className="text-lg font-black text-emerald-400 mt-0.5">€ {computedQuarterlyTotal.toFixed(2)}</p>
                                     </div>
                                 </div>
 
-                                <div className="bg-white/5 rounded-2xl p-3 border border-white/10 text-[11px] text-slate-300 space-y-1">
-                                    <p className="font-bold text-white">💡 Nota MIRA:</p>
-                                    <p>O pagamento deve ser efetuado mensalmente entre os dias <strong>10 e 20</strong> do mês seguinte àquele a que respeita (ex: contribuição de Janeiro paga até 20 de Fevereiro).</p>
+                                <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-xs text-slate-200 space-y-1.5">
+                                    <p className="font-black text-white flex items-center gap-1.5">
+                                        <span>💡</span> Calendário de Pagamento Obrigatório:
+                                    </p>
+                                    <p className="text-slate-300 leading-relaxed">
+                                        O pagamento deve ser efetuado mensalmente entre os dias <strong className="text-amber-400 font-bold">10 e 20</strong> do mês seguinte (ex: contribuição de Janeiro paga entre 10 e 20 de Fevereiro).
+                                    </p>
                                 </div>
                             </div>
                         </div>

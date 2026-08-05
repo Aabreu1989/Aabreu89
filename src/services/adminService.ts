@@ -651,7 +651,6 @@ export const adminService: AdminService = {
             const baseDocCount = 3451;
             const baseAiQueries = 18642;
             const baseSimulations = 4872;
-            const baseLikes = 1420;
             const baseMobilePwa = 629;
             const baseDesktopPwa = 233;
             const baseHoras = 4567;
@@ -685,7 +684,7 @@ export const adminService: AdminService = {
             const finalDocCount = baseDocCount + (docCount || 0) + localDocs;
             const finalAiQueries = baseAiQueries + (aiQueriesCount || 0) + localAiQueries;
             const finalSimulations = baseSimulations + (simLogsRes || 0) + localSims;
-            const finalTotalLikes = baseLikes + (totalLikesSum || 0) + localLikes;
+            const finalTotalLikes = (totalLikesSum || 0) + localLikes;
             const finalPosts = (postCount || 0) + localPosts;
             const finalComments = (commentCount || 0) + localComments;
             const finalMobilePwa = baseMobilePwa + (pwaMobileDownloads || 0);
@@ -747,7 +746,7 @@ export const adminService: AdminService = {
                 processosAjudados: 1015,
                 pwaMobileDownloads: 629,
                 pwaComputerDownloads: 233,
-                totalLikes: 1420
+                totalLikes: 0
             };
         }
     },
