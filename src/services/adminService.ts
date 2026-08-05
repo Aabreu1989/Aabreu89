@@ -670,7 +670,9 @@ export const adminService: AdminService = {
                 localAiQueries = parseInt(localStorage.getItem('mira_realtime_ai_queries_count') || '0', 10);
                 localPosts = parseInt(localStorage.getItem('mira_realtime_posts_count') || '0', 10);
                 localComments = parseInt(localStorage.getItem('mira_realtime_comments_count') || '0', 10);
-                localLikes = parseInt(localStorage.getItem('mira_realtime_likes_count') || '0', 10);
+                // Purge any legacy cached likes count to prevent inflated values
+                localStorage.removeItem('mira_realtime_likes_count');
+                localLikes = 0;
               } catch (e) {}
             }
 
@@ -684,7 +686,7 @@ export const adminService: AdminService = {
             const finalDocCount = baseDocCount + (docCount || 0) + localDocs;
             const finalAiQueries = baseAiQueries + (aiQueriesCount || 0) + localAiQueries;
             const finalSimulations = baseSimulations + (simLogsRes || 0) + localSims;
-            const finalTotalLikes = (totalLikesSum || 0) + localLikes;
+            const finalTotalLikes = Math.max(0, totalLikesSum || 0);
             const finalPosts = (postCount || 0) + localPosts;
             const finalComments = (commentCount || 0) + localComments;
             const finalMobilePwa = baseMobilePwa + (pwaMobileDownloads || 0);
