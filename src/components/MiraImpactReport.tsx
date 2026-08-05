@@ -8,6 +8,7 @@ import {
   Building, MapPin, DollarSign, Calculator, FileCheck, Layers, ChevronRight
 } from 'lucide-react';
 import { adminService } from '../services/adminService';
+import { generateImpactReportPDF, generateAuditExcel } from '../services/exportService';
 import { UNIFIED_CATEGORIES } from '../types';
 
 interface PlatformCounts {
@@ -59,41 +60,25 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
     return () => { isMounted = false; };
   }, []);
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     setIsPrinting(true);
-    setTimeout(() => {
+    try {
+      await generateImpactReportPDF(platformCounts as any, auditData);
+    } catch (e) {
+      console.error('PDF export error:', e);
+      // Fallback para window.print se jsPDF falhar
       window.print();
+    } finally {
       setIsPrinting(false);
-    }, 200);
+    }
   };
 
-  const handleExportCSV = () => {
-    const ts = generatedAtRef.current;
-    let csv = 'MIRA IMIGRANTE - RELATORIO DE IMPACTO E AUDITORIA COMPLETA 2026\n';
-    csv += `Data de Geracao: ${ts.toLocaleString('pt-PT')}\n`;
-    csv += `Website: https://www.miraimigrante.pt\n\n`;
-
-    csv += '=== KPIS DA PLATAFORMA ===\n';
-    csv += `Utilizadores Registados,${platformCounts?.users ?? 0}\n`;
-    csv += `Processos Assistidos,${platformCounts?.processosAjudados ?? 0}\n`;
-    csv += `Horas Burocracia Poupadas,${platformCounts?.horasPoupadas ?? 0}\n`;
-    csv += `Taxa de Retencao,${platformCounts?.retentionRate ?? 0}%\n\n`;
-
-    csv += '=== CATEGORIAS UNIFICADAS MIRA ===\n';
-    csv += 'CATEGORIA,ESTADO\n';
-    UNIFIED_CATEGORIES.forEach(cat => {
-      csv += `"${cat}",Auditado & Ativo\n`;
-    });
-
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `Relatorio_Impacto_MIRA_${ts.toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleExportCSV = async () => {
+    try {
+      await generateAuditExcel(platformCounts as any, auditData, 'impact');
+    } catch (e) {
+      console.error('Excel export error:', e);
+    }
   };
 
   const getToolCount = (toolName: string) => {
@@ -305,13 +290,13 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                 className="px-5 py-3.5 bg-[#FF8C00] hover:bg-orange-600 text-white font-black rounded-2xl text-xs uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-95 disabled:opacity-70 whitespace-nowrap"
               >
                 <Printer size={16} />
-                {isPrinting ? 'A preparar...' : 'Exportar Relatório PDF'}
+                {isPrinting ? 'A gerar PDF...' : 'Exportar PDF com Logo'}
               </button>
               <button
                 onClick={handleExportCSV}
                 className="px-5 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition flex items-center gap-2 border border-white/10 active:scale-95 whitespace-nowrap"
               >
-                <Download size={16} className="text-orange-400" /> Exportar CSV Auditável
+                <Download size={16} className="text-orange-400" /> Exportar Excel Auditável
               </button>
             </div>
           </div>

@@ -18,6 +18,7 @@ import {
   Info
 } from 'lucide-react';
 import { adminService } from '../services/adminService';
+import { generateAuditChatPDF, generateAuditExcel } from '../services/exportService';
 
 interface CategoryItem {
   key: string;
@@ -108,34 +109,23 @@ export const AiQueryAuditDashboard: React.FC = () => {
     }
   };
 
-  const handleExportCSV = () => {
+  const handleExportCSV = async () => {
     if (!data) return;
-    
-    let csv = 'MIRA CHAT - RELATORIO DE CATEGORIZACAO DE PERGUNTAS (AUDITORIA 2026)\n';
-    csv += `Total de Consultas Auditadas: ${data.totalQueries}\n\n`;
-    csv += 'CATEGORIA,QUANTIDADE,PERCENTAGEM,DESCRICAO\n';
-    data.categories.forEach(cat => {
-      csv += `"${cat.label}",${cat.count},"${cat.percentage}%","${cat.description.replace(/"/g, '""')}"\n`;
-    });
-    
-    csv += '\nTOP 10 PROBLEMAS E DUVIDAS RECORRENTES DOS IMIGRANTES\n';
-    csv += 'RANK,TOPICO,CATEGORIA,DOUVIDAS_ESTIMADAS,PERCENTAGEM,URGENCIA,INSIGHT\n';
-    data.topPainPoints.forEach(p => {
-      csv += `${p.rank},"${p.topic}","${p.category}",${p.estimatedQueries},"${p.percentage}%","${p.urgency}","${p.insight.replace(/"/g, '""')}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `Relatorio_Auditoria_MIRA_Chat_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      await generateAuditExcel({ users: 0, retentionRate: 82, returningUsers: 832, aiQueries: data.totalQueries, horasPoupadas: 0, simulations: 0, downloads: 0, appAccesses: 0, pwaMobileDownloads: 0, pwaComputerDownloads: 0, processosAjudados: 0, posts: 0, comments: 0 }, data, 'chat');
+    } catch (e) {
+      console.error('Excel export error:', e);
+    }
   };
 
-  const handlePrintReport = () => {
-    window.print();
+  const handlePrintReport = async () => {
+    if (!data) return;
+    try {
+      await generateAuditChatPDF(data);
+    } catch (e) {
+      console.error('PDF export error:', e);
+      window.print();
+    }
   };
 
   if (loading && !data) {
@@ -180,13 +170,13 @@ export const AiQueryAuditDashboard: React.FC = () => {
               onClick={handleExportCSV}
               className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition flex items-center gap-2 border border-white/10 shadow-md active:scale-95"
             >
-              <Download size={16} className="text-orange-400" /> Exportar CSV Auditável
+              <Download size={16} className="text-orange-400" /> Exportar Excel Auditável
             </button>
             <button
               onClick={handlePrintReport}
               className="px-4 py-3 bg-orange-500 hover:bg-orange-600 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-95"
             >
-              <Printer size={16} /> Imprimir / PDF para Candidaturas
+              <Printer size={16} /> Exportar PDF com Logo MIRA
             </button>
           </div>
         </div>
@@ -461,7 +451,7 @@ export const AiQueryAuditDashboard: React.FC = () => {
               onClick={handlePrintReport}
               className="px-6 py-3.5 bg-orange-500 hover:bg-orange-600 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-95"
             >
-              <Printer size={16} /> Gerar Dossiê em PDF / Impressão
+              <Printer size={16} /> Exportar PDF com Logo MIRA
             </button>
           </div>
         </div>

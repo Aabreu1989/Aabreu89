@@ -2,13 +2,14 @@ import React, { useState, useEffect, useCallback, memo } from 'react';
 import AdminSaberIA from './AdminSaberIA';
 import { MiraImpactReport } from './MiraImpactReport';
 import { adminService } from '../services/adminService';
+import { generateAdminHubPDF, generateAuditExcel } from '../services/exportService';
 import { User, Post } from '../types';
 import {
     ShieldCheck, Users, ShieldAlert, Trash2, Ban,
     Search, CheckCircle2, RefreshCcw, Database, 
     Activity, ChevronDown, Loader2, GraduationCap, MapPin, Lightbulb, Bell,
     User as UserIcon, CheckCircle, Bot, Star, X, MessageCircle, AlertCircle, Briefcase, ChevronRight, MailX, Sparkles, Globe, Award, FileText, Smartphone,
-    BarChart3, TrendingUp, Calculator
+    BarChart3, TrendingUp, Calculator, Download
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useToast } from './Toast';
@@ -649,6 +650,52 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             <p className="text-xs text-slate-400 font-bold mt-2 uppercase">Relatório de Impacto Auditado & i18n para Concursos (EUSIC/PT2030)</p>
                                         </button>
                                     )}
+                                </div>
+
+                                {/* ═══ EXPORTAÇÃO DE AUDITORIA ═══ */}
+                                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-950 border border-[#FF8C00]/30 rounded-[2.5rem] space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-3 bg-[#FF8C00]/20 rounded-2xl border border-[#FF8C00]/30">
+                                            <Download size={22} className="text-[#FF8C00]" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-black uppercase tracking-wider text-white">Exportação de Relatórios para Auditoria</h3>
+                                            <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">PDF com Logo MIRA · Excel Multi-aba para Auditores · Dados desde o lançamento</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    showToast('A gerar PDF do Admin Hub...', 'info');
+                                                    await generateAdminHubPDF(counts as any);
+                                                    showToast('PDF gerado com sucesso! ✅', 'success');
+                                                } catch (e) {
+                                                    showToast('Erro ao gerar PDF. Tente novamente.', 'error');
+                                                }
+                                            }}
+                                            className="flex items-center justify-center gap-3 p-5 bg-[#FF8C00] hover:bg-orange-600 text-white font-black rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-500/25"
+                                        >
+                                            <FileText size={18} />
+                                            <span>Exportar PDF Admin Hub</span>
+                                        </button>
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    showToast('A gerar Excel de Auditoria...', 'info');
+                                                    await generateAuditExcel(counts as any, undefined, 'admin');
+                                                    showToast('Excel gerado com sucesso! ✅', 'success');
+                                                } catch (e) {
+                                                    showToast('Erro ao gerar Excel. Tente novamente.', 'error');
+                                                }
+                                            }}
+                                            className="flex items-center justify-center gap-3 p-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-emerald-500/25"
+                                        >
+                                            <Download size={18} />
+                                            <span>Exportar Excel Auditável</span>
+                                        </button>
+                                    </div>
+                                    <p className="text-[8px] font-bold text-white/25 uppercase tracking-widest text-center">O Excel inclui: Resumo Executivo · Métricas por Mês · Evolução Anual · Utilizadores · Consultas IA · Simulações · Vagas · Comunidade · Metadados</p>
                                 </div>
                             </div>
                         )}

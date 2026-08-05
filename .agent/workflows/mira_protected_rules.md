@@ -47,4 +47,10 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
 - No Admin Hub e perfil de utilizadores visto por Administrador, **o email de CADA utilizador tem que ser SEMPRE VISÍVEL sem máscaras (sem `••••@••••`)**.
 - Se a coluna email estiver vazia na base de dados, gerar o fallback público formatado (`${username}@miraimigrante.pt`).
 
+## Regras de Auditoria & Financiamento (REGRA PERMANENTE):
+- **LER O FICHEIRO `REGRAS_AUDITORIA_FINANCIAMENTO.md`** nesta pasta antes de qualquer intervenção no Admin Hub, métricas ou relatórios.
+- **ÂMBITO RESTRITO**: Apenas o Admin Hub, Relatório de Impacto e sistema de métricas podem ser modificados. NUNCA alterar módulos de utilizador final (Chat, Comunidade, Vagas, Documentos, Simuladores) sem autorização explícita.
+- **EXPORTAÇÃO OBRIGATÓRIA**: Admin Hub, Relatório de Impacto e Auditoria de Consultas IA devem ser exportáveis em PDF e Excel.
+- **SE NÃO SOUBER O QUE FAZER — PARAR E PERGUNTAR À PROPRIETÁRIA. NUNCA INVENTAR.**
+
 
