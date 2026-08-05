@@ -738,13 +738,18 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
           <button
             onClick={() => setIsAlertModalOpen(true)}
-            className="w-full bg-gradient-to-r from-[#FF8C00] via-amber-500 to-[#FF8C00] hover:brightness-110 text-white py-4 px-6 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2.5 shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.02] active:scale-95 border border-orange-400/40 relative overflow-hidden group"
+            className="w-full bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:brightness-110 text-white py-4 px-6 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-500/25 transition-all hover:scale-[1.02] active:scale-95 border border-emerald-400/40 relative overflow-hidden group cursor-pointer"
           >
             <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
             <Bell size={18} className="animate-bounce text-white shrink-0 drop-shadow" />
-            <span className="drop-shadow-sm font-black text-white">Criar Alerta de Vagas</span>
+            <span className="drop-shadow-sm font-black text-white">
+              {language === 'EN' ? 'Create Job Alert' :
+               language === 'ES' ? 'Crear Alerta de Empleo' :
+               language === 'FR' ? 'Créer une Alerte d\'Emploi' :
+               'Criar Alerta de Vagas'}
+            </span>
             {activeAlertsCount > 0 && (
-              <span className="bg-white text-[#FF8C00] text-[9px] font-black px-2.5 py-0.5 rounded-full border border-white/40 shadow-sm ml-1">
+              <span className="bg-white text-emerald-600 text-[9px] font-black px-2.5 py-0.5 rounded-full border border-white/40 shadow-sm ml-1">
                 {activeAlertsCount}
               </span>
             )}
