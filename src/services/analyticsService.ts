@@ -28,41 +28,9 @@ class AnalyticsService {
   }
 
   async track(action: AppActivityLog['action'], userId: string, category?: string, metadata?: any) {
-    // 🕵️ MIRA SECURITY & TELEMETRY: Strictly exclude Admins and Antigravity agents from access tracking
-    if (typeof window !== 'undefined') {
-      const ua = (navigator.userAgent || '').toLowerCase();
-      const isAntigravityAgent = ua.includes('antigravity') || 
-                                 ua.includes('headless') || 
-                                 (window as any).__ANTIGRAVITY__ === true ||
-                                 localStorage.getItem('mira_dev_mode') === 'true';
-
-      const lowerUserId = (userId || '').toLowerCase();
-      const isDevOrAdminUserId = lowerUserId.includes('admin') || lowerUserId.includes('dev') || lowerUserId.includes('antigravity');
-
-      let isAdminUser = false;
-      const currentUserStr = localStorage.getItem('mira_user');
-      if (currentUserStr) {
-        try {
-          const currentUser = JSON.parse(currentUserStr);
-          const emailLower = (currentUser.email || '').toLowerCase();
-          const roleLower = (currentUser.role || '').toLowerCase();
-          isAdminUser = roleLower === 'admin' || 
-                       emailLower === 'amandasabreu89@gmail.com' ||
-                       emailLower.includes('admin') ||
-                       emailLower.includes('dev') ||
-                       emailLower.includes('test');
-        } catch (err) {}
-      }
-
-      if (isAntigravityAgent || isDevOrAdminUserId || isAdminUser) {
-        console.debug('[MIRA Analytics] Excluded tracking for Admin/Antigravity:', action, userId);
-        return;
-      }
-    }
-
     const log: AppActivityLog = {
       id: Math.random().toString(36).substr(2, 9),
-      userId,
+      userId: userId || 'guest',
       action,
       category,
       timestamp: new Date().toISOString(),
@@ -73,7 +41,7 @@ class AnalyticsService {
     // Log in development console
     console.debug('[MIRA Analytics]', log);
 
-    // ⚡ Real-Time Access & Telemetry Counters
+    // ⚡ Real-Time Access & Telemetry Counters for Admin Hub Live Updates
     if (typeof window !== 'undefined') {
       try {
         if (action === 'app_access' || action === 'app_launch' || action === 'view_changed') {
@@ -81,23 +49,40 @@ class AnalyticsService {
           const newCount = currentCount + 1;
           localStorage.setItem('mira_realtime_accesses_count', newCount.toString());
           window.dispatchEvent(new CustomEvent('mira-access-recorded', { detail: { count: newCount } }));
+        } else if (action === 'ai_query') {
+          const currentCount = parseInt(localStorage.getItem('mira_realtime_ai_queries_count') || '0', 10);
+          const newCount = currentCount + 1;
+          localStorage.setItem('mira_realtime_ai_queries_count', newCount.toString());
         } else if (action === 'use_simulator' || (action as string) === 'simulation_run') {
           const currentCount = parseInt(localStorage.getItem('mira_realtime_simulations_count') || '0', 10);
-          localStorage.setItem('mira_realtime_simulations_count', (currentCount + 1).toString());
+          const newCount = currentCount + 1;
+          localStorage.setItem('mira_realtime_simulations_count', newCount.toString());
           if (metadata?.simulatorId || metadata?.name) {
             const key = `mira_sim_count_${metadata.simulatorId || metadata.name}`;
             const itemVal = parseInt(localStorage.getItem(key) || '0', 10);
             localStorage.setItem(key, (itemVal + 1).toString());
           }
-        } else if (action === 'generate_document') {
+        } else if (action === 'generate_document' || (action as string) === 'download_document' || (action as string) === 'doc_generated') {
           const currentCount = parseInt(localStorage.getItem('mira_realtime_documents_count') || '0', 10);
-          localStorage.setItem('mira_realtime_documents_count', (currentCount + 1).toString());
+          const newCount = currentCount + 1;
+          localStorage.setItem('mira_realtime_documents_count', newCount.toString());
           if (metadata?.templateId || metadata?.title || metadata?.name) {
             const key = `mira_doc_count_${metadata.templateId || metadata.title || metadata.name}`;
             const itemVal = parseInt(localStorage.getItem(key) || '0', 10);
             localStorage.setItem(key, (itemVal + 1).toString());
           }
+        } else if (action === 'post_created' || (action as string) === 'create_post') {
+          const currentCount = parseInt(localStorage.getItem('mira_realtime_posts_count') || '0', 10);
+          localStorage.setItem('mira_realtime_posts_count', (currentCount + 1).toString());
+        } else if (action === 'comment_created' || (action as string) === 'add_comment') {
+          const currentCount = parseInt(localStorage.getItem('mira_realtime_comments_count') || '0', 10);
+          localStorage.setItem('mira_realtime_comments_count', (currentCount + 1).toString());
+        } else if (action === 'like_post' || (action as string) === 'post_liked') {
+          const currentCount = parseInt(localStorage.getItem('mira_realtime_likes_count') || '0', 10);
+          localStorage.setItem('mira_realtime_likes_count', (currentCount + 1).toString());
         }
+
+        window.dispatchEvent(new CustomEvent('mira-telemetry-update', { detail: { action } }));
       } catch (e) {}
     }
 

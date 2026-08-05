@@ -189,14 +189,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
     useEffect(() => {
         loadData(true);
-        // 🚀 MIRA: Polling estabilizado para 10 segundos com sincronização forçada (Real-time auto update)
-        const interval = setInterval(() => loadData(true), 10000);
+        // 🚀 MIRA: Polling de alta frequência a cada 3 segundos (Real-time live stats)
+        const interval = setInterval(() => loadData(true), 3000);
         return () => clearInterval(interval);
     }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus]);
 
-
-    // 🛡️ MIRA REAL-TIME: Escuta mudanças globais no banco para atualizar o Dashboard instantaneamente
+    // 🛡️ MIRA REAL-TIME: Escuta eventos locais e Postgres Realtime para atualizar o Dashboard instantaneamente
     useEffect(() => {
+        const handleLocalTelemetryUpdate = () => loadData(true);
+        window.addEventListener('mira-telemetry-update', handleLocalTelemetryUpdate);
+        window.addEventListener('mira-access-recorded', handleLocalTelemetryUpdate);
+
         const channel = supabase
             .channel('admin_sovereign_sync')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => loadData(true))
@@ -207,11 +210,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, () => loadData(true))
             .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => loadData(true))
             .on('postgres_changes', { event: '*', schema: 'public', table: 'app_suggestions' }, () => loadData(true))
-            // 🤖 PERGUNTAS DO MIRA: Escuta em tempo real cada nova query ao assistente
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_logs' }, () => loadData(true))
             .subscribe();
 
         return () => {
+            window.removeEventListener('mira-telemetry-update', handleLocalTelemetryUpdate);
+            window.removeEventListener('mira-access-recorded', handleLocalTelemetryUpdate);
             supabase.removeChannel(channel);
         };
     }, []);

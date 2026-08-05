@@ -2,6 +2,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ""; 
 
 import { createClient } from '@supabase/supabase-js';
+import { analytics } from './analyticsService';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // 🛡️ [MIRA V3.1M] LOCAL KNOWLEDGE BASE - Funciona SEM API (Custo €0)const MIRA_LOCAL_KB: Record<string, string> = {
@@ -229,6 +230,9 @@ export const generateAssistantResponseV45 = async (prompt: string, history: any[
     const lang = (language || 'PT').toUpperCase();
     const normalizedKey = normalizePromptKey(prompt);
     const cacheKey = `mira_chat_cache_persistent_${normalizedKey}_${lang}`;
+
+    // ⚡ Real-Time Telemetry Tracking for AI Queries in Admin Hub
+    try { analytics.track('ai_query', 'system', 'chat', { promptLength: prompt.length }); } catch (e) {}
 
     // 🛡️ 1. CHECK PERSISTENT LOCAL STORAGE CACHE (CUSTO €0 - ZERO TOKENS)
     if (action === 'chat') {
