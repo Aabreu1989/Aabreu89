@@ -10,9 +10,19 @@ const KNOWLEDGE_BASE = [
     content: "A Manifestação de Interesse foi EXTINTA. Já não é possível regularizar-se entrando como turista para trabalhar. Agora é obrigatório obter um visto no consulado do país de origem. Processos submetidos antes de Junho 2024 continuam válidos e devem ser acompanhados no portal aima.gov.pt."
   },
   {
-    keywords: ["artigo 92", "turista", "estudante"],
-    topic: "Legalização via Artigo 92",
-    content: "Sim, é possível. Alguém que entrou como turista e excedeu os prazo pode legalizar-se pelo Artigo 92 com prova de matrícula em ensino reconhecido."
+    keywords: ["artigo 92", "estudante", "ensino superior", "visto estudante"],
+    topic: "Visto e Residência de Estudante (Art. 92.º)",
+    content: "A Autorização de Residência para estudantes exige a prévia instrução de Visto de Estudo no Consulado Português do país de origem antes de viajar. A regularização de turistas sem visto consular foi extinta pelas reformas do Parlamento."
+  },
+  {
+    keywords: ["comprovativo", "morada", "atestado", "junta", "freguesia"],
+    topic: "Novas Diretrizes de Comprovativo de Morada (2025/2026)",
+    content: "As Juntas de Freguesia deixaram de emitir Atestados de Residência baseados apenas em testemunhas informais. É obrigatório apresentar Contrato de Arrendamento registado no Portal das Finanças com recibos eletrónicos, Escritura de Imóvel, ou Declaração do Proprietário acompanhada da Caderneta Predial Urbana atualizada. Declarações falsas resultam no cancelamento imediato de processos de NIF e AIMA."
+  },
+  {
+    keywords: ["visto de trabalho", "empresa", "empresas", "termo de responsabilidade", "promessa de trabalho"],
+    topic: "Responsabilidade das Empresas & Vistos de Trabalho (2025/2026)",
+    content: "As empresas em Portugal só podem contratar trabalhadores estrangeiros que tenham obtido o Visto D1 (Trabalho Subordinado) ou Visto para Procura de Trabalho no Consulado de Portugal no país de origem. A empresa deve emitir uma Promessa de Contrato de Trabalho ou Termo de Responsabilidade prévio. A contratação ilegal de turistas sujeita as empresas a sanções gravíssimas e coimas da ACT e AIMA."
   },
   {
     keywords: ["agendamento", "aima", "vagas", "tentando", "meses", "como", "conseguir", "monitoro", "monitorar", "servir", "serve", "site", "portal"],

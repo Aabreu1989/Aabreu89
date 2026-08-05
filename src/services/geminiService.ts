@@ -205,6 +205,15 @@ const getMiraLocalResponse = (prompt: string, language: string = 'PT'): string |
   return kb['default'] || null;
 };
 
+const normalizePromptKey = (str: string) => {
+  return str
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+};
+
 const safeBtoa = (str: string) => {
   try {
     return btoa(unescape(encodeURIComponent(str)));
@@ -217,6 +226,36 @@ export const generateAssistantResponseV45 = async (prompt: string, history: any[
   try {
     if (!prompt || !prompt.trim()) return { text: "", success: true };
 
+    const lang = (language || 'PT').toUpperCase();
+    const normalizedKey = normalizePromptKey(prompt);
+    const cacheKey = `mira_chat_cache_persistent_${normalizedKey}_${lang}`;
+
+    // 🛡️ 1. CHECK PERSISTENT LOCAL STORAGE CACHE (CUSTO €0 - ZERO TOKENS)
+    if (action === 'chat') {
+      try {
+        const persistentCached = localStorage.getItem(cacheKey) || sessionStorage.getItem(cacheKey);
+        if (persistentCached) {
+          console.log('🧠 [MIRA CACHE PERSISTENTE] Resposta para pergunta idêntica recuperada (Custo €0, 0 Tokens)');
+          return { text: persistentCached, success: true, version: 'V2026_PERSISTENT_CACHE', hydration: 1, perf: '0ms' };
+        }
+      } catch (e) {
+        console.warn('LocalStorage error reading chat cache:', e);
+      }
+    }
+
+    // 🛡️ 2. CHECK LOCAL KNOWLEDGE BASE DIRECTIVES (CUSTO €0 - ZERO TOKENS)
+    const localMatch = getMiraLocalResponse(prompt, language);
+    const defaultResponse = (lang === 'EN' ? MIRA_LOCAL_KB_EN['default'] :
+                             lang === 'ES' ? MIRA_LOCAL_KB_ES['default'] :
+                             lang === 'FR' ? MIRA_LOCAL_KB_FR['default'] : MIRA_LOCAL_KB['default']) || '';
+    
+    if (localMatch && localMatch !== defaultResponse) {
+      if (action === 'chat') {
+        try { localStorage.setItem(cacheKey, localMatch); sessionStorage.setItem(cacheKey, localMatch); } catch (e) {}
+      }
+      return { text: localMatch, success: true, version: 'V2026_LOCAL_KB', hydration: 1, perf: '0ms' };
+    }
+
     console.log(`🧠 [MIRA] Ordem enviada para a Nuvem...`);
 
     // Organização de mensagens para manter o contexto (V2026.GOLD)
@@ -227,16 +266,6 @@ export const generateAssistantResponseV45 = async (prompt: string, history: any[
         role: (h.role === 'assistant' || h.role === 'model') ? 'model' : 'user',
         content: (h.content || h.text || h.message || "").trim()
       }));
-
-    // 🛡️ [SOVEREIGN V2026] CACHE DE MEMÓRIA (TOKEN SAVER)
-    const cacheKey = `mira_chat_${safeBtoa(prompt.substring(0, 100))}_${language}`;
-    if (action === 'chat') {
-      const cachedResponse = sessionStorage.getItem(cacheKey);
-      if (cachedResponse) {
-        console.log('🧠 [MIRA CACHE] Resposta recuperada do histórico (custo €0, poupança de tokens)');
-        return { text: cachedResponse, success: true, version: 'V2026_CACHE', hydration: 1, perf: '0ms' };
-      }
-    }
 
     const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
     const response = await fetch(`${apiUrl}/api/chat`, {
@@ -262,9 +291,12 @@ export const generateAssistantResponseV45 = async (prompt: string, history: any[
     
     const text = data?.text || textFallback;
  
-    // 🛡️ [SOVEREIGN V2026] GUARDA NO HISTÓRICO PARA NÃO GASTAR MAIS TOKENS NESSA PERGUNTA
+    // 🛡️ [SOVEREIGN V2026] GUARDA NO CACHE PERSISTENTE LOCALSTORAGE PARA NÃO GASTAR MAIS TOKENS
     if (action === 'chat' && data?.text) {
-      sessionStorage.setItem(cacheKey, data.text);
+      try {
+        localStorage.setItem(cacheKey, data.text);
+        sessionStorage.setItem(cacheKey, data.text);
+      } catch (e) {}
     }
  
     return { 
