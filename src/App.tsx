@@ -594,21 +594,6 @@ const AppContent: React.FC = () => {
             localStorage.setItem('mira_recovery_pending', 'true');
         }
 
-        // V26.8: Clean ONLY auth-related URL parameters. Keep view/tab for persistence.
-        const authParams = ['access_token', 'refresh_token', 'expires_in', 'provider_token', 'token_type', 'code'];
-        let hasAuth = window.location.hash.includes('access_token') || params.has('code');
-        
-        if (hasAuth) {
-            const cleanParams = new URLSearchParams();
-            params.forEach((v, k) => {
-                if (!authParams.includes(k)) cleanParams.set(k, v);
-            });
-            const search = cleanParams.toString();
-            const newUrl = window.location.pathname + (search ? '?' + search : '');
-            window.history.replaceState({}, document.title, newUrl);
-            console.log("MIRA_DEBUG: Auth parameters cleaned, persistence params kept.");
-        }
-
         // 🛡️ MIRA V2026.GOLD: Sovereign Admin Guard (Administração & Concursos)
         const isAdmin = user && (user.role === 'admin' || [
             'amandasabreu89@gmail.com', 
@@ -635,9 +620,10 @@ const AppContent: React.FC = () => {
 
         const checkSession = async () => {
             try {
-                // 🛡️ MIRA: Direct Hash Token Extractor (Fix for localhost & OAuth redirects)
-                if (window.location.hash.includes('access_token')) {
-                    console.log("🔑 [MIRA AUTH] Extracting OAuth access_token from URL hash...");
+                // 🛡️ MIRA: Direct Hash / Query Token Extractor (Fix for localhost & OAuth redirects)
+                const hasAccessToken = window.location.hash.includes('access_token') || window.location.search.includes('access_token');
+                if (hasAccessToken) {
+                    console.log("🔑 [MIRA AUTH] Extracting OAuth access_token from URL context...");
                     // Clean fake bypass if present to allow real login
                     const localToken = localStorage.getItem('mira-token-v4') || '';
                     if (localToken.includes('fake_signature_for_local_bypass')) {
@@ -646,8 +632,10 @@ const AppContent: React.FC = () => {
 
                     const rawHash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
                     const hashParams = new URLSearchParams(rawHash);
-                    const accessToken = hashParams.get('access_token');
-                    const refreshToken = hashParams.get('refresh_token');
+                    const searchParams = new URLSearchParams(window.location.search);
+                    
+                    const accessToken = hashParams.get('access_token') || searchParams.get('access_token');
+                    const refreshToken = hashParams.get('refresh_token') || searchParams.get('refresh_token');
 
                     if (accessToken) {
                         try {
@@ -658,7 +646,7 @@ const AppContent: React.FC = () => {
                             if (setSessionErr) {
                                 console.error("🔑 [MIRA AUTH] setSession error:", setSessionErr);
                             } else if (setSessionRes?.session?.user) {
-                                console.log("✅ [MIRA AUTH] Session restored via hash token for:", setSessionRes.session.user.email);
+                                console.log("✅ [MIRA AUTH] Session restored via token for:", setSessionRes.session.user.email);
                                 let profile = await authService.fetchProfileWithRetry(
                                     setSessionRes.session.user.id,
                                     setSessionRes.session.user.email || '',
@@ -681,7 +669,7 @@ const AppContent: React.FC = () => {
                                     setShowSplash(false);
                                     setIsInitializing(false);
                                     sessionStorage.setItem('mira_splash_shown', 'true');
-                                    // Clean hash after setting session
+                                    // Clean hash and auth params after setting session
                                     const params = new URLSearchParams(window.location.search);
                                     const cleanParams = new URLSearchParams();
                                     const authParams = ['code', 'access_token', 'refresh_token', 'expires_in', 'provider_token', 'token_type'];
@@ -693,7 +681,7 @@ const AppContent: React.FC = () => {
                                 }
                             }
                         } catch (e) {
-                            console.error("🔑 [MIRA AUTH] Hash token processing error:", e);
+                            console.error("🔑 [MIRA AUTH] Token processing error:", e);
                         }
                     }
                 }
