@@ -638,6 +638,12 @@ const AppContent: React.FC = () => {
                 // 🛡️ MIRA: Direct Hash Token Extractor (Fix for localhost & OAuth redirects)
                 if (window.location.hash.includes('access_token')) {
                     console.log("🔑 [MIRA AUTH] Extracting OAuth access_token from URL hash...");
+                    // Clean fake bypass if present to allow real login
+                    const localToken = localStorage.getItem('mira-token-v4') || '';
+                    if (localToken.includes('fake_signature_for_local_bypass')) {
+                        localStorage.removeItem('mira-token-v4');
+                    }
+
                     const rawHash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
                     const hashParams = new URLSearchParams(rawHash);
                     const accessToken = hashParams.get('access_token');
@@ -652,12 +658,22 @@ const AppContent: React.FC = () => {
                             if (setSessionErr) {
                                 console.error("🔑 [MIRA AUTH] setSession error:", setSessionErr);
                             } else if (setSessionRes?.session?.user) {
-                                console.log("✅ [MIRA AUTH] Session restored via hash token!");
-                                const profile = await authService.fetchProfileWithRetry(
+                                console.log("✅ [MIRA AUTH] Session restored via hash token for:", setSessionRes.session.user.email);
+                                let profile = await authService.fetchProfileWithRetry(
                                     setSessionRes.session.user.id,
                                     setSessionRes.session.user.email || '',
-                                    setSessionRes.session.user.user_metadata?.name
+                                    setSessionRes.session.user.user_metadata?.name || setSessionRes.session.user.user_metadata?.full_name
                                 );
+
+                                if (!profile) {
+                                    console.log("🔑 [MIRA AUTH] Profile not found, creating fallback profile...");
+                                    profile = await authService.createFallbackProfile(
+                                        setSessionRes.session.user.id,
+                                        setSessionRes.session.user.email || '',
+                                        setSessionRes.session.user.user_metadata?.name || setSessionRes.session.user.user_metadata?.full_name
+                                    );
+                                }
+
                                 if (profile && mounted) {
                                     const u = authService.mapProfileToUser(profile, setSessionRes.session.user);
                                     setUser(u);
@@ -666,7 +682,13 @@ const AppContent: React.FC = () => {
                                     setIsInitializing(false);
                                     sessionStorage.setItem('mira_splash_shown', 'true');
                                     // Clean hash after setting session
-                                    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+                                    const params = new URLSearchParams(window.location.search);
+                                    const cleanParams = new URLSearchParams();
+                                    const authParams = ['code', 'access_token', 'refresh_token', 'expires_in', 'provider_token', 'token_type'];
+                                    params.forEach((v, k) => { if (!authParams.includes(k)) cleanParams.set(k, v); });
+                                    const searchStr = cleanParams.toString();
+                                    const newUrl = window.location.pathname + (searchStr ? '?' + searchStr : '');
+                                    window.history.replaceState({}, document.title, newUrl);
                                     return;
                                 }
                             }
@@ -701,7 +723,7 @@ const AppContent: React.FC = () => {
 
                 // 🛡️ MIRA: Se for o bypass, não verificamos o perfil na nuvem!
                 const localToken = localStorage.getItem('mira-token-v4') || '';
-                if (localToken.includes('fake_signature_for_local_bypass')) {
+                if (localToken.includes('fake_signature_for_local_bypass') && !window.location.hash.includes('access_token')) {
                     console.log("👑 [MIRA] Sessão bypass confirmada. Ignorando Cloud Auth.");
                     const localUser = localStorage.getItem('mira_user');
                     if (localUser) {
