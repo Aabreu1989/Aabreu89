@@ -5,8 +5,7 @@
     "C:\\Program Files\\nodejs\\node.exe",
     "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\dist\\vc.js",
     "build",
-    "--prod",
-    "--yes"
+    "--prod"
   ],
   "cliVersion": "54.14.0",
   "builds": [
@@ -36,66 +35,6 @@
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/utils/rate-limiter.js",
-      "config": {
-        "zeroConfig": true
-      }
-    },
-    {
-      "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
-      "apiVersion": 3,
-      "use": "@vercel/node",
-      "src": "api/admin-delete-content.js",
-      "config": {
-        "zeroConfig": true
-      }
-    },
-    {
-      "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
-      "apiVersion": 3,
-      "use": "@vercel/node",
-      "src": "api/admin-delete-user.js",
-      "config": {
-        "zeroConfig": true
-      }
-    },
-    {
-      "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
-      "apiVersion": 3,
-      "use": "@vercel/node",
-      "src": "api/admin-export-impact.js",
-      "config": {
-        "zeroConfig": true
-      }
-    },
-    {
-      "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
-      "apiVersion": 3,
-      "use": "@vercel/node",
-      "src": "api/admin-metrics-panel.js",
-      "config": {
-        "zeroConfig": true
-      }
-    },
-    {
-      "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
-      "apiVersion": 3,
-      "use": "@vercel/node",
-      "src": "api/admin-purge.js",
-      "config": {
-        "zeroConfig": true
-      }
-    },
-    {
-      "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
-      "apiVersion": 3,
-      "use": "@vercel/node",
-      "src": "api/admin-users.js",
       "config": {
         "zeroConfig": true
       }

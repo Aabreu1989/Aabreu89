@@ -5,5 +5,13 @@ dist
 tmp
 scratch
 .agent
+backups
+dsmt-nexus
+supabase
+tests
+app
+fixes
+modules
+lib
 *.log
 *.sql

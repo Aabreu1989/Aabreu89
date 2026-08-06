@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { isRateLimited, getClientIp } from './utils/rate-limiter.js';
+import { isRateLimited, getClientIp } from '../lib/rate-limiter.js';
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
