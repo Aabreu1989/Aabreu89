@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import AdminSaberIA from './AdminSaberIA';
 import { MiraImpactReport } from './MiraImpactReport';
+import PremiosView from './PremiosView';
 import { adminService } from '../services/adminService';
 import { generateAdminHubPDF, generateAuditExcel } from '../services/exportService';
 import { User, Post } from '../types';
@@ -477,16 +478,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <span className="truncate">{tab.label}</span>
                     </button>
                 ))}
-                
-                {onViewChange && (
-                    <button
-                        onClick={() => onViewChange('premios')}
-                        className="w-full lg:flex-1 py-2.5 sm:py-3.5 px-2 sm:px-4 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 sm:gap-2 transition-all text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 hover:text-white col-span-2 sm:col-span-1"
-                    >
-                        <Award size={14} className="shrink-0 animate-pulse text-orange-400 sm:w-[16px] sm:h-[16px]" />
-                        <span className="truncate">CONCURSOS 🏆</span>
-                    </button>
-                )}
             </div>
 
 
@@ -637,7 +628,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         <p className="text-xs text-white/40 font-bold mt-2 uppercase">Garante que o MIRA sabe as leis de 2026</p>
                                     </button>
                                     {onViewChange && (
-                                        <button onClick={() => onViewChange('premios')} className="w-full p-8 bg-gradient-to-br from-indigo-950/40 via-slate-900 to-indigo-950/30 border border-indigo-500/20 rounded-[2.5rem] text-left hover:border-orange-500/40 hover:scale-[1.02] transition-all group shadow-2xl relative overflow-hidden">
+                                        <button onClick={() => setActiveTab('concursos')} className="w-full p-8 bg-gradient-to-br from-indigo-950/40 via-slate-900 to-indigo-950/30 border border-indigo-500/20 rounded-[2.5rem] text-left hover:border-orange-500/40 hover:scale-[1.02] transition-all group shadow-2xl relative overflow-hidden">
                                             <div className="absolute top-[-20%] right-[-20%] w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
                                             <Award className="mb-4 text-orange-400 group-hover:scale-110 transition-transform duration-300" size={32} />
                                             <h4 className="text-xl font-black uppercase tracking-tight text-white flex items-center gap-1.5">Painel de Candidaturas <Sparkles size={16} className="text-orange-400 animate-pulse" /></h4>
@@ -1241,78 +1232,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         )}
 
                         {activeTab === 'concursos' && (
-                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                    <div>
-                                        <h2 className="text-2xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
-                                            <span>CONCURSOS & PRÉMIOS MIRA</span>
-                                            <span className="text-xs font-black bg-orange-500/20 text-[#FF8C00] px-3 py-1 rounded-full border border-orange-500/30">V2026.GOLD</span>
-                                        </h2>
-                                        <p className="text-xs text-white/40 font-bold uppercase tracking-wider mt-1">Gestão de candidaturas, submissões e dossiês de financiamento europeu</p>
-                                    </div>
-                                    <button 
-                                        onClick={() => onViewChange?.('premios')}
-                                        className="px-5 py-3 bg-[#FF8C00] hover:bg-orange-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-orange-500/20 transition-all flex items-center gap-2"
-                                    >
-                                        <Trophy size={16} />
-                                        <span>Abrir Ecrã de Prémios</span>
-                                    </button>
-                                </div>
-
-                                {/* Stat summary */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <div className="p-6 bg-gradient-to-br from-amber-900/30 to-slate-900 border border-amber-500/20 rounded-[2rem]">
-                                        <p className="text-[10px] font-black text-amber-300 uppercase tracking-widest mb-1">Candidaturas Ativas</p>
-                                        <h3 className="text-3xl font-black text-white">4</h3>
-                                        <p className="text-[9px] font-bold text-amber-200/50 mt-1 uppercase">Em análise pela comissão</p>
-                                    </div>
-                                    <div className="p-6 bg-gradient-to-br from-emerald-900/30 to-slate-900 border border-emerald-500/20 rounded-[2rem]">
-                                        <p className="text-[10px] font-black text-emerald-300 uppercase tracking-widest mb-1">Taxa de Elegibilidade</p>
-                                        <h3 className="text-3xl font-black text-emerald-400">100%</h3>
-                                        <p className="text-[9px] font-bold text-emerald-200/50 mt-1 uppercase">Critérios ISO & UE preenchidos</p>
-                                    </div>
-                                    <div className="p-6 bg-gradient-to-br from-purple-900/30 to-slate-900 border border-purple-500/20 rounded-[2rem]">
-                                        <p className="text-[10px] font-black text-purple-300 uppercase tracking-widest mb-1">Impacto Auditado</p>
-                                        <h3 className="text-3xl font-black text-purple-300">52.198+</h3>
-                                        <p className="text-[9px] font-bold text-purple-200/50 mt-1 uppercase">Acessos totais verificados</p>
-                                    </div>
-                                    <div className="p-6 bg-gradient-to-br from-blue-900/30 to-slate-900 border border-blue-500/20 rounded-[2rem]">
-                                        <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Dossiês Exportados</p>
-                                        <h3 className="text-3xl font-black text-white">12</h3>
-                                        <p className="text-[9px] font-bold text-blue-200/50 mt-1 uppercase">PDF + Excel de auditoria</p>
-                                    </div>
-                                </div>
-
-                                {/* List of Active Competitions */}
-                                <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] space-y-4">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-white/60">Programas & Prémios em Competição</h3>
-                                    
-                                    <div className="space-y-3">
-                                        {[
-                                            { name: 'Prémio Inovação Social & Inclusão Digital 2026', cat: 'Inovação Social', status: 'Em Avaliação Final', prize: 'Fundo Social Europeu (FSE+)', score: '98/100' },
-                                            { name: 'Concurso Nacional de Tecnologia Civica para Migrantes', cat: 'Capacitação Tecnológica', status: 'Candidatura Submetida', prize: 'Prémio Impacto Digital', score: '96/100' },
-                                            { name: 'Selo de Excelência de Transparência & Direitos', cat: 'Literacia Legal & Cívica', status: 'Auditado & Aprovado', prize: 'Certificação Oficial', score: '100/100' },
-                                            { name: 'Prémio Empreendedorismo de Impacto Comunitário', cat: 'Empregabilidade & Integração', status: 'Fase de Defesa', prize: 'Aceleração Internacional', score: '95/100' }
-                                        ].map((c, i) => (
-                                            <div key={i} className="p-5 bg-black/40 border border-white/10 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-[#FF8C00]/30 transition-all">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <Trophy size={16} className="text-[#FF8C00]" />
-                                                        <h4 className="text-sm font-black text-white">{c.name}</h4>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{c.cat}</span>
-                                                        <span className="text-[9px] text-white/40 font-bold">{c.prize}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                                                    <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">{c.status}</span>
-                                                    <span className="text-xs font-black text-white bg-white/10 px-3 py-1 rounded-lg">{c.score}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <PremiosView language={language} onBack={() => setActiveTab('dashboard')} />
                             </div>
                         )}
 
