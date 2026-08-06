@@ -3,18 +3,36 @@
   "target": "production",
   "argv": [
     "C:\\Program Files\\nodejs\\node.exe",
-    "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\vercel\\dist\\vc.js",
+    "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\dist\\vc.js",
     "build",
-    "--prod"
+    "--prod",
+    "--yes"
   ],
-  "cliVersion": "58.7.0",
-  "detectedFramework": {
-    "status": "skipped"
-  },
+  "cliVersion": "54.14.0",
   "builds": [
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
+      "apiVersion": 3,
+      "use": "@vercel/node",
+      "src": "api/admin/export-impact.js",
+      "config": {
+        "zeroConfig": true
+      }
+    },
+    {
+      "require": "@vercel/node",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
+      "apiVersion": 3,
+      "use": "@vercel/node",
+      "src": "api/admin/metrics-panel.js",
+      "config": {
+        "zeroConfig": true
+      }
+    },
+    {
+      "require": "@vercel/node",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/utils/rate-limiter.js",
@@ -24,7 +42,7 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/admin-delete-content.js",
@@ -34,7 +52,7 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/admin-delete-user.js",
@@ -44,7 +62,17 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
+      "apiVersion": 3,
+      "use": "@vercel/node",
+      "src": "api/admin-export-impact.js",
+      "config": {
+        "zeroConfig": true
+      }
+    },
+    {
+      "require": "@vercel/node",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/admin-metrics-panel.js",
@@ -54,7 +82,7 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/admin-purge.js",
@@ -64,7 +92,7 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/admin-users.js",
@@ -74,7 +102,17 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
+      "apiVersion": 3,
+      "use": "@vercel/node",
+      "src": "api/admin.js",
+      "config": {
+        "zeroConfig": true
+      }
+    },
+    {
+      "require": "@vercel/node",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/chat.js",
@@ -84,7 +122,7 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/recover.js",
@@ -94,7 +132,7 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/register.js",
@@ -104,7 +142,17 @@
     },
     {
       "require": "@vercel/node",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\node\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
+      "apiVersion": 3,
+      "use": "@vercel/node",
+      "src": "api/sync-jobs.js",
+      "config": {
+        "zeroConfig": true
+      }
+    },
+    {
+      "require": "@vercel/node",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\node\\dist\\index",
       "apiVersion": 3,
       "use": "@vercel/node",
       "src": "api/update-password.js",
@@ -114,13 +162,15 @@
     },
     {
       "require": "@vercel/static-build",
-      "requirePath": "C:\\Users\\Utilizador\\AppData\\Local\\npm-cache\\_npx\\08f60b178ba8da04\\node_modules\\@vercel\\static-build\\dist\\index",
+      "requirePath": "C:\\Users\\Utilizador\\AppData\\Roaming\\npm\\node_modules\\vercel\\node_modules\\@vercel\\static-build\\dist\\index",
       "apiVersion": 2,
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
         "zeroConfig": true,
-        "framework": "vite"
+        "framework": "vite",
+        "buildCommand": "npm run build",
+        "outputDirectory": "dist"
       }
     }
   ]
