@@ -63,7 +63,6 @@ export default defineConfig(({ mode }) => {
             'vendor-react': ['react', 'react-dom'],
             'vendor-supabase': ['@supabase/supabase-js'],
             'vendor-ui': ['lucide-react', 'recharts'],
-            'massive-data': ['./src/utils/massiveJobsDatabase', './src/utils/iefpCoursesDatabase', './src/utils/dgesCoursesDatabase', './src/utils/massiveServicesDatabase'],
           },
         },
         onwarn(warning, warn) {
