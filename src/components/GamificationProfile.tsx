@@ -423,13 +423,20 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                 const baseUser = fullProfile || user;
                 const sanitized = { ...baseUser, email: user?.email || baseUser?.email };
 
-                if (isAdmin && !sanitized.email) {
+                if (isAdmin) {
+                    // Admin sempre vê o email — busca direto da tabela profiles
                     try {
-                        const { data: profileDb } = await supabase.from('profiles').select('email').eq('id', user.id).maybeSingle();
+                        const { data: profileDb } = await supabase
+                            .from('profiles')
+                            .select('email, name, avatar_url, role, bio')
+                            .eq('id', user.id)
+                            .maybeSingle();
                         if (profileDb?.email) {
                             sanitized.email = profileDb.email;
                         }
-                    } catch (e) {}
+                    } catch (e) {
+                        console.error('MIRA Admin: erro ao buscar email do utilizador', e);
+                    }
                 }
 
                 if (!isAdmin && !isOwner) {

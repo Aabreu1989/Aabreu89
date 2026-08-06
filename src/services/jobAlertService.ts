@@ -17,7 +17,41 @@ const LOCAL_KEY = 'mira_job_alerts_v1';
 
 export const jobAlertService = {
   /**
-   * Get all active alerts for current session / user
+   * Get all active alerts from Supabase (with localStorage fallback)
+   */
+  async getAlertsAsync(userId?: string): Promise<JobAlert[]> {
+    if (userId) {
+      try {
+        const { data, error } = await supabase
+          .from('user_job_alerts')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
+
+        if (!error && data) {
+          const mapped: JobAlert[] = data.map(item => ({
+            id: item.id,
+            user_id: item.user_id,
+            workTopic: item.work_topic || 'Todos',
+            location: item.location || 'Todos os Distritos',
+            keywords: item.keywords || '',
+            isActive: item.is_active ?? true,
+            frequency: item.frequency || 'instant',
+            createdAt: item.created_at,
+            lastNotifiedAt: item.last_notified_at
+          }));
+          localStorage.setItem(LOCAL_KEY, JSON.stringify(mapped));
+          return mapped;
+        }
+      } catch (e) {
+        console.warn('MIRA JobAlert: Supabase fetch error, fallback to local', e);
+      }
+    }
+    return this.getAlerts(userId);
+  },
+
+  /**
+   * Synchronous getAlerts (reads local cache)
    */
   getAlerts(userId?: string): JobAlert[] {
     try {
@@ -33,14 +67,16 @@ export const jobAlertService = {
   },
 
   /**
-   * Save a new job alert
+   * Save a new job alert directly to Supabase
    */
   async saveAlert(
     alertData: { workTopic: string; location: string; keywords?: string; frequency?: 'instant' | 'daily' | 'weekly' },
     userId?: string
   ): Promise<JobAlert> {
+    const alertId = `alert-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    
     const newAlert: JobAlert = {
-      id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      id: alertId,
       user_id: userId,
       workTopic: alertData.workTopic || 'Todos',
       location: alertData.location || 'Todos os Distritos',
@@ -50,26 +86,33 @@ export const jobAlertService = {
       createdAt: new Date().toISOString()
     };
 
-    // 1. Save locally
+    // Save locally
     const existing = this.getAlerts();
     const updated = [newAlert, ...existing];
     localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
 
-    // 2. Sync to Supabase if logged in
+    // Save directly to Supabase if logged in
     if (userId) {
       try {
-        await supabase.from('user_job_alerts').upsert({
-          id: newAlert.id,
-          user_id: userId,
-          work_topic: newAlert.workTopic,
-          location: newAlert.location,
-          keywords: newAlert.keywords,
-          is_active: newAlert.isActive,
-          frequency: newAlert.frequency,
-          created_at: newAlert.createdAt
-        });
+        const { data, error } = await supabase
+          .from('user_job_alerts')
+          .insert({
+            user_id: userId,
+            work_topic: newAlert.workTopic,
+            location: newAlert.location,
+            keywords: newAlert.keywords,
+            is_active: newAlert.isActive,
+            frequency: newAlert.frequency,
+            created_at: newAlert.createdAt
+          })
+          .select()
+          .single();
+
+        if (!error && data) {
+          newAlert.id = data.id;
+        }
       } catch (e) {
-        console.warn('MIRA JobAlert: Supabase sync warning:', e);
+        console.warn('MIRA JobAlert: Supabase insert warning:', e);
       }
     }
 
@@ -77,7 +120,7 @@ export const jobAlertService = {
   },
 
   /**
-   * Toggle alert active status
+   * Toggle alert active status in Supabase
    */
   async toggleAlert(alertId: string, isActive: boolean, userId?: string): Promise<void> {
     const list = this.getAlerts();
@@ -86,13 +129,18 @@ export const jobAlertService = {
 
     if (userId) {
       try {
-        await supabase.from('user_job_alerts').update({ is_active: isActive }).eq('id', alertId);
-      } catch (e) {}
+        await supabase
+          .from('user_job_alerts')
+          .update({ is_active: isActive })
+          .eq('id', alertId);
+      } catch (e) {
+        console.warn('MIRA JobAlert: Toggle status warning:', e);
+      }
     }
   },
 
   /**
-   * Delete an alert
+   * Delete an alert from Supabase
    */
   async deleteAlert(alertId: string, userId?: string): Promise<void> {
     const list = this.getAlerts();
@@ -101,78 +149,21 @@ export const jobAlertService = {
 
     if (userId) {
       try {
-        await supabase.from('user_job_alerts').delete().eq('id', alertId);
-      } catch (e) {}
+        await supabase
+          .from('user_job_alerts')
+          .delete()
+          .eq('id', alertId);
+      } catch (e) {
+        console.warn('MIRA JobAlert: Delete alert warning:', e);
+      }
     }
   },
 
   /**
-   * Core Engine: Check active alerts against recent jobs and generate notifications
+   * Client-side check fallback (Supabase Trigger handles atomic matching automatically)
    */
   async checkAlertsAndNotify(jobs: JobPost[], userId?: string): Promise<number> {
-    const alerts = this.getAlerts(userId).filter(a => a.isActive);
-    if (alerts.length === 0 || !jobs || jobs.length === 0) return 0;
-
-    const now = Date.now();
-    let notificationCount = 0;
-    const NOTIFY_COOL_DOWN_MS = 12 * 60 * 60 * 1000; // 12 hours cooldown per alert
-
-    const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
-    for (const alert of alerts) {
-      // Check cooldown
-      const lastNotified = alert.lastNotifiedAt ? new Date(alert.lastNotifiedAt).getTime() : 0;
-      if (now - lastNotified < NOTIFY_COOL_DOWN_MS) continue;
-
-      // Filter jobs matching alert criteria
-      const topicNorm = normalize(alert.workTopic);
-      const locNorm = normalize(alert.location);
-      const kwNorm = alert.keywords ? normalize(alert.keywords) : '';
-
-      const matchingJobs = jobs.filter(job => {
-        const jTopic = normalize(job.workTopic || '');
-        const jLoc = normalize(job.location || '');
-        const jTitle = normalize(job.title || '');
-
-        const matchesTopic = topicNorm === 'todos' || jTopic.includes(topicNorm) || topicNorm.includes(jTopic);
-        const matchesLoc = locNorm === 'todos os distritos' || locNorm === 'todos' || jLoc.includes(locNorm);
-        const matchesKw = !kwNorm || jTitle.includes(kwNorm) || jTopic.includes(kwNorm);
-
-        return matchesTopic && matchesLoc && matchesKw;
-      });
-
-      if (matchingJobs.length > 0) {
-        const topJob = matchingJobs[0];
-        const count = matchingJobs.length;
-        const alertTitle = `🔔 ${count} ${count === 1 ? 'Nova Vaga' : 'Novas Vagas'} Encontradas!`;
-        const alertMsg = count === 1
-          ? `Vaga de "${topJob.title}" em ${topJob.location} corresponde ao seu alerta.`
-          : `Foram encontradas ${count} vagas recentes na área "${alert.workTopic}" (${alert.location}).`;
-
-        // Update alert lastNotifiedAt
-        alert.lastNotifiedAt = new Date().toISOString();
-        const allAlerts = this.getAlerts();
-        const updatedAlerts = allAlerts.map(a => a.id === alert.id ? alert : a);
-        localStorage.setItem(LOCAL_KEY, JSON.stringify(updatedAlerts));
-
-        // Trigger in-app notification if userId exists or toast
-        if (userId) {
-          try {
-            await supabase.from('notifications').insert({
-              user_id: userId,
-              type: 'jobs',
-              title: alertTitle,
-              message: alertMsg,
-              is_read: false,
-              created_at: new Date().toISOString()
-            });
-          } catch (e) {}
-        }
-
-        notificationCount++;
-      }
-    }
-
-    return notificationCount;
+    // Database trigger process_job_alerts_on_new_job handles atomic matching without duplicates
+    return 0;
   }
 };

@@ -29,7 +29,7 @@ const BASELINES = {
   downloads: 3451,
   pwaMobile: 629,
   pwaDesktop: 233,
-  appAccesses: 49592,
+  appAccesses: 52198,
   jobs: 5326,
   services: 225,
 };

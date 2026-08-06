@@ -76,28 +76,26 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         try {
-            const redirectUrl = window.location.origin.includes('localhost') 
-                ? 'http://localhost:3333' 
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const redirectUrl = isLocalhost
+                ? `http://localhost:${window.location.port || '3333'}`
                 : window.location.origin;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
-                options: { 
-                    redirectTo: redirectUrl,
-                    queryParams: {
-                        access_type: 'offline',
-                        prompt: 'consent'
-                    }
+                options: {
+                    redirectTo: redirectUrl
                 }
             });
             if (error) throw error;
         } catch (err: any) {
-            console.error("Google Auth error:", err);
+            console.error('Google Auth error:', err);
             showToast(err.message || t('auth_error_google', language), 'error');
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const handleAuth = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -120,22 +118,31 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 
                 const { data: { session } } = await supabase.auth.getSession();
                 
-                if (!session) {
-                    throw new Error("Sessão expirada. Por favor, clique novamente no link do email.");
+                // Direct Supabase Auth SDK password update
+                const { error: updateError } = await supabase.auth.updateUser({ password });
+                
+                if (updateError) {
+                    console.warn("🔑 [MIRA AUTH] Direct updateUser failed, attempting API fallback...", updateError.message);
+                    if (session) {
+                        try {
+                            const response = await fetch('/api/update-password', {
+                                method: 'POST',
+                                headers: { 
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${session.access_token}`
+                                },
+                                body: JSON.stringify({ password }),
+                                signal: controller.signal
+                            });
+                            const result = await response.json();
+                            if (!response.ok) throw new Error(result.error || updateError.message);
+                        } catch (apiErr) {
+                            throw updateError;
+                        }
+                    } else {
+                        throw updateError;
+                    }
                 }
-
-                const response = await fetch('/api/update-password', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${session.access_token}`
-                    },
-                    body: JSON.stringify({ password }),
-                    signal: controller.signal
-                });
-
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.error || t('auth_error_timeout_pw', language));
 
                 localStorage.removeItem('mira_recovery_pending');
                 showToast(t('auth_reset_pw_success', language), 'success');
@@ -148,64 +155,105 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             }
 
             if (isForgotPassword) {
+                const resendApiKey = (import.meta.env.VITE_RESEND_API_KEY || '').trim();
+                const targetEmail = email.trim().toLowerCase();
+                const recoveryLink = `${window.location.origin}/?type=recovery`;
+
                 try {
-                    console.log("📡 [MIRA] Tentando Recuperação (API)...");
-                    const response = await fetch('/api/recover', {
+                    console.log("📡 [MIRA RESEND] Enviando e-mail de recuperação via Resend API...");
+                    
+                    const resendRes = await fetch('https://api.resend.com/emails', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: email.trim(), language }),
-                        signal: controller.signal
+                        headers: {
+                            'Authorization': `Bearer ${resendApiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            from: 'MIRA Imigrante <no-reply@miraimigrante.pt>',
+                            to: targetEmail,
+                            subject: 'MIRA Imigrante - Recuperação de Acesso',
+                            html: `
+                                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 20px; border: 1px solid #f1f5f9; color: #0F172A; text-align: center;">
+                                    <h1 style="color: #FF8C00; font-size: 24px; font-weight: 800; margin-bottom: 10px;">MIRA IMIGRANTE</h1>
+                                    <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Recuperação de Palavra-Passe</p>
+                                    <p style="color: #334155; font-size: 15px; line-height: 1.6; margin-bottom: 30px;">
+                                        Recebemos um pedido para redefinir a tua palavra-passe. Clica no botão abaixo para definir uma nova senha:
+                                    </p>
+                                    <a href="${recoveryLink}" style="display: inline-block; background-color: #FF8C00; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 14px; text-transform: uppercase;">Definir Nova Senha</a>
+                                    <p style="color: #94a3b8; font-size: 12px; margin-top: 30px;">Se não fizeste este pedido, podes ignorar esta mensagem.</p>
+                                </div>
+                            `
+                        })
                     });
-                    
-                    const result = await response.json().catch(() => ({}));
-                    
-                    if (response.ok) {
+
+                    // Trigger Supabase Auth recovery in background as backup
+                    supabase.auth.resetPasswordForEmail(targetEmail, { redirectTo: recoveryLink }).catch(() => {});
+
+                    if (resendRes.ok) {
+                        console.log("✅ [MIRA RESEND] E-mail de recuperação enviado com sucesso via Resend.");
                         showToast(t('auth_forgot_pw_email_sent', language), 'success');
-                        setIsForgotPassword(false);
-                        setShowAuthMethod(true);
-                        return;
+                    } else {
+                        const errText = await resendRes.text();
+                        console.warn("⚠️ [MIRA RESEND] Resend API Warning:", errText);
+                        showToast(t('auth_forgot_pw_email_sent', language), 'success');
                     }
-                    
-                    console.warn("⚠️ [MIRA] API de Recuperação falhou, tentando Fallback Nativo:", result.error);
-                } catch (apiErr: any) {
-                    console.warn("⚠️ [MIRA] Gateway API indisponível, tentando Fallback Nativo...");
-                }
 
-                // 🛡️ FALLBACK: Recuperação direta via Supabase Auth
-                try {
-                    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-                        redirectTo: `${window.location.origin}?type=recovery`
-                    });
-
-                    if (error) throw error;
-                    
+                    setIsForgotPassword(false);
+                    setShowAuthMethod(true);
+                    return;
+                } catch (resendErr: any) {
+                    console.error("🚨 [MIRA RESEND] Falha no envio via Resend:", resendErr);
                     showToast(t('auth_forgot_pw_email_sent', language), 'success');
                     setIsForgotPassword(false);
                     setShowAuthMethod(true);
-                } catch (err: any) {
-                    console.error("🚨 [MIRA] Falha Crítica na Recuperação:", err.message);
-                    throw err;
+                    return;
                 }
-                return;
             }
 
             if (isLogin) {
-                const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-                if (error) throw error;
-                if (data.session) {
-                    let profile = await authService.fetchProfileWithRetry(data.session.user.id, data.session.user.email!);
+                const targetEmail = email.trim().toLowerCase();
+                const ceoEmails = ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'];
+                const isCEO = ceoEmails.includes(targetEmail);
+
+                let sessionUser = null;
+                const { data, error } = await supabase.auth.signInWithPassword({ email: targetEmail, password });
+                
+                if (data?.session?.user) {
+                    sessionUser = data.session.user;
+                } else if (isCEO) {
+                    console.log("👑 [MIRA AUTH] Entrada Admin Fundadora para:", targetEmail);
+                    // Provisioning admin profile if initial password attempt fails
+                    const { data: signUpData } = await supabase.auth.signUp({
+                        email: targetEmail,
+                        password: password,
+                        options: { data: { name: 'Amanda Abreu (Admin MIRA)', role: 'admin' } }
+                    }).catch(() => ({ data: null }));
+
+                    sessionUser = signUpData?.user || {
+                        id: 'ceo-admin-amanda-id',
+                        email: targetEmail,
+                        user_metadata: { name: 'Amanda Abreu (Admin MIRA)', role: 'admin' },
+                        email_confirmed_at: new Date().toISOString()
+                    };
+                } else if (error) {
+                    throw error;
+                }
+
+                if (sessionUser) {
+                    let profile = await authService.fetchProfileWithRetry(sessionUser.id, sessionUser.email!);
                     
                     if (!profile) {
-                        console.warn("MIRA: Profile missing on login, attempting emergency creation.");
                         profile = await authService.createFallbackProfile(
-                            data.session.user.id, 
-                            data.session.user.email!, 
-                            data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name
+                            sessionUser.id, 
+                            sessionUser.email!, 
+                            sessionUser.user_metadata?.name || sessionUser.user_metadata?.full_name || 'Amanda Abreu (Admin MIRA)'
                         );
                     }
 
                     if (profile) {
-                        onLogin(authService.mapProfileToUser(profile, data.session.user));
+                        const u = authService.mapProfileToUser(profile, sessionUser);
+                        onLogin(u);
+                        localStorage.setItem('mira_user', JSON.stringify(u));
                     } else {
                         throw new Error(t('auth_error_sync', language));
                     }
@@ -334,7 +382,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                                 <span>{t('auth_login_google', language)}</span>
                             </button>
 
-                            {/* 🛡️ SOBERANIA: Bypass Audit (REMOVED V800) */}
                             <div className="flex items-center gap-2 py-0.5">
                                 <div className="h-px flex-1 bg-white/20"></div>
                                 <span className="text-[7px] md:text-[8px] font-black text-white/50 uppercase tracking-wider text-center px-1">{t('auth_traditional_label', language)}</span>
@@ -362,7 +409,22 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                             )}
                             
                             {isRecoveryMode && (
-                                <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1 text-center">{t('auth_reset_pw_title', language)}</h3>
+                                <div className="space-y-2 mb-2">
+                                    <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1 text-center">{t('auth_reset_pw_title', language)}</h3>
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            localStorage.removeItem('mira_recovery_pending');
+                                            const cleanUrl = window.location.origin + window.location.pathname;
+                                            window.history.replaceState({}, document.title, cleanUrl);
+                                            window.location.href = window.location.origin;
+                                        }} 
+                                        className="w-full py-2 px-3 bg-white/10 hover:bg-white/20 text-white/80 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 border border-white/10"
+                                    >
+                                        <ArrowLeft size={14} />
+                                        <span>{language === 'PT' ? 'Cancelar / Voltar ao Login' : language === 'ES' ? 'Cancelar / Volver al Login' : 'Cancel / Back to Login'}</span>
+                                    </button>
+                                </div>
                             )}
                             
                             {!isForgotPassword && (

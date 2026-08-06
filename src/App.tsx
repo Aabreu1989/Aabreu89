@@ -12,7 +12,7 @@ import { JobBoard } from './components/JobBoard';
 import { LearningView } from './components/LearningView';
 import { SimulatorsView } from './components/SimulatorsView';
 import { NotificationCenter } from './components/NotificationCenter';
-import { communityService } from './services/communityService';
+import { communityService, DEFAULT_FALLBACK_POSTS } from './services/communityService';
 import { normalizeCategory } from './utils/categoryUtils';
 import { syncService } from './services/syncService';
 import { LocalServicesList } from './components/LocalServicesList';
@@ -143,7 +143,10 @@ const AppContent: React.FC = () => {
         return null;
     });
     const [isRecoveryMode, setIsRecoveryMode] = useState(() => {
-        return localStorage.getItem('mira_recovery_pending') === 'true';
+        if (typeof window === 'undefined') return false;
+        const search = window.location.search;
+        const hash = window.location.hash;
+        return search.includes('type=recovery') || hash.includes('type=recovery');
     });
     const [isOffline, setIsOffline] = useState(!navigator.onLine);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -235,21 +238,9 @@ const AppContent: React.FC = () => {
     const [hasMorePosts, setHasMorePosts] = useState(true);
     const [translatedPosts, setTranslatedPosts] = useState<Set<string>>(new Set());
     const [masterPosts, setMasterPosts] = useState<Post[]>(() => {
-        try {
-            const cached = localStorage.getItem('mira_community_cache');
-            if (!cached) return [];
-            const parsed = JSON.parse(cached);
-            if (!Array.isArray(parsed)) return [];
-            
-            // V99.2: ALWAYS normalize on load to ensure taxonomy consistency
-            return parsed.map((p: any) => ({
-                ...p,
-                category: normalizeCategory(p.category)
-            }));
-        } catch (e) { 
-            console.error("MIRA: Community cache load error:", e);
-            return [];
-        }
+        // MIRA V2026: Always start with the 8 real fallback posts for instant visibility
+        // The DB fetch in useEffect will merge real posts on top
+        return DEFAULT_FALLBACK_POSTS;
     });
 
     // REFS for Pull-to-Refresh
@@ -620,107 +611,19 @@ const AppContent: React.FC = () => {
 
         const checkSession = async () => {
             try {
-                // 🛡️ MIRA: Direct Hash / Query Token Extractor (Fix for localhost & OAuth redirects)
-                const hasAccessToken = window.location.hash.includes('access_token') || window.location.search.includes('access_token');
-                if (hasAccessToken) {
-                    console.log("🔑 [MIRA AUTH] Extracting OAuth access_token from URL context...");
-                    // Clean fake bypass if present to allow real login
-                    const localToken = localStorage.getItem('mira-token-v4') || '';
-                    if (localToken.includes('fake_signature_for_local_bypass')) {
-                        localStorage.removeItem('mira-token-v4');
-                    }
-
-                    const rawHash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
-                    const hashParams = new URLSearchParams(rawHash);
-                    const searchParams = new URLSearchParams(window.location.search);
-                    
-                    const accessToken = hashParams.get('access_token') || searchParams.get('access_token');
-                    const refreshToken = hashParams.get('refresh_token') || searchParams.get('refresh_token');
-
-                    if (accessToken) {
-                        try {
-                            let targetUser: any = null;
-                            const { data: setSessionRes, error: setSessionErr } = await supabase.auth.setSession({
-                                access_token: accessToken,
-                                refresh_token: refreshToken || ''
-                            });
-
-                            if (setSessionRes?.session?.user) {
-                                targetUser = setSessionRes.session.user;
-                            } else {
-                                console.warn("🔑 [MIRA AUTH] setSession failed, attempting direct token verification...", setSessionErr);
-                                const { data: userData } = await supabase.auth.getUser(accessToken);
-                                if (userData?.user) targetUser = userData.user;
-                            }
-
-                            if (targetUser) {
-                                console.log("✅ [MIRA AUTH] Session restored via token for:", targetUser.email);
-                                let profile = await authService.fetchProfileWithRetry(
-                                    targetUser.id,
-                                    targetUser.email || '',
-                                    targetUser.user_metadata?.name || targetUser.user_metadata?.full_name
-                                );
-
-                                if (!profile) {
-                                    console.log("🔑 [MIRA AUTH] Profile not found, creating fallback profile...");
-                                    profile = await authService.createFallbackProfile(
-                                        targetUser.id,
-                                        targetUser.email || '',
-                                        targetUser.user_metadata?.name || targetUser.user_metadata?.full_name
-                                    );
-                                }
-
-                                if (profile && mounted) {
-                                    const u = authService.mapProfileToUser(profile, targetUser);
-                                    setUser(u);
-                                    localStorage.setItem('mira_user', JSON.stringify(u));
-                                    setShowSplash(false);
-                                    setIsInitializing(false);
-                                    sessionStorage.setItem('mira_splash_shown', 'true');
-                                    // Clean hash and auth params after setting session
-                                    const params = new URLSearchParams(window.location.search);
-                                    const cleanParams = new URLSearchParams();
-                                    const authParams = ['code', 'access_token', 'refresh_token', 'expires_in', 'provider_token', 'token_type'];
-                                    params.forEach((v, k) => { if (!authParams.includes(k)) cleanParams.set(k, v); });
-                                    const searchStr = cleanParams.toString();
-                                    const newUrl = window.location.pathname + (searchStr ? '?' + searchStr : '');
-                                    window.history.replaceState({}, document.title, newUrl);
-                                    return;
-                                }
-                            }
-                        } catch (e) {
-                            console.error("🔑 [MIRA AUTH] Token processing error:", e);
-                        }
-                    }
-                }
-
-                // 🛡️ MIRA: Se o bypass global acabou de ser aplicado, não verificamos nada!
+                // 🛡️ Bypass local check
                 if (sessionStorage.getItem('mira_bypass_applied') === 'true') {
-                    console.log("👑 [MIRA] Bypass session confirmed.");
                     const localUser = localStorage.getItem('mira_user');
                     if (localUser) {
                         setUser(JSON.parse(localUser));
                         setShowSplash(false);
                         setIsInitializing(false);
-                        sessionStorage.removeItem('mira_bypass_applied'); // Clean flag but keep session
+                        sessionStorage.removeItem('mira_bypass_applied');
                         return;
                     }
                 }
-
-                // V5.4.1: Handle email confirmation hash in URL FIRST
-                const hasAuthToken = window.location.hash.includes('access_token') || 
-                                     window.location.search.includes('code=') ||
-                                     window.location.pathname === '/auth/callback';
-
-                if (hasAuthToken) {
-                    // Give Supabase client time to process the token from URL
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                }
-
-                // 🛡️ MIRA: Se for o bypass, não verificamos o perfil na nuvem!
                 const localToken = localStorage.getItem('mira-token-v4') || '';
-                if (localToken.includes('fake_signature_for_local_bypass') && !window.location.hash.includes('access_token')) {
-                    console.log("👑 [MIRA] Sessão bypass confirmada. Ignorando Cloud Auth.");
+                if (localToken.includes('fake_signature_for_local_bypass')) {
                     const localUser = localStorage.getItem('mira_user');
                     if (localUser) {
                         setUser(JSON.parse(localUser));
@@ -731,40 +634,21 @@ const AppContent: React.FC = () => {
                     return;
                 }
 
+                // 🔑 Normal session check (implicit flow / existing session)
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user && mounted) {
-                    let profile = await authService.fetchProfileWithRetry(
-                        session.user.id, 
-                        session.user.email || '', 
-                        session.user.user_metadata?.name || session.user.user_metadata?.full_name
-                    );
-
-                    if (!profile) {
-                        console.warn("MIRA Security: Perfil não encontrado no DB. Criando perfil de emergência.");
-                        profile = await authService.createFallbackProfile(
-                            session.user.id, 
-                            session.user.email || '', 
-                            session.user.user_metadata?.name || session.user.user_metadata?.full_name
-                        );
-                    }
-
-                    if (profile && mounted) {
-                        const u = authService.mapProfileToUser(profile, session.user);
-                        setUser(u);
-                        localStorage.setItem('mira_user', JSON.stringify(u));
-                        setShowSplash(false); 
-                        setIsInitializing(false);
-                        sessionStorage.setItem('mira_splash_shown', 'true');
-                    }
+                    console.log('✅ [MIRA AUTH] Existing session found:', session.user.email);
+                    await handleSessionUser(session.user, mounted);
                 } else if (mounted) {
-                    // If no session but we have local user, it might be stale or just background re-auth
-                    if (!localStorage.getItem('mira-token-v4')) {
-                        setUser(null);
-                        localStorage.removeItem('mira_user');
+                    const localUserStr = localStorage.getItem('mira_user');
+                    if (localUserStr) {
+                        try {
+                            setUser(JSON.parse(localUserStr));
+                        } catch (e) {}
                     }
                 }
             } catch (err) {
-                console.error("MIRA: checkSession error:", err);
+                console.error('MIRA: checkSession error:', err);
             } finally {
                 if (mounted) {
                     setIsInitializing(false);
@@ -775,6 +659,32 @@ const AppContent: React.FC = () => {
                 }
             }
         };
+
+        const handleSessionUser = async (authUser: any, mounted: boolean) => {
+            if (!mounted) return;
+            let profile = await authService.fetchProfileWithRetry(
+                authUser.id,
+                authUser.email || '',
+                authUser.user_metadata?.name || authUser.user_metadata?.full_name
+            );
+            if (!profile) {
+                profile = await authService.createFallbackProfile(
+                    authUser.id,
+                    authUser.email || '',
+                    authUser.user_metadata?.name || authUser.user_metadata?.full_name
+                );
+            }
+            if (profile && mounted) {
+                const u = authService.mapProfileToUser(profile, authUser);
+                setUser(u);
+                localStorage.setItem('mira_user', JSON.stringify(u));
+                setShowSplash(false);
+                setIsInitializing(false);
+                sessionStorage.setItem('mira_splash_shown', 'true');
+                setShowConsent(true);
+            }
+        };
+
 
         checkSession();
 
@@ -801,11 +711,20 @@ const AppContent: React.FC = () => {
                         return;
                     }
 
-                    const profile = await authService.fetchProfileWithRetry(
+                    let profile = await authService.fetchProfileWithRetry(
                         session.user.id, 
                         session.user.email || '', 
-                        session.user.user_metadata?.name
+                        session.user.user_metadata?.name || session.user.user_metadata?.full_name
                     );
+
+                    if (!profile) {
+                        console.warn("MIRA Security: Perfil de OAuth não encontrado. Criando perfil automaticamente.");
+                        profile = await authService.createFallbackProfile(
+                            session.user.id, 
+                            session.user.email || '', 
+                            session.user.user_metadata?.name || session.user.user_metadata?.full_name
+                        );
+                    }
 
                     if (profile && mounted) {
                         if (session.user.email && profile.email !== session.user.email) {
@@ -819,12 +738,14 @@ const AppContent: React.FC = () => {
                         setShowSplash(false);
                         setIsInitializing(false);
                         sessionStorage.setItem('mira_splash_shown', 'true');
+                        setShowConsent(true);
                         
+                        if (!pwaService.isStandalone()) {
+                            setShowPostLoginInstallModal(true);
+                        }
+
                         // Clean URL hash but preserve view parameters (V55.1)
                         if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
-                            if (!pwaService.isStandalone()) {
-                                setShowPostLoginInstallModal(true);
-                            }
                             const params = new URLSearchParams(window.location.search);
                             const cleanParams = new URLSearchParams();
                             const authParams = ['code', 'access_token', 'refresh_token', 'expires_in', 'provider_token', 'token_type'];
@@ -1025,6 +946,47 @@ const AppContent: React.FC = () => {
             setIsRefreshing(false); 
         }
     };
+
+    // ⚡ MIRA REALTIME: Listen for live posts & comments from Supabase PostgreSQL
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const channel = communityService.subscribeToCommunityChanges(
+            (newPost) => {
+                setMasterPosts(prev => {
+                    if ((prev || []).some(p => p.id === newPost.id)) return prev;
+                    return [newPost, ...(prev || [])];
+                });
+            },
+            (newComment) => {
+                setMasterPosts(prev => (prev || []).map(p => {
+                    if (p.id === newComment.post_id) {
+                        const exists = (p.comments || []).some(c => c.id === newComment.id);
+                        if (exists) return p;
+                        return {
+                            ...p,
+                            comments: [...(p.comments || []), {
+                                id: newComment.id,
+                                authorId: newComment.author_id,
+                                authorName: 'Membro',
+                                authorAvatar: '',
+                                content: newComment.content,
+                                timestamp: newComment.created_at || new Date().toISOString(),
+                                likes: 0,
+                                parentId: newComment.parent_id || null,
+                                translations: {}
+                            }]
+                        };
+                    }
+                    return p;
+                }));
+            }
+        );
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [user?.id]);
 
     useEffect(() => {
         if (user?.id) {
@@ -1437,18 +1399,18 @@ const AppContent: React.FC = () => {
                 />
             )}
             {showPostLoginInstallModal && !pwaService.isStandalone() && (
-                <div className="fixed inset-0 z-[6000] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] p-8 max-w-sm w-full space-y-6 text-center shadow-2xl relative">
+                <div className="fixed inset-0 z-[6000] bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 max-w-sm w-full space-y-6 text-center shadow-2xl relative text-slate-900">
                         <button
                             onClick={() => setShowPostLoginInstallModal(false)}
-                            className="absolute top-6 right-6 text-white/40 hover:text-white"
+                            className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition-colors p-1"
                         >
                             <X size={20} />
                         </button>
-                        <div className="w-16 h-16 rounded-3xl bg-mira-orange/10 flex items-center justify-center mx-auto text-mira-orange text-3xl">
+                        <div className="w-16 h-16 rounded-3xl bg-orange-50 border border-orange-100 flex items-center justify-center mx-auto text-mira-orange text-3xl shadow-sm">
                             📲
                         </div>
-                        <h3 className="text-lg font-black text-white uppercase tracking-wider">
+                        <h3 className="text-lg font-black text-slate-900 uppercase tracking-wider">
                             {isMobile ? (
                                 language === 'PT' ? 'MIRA no seu Telemóvel' :
                                 language === 'ES' ? 'MIRA en tu Móvil' :
@@ -1461,7 +1423,7 @@ const AppContent: React.FC = () => {
                                 'MIRA on your Computer'
                             )}
                         </h3>
-                        <p className="text-xs text-white/70 font-medium leading-relaxed">
+                        <p className="text-xs text-slate-600 font-medium leading-relaxed">
                             {isMobile ? (
                                 language === 'PT' ? 'Deseja adicionar um atalho do MIRA ao ecrã principal do seu telemóvel para um acesso rápido e seguro?' :
                                 language === 'ES' ? '¿Desea agregar un acesso directo de MIRA a la pantalla de inicio de su móvil para un acesso rápido y seguro?' :
@@ -1483,10 +1445,14 @@ const AppContent: React.FC = () => {
                                     } else if (pwaService.isIOS()) {
                                         setShowSafariGuide(true);
                                     } else {
-                                        alert("Para instalar o MIRA no seu dispositivo, aceda ao menu do seu navegador (três pontos no canto superior direito) e selecione 'Instalar' ou 'Adicionar'.");
+                                        alert(
+                                            language === 'PT' ? "Para instalar o MIRA no seu dispositivo, aceda ao menu do seu navegador e selecione 'Instalar' ou 'Adicionar ao ecrã principal'." :
+                                            language === 'ES' ? "Para instalar MIRA en su dispositivo, acceda al menú de su navegador y seleccione 'Instalar' o 'Agregar a la pantalla de inicio'." :
+                                            "To install MIRA on your device, access your browser menu and select 'Install' or 'Add to home screen'."
+                                        );
                                     }
                                 }}
-                                className="w-full py-4 bg-mira-orange text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:brightness-110 active:scale-95 transition-all"
+                                className="w-full py-4 bg-mira-orange text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-orange-500/25"
                             >
                                 {language === 'PT' ? 'Instalar Atalho' :
                                  language === 'ES' ? 'Instalar Acceso Directo' :
@@ -1495,7 +1461,7 @@ const AppContent: React.FC = () => {
                             </button>
                             <button
                                 onClick={() => setShowPostLoginInstallModal(false)}
-                                className="w-full py-4 bg-white/5 hover:bg-white/10 text-white/70 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all"
+                                className="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all"
                             >
                                 {language === 'PT' ? 'Agora Não' :
                                  language === 'ES' ? 'Ahora No' :
@@ -1507,47 +1473,47 @@ const AppContent: React.FC = () => {
                 </div>
             )}
             {showSafariGuide && (
-                <div className="fixed inset-0 z-[6000] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] p-8 max-w-sm w-full space-y-6 text-center shadow-2xl relative">
+                <div className="fixed inset-0 z-[6000] bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 max-w-sm w-full space-y-6 text-center shadow-2xl relative text-slate-900">
                         <button
                             onClick={() => setShowSafariGuide(false)}
-                            className="absolute top-6 right-6 text-white/40 hover:text-white"
+                            className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition-colors p-1"
                         >
                             <X size={20} />
                         </button>
-                        <div className="w-16 h-16 rounded-3xl bg-mira-orange/10 flex items-center justify-center mx-auto text-mira-orange text-3xl">
+                        <div className="w-16 h-16 rounded-3xl bg-orange-50 border border-orange-100 flex items-center justify-center mx-auto text-mira-orange text-3xl shadow-sm">
                             📲
                         </div>
-                        <h3 className="text-lg font-black text-white uppercase tracking-wider">
+                        <h3 className="text-lg font-black text-slate-900 uppercase tracking-wider">
                             {language === 'PT' ? 'Instalar no seu iPhone' :
                              language === 'ES' ? 'Instalar en tu iPhone' :
                              language === 'FR' ? 'Installer sur iPhone' :
                              'Install on your iPhone'}
                         </h3>
-                        <p className="text-xs text-white/70 font-medium leading-relaxed">
+                        <p className="text-xs text-slate-600 font-medium leading-relaxed">
                             {language === 'PT' ? (
                                 <>
-                                    Para adicionar o atalho ao ecrã principal, toque no botão de partilha <span className="inline-block p-1 bg-white/10 rounded">📤</span> no Safari e selecione <strong>'Adicionar ao Ecrã Principal'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    Para adicionar o atalho ao ecrã principal, toque no botão de partilha <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">📤</span> no Safari e selecione <strong>'Adicionar ao Ecrã Principal'</strong> <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">➕</span>.
                                 </>
                             ) : language === 'ES' ? (
                                 <>
-                                    Para agregar el acceso directo a la pantalla de inicio, toque el botón de compartir <span className="inline-block p-1 bg-white/10 rounded">📤</span> en Safari y seleccione <strong>'Compartir / Agregar a pantalla de inicio'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    Para agregar el acceso directo a la pantalla de inicio, toque el botón de compartir <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">📤</span> en Safari y seleccione <strong>'Compartir / Agregar a pantalla de inicio'</strong> <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">➕</span>.
                                 </>
                             ) : language === 'FR' ? (
                                 <>
-                                    Pour ajouter le raccourci sur l'écran d'accueil, appuyez sur le bouton de partage <span className="inline-block p-1 bg-white/10 rounded">📤</span> dans Safari et sélectionnez <strong>'Sur l'écran d'accueil'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    Pour ajouter le raccourci sur l'écran d'accueil, appuyez sur le bouton de partage <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">📤</span> dans Safari et sélectionnez <strong>'Sur l'écran d'accueil'</strong> <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">➕</span>.
                                 </>
                             ) : (
                                 <>
-                                    To add the shortcut to your home screen, tap the share button <span className="inline-block p-1 bg-white/10 rounded">📤</span> in Safari and select <strong>'Add to Home Screen'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    To add the shortcut to your home screen, tap the share button <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">📤</span> in Safari and select <strong>'Add to Home Screen'</strong> <span className="inline-block p-1 bg-slate-100 rounded border border-slate-200">➕</span>.
                                 </>
                             )}
                         </p>
                         <button
                             onClick={() => setShowSafariGuide(false)}
-                            className="w-full py-4 bg-mira-orange text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:brightness-110 active:scale-95 transition-all"
+                            className="w-full py-4 bg-mira-orange text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-orange-500/25"
                         >
-                            {language === 'PT' ? 'Entendido' : 'Got it'}
+                            {language === 'PT' ? 'Entendido' : language === 'ES' ? 'Entendido' : 'Got it'}
                         </button>
                     </div>
                 </div>
@@ -1562,6 +1528,7 @@ const AppContent: React.FC = () => {
                         onLogin={(u) => { 
                             setUser(u); 
                             handleViewChange(ViewType.HOME); 
+                            setShowConsent(true);
                             if (!pwaService.isStandalone()) {
                                 setShowPostLoginInstallModal(true);
                             }

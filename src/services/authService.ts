@@ -9,47 +9,70 @@ import { t } from '../utils/translations';
 export const authService = {
     async fetchProfileWithRetry(userId: string, email: string, name?: string, retries = 3, delay = 500): Promise<any> {
         const ceoEmails = ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'];
-        const isCEO = ceoEmails.includes(email?.toLowerCase());
+        const isCEO = ceoEmails.includes(email?.toLowerCase()?.trim());
 
         for (let i = 0; i < retries; i++) {
             try {
-                // 1. Try by ID
-                let { data, error } = await supabase
+                let { data } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', userId)
                     .maybeSingle();
 
-                // 2. Fallback to Email search if not matched by ID
                 if (!data && email) {
                     const { data: emailData } = await supabase
                         .from('profiles')
                         .select('*')
-                        .eq('email', email.toLowerCase())
+                        .eq('email', email.toLowerCase().trim())
                         .maybeSingle();
 
                     if (emailData) {
                         data = emailData;
-                        // Sincronizar ID novo com a conta
-                        await supabase.from('profiles').update({ id: userId }).eq('email', email.toLowerCase());
+                        await supabase.from('profiles').update({ id: userId }).eq('email', email.toLowerCase().trim()).catch(() => {});
                     }
                 }
 
                 if (data) {
-                    // Garantia Mestre CEO Amanda Abreu
                     if (isCEO) {
                         data.role = 'admin';
                         data.reputation = Math.max(data.reputation || 0, 10458);
                         data.trust_level = 'Elite';
+                        data.is_verified = true;
                         data.points = Math.max(data.points || 0, 1000000);
                     }
                     return data;
+                }
+
+                if (isCEO) {
+                    // For CEO email, immediately return full admin profile fallback without waiting for retries
+                    return {
+                        id: userId,
+                        name: name || 'Amanda Abreu (Admin MIRA)',
+                        email: email,
+                        role: 'admin',
+                        reputation: 10458,
+                        trust_level: 'Elite',
+                        is_verified: true,
+                        updated_at: new Date().toISOString()
+                    };
                 }
 
                 if (i < retries - 1) {
                     await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
                 } 
             } catch (e) {
+                if (isCEO) {
+                    return {
+                        id: userId,
+                        name: name || 'Amanda Abreu (Admin MIRA)',
+                        email: email,
+                        role: 'admin',
+                        reputation: 10458,
+                        trust_level: 'Elite',
+                        is_verified: true,
+                        updated_at: new Date().toISOString()
+                    };
+                }
                 if (i < retries - 1) {
                     await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
                 }

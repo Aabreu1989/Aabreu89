@@ -11,27 +11,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.log(`📡 MIRA CONNECTED: ${projectId}`);
 }
 
-// Module-level singleton: ensures only ONE client instance exists.
-// This prevents NavigatorLock timeout errors when Vite HMR reloads modules 
-// and multiple instances compete for the same 'mira-token-v4' lock.
-let _client: SupabaseClient | null = null;
-
-function getSupabaseClient(): SupabaseClient {
-  if (!_client) {
-    _client = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storageKey: 'mira-token-v4',
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-        // Bypass Navigator Locks entirely to prevent "lock acquire timeout" errors
-        // from multiple tabs or HMR-triggered client re-creations.
-        lock: ((_name: string, _acquireTimeout: number, fn: () => Promise<unknown>) => fn()) as Parameters<typeof createClient>[2]['auth']['lock'] & {}
-      }
-    });
+export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    flowType: 'implicit',
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'mira-token-v4',
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   }
-  return _client;
-}
-
-export const supabase = getSupabaseClient();
+});

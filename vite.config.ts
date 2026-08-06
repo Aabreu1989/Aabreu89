@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
     root: path.resolve(__dirname),
+    cacheDir: path.resolve(__dirname, 'node_modules/.vite'),
     server: {
       port: 3333,
       host: true,
@@ -47,16 +48,10 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    // 🛡️ Optimize dependency pre-bundling to prevent crashes on cold start
+    // 🛡️ Disable dev pre-bundling optimizer to prevent Node v24 esbuild output key mismatch crash
     optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        '@supabase/supabase-js',
-        'lucide-react',
-        'recharts',
-      ],
-      exclude: ['puppeteer'],    // Puppeteer must never run in the browser
+      noDiscovery: true,
+      include: [],
     },
 
     build: {

@@ -269,22 +269,19 @@ const CommunityViewComponent = ({
       }
     };
     
-    if (!isLoading) {
-      fetchStories();
-    }
+    // Always fetch stories on mount and on interval - do not block on isLoading
+    fetchStories();
 
     // 🔄 MIRA AUTO-REFRESH: Atualiza stories a cada 30 segundos
     const intervalId = setInterval(() => {
-      if (!isLoading) {
-        fetchStories();
-      }
+      fetchStories();
     }, 30000);
 
     return () => {
       active = false;
       clearInterval(intervalId);
     };
-  }, [isLoading]);
+  }, []);
 
   // Estados para o NOVO POST (Fidelidade Online)
   const [newPostContent, setNewPostContent] = useState('');
@@ -376,8 +373,23 @@ const CommunityViewComponent = ({
           translations: {}
       };
 
-      // 🚀 AÇÃO INSTANTÂNEA: Inserir no Feed
+      // 🚀 AÇÃO INSTANTÂNEA: Inserir no Feed e guardar cópia local
       setMasterPosts(prev => [displayPost, ...prev]);
+
+      try {
+        const rawLocal = localStorage.getItem('mira_local_user_posts');
+        const localList = rawLocal ? JSON.parse(rawLocal) : [];
+        localList.unshift({
+          id: localId,
+          author_id: user.id,
+          title: 'Nova Partilha',
+          content: initialContent,
+          category: initialCategory,
+          background_image: initialBackground,
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem('mira_local_user_posts', JSON.stringify(localList.slice(0, 50)));
+      } catch (e) {}
       
       // Feedback visual imediato
       showToast(t('toast_post_created', language), "success");
@@ -905,19 +917,17 @@ const CommunityViewComponent = ({
               onReportComment={handleReportComment}
               onFollow={handleFollow}
             />
-          )) : !isLoading && (
+          )) : filteredPosts.length === 0 && !isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-300">
                 <ShieldAlert size={60} strokeWidth={1} className="mb-4 opacity-10" />
                 <p className="font-black text-[10px] uppercase tracking-[0.3em]">{t('comm_no_posts', language)}</p>
             </div>
-          )}
-          
-          {isLoading && (
+          ) : filteredPosts.length === 0 && isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-300">
                 <Loader2 size={40} className="animate-spin text-orange-500 mb-4 opacity-40" />
                 <p className="font-black text-[10px] uppercase tracking-[0.3em] opacity-40">Sincronizando...</p>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

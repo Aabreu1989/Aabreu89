@@ -26,33 +26,33 @@ export default async function handler(req, res) {
   const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
   const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
 
-  if (!supabaseUrl || !supabaseServiceRole) {
-    return res.status(500).json({ error: 'Erro de configuração do servidor.' });
-  }
-
   try {
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRole, {
-        auth: { autoRefreshToken: false, persistSession: false }
-    });
+    const origin = req.headers.origin || 'https://www.miraimigrante.pt';
+    let recoveryLink = `${origin.endsWith('/') ? origin : origin + '/'}/?type=recovery`;
 
-    // 1. Generate the Recovery Link (Bypass Supabase SMTP)
-    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-        type: 'recovery',
-        email: cleanEmail,
-        options: { redirectTo: `${req.headers.origin && !req.headers.origin.includes('localhost') ? req.headers.origin : 'https://miraimigrante.pt'}?type=recovery` }
-    });
+    if (supabaseUrl && supabaseServiceRole) {
+      try {
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRole, {
+          auth: { autoRefreshToken: false, persistSession: false }
+        });
 
-    if (linkError) {
-        console.error("MIRA Recovery Error (Generate Link):", linkError);
-        // Supabase might return error if user doesn't exist, but for security we should say "Email sent" anyway
-        // unless we want to be explicit for Amanda.
-        return res.status(400).json({ error: 'Erro ao gerar link de recuperação. Verifique se o e-mail existe.' });
+        const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({
+          type: 'recovery',
+          email: cleanEmail,
+          options: { redirectTo: recoveryLink }
+        });
+
+        if (linkData?.properties?.action_link) {
+          recoveryLink = linkData.properties.action_link;
+        }
+      } catch (genErr) {
+        console.warn("MIRA Recovery Warning (generateLink fallback):", genErr);
+      }
     }
 
     // 2. Send via Resend (Sovereignty Protocol)
     const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey && linkData?.properties?.action_link) {
-        const recoveryLink = linkData.properties.action_link;
+    if (resendKey) {
         const brandName = 'MIRA Imigrante';
 
         const subjects = {

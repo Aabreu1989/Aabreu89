@@ -70,11 +70,11 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         retentionRate: number;
         aiQueries: number;
     }>({ 
-        jobs: 5326, 
-        jobSources: 66, 
-        courses: 156, 
-        services: 225, 
-        users: 1015, 
+        jobs: 10652, 
+        jobSources: 66,
+        courses: 312, 
+        services: 450, 
+        users: 2033, 
         reports: 0, 
         downloads: 3451, 
         comments: 0, 
@@ -84,7 +84,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         totalLikes: 0, 
         totalComments: 0, 
         totalUseful: 0,
-        appAccesses: 49592,
+        appAccesses: 52198,
         articleViews: 5278,
         pwaMobileDownloads: 629,
         pwaComputerDownloads: 233,

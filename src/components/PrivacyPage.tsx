@@ -91,6 +91,64 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
           </div>
         </Section>
 
+        {/* 🛡️ POLÍTICA DE TRANSPARÊNCIA, AGREGAÇÃO DE VAGAS E SEGURANÇA */}
+        <Section id="jobs_policy" title={t('jobs_policy_title', language)} icon={Globe} colorClass="bg-blue-50 text-blue-600 border border-blue-100">
+          <div className="space-y-5 text-xs sm:text-sm text-slate-600">
+            <p className="font-bold text-slate-800 leading-relaxed">
+              {t('jobs_policy_intro', language)}
+            </p>
+
+            {/* Secção 1 */}
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
+              <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider text-mira-blue">
+                1. {t('jobs_policy_sec1_title', language)}
+              </h4>
+              <ul className="space-y-2 text-xs leading-relaxed text-slate-600">
+                <li>• <strong>{t('jobs_policy_sec1_bullet1_title', language)}:</strong> {t('jobs_policy_sec1_bullet1_desc', language)}</li>
+                <li>• <strong>{t('jobs_policy_sec1_bullet2_title', language)}:</strong> {t('jobs_policy_sec1_bullet2_desc', language)}</li>
+                <li>• <strong>{t('jobs_policy_sec1_bullet3_title', language)}:</strong> {t('jobs_policy_sec1_bullet3_desc', language)}</li>
+              </ul>
+            </div>
+
+            {/* Secção 2 */}
+            <div className="bg-amber-50 p-4 rounded-2xl border border-amber-200/80 space-y-2">
+              <h4 className="font-black text-amber-900 text-xs uppercase tracking-wider">
+                2. {t('jobs_policy_sec2_title', language)}
+              </h4>
+              <ul className="space-y-2 text-xs leading-relaxed text-amber-950">
+                <li>• {t('jobs_policy_sec2_bullet1', language)}</li>
+                <li>• {t('jobs_policy_sec2_bullet2', language)}</li>
+                <li>• <strong>{t('jobs_policy_sec2_bullet3', language)}</strong></li>
+              </ul>
+            </div>
+
+            {/* Secção 3 */}
+            <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-200/80 space-y-2">
+              <h4 className="font-black text-emerald-900 text-xs uppercase tracking-wider">
+                3. {t('jobs_policy_sec3_title', language)}
+              </h4>
+              <ul className="space-y-2 text-xs leading-relaxed text-emerald-950">
+                <li>• {t('jobs_policy_sec3_bullet1', language)}</li>
+                <li>• {t('jobs_policy_sec3_bullet2', language)}</li>
+              </ul>
+            </div>
+
+            {/* Secção 4 */}
+            <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-200/80 space-y-2">
+              <h4 className="font-black text-indigo-900 text-xs uppercase tracking-wider">
+                4. {t('jobs_policy_sec4_title', language)}
+              </h4>
+              <p className="text-xs text-indigo-950 leading-relaxed">
+                {t('jobs_policy_sec4_desc', language)}
+              </p>
+              <div className="pt-1 flex items-center gap-2 font-black text-indigo-700">
+                <MailX size={16} />
+                <span>mira.app@hotmail.com</span>
+              </div>
+            </div>
+          </div>
+        </Section>
+
         <Section id="copyright" title={t('privacy_s1_title', language)} icon={Copyright} colorClass="bg-mira-orange/10 text-mira-orange border border-mira-orange/20">
           <div className="space-y-4">
             <p className="font-black text-slate-900 leading-tight">{t('privacy_s1_p1', language)}</p>
