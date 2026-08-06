@@ -3,6 +3,15 @@
   "private": true,
   "version": "2026.GOLD",
   "type": "module",
+  "files": [
+    "src",
+    "public",
+    "api",
+    "index.html",
+    "vite.config.ts",
+    "package.json",
+    "vercel.json"
+  ],
   "scripts": {
     "dev": "node scripts/dev-launcher.mjs",
     "dev:vite": "vite",
