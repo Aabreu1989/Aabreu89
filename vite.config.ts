@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
     cacheDir: path.resolve(__dirname, 'node_modules/.vite'),
     server: {
       port: 3333,
-      host: true,
-      strictPort: true, 
+      strictPort: true,
+      host: true, 
       hmr: {
         overlay: true,           // Show errors as overlay instead of crashing
         timeout: 60000,          // 60s timeout before giving up on HMR connection
