@@ -56,7 +56,7 @@ PORTS_TO_FREE.forEach(freePort);
 // ─── SPAWN VITE ──────────────────────────────────────────────────────────────
 function startVite() {
     log('SYS', COLORS.sys, '⚡ Iniciando Vite (Frontend)...');
-    const vite = spawn('node', ['./node_modules/vite/bin/vite.js'], {
+    const vite = spawn('npx', ['vite', '--port', '3333', '--host'], {
         shell: true,
         cwd: path.resolve(__dirname, '..'),
         env: { ...process.env },
