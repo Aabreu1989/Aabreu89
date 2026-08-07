@@ -693,19 +693,19 @@ export const adminService: AdminService = {
               simLogsRes = res.count || 0;
             } catch (e) {}
 
-            const realUsers = baseUsers + (userCount || 0);
-            const realJobs = baseJobs + (jobCount || 0);
-            const realCourses = baseCourses + (courseCount || 0);
-            const realServices = baseServices + (serviceCount || 0);
-            const realAccesses = baseAccesses + (appAccessesCount || 0) + localAccesses;
-            const finalDocCount = baseDocCount + (docCount || 0) + localDocs;
-            const finalAiQueries = baseAiQueries + (aiQueriesCount || 0) + localAiQueries;
-            const finalSimulations = baseSimulations + (simLogsRes || 0) + localSims;
+            const realUsers = Math.max(userCount || 0, baseUsers);
+            const realJobs = Math.max(jobCount || 0, baseJobs);
+            const realCourses = Math.max(courseCount || 0, baseCourses);
+            const realServices = Math.max(serviceCount || 0, baseServices);
+            const realAccesses = Math.max((appAccessesCount || 0) + localAccesses, baseAccesses);
+            const finalDocCount = Math.max((docCount || 0) + localDocs, baseDocCount);
+            const finalAiQueries = Math.max((aiQueriesCount || 0) + localAiQueries, baseAiQueries);
+            const finalSimulations = Math.max((simLogsRes || 0) + localSims, baseSimulations);
             const finalTotalLikes = Math.max(0, totalLikesSum || 0);
             const finalPosts = Math.max(8, (postCount || 0) + localPosts);
             const finalComments = Math.max(24, (commentCount || 0) + localComments);
-            const finalMobilePwa = baseMobilePwa + (pwaMobileDownloads || 0);
-            const finalDesktopPwa = baseDesktopPwa + (pwaComputerDownloads || 0);
+            const finalMobilePwa = Math.max(pwaMobileDownloads || 0, baseMobilePwa);
+            const finalDesktopPwa = Math.max(pwaComputerDownloads || 0, baseDesktopPwa);
             const finalHoras = baseHoras + Math.floor(finalDocCount * 1.2) + Math.floor(finalAiQueries * 0.1);
             const finalProcessos = realUsers;
 

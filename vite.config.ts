@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3333,
       host: true,
-      strictPort: false, 
+      strictPort: true, 
       hmr: {
         overlay: true,           // Show errors as overlay instead of crashing
         timeout: 60000,          // 60s timeout before giving up on HMR connection
