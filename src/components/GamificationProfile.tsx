@@ -424,7 +424,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                 const sanitized = { ...baseUser, email: user?.email || baseUser?.email };
 
                 if (isAdmin) {
-                    // Admin sempre vê o email — busca direto da tabela profiles
+                    // Admin sempre vê o email — busca direto da tabela profiles ou gera fallback visível
                     try {
                         const { data: profileDb } = await supabase
                             .from('profiles')
@@ -436,6 +436,9 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                         }
                     } catch (e) {
                         console.error('MIRA Admin: erro ao buscar email do utilizador', e);
+                    }
+                    if (!sanitized.email && user.id) {
+                        sanitized.email = `${user.id.substring(0, 8)}@mira.user`;
                     }
                 }
 
@@ -647,19 +650,19 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                             </div>
                         ) : (
                             <div className="mt-6 text-center animate-in fade-in slide-in-from-top-4 duration-700">
-                                {((currentUser?.role === 'admin') || ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'].includes(currentUser?.email?.toLowerCase() || '') || (currentUser?.id === profileUser?.id)) && profileUser?.email && (
+                                {(isUserAdmin(currentUser) || (currentUser?.id === profileUser?.id)) && (
                                     <div className="flex flex-col items-center gap-2 mb-4">
                                         <div className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl shadow-black/20 flex items-center gap-2 group">
                                             <Mail size={14} className="text-[#FF8C00] group-hover:scale-110 transition-transform" />
-                                            <p className="text-[11px] font-black text-white uppercase tracking-widest selection:bg-[#FF8C00] selection:text-white">
-                                                {profileUser.email}
+                                            <p className="text-[11px] font-black text-white uppercase tracking-widest selection:bg-[#FF8C00] selection:text-white font-mono">
+                                                {profileUser?.email || user?.email || (profileUser?.id ? `${profileUser.id.substring(0, 8)}@mira.user` : '---')}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.3em] bg-slate-100 px-3 py-1 rounded-full border border-slate-200 shadow-sm">
-                                                ID: {profileUser.id.substring(0, 12).toUpperCase()}
+                                                ID: {(profileUser?.id || user?.id || '---').substring(0, 12).toUpperCase()}
                                             </span>
-                                            {(currentUser?.role === 'admin' || ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'].includes(currentUser?.email?.toLowerCase() || '')) && (
+                                            {isUserAdmin(currentUser) && (
                                                 <span className="text-[8px] font-black text-[#FF8C00] uppercase tracking-[0.3em] bg-orange-50 px-3 py-1 rounded-full border border-orange-100 shadow-sm">
                                                     ACESSO ADMIN — EMAIL VISÍVEL
                                                 </span>

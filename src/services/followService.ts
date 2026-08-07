@@ -22,8 +22,12 @@ export const followService = {
 
         // 2. Registos remotos na tabela user_follows
         try {
-            await supabase.from('user_follows').insert([{ follower_id: followerId, following_id: followedId }]);
-        } catch (e) {}
+            await supabase.from('user_follows').upsert([{ follower_id: followerId, following_id: followedId }], { onConflict: 'follower_id,following_id' });
+        } catch (e) {
+            try {
+                await supabase.from('user_follows').insert([{ follower_id: followerId, following_id: followedId }]);
+            } catch (err) {}
+        }
 
         try {
             await supabase.from('activity_logs').insert([{
@@ -191,9 +195,9 @@ export const followService = {
         return { data: (data as any[]).map(d => d.profiles).filter(Boolean), error: null };
     },
 
-    async toggleFollow(followerId: string, followedId: string) {
-        const isFollowing = await this.isFollowing(followerId, followedId);
-        if (isFollowing) {
+    async toggleFollow(followerId: string, followedId: string, forceState?: boolean) {
+        const shouldFollow = forceState !== undefined ? forceState : !(await this.isFollowing(followerId, followedId));
+        if (!shouldFollow) {
             return await this.unfollowUser(followerId, followedId);
         } else {
             return await this.followUser(followerId, followedId);

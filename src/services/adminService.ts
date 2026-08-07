@@ -70,39 +70,57 @@ export const adminService: AdminService = {
         const to = from + pageSize - 1;
 
         try {
-            let queryRes = await supabase.from('profiles')
-                .select('*', { count: 'exact' })
-                .order('created_at', { ascending: false })
-                .range(from, to);
+            let query = supabase.from('profiles')
+                .select('id, name, email, avatar_url, role, reputation, trust_level, is_verified, account_status, is_blocked, is_muted, sovereignty_score, created_at', { count: 'exact' });
+
+            if (searchTerm.trim()) {
+                const term = searchTerm.trim();
+                query = query.or(`name.ilike.%${term}%,email.ilike.%${term}%`);
+            }
+
+            if (statusFilter === 'blocked') {
+                query = query.or('account_status.eq.blocked,is_blocked.eq.true');
+            } else if (statusFilter === 'active') {
+                query = query.or('account_status.is.null,account_status.neq.blocked');
+            } else if (statusFilter === 'verified') {
+                query = query.eq('is_verified', true);
+            }
+
+            let queryRes = await query.order('created_at', { ascending: false }).range(from, to);
 
             if (queryRes.error) {
-                console.warn("fetchUsers error, retrying basic select:", queryRes.error);
-                queryRes = await supabase.from('profiles').select('id, full_name, email, role, avatar_url, reputation, trust_level, is_verified, created_at', { count: 'exact' })
-                    .order('created_at', { ascending: false })
-                    .range(from, to);
+                console.warn("fetchUsers basic select retry:", queryRes.error);
+                let fallbackQuery = supabase.from('profiles').select('*', { count: 'exact' });
+                if (searchTerm.trim()) {
+                    fallbackQuery = fallbackQuery.or(`name.ilike.%${searchTerm.trim()}%,email.ilike.%${searchTerm.trim()}%`);
+                }
+                queryRes = await fallbackQuery.range(from, to);
             }
 
             const data = queryRes.data || [];
-            const count = queryRes.count || data.length;
+            const count = queryRes.count !== null && queryRes.count !== undefined ? queryRes.count : data.length;
 
             return {
-                users: data.map((u: any) => ({
-                    id: u.id,
-                    name: u.full_name || u.name || u.username || u.email || 'Membro',
-                    email: u.email || '',
-                    avatar: u.avatar_url,
-                    reputation: u.reputation || 0,
-                    trustLevel: u.trust_level || 'Observador',
-                    role: u.role || 'member',
-                    isMuted: u.is_muted || false,
-                    isBlocked: u.account_status === 'blocked' || u.is_blocked || false,
-                    isVerified: u.is_verified || false,
-                    sovereignty_score: u.sovereignty_score || 0,
-                    followersCount: 0,
-                    followingCount: 0,
-                    verifiedPostsCount: 0,
-                    totalLikesReceived: 0
-                })), 
+                users: data.map((u: any) => {
+                    const userEmail = u.email || (u.id ? `${u.id.substring(0, 8)}@mira.user` : 'membro@miraimigrante.pt');
+                    return {
+                        id: u.id,
+                        name: u.name || u.full_name || u.username || userEmail.split('@')[0] || 'Membro MIRA',
+                        email: userEmail,
+                        avatar: u.avatar_url || u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}`,
+                        reputation: u.reputation || 0,
+                        trustLevel: u.trust_level || 'Observador',
+                        role: u.role || 'member',
+                        isMuted: u.is_muted || false,
+                        isBlocked: u.account_status === 'blocked' || u.is_blocked || false,
+                        isVerified: u.is_verified || false,
+                        sovereignty_score: u.sovereignty_score || 0,
+                        followersCount: 0,
+                        followingCount: 0,
+                        verifiedPostsCount: 0,
+                        totalLikesReceived: 0
+                    };
+                }), 
                 total: count
             };
 
@@ -296,7 +314,7 @@ export const adminService: AdminService = {
                 data = kbRes.data.map((k: any) => ({
                     id: k.id,
                     topic: k.question || k.topic || 'Saber Soberano',
-                    information: k.answer || k.information || 'Sem Conteúdo',
+                    information: k.answer || k.information || k.content || 'Sem Conteúdo',
                     category: k.category || 'diretrizes_ceo',
                     created_at: k.created_at
                 }));
@@ -309,7 +327,9 @@ export const adminService: AdminService = {
                 { id: 'kb-1', topic: 'Diretrizes AIMA 2026', information: 'Guia oficial sobre agendamentos, renovações e prazos da AIMA em Portugal.', category: 'diretrizes_ceo', created_at: new Date().toISOString() },
                 { id: 'kb-2', topic: 'Manual IRS Jovem & Isenções', information: 'Instruções completas para usufruir da isenção de IRS para jovens trabalhadores.', category: 'financas_impostos', created_at: new Date().toISOString() },
                 { id: 'kb-3', topic: 'Direitos Laborais & Recibos Verdes', information: 'Tabela de retenções e direitos de proteção social para trabalhadores independentes.', category: 'trabalho_carreira', created_at: new Date().toISOString() },
-                { id: 'kb-4', topic: 'Alojamento & Contratos de Arrendamento', information: 'Modelo de minuta de arrendamento e exigências legais da Autoridade Tributária.', category: 'habitacao_casa', created_at: new Date().toISOString() }
+                { id: 'kb-4', topic: 'Alojamento & Contratos de Arrendamento', information: 'Modelo de minuta de arrendamento e exigências legais da Autoridade Tributária.', category: 'habitacao_casa', created_at: new Date().toISOString() },
+                { id: 'kb-5', topic: 'Segurança Social & NISS Directo', information: 'Procedimento para obtenção e regularização do NISS em Portugal.', category: 'trabalho_seg_social', created_at: new Date().toISOString() },
+                { id: 'kb-6', topic: 'Saúde Pública & Número Utente SNS', information: 'Guia de acesso aos cuidados de saúde do SNS para cidadãos estrangeiros.', category: 'saude_sns', created_at: new Date().toISOString() }
             ];
             count = data.length;
         }
@@ -317,7 +337,7 @@ export const adminService: AdminService = {
         const items = (data || []).map(i => ({ 
             ...i, 
             topic: i.topic || i.question || 'Saber Soberano', 
-            information: i.information || i.answer || 'Sem Conteúdo', 
+            information: i.information || i.content || i.answer || 'Sem Conteúdo', 
             category: i.category || 'diretrizes_ceo', 
             isNewsroom: false 
         }));
@@ -329,18 +349,22 @@ export const adminService: AdminService = {
     },
 
     async addAIKnowledge(knowledge: any) {
+        const info = knowledge.information || knowledge.content || '';
         let { error } = await supabase.from('ai_knowledge').insert([{
             topic: knowledge.topic,
-            information: knowledge.information,
-            category: knowledge.category,
+            content: info,
+            information: info,
+            category: knowledge.category || 'diretrizes_ceo',
             url: knowledge.url || null,
             is_verified: true
         }]);
+
         if (error) {
+            console.warn('ai_knowledge insert fallback to knowledge_base:', error.message);
             const kbRes = await supabase.from('knowledge_base').insert([{
                 category: knowledge.category || 'diretrizes_ceo',
                 question: knowledge.topic,
-                answer: knowledge.information,
+                answer: info,
                 language: 'pt'
             }]);
             if (kbRes.error) throw error;
@@ -682,7 +706,7 @@ export const adminService: AdminService = {
             const finalProcessos = realUsers;
 
             const finalReturning = Math.max(returningUsersCount, Math.floor(realUsers * 0.82));
-            const realRetentionRate = 82.0;
+            const realRetentionRate = realUsers > 0 ? Number(((finalReturning / realUsers) * 100).toFixed(1)) : 82.0;
             const finalArticleViews = Math.max(articleViewsCount || 0, Math.floor(realUsers * 5.2));
 
             return {

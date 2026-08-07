@@ -696,7 +696,7 @@ const CommunityViewComponent = ({
         return next;
       });
 
-      await followService.toggleFollow(user.id, authorId);
+      await followService.toggleFollow(user.id, authorId, isNowFollowing);
       
       showToast(isNowFollowing ? (t('toast_follow_success', language) || 'A seguir utilizador! +5 Pontos 🎉') : (t('toast_unfollow_success', language) || 'Deixaste de seguir.'), "success");
       
