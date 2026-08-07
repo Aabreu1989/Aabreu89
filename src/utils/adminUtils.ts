@@ -11,9 +11,9 @@ export const ADMIN_EMAILS = [
     'mira.atendimento@gmail.com'
 ];
 
-export function isUserAdmin(user: User | null | undefined): boolean {
+export function isUserAdmin(user: { email?: string | null; role?: string; user_metadata?: any } | User | null | undefined): boolean {
     if (!user) return false;
-    if (user.role === 'admin') return true;
+    if (user.role === 'admin' || (user as any).user_metadata?.role === 'admin') return true;
     if (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())) return true;
     return false;
 }

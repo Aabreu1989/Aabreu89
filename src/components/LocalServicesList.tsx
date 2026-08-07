@@ -8,6 +8,7 @@ import { t } from '../utils/translations';
 import { PROTECTED_SERVICES } from '../utils/protectedData';
 import { useToast } from './Toast';
 import { normalizeCategory, getCategoryKey, getCategoryColor } from '../utils/categoryUtils';
+import { analyticsService } from '../services/analyticsService';
 
 const normalizeForSearch = (str: string | undefined | null): string => {
     if (!str) return '';
@@ -479,7 +480,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                                     href={`tel:${service.phone}`}
                                                     onClick={() => {
                                                         try {
-                                                            const nameLower = (service.name || '').toLowerCase();
+                                                            const nameLower = ((service as any).name || service.title || '').toLowerCase();
                                                             let matchedGroup = 'Lojas do Cidadão & Espaços Cidadão';
                                                             if (nameLower.includes('aima') || nameLower.includes('conservatóri') || nameLower.includes('irn') || nameLower.includes('sef')) {
                                                                 matchedGroup = 'Balcões AIMA / Conservatórias';
@@ -507,7 +508,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     try {
-                                                        const nameLower = (service.name || '').toLowerCase();
+                                                        const nameLower = ((service as any).name || service.title || '').toLowerCase();
                                                         let matchedGroup = 'Lojas do Cidadão & Espaços Cidadão';
                                                         if (nameLower.includes('aima') || nameLower.includes('conservatóri') || nameLower.includes('irn') || nameLower.includes('sef')) {
                                                             matchedGroup = 'Balcões AIMA / Conservatórias';

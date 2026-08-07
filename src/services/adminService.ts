@@ -687,7 +687,11 @@ export const adminService: AdminService = {
               } catch (e) {}
             }
 
-            const simLogsRes = await supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_run']).then(res => res.count || 0).catch(() => 0);
+            let simLogsRes = 0;
+            try {
+              const res = await supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_run']);
+              simLogsRes = res.count || 0;
+            } catch (e) {}
 
             const realUsers = baseUsers + (userCount || 0);
             const realJobs = baseJobs + (jobCount || 0);

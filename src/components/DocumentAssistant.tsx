@@ -44,7 +44,7 @@ interface DocumentAssistantProps {
     onEarnPoints: (points: number, badgeId?: string) => void;
     onViewChange: (view: ViewType, params?: any) => void;
     language: string;
-    initialTab?: 'regularize' | 'docs' | 'wizard' | 'services' | 'visa_job_search' | 'retirement' | 'accommodation' | 'nif';
+    initialTab?: 'regularize' | 'docs' | 'wizard' | 'services' | 'visa_job_search' | 'retirement' | 'accommodation' | 'nif' | 'irs' | 'niss' | 'utente' | 'driving' | 'bank' | 'metro' | string;
     initialSearch?: string;
     initialTemplateId?: string;
     initialGuideId?: string;

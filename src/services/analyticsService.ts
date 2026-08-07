@@ -27,6 +27,10 @@ class AnalyticsService {
     }
   }
 
+  logActivity(action: any, metadata?: any) {
+    this.track(action as any, 'guest', undefined, metadata);
+  }
+
   async track(action: AppActivityLog['action'], userId: string, category?: string, metadata?: any) {
     const log: AppActivityLog = {
       id: Math.random().toString(36).substr(2, 9),
@@ -130,3 +134,4 @@ class AnalyticsService {
 }
 
 export const analytics = new AnalyticsService();
+export const analyticsService = analytics;

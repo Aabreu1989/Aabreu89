@@ -28,7 +28,9 @@ export const authService = {
 
                     if (emailData) {
                         data = emailData;
-                        await supabase.from('profiles').update({ id: userId }).eq('email', email.toLowerCase().trim()).catch(() => {});
+                        try {
+                            await supabase.from('profiles').update({ id: userId }).eq('email', email.toLowerCase().trim());
+                        } catch (_) {}
                     }
                 }
 

@@ -267,7 +267,7 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
                                 Plano de Cidadania
                             </h2>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
-                                {isCPLP ? 'Acordo CPLP' : 'Via Padrão'} · {pathways.find(p => p.id === pathway)?.title}
+                                {isCPLP ? 'Acordo CPLP' : 'Via Padrão'} · {activePathways.find(p => p.id === pathway)?.title}
                             </p>
                         </div>
                     )}

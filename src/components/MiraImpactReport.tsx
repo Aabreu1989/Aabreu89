@@ -22,6 +22,8 @@ interface PlatformCounts {
   pwaMobileDownloads: number;
   pwaComputerDownloads: number;
   usersToday: number;
+  downloads?: number;
+  aiQueries?: number;
   jobs?: { db: number; prot: number };
   courses?: { db: number; prot: number };
   services?: { db: number; prot: number };

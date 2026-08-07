@@ -117,6 +117,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                     totalUseful: stats.verifiedPosts ?? 0,
                     pwaMobileDownloads: stats.pwaMobileDownloads ?? 0,
                     pwaComputerDownloads: stats.pwaComputerDownloads ?? 0,
+                    retentionRate: stats.retentionRate ?? 82.0,
                     aiQueries: stats.aiQueries ?? 0
                 });
                 

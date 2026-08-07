@@ -100,7 +100,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     isSuperAdmin,
     onViewChange
 }) => {
-    const [activeTab, setActiveTab ] = useState<'dashboard' | 'users' | 'knowledge' | 'gamification' | 'broadcast' | 'impact'>(initialTab as any || 'dashboard');
+    const [activeTab, setActiveTab ] = useState<'dashboard' | 'users' | 'knowledge' | 'gamification' | 'broadcast' | 'impact' | 'concursos'>(initialTab as any || 'dashboard');
 
     
     useEffect(() => {
@@ -233,6 +233,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         }
 
         // MIRA V2026.GOLD: Silent background refresh - keep UI cards visible at all times
+        const hasData = !!cached;
         try {
             const tasks = [];
             
