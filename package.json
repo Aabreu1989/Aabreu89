@@ -4,8 +4,10 @@
   "version": "2026.GOLD",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/dev-launcher.mjs",
-    "dev:vite": "vite",
+    "dev": "vite --port 3333 --host",
+    "start": "vite --port 3333 --host",
+    "dev:launcher": "node scripts/dev-launcher.mjs",
+    "dev:vite": "vite --port 3333 --host",
     "dev:api": "node api-dev-server.js",
     "dev:all": "concurrently \"npm run dev:vite\" \"npm run dev:api\"",
     "build": "vite build",
