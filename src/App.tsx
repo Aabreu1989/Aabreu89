@@ -26,6 +26,7 @@ import { AdminPanel } from './components/AdminPanel';
 import PremiosView from './components/PremiosView';
 import { templates, serviceGuides } from './utils/documentsDatabase';
 import { authService } from './services/authService';
+import { isUserAdmin } from './utils/adminUtils';
 import { Bot, Sparkles, X, Smartphone } from 'lucide-react';
 import { t } from './utils/translations';
 import { pwaService } from './utils/pwa';
@@ -158,11 +159,7 @@ const AppContent: React.FC = () => {
     const [docDrafts, setDocDrafts] = useState<any[]>([]);
     const [targetProfileUser, setTargetProfileUser] = useState<User | null>(null);
     const [docHistory, setDocHistory] = useState<GeneratedDocument[]>([]);
-    const isSystemAdmin = [
-        'mira.app@hotmail.com',
-        'amandajhonnes@yahoo.com.br',
-        'amandasabreu89@gmail.com'
-    ].includes(user?.email?.toLowerCase() || '') || user?.role === 'admin';
+    const isSystemAdmin = isUserAdmin(user);
     // Helper functions for bulletproof interaction persistence across user sessions
     const loadSavedLikes = (): Set<string> => {
         try {
@@ -586,14 +583,7 @@ const AppContent: React.FC = () => {
         }
 
         // 🛡️ MIRA V2026.GOLD: Sovereign Admin Guard (Administração & Concursos)
-        const isAdmin = user && (user.role === 'admin' || [
-            'amandasabreu89@gmail.com', 
-            'amandasabreu@gmail.com', 
-            'no-reply@miraimigrante.pt',
-            'atendimentomira@gmail.com',
-            'suportemira@gmail.com',
-            'mira.atendimento@gmail.com'
-        ].includes(user.email?.toLowerCase() || ''));
+        const isAdmin = isUserAdmin(user);
 
         if ((currentView === ViewType.ADMIN || currentView === ViewType.PREMIOS) && user && !isAdmin) {
             console.warn(`🚨 ACESSO NEGADO A ${currentView}: Redirecionando utilizador comum via Guardião Soberano.`);
@@ -702,7 +692,7 @@ const AppContent: React.FC = () => {
                     // VERIFICAÇÃO DE SEGURANÇA: Bloqueio de sessão sem confirmação de email (V2026.GOLD)
                     // V11000: Permissivo em isRecoveryMode, Provedores OAuth (Google) ou Admin Amanda
                     const isOAuth = session.user.app_metadata.provider !== 'email';
-                    const isAdmin = ['amandasabreu89@gmail.com'].includes(session.user.email?.toLowerCase() || '') || session.user.email === 'amandasabreu89@gmail.com';
+                    const isAdmin = isUserAdmin(session.user);
                     if (!session.user.email_confirmed_at && !isRecoveryMode && !isOAuth && !isAdmin) {
                         console.warn("MIRA Security: Sessão ativa mas email não confirmado. Bloqueando acesso.");
                         await supabase.auth.signOut();
@@ -1346,7 +1336,7 @@ const AppContent: React.FC = () => {
              case ViewType.DASHBOARD: return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} />;
              case ViewType.ADMIN: 
                  // 💎 SOBERANIA MÁXIMA V2026.GOLD: Render fallback only, logic is in useEffect Guard
-                 if (!['amandasabreu89@gmail.com'].includes(user.email?.toLowerCase() || '')) {
+                 if (!isUserAdmin(user)) {
                      return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} />;
                  }
                 return <AdminPanel 
