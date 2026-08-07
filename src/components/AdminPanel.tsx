@@ -138,26 +138,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         appAccesses?: number;
         totalLikes?: number;
     }>({ 
-        courses: { db: 312, prot: 0 }, 
-        services: { db: 450, prot: 0 }, 
-        users: 2033, 
+        courses: { db: 156, prot: 0 }, 
+        services: { db: 225, prot: 0 }, 
+        users: 1020, 
         usersToday: 0,
-        jobs: { db: 10652, prot: 0 }, 
+        jobs: { db: 5326, prot: 0 }, 
         reports: 0,
         suggestions: 0,
         posts: 8,
-        comments: 0,
+        comments: 24,
         retentionRate: 82.0,
         returningUsers: 832,
         pwaMobileDownloads: 629,
         pwaComputerDownloads: 233,
         horasPoupadas: 4567,
-        processosAjudados: 2033,
+        processosAjudados: 1020,
         aiQueries: 18642,
         simulations: 4872,
         downloads: 3451,
-        appAccesses: 52198,
-        totalLikes: 0
+        appAccesses: 49592,
+        totalLikes: 124
     });
     const [userSearchTerm, setUserSearchTerm] = useState('');
     const [knowledgeSearch, setKnowledgeSearch] = useState('');
