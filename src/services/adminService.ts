@@ -70,8 +70,7 @@ export const adminService: AdminService = {
         const to = from + pageSize - 1;
 
         try {
-            let query = supabase.from('profiles')
-                .select('id, name, email, avatar_url, role, reputation, trust_level, is_verified, account_status, is_blocked, is_muted, sovereignty_score, created_at', { count: 'exact' });
+            let query = supabase.from('profiles').select('*', { count: 'exact' });
 
             if (searchTerm.trim()) {
                 const term = searchTerm.trim();
@@ -79,23 +78,12 @@ export const adminService: AdminService = {
             }
 
             if (statusFilter === 'blocked') {
-                query = query.or('account_status.eq.blocked,is_blocked.eq.true');
-            } else if (statusFilter === 'active') {
-                query = query.or('account_status.is.null,account_status.neq.blocked');
+                query = query.eq('account_status', 'blocked');
             } else if (statusFilter === 'verified') {
                 query = query.eq('is_verified', true);
             }
 
-            let queryRes = await query.order('created_at', { ascending: false }).range(from, to);
-
-            if (queryRes.error) {
-                console.warn("fetchUsers basic select retry:", queryRes.error);
-                let fallbackQuery = supabase.from('profiles').select('*', { count: 'exact' });
-                if (searchTerm.trim()) {
-                    fallbackQuery = fallbackQuery.or(`name.ilike.%${searchTerm.trim()}%,email.ilike.%${searchTerm.trim()}%`);
-                }
-                queryRes = await fallbackQuery.range(from, to);
-            }
+            const queryRes = await query.order('created_at', { ascending: false }).range(from, to);
 
             const data = queryRes.data || [];
             const rawCount = queryRes.count !== null && queryRes.count !== undefined ? queryRes.count : data.length;
