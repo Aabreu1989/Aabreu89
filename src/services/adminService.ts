@@ -676,23 +676,15 @@ export const adminService: AdminService = {
             let localLikes = 0;
             if (typeof window !== 'undefined') {
               try {
-                localSims = parseInt(localStorage.getItem('mira_realtime_simulations_count') || '0', 10);
-                localDocs = parseInt(localStorage.getItem('mira_realtime_documents_count') || '0', 10);
-                localAccesses = parseInt(localStorage.getItem('mira_realtime_accesses_count') || '0', 10);
-                localAiQueries = parseInt(localStorage.getItem('mira_realtime_ai_queries_count') || '0', 10);
-                localPosts = parseInt(localStorage.getItem('mira_realtime_posts_count') || '0', 10);
-                localComments = parseInt(localStorage.getItem('mira_realtime_comments_count') || '0', 10);
-                // Purge any legacy cached likes count to prevent inflated values
+                localStorage.removeItem('mira_realtime_accesses_count');
+                localStorage.removeItem('mira_realtime_simulations_count');
+                localStorage.removeItem('mira_realtime_documents_count');
+                localStorage.removeItem('mira_realtime_ai_queries_count');
+                localStorage.removeItem('mira_realtime_posts_count');
+                localStorage.removeItem('mira_realtime_comments_count');
                 localStorage.removeItem('mira_realtime_likes_count');
-                localLikes = 0;
               } catch (e) {}
             }
-
-            let simLogsRes = 0;
-            try {
-              const res = await supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_run']);
-              simLogsRes = res.count || 0;
-            } catch (e) {}
 
             const realUsers = Math.max(userCount || 0, 1020);
             const realJobs = Math.max(jobCount || 0, 5326);

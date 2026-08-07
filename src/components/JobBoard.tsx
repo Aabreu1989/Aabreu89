@@ -201,7 +201,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
       });
   }, [language]);
 
-  const [jobs, setJobs] = useState<JobPost[]>(initialJobs);
+  const [jobs, setJobs] = useState<JobPost[]>(() => PROTECTED_JOBS || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [visibleJobsCount, setVisibleJobsCount] = useState(20);
