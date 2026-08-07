@@ -13,8 +13,8 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       host: true, 
       hmr: {
-        overlay: true,           // Show errors as overlay instead of crashing
-        timeout: 60000,          // 60s timeout before giving up on HMR connection
+        overlay: false,
+        timeout: 60000,
       },
       watch: {
         // Ignore node_modules and supabase functions to prevent excessive file watchers

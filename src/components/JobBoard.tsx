@@ -79,6 +79,7 @@ function isSpamOrBlog(title: string, url: string): boolean {
 interface JobBoardProps {
   language: string;
   isAdmin?: boolean;
+  user?: any;
   onViewChange?: (view: ViewType, params?: any) => void;
   initialTab?: 'jobs' | 'trends';
 }
@@ -164,7 +165,7 @@ function isWithin60Days(dateStr?: string): boolean {
   }
 }
 
-export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewChange, initialTab }) => {
+export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onViewChange, initialTab }) => {
   const [activeTab, setActiveTab] = useState<'jobs' | 'trends'>(initialTab || 'jobs');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState(t('jobs_all_districts', language));
@@ -361,7 +362,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
 
     // Fast-path: Load static protected jobs immediately so UI never stays stuck in loading
     if (jobs.length === 0) {
-      setJobs(PROTECTED_JOBS || []);
+      setJobs(initialJobs);
       setLoading(false);
     }
 
@@ -440,7 +441,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
       const sixtyDaysAgoISO = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase
         .from('job_posts')
-        .select('id, title, location, source_name, source_url, date_posted, posted_at, created_at, category, work_topic')
+        .select('id, title, location, source_name, source_url, created_at, category, work_topic')
         .gte('created_at', sixtyDaysAgoISO)
         .order('created_at', { ascending: false })
         .limit(300);
