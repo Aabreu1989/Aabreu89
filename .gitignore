@@ -39,3 +39,5 @@ backups/
 # Logs de backup
 backup_log.txt
 schema_log.txt
+
+.vercel

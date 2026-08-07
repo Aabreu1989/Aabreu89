@@ -210,11 +210,16 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, onViewCha
   const [totalPlatformJobs, setTotalPlatformJobs] = useState<number>(0);
   const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
-  const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts().filter(a => a.isActive).length);
+  const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts(user?.id).filter(a => a.isActive).length);
 
-  const refreshAlertsCount = () => {
-    setActiveAlertsCount(jobAlertService.getAlerts().filter(a => a.isActive).length);
-  };
+  const refreshAlertsCount = React.useCallback(async () => {
+    const alerts = await jobAlertService.getAlertsAsync(user?.id);
+    setActiveAlertsCount(alerts.filter(a => a.isActive).length);
+  }, [user?.id]);
+
+  React.useEffect(() => {
+    refreshAlertsCount();
+  }, [user?.id, refreshAlertsCount]);
 
 
   // Dynamic Insights calculation based on jobs database (MIRA V2026.ELITE)

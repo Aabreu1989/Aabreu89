@@ -534,31 +534,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
         };
       }
       return a;
-    }).filter(a => {
-      const bostaTitles = [
-        'AIMA (Agência para a Integração, Migrações e Asilo)',
-        'Visto CPLP (Residência)',
-        'NIF (Número de Identificação Fiscal)',
-        'Artigo 88.º n.º 2 (Manifestação de Interesse)',
-        'Artigo 89.º n.º 2 (Trabalho Independente)',
-        'BOAS-VINDAS',
-        'DIRETRIZ MIRA 2026',
-        'AIMA: Vistos 2026'
-      ];
-      return !bostaTitles.some(bt => (a as any).title?.includes(bt));
-    }).concat(dbArticles.filter(a => {
-       const bostaTitles = [
-        'AIMA (Agência para a Integração, Migrações e Asilo)',
-        'Visto CPLP (Residência)',
-        'NIF (Número de Identificação Fiscal)',
-        'Artigo 88.º n.º 2 (Manifestação de Interesse)',
-        'Artigo 89.º n.º 2 (Trabalho Independente)',
-        'BOAS-VINDAS',
-        'DIRETRIZ MIRA 2026',
-        'AIMA: Vistos 2026'
-      ];
-      return !bostaTitles.some(bt => (a as any).title?.includes(bt));
-    }));
+    }).concat(dbArticles);
 
     return combined.map(a => ({
       ...a,
