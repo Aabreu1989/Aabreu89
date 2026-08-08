@@ -548,7 +548,25 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   };
 
   useEffect(() => {
-    fetchJobs();
+    let isMounted = true;
+
+    const loadJobs = async () => {
+      try {
+        await fetchJobs();
+      } catch (err) {
+        console.error('Erro ao buscar vagas:', err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadJobs();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const sources = React.useMemo(() => {
