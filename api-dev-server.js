@@ -43,19 +43,7 @@ app.use((req, res, next) => {
 // ─── HEALTH CHECK ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'Sovereign', uptime: process.uptime() }));
 
-// ─── OAUTH PORT 3000 REDIRECT GUARD ──────────────────────────────────────────
-try {
-    const oauthServer = http.createServer((req, res) => {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(`<!DOCTYPE html><html><head><title>MIRA OAuth Redirect</title></head><body><script>window.location.href = 'http://localhost:3333' + window.location.pathname + window.location.search + window.location.hash;</script></body></html>`);
-    });
-    oauthServer.on('error', (e) => {
-        console.warn('⚠️ [MIRA OAuth] Porto 3000 ocupado/indisponível:', e.message);
-    });
-    oauthServer.listen(3000, () => {
-        console.log('🔄 [MIRA OAuth] Proxy escutando em http://127.0.0.1:3000 -> Forwarding to http://localhost:3333');
-    });
-} catch (e) {}
+
 
 // ─── NESTED ROUTING HANDLER FOR EXPORT IMPACT ─────────────────────────────────
 app.all('/api/admin/export-impact', async (req, res) => {
