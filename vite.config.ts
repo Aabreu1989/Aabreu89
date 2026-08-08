@@ -17,9 +17,11 @@ export default defineConfig(({ mode }) => {
         timeout: 60000,
       },
       watch: {
-        // Ignore node_modules and supabase functions to prevent excessive file watchers
         ignored: [
           '**/node_modules/**',
+          '**/.vercel/**',
+          '**/scratch_*.mjs',
+          '**/scratch/**',
           '**/supabase/functions/**',
           '**/.git/**',
           '**/dist/**',

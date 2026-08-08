@@ -1,1 +1,16 @@
-{"projectId":"prj_ltYAiOZaGrPw0FWxVmZylQT83FAo","orgId":"team_aowHDCT6Pzurs6TYc7cTAOCF","projectName":"mira"}
+{
+  "projectId": "prj_ltYAiOZaGrPw0FWxVmZylQT83FAo",
+  "orgId": "team_aowHDCT6Pzurs6TYc7cTAOCF",
+  "projectName": "mira",
+  "settings": {
+    "createdAt": 1772040010805,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

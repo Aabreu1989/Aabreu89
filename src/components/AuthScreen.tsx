@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, getAuthRedirectUrl } from '../lib/supabase';
 import { User } from '../types';
 import { 
     Shield, Lock, CheckCircle2, Mail, Key, Eye, EyeOff, AlertCircle, 
@@ -76,10 +76,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         try {
-            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const redirectUrl = isLocalhost
-                ? `http://localhost:${window.location.port || '3333'}`
-                : window.location.origin;
+            const redirectUrl = getAuthRedirectUrl();
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
