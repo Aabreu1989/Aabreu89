@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'mira',
-    emptyOutDir: false
+    emptyOutDir: true
   }
 })
