@@ -77,17 +77,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         setIsLoading(true);
         try {
             const redirectUrl = getAuthRedirectUrl();
-
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: redirectUrl
-                }
+                    redirectTo: redirectUrl,
+                },
             });
             if (error) throw error;
-        } catch (err: any) {
-            console.error('Google Auth error:', err);
-            showToast(err.message || t('auth_error_google', language), 'error');
+        } catch (error: any) {
+            console.error('Erro no login do Google:', error);
+            showToast(error?.message || t('auth_error_google', language), 'error');
         } finally {
             setIsLoading(false);
         }
