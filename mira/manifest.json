@@ -1,0 +1,30 @@
+{
+  "short_name": "MIRA",
+  "name": "MIRA Imigrante",
+  "description": "Web APP de Apoio e Integração de Imigrantes em Portugal",
+  "icons": [
+    {
+      "src": "/logo-mira.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-mira.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-mira-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#020420",
+  "theme_color": "#FF8C00",
+  "display": "standalone",
+  "orientation": "portrait"
+}
