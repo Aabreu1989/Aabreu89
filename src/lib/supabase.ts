@@ -13,8 +13,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const getAuthRedirectUrl = (): string => {
   if (typeof window !== 'undefined') {
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    return isLocal ? `http://localhost:${window.location.port || '3000'}` : window.location.origin;
+    return window.location.origin;
   }
   return 'https://miraimigrante.pt';
 };
@@ -29,5 +28,3 @@ export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKe
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   }
 });
-
-

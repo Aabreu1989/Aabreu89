@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
     root: path.resolve(__dirname),
     cacheDir: path.resolve(__dirname, 'node_modules/.vite'),
     server: {
-      port: 3000,
+      port: 3333,
       strictPort: true,
       host: true, 
       hmr: {
