@@ -541,7 +541,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       localStorage.setItem('mira_jobs_cache_v2', JSON.stringify(cacheObj));
     } catch (err: any) {
       console.error('MIRA JobBoard error:', err);
-      if (!hasLoadedFromCache && jobs.length === 0) setError(t('job_connection_error', language));
+      setJobs(prev => prev.length > 0 ? prev : initialJobs);
     } finally {
       setLoading(false);
     }
