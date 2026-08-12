@@ -1,9 +1,8 @@
 import React, { memo } from 'react';
-import { Globe, ChevronDown, LogOut, Download } from 'lucide-react';
+import { Globe, ChevronDown, LogOut } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
 import { t } from '../utils/translations';
 import { User } from '../types';
-import { pwaService } from '../utils/pwa';
 
 export interface TopBarProps {
     user: User | null;
@@ -56,11 +55,11 @@ const TopBar: React.FC<TopBarProps> = ({
     };
 
     return (
-        <header className={`${isDark ? 'bg-[#0A0A0A] border-white/10 text-white backdrop-blur-xl' : 'bg-white border-slate-200/80 text-slate-900 shadow-[0_4px_16px_rgba(0,0,0,0.06)]'} border-b px-2.5 sm:px-4 py-2 sm:py-3 flex items-center justify-between sticky top-0 z-[60] transition-all duration-500 max-w-full overflow-visible flex-nowrap`}>
+        <header className={`${isDark ? 'bg-[#0A0A0A] border-white/10 text-white backdrop-blur-xl' : 'bg-white border-slate-200/80 text-slate-900 shadow-[0_4px_16px_rgba(0,0,0,0.06)]'} border-b px-3.5 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between sticky top-0 z-[60] transition-all duration-500 max-w-full overflow-visible flex-nowrap`}>
             {/* BRAND / LOGO */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink min-w-0">
                 <div 
-                    className="flex items-center gap-1.5 sm:gap-2 cursor-pointer active:scale-95 transition-transform group min-w-0"
+                    className="flex items-center gap-2 sm:gap-3 cursor-pointer active:scale-95 transition-transform group min-w-0"
                     onClick={handleLogoClick}
                     title={isSystemAdmin ? 'Admin Hub' : 'MIRA'}
                 >
@@ -71,31 +70,13 @@ const TopBar: React.FC<TopBarProps> = ({
                          </div>
                      </div>
                       <div className="min-w-0">
-                           <h2 className={`font-black text-sm sm:text-xl tracking-tighter uppercase truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{isSystemAdmin ? 'ADMIN HUB' : 'MIRA'}</h2>
+                           <h2 className={`font-black text-base sm:text-xl tracking-tighter uppercase truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{isSystemAdmin ? 'ADMIN HUB' : 'MIRA'}</h2>
                       </div>
                 </div>
             </div>
 
             {/* ACTION BUTTONS (RESPONSIVE FLEX BAR) */}
-            <div className="flex items-center gap-1 sm:gap-2.5 flex-shrink-0">
-                {/* 📲 PWA DOWNLOAD BUTTON — ALWAYS VISIBLE & ULTRA-RESPONSIVE */}
-                {onInstallApp && (
-                    <button 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onInstallApp();
-                        }}
-                        className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-1.5 rounded-full transition-all border bg-emerald-500 border-emerald-600 hover:bg-emerald-600 active:scale-95 shadow-sm shadow-emerald-500/20 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0"
-                        title={language === 'EN' ? 'Download MIRA App' : language === 'ES' ? 'Descargar App MIRA' : 'Baixar App MIRA'}
-                        id="MIRA_PWA_DOWNLOAD_BTN"
-                    >
-                        <Download size={13} className="text-white animate-bounce shrink-0" />
-                        <span className="hidden sm:inline">{language === 'EN' ? 'Download App' : language === 'ES' ? 'Descargar App' : language === 'FR' ? 'Télécharger App' : 'Baixar App'}</span>
-                        <span className="inline sm:hidden text-[9px] font-black">App</span>
-                    </button>
-                )}
-
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 {/* LANGUAGE SELECTOR */}
                 <div className="relative shrink-0">
                     <button 
