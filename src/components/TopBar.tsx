@@ -1,9 +1,9 @@
-
 import React, { memo } from 'react';
-import { Globe, ChevronDown, LogOut } from 'lucide-react';
+import { Globe, ChevronDown, LogOut, Download } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
 import { t } from '../utils/translations';
 import { User } from '../types';
+import { pwaService } from '../utils/pwa';
 
 export interface TopBarProps {
     user: User | null;
@@ -21,6 +21,7 @@ export interface TopBarProps {
     onNotifNavigate?: () => void;
     onSetLanguage: (lang: string) => void;
     onProfileClick?: () => void;
+    onInstallApp?: () => void;
     isDark?: boolean;
 }
 
@@ -40,6 +41,7 @@ const TopBar: React.FC<TopBarProps> = ({
     onNotifNavigate,
     onSetLanguage,
     onProfileClick,
+    onInstallApp,
     isDark = false
 }) => {
     const [showLangMenu, setShowLangMenu] = React.useState(false);
@@ -54,44 +56,64 @@ const TopBar: React.FC<TopBarProps> = ({
     };
 
     return (
-        <header className={`${isDark ? 'bg-[#0A0A0A] border-white/10 text-white backdrop-blur-xl' : 'bg-white border-slate-200/80 text-slate-900 shadow-[0_4px_16px_rgba(0,0,0,0.06)]'} border-b px-4 py-3 flex items-center justify-between sticky top-0 z-[60] transition-all duration-500`}>
-            <div className="flex items-center gap-4">
+        <header className={`${isDark ? 'bg-[#0A0A0A] border-white/10 text-white backdrop-blur-xl' : 'bg-white border-slate-200/80 text-slate-900 shadow-[0_4px_16px_rgba(0,0,0,0.06)]'} border-b px-2.5 sm:px-4 py-2 sm:py-3 flex items-center justify-between sticky top-0 z-[60] transition-all duration-500 max-w-full overflow-visible flex-nowrap`}>
+            {/* BRAND / LOGO */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
                 <div 
-                    className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform group"
+                    className="flex items-center gap-1.5 sm:gap-2 cursor-pointer active:scale-95 transition-transform group min-w-0"
                     onClick={handleLogoClick}
                     title={isSystemAdmin ? 'Admin Hub' : 'MIRA'}
                 >
                      <div className="flex-shrink-0 flex items-center">
-                        <div className="w-12 h-12 flex items-center justify-center relative group-hover:scale-110 transition-transform duration-500 bg-transparent">
-                             <img src="/logo-mira.png" alt="MIRA" className="w-[44px] h-[44px] object-contain relative z-10 bg-transparent" style={{ background: 'transparent' }} />
-                             {isSystemAdmin && <div className="absolute inset-0 bg-mira-orange/20 blur-2xl rounded-full animate-pulse" />}
+                        <div className="w-8 h-8 sm:w-11 sm:h-11 flex items-center justify-center relative group-hover:scale-110 transition-transform duration-500 bg-transparent">
+                             <img src="/logo-mira.png" alt="MIRA" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] object-contain relative z-10 bg-transparent" style={{ background: 'transparent' }} />
+                             {isSystemAdmin && <div className="absolute inset-0 bg-mira-orange/20 blur-xl rounded-full animate-pulse" />}
                          </div>
                      </div>
-                      <div>
-                           <h2 className={`font-black text-xl tracking-tighter uppercase ${isDark ? 'text-white' : 'text-slate-900'}`}>{isSystemAdmin ? 'ADMIN HUB' : 'MIRA'}</h2>
+                      <div className="min-w-0">
+                           <h2 className={`font-black text-sm sm:text-xl tracking-tighter uppercase truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{isSystemAdmin ? 'ADMIN HUB' : 'MIRA'}</h2>
                       </div>
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4">
-                {/* Language button — ALWAYS orange */}
-                <div className="relative">
+            {/* ACTION BUTTONS (RESPONSIVE FLEX BAR) */}
+            <div className="flex items-center gap-1 sm:gap-2.5 flex-shrink-0">
+                {/* 📲 PWA DOWNLOAD BUTTON — ALWAYS VISIBLE & ULTRA-RESPONSIVE */}
+                {onInstallApp && (
+                    <button 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onInstallApp();
+                        }}
+                        className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-1.5 rounded-full transition-all border bg-emerald-500 border-emerald-600 hover:bg-emerald-600 active:scale-95 shadow-sm shadow-emerald-500/20 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0"
+                        title={language === 'EN' ? 'Download MIRA App' : language === 'ES' ? 'Descargar App MIRA' : 'Baixar App MIRA'}
+                        id="MIRA_PWA_DOWNLOAD_BTN"
+                    >
+                        <Download size={13} className="text-white animate-bounce shrink-0" />
+                        <span className="hidden sm:inline">{language === 'EN' ? 'Download App' : language === 'ES' ? 'Descargar App' : language === 'FR' ? 'Télécharger App' : 'Baixar App'}</span>
+                        <span className="inline sm:hidden text-[9px] font-black">App</span>
+                    </button>
+                )}
+
+                {/* LANGUAGE SELECTOR */}
+                <div className="relative shrink-0">
                     <button 
                         onClick={() => setShowLangMenu(!showLangMenu)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all border bg-mira-orange border-orange-500 hover:bg-orange-600 active:scale-95 shadow-md shadow-orange-500/20"
+                        className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-1.5 rounded-full transition-all border bg-mira-orange border-orange-500 hover:bg-orange-600 active:scale-95 shadow-sm shadow-orange-500/20 shrink-0"
                     >
-                        <Globe size={14} className="text-white" />
-                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-white">{language}</span>
-                        <ChevronDown size={12} className="text-white/70" />
+                        <Globe size={13} className="text-white shrink-0" />
+                        <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-white">{language}</span>
+                        <ChevronDown size={11} className="text-white/80 shrink-0" />
                     </button>
 
                     {showLangMenu && (
-                        <div className="absolute top-full right-0 mt-3 w-40 bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-2xl border border-slate-100 dark:border-white/10 p-2 z-[9999] animate-in slide-in-from-top-2">
+                        <div className="absolute top-full right-0 mt-3 w-36 sm:w-40 bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-2xl border border-slate-100 dark:border-white/10 p-2 z-[9999] animate-in slide-in-from-top-2">
                             {['PT', 'EN', 'ES', 'FR'].map(l => (
                                 <button 
                                     key={l} 
                                     onClick={() => { onSetLanguage(l); setShowLangMenu(false); }} 
-                                    className={`w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-extrabold uppercase transition-all ${language === l ? 'bg-mira-orange text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}`}
+                                    className={`w-full text-left px-3.5 py-2 sm:py-2.5 rounded-xl text-[10px] font-extrabold uppercase transition-all ${language === l ? 'bg-mira-orange text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}`}
                                 >
                                     {l}
                                 </button>
@@ -100,8 +122,9 @@ const TopBar: React.FC<TopBarProps> = ({
                     )}
                 </div>
 
+                {/* USER ACTIONS: NOTIFICATIONS + LOGOUT */}
                 {user && (
-                    <div className={`flex items-center gap-3 pl-3 border-l ${isDark || isSystemAdmin ? 'border-white/10' : 'border-slate-100'}`}>
+                    <div className={`flex items-center gap-1 sm:gap-2.5 pl-1.5 sm:pl-3 border-l shrink-0 ${isDark || isSystemAdmin ? 'border-white/10' : 'border-slate-200'}`}>
                         <NotificationBell 
                             isDark={isSystemAdmin}
                             notifications={notifications}
@@ -114,10 +137,10 @@ const TopBar: React.FC<TopBarProps> = ({
                         />
                         <button 
                             onClick={onLogout}
-                            className={`p-2.5 rounded-xl transition-all border ${isDark ? 'bg-white/5 border-white/10 text-white/40 hover:text-red-500 hover:bg-red-500/10' : 'bg-slate-50 border-slate-200 text-slate-400 hover:text-red-600 hover:bg-red-50'} active:scale-90`}
+                            className={`p-1.5 sm:p-2 rounded-xl transition-all border ${isDark ? 'bg-white/5 border-white/10 text-white/40 hover:text-red-500 hover:bg-red-500/10' : 'bg-slate-50 border-slate-200 text-slate-400 hover:text-red-600 hover:bg-red-50'} active:scale-90`}
                             title={t('logout', language)}
                         >
-                            <LogOut size={16} />
+                            <LogOut size={15} className="sm:w-4 sm:h-4" />
                         </button>
                     </div>
                 )}

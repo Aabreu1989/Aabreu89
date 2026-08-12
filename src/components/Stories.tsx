@@ -22,13 +22,13 @@ export const Stories: React.FC<StoriesProps> = ({ stories, onStoryClick }) => {
               <div className="p-0.5 bg-white rounded-full">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-transparent">
                   <img 
-                    src={story.authorAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(story.authorName)}&background=f97316&color=fff`} 
+                    src={story.authorAvatar && story.authorAvatar.trim() !== '' ? story.authorAvatar : `https://ui-avatars.com/api/?name=${encodeURIComponent(story.authorName || 'Membro')}&background=f97316&color=fff`} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                    alt={story.authorName} 
+                    alt={story.authorName || 'Membro'} 
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.onerror = null;
-                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(story.authorName)}&background=f97316&color=fff`;
+                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(story.authorName || 'Membro')}&background=f97316&color=fff`;
                     }}
                   />
                 </div>
@@ -50,7 +50,7 @@ export const Stories: React.FC<StoriesProps> = ({ stories, onStoryClick }) => {
             </div>
             
             <span className="text-[10px] font-black uppercase tracking-tight text-slate-500 group-hover:text-[#FF8C00] transition-colors truncate w-20 text-center">
-              {story.authorName.split(' ')[0]}
+              {(story.authorName || 'Membro').split(' ')[0]}
             </span>
           </button>
         ))}

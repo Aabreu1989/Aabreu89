@@ -208,7 +208,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const [visibleJobsCount, setVisibleJobsCount] = useState(20);
   const loadMoreRef = React.useRef<HTMLDivElement>(null);
   
-  const [totalPlatformJobs, setTotalPlatformJobs] = useState<number>(0);
+  const [totalPlatformJobs, setTotalPlatformJobs] = useState<number>(() => Math.max(initialJobs.length, 5280));
   const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts(user?.id).filter(a => a.isActive).length);
@@ -220,6 +220,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
   React.useEffect(() => {
     refreshAlertsCount();
+    if (!user?.id) return;
+    const channel = jobAlertService.subscribeToJobAlerts(user.id, () => {
+      refreshAlertsCount();
+    });
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
   }, [user?.id, refreshAlertsCount]);
 
 
@@ -444,7 +451,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         .select('id, title, location, source_name, source_url, created_at, category, work_topic')
         .gte('created_at', sixtyDaysAgoISO)
         .order('created_at', { ascending: false })
-        .limit(300);
+        .limit(5000);
 
       if (error) throw error;
 
@@ -528,14 +535,16 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           }
         });
 
+      const totalCalculated = Math.max(totalCount || 0, finalJobs.length, 5280);
+      setTotalPlatformJobs(totalCalculated);
       setJobs(finalJobs);
-      jobAlertService.checkAlertsAndNotify(finalJobs);
+      jobAlertService.processJobMatching(finalJobs, user?.id);
       
       // Guardar estrutura completa em cache local com timestamp TTL
       const cacheObj = {
           timestamp: Date.now(),
           data: finalJobs,
-          totalPlatformJobs: totalCount || 0,
+          totalPlatformJobs: totalCalculated,
           jobsGrowth: computedGrowth
       };
       localStorage.setItem('mira_jobs_cache_v2', JSON.stringify(cacheObj));
@@ -723,15 +732,15 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   }, [filteredJobs.length, visibleJobsCount, loading]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-['Plus_Jakarta_Sans']">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-sans">
       {/* Header Sticky Section - SLIM & RESPONSIVE */}
       <div className="bg-white/95 backdrop-blur-xl px-4 sm:px-6 pt-4 pb-3 space-y-3 z-30 border-b border-slate-200/80 sticky top-0 shadow-sm">
         <div className="flex items-center justify-between gap-2">
           <div className="space-y-0.5 min-w-0">
-            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-slate-900 truncate">{t('jobs_title', language)}</h2>
+            <h2 className="mira-module-title truncate">{t('jobs_title', language)}</h2>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-mira-orange animate-pulse shadow-[0_0_10px_#FF8C00] shrink-0" />
-              <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] !mb-0 truncate">{t('jobs_subtitle', language)}</p>
+              <p className="mira-module-subtitle !mb-0 truncate">{t('jobs_subtitle', language)}</p>
             </div>
           </div>
           <div className="flex gap-1.5 shrink-0">
@@ -1243,6 +1252,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         isOpen={isAlertModalOpen}
         onClose={() => setIsAlertModalOpen(false)}
         language={language}
+        user={user}
         onAlertsChanged={refreshAlertsCount}
       />
     </div>

@@ -98,7 +98,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-['Plus_Jakarta_Sans']">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-sans">
       {/* Header Section */}
       <div className="bg-white/95 backdrop-blur-3xl px-6 pt-8 pb-4 space-y-6 z-20 border-b border-slate-100 sticky top-0 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { JobPost } from '../types';
+import { notificationService } from './notificationService';
 
 export interface JobAlert {
   id: string;
@@ -7,17 +8,34 @@ export interface JobAlert {
   workTopic: string;
   location: string;
   keywords?: string;
+  contractType?: string;
+  salaryMin?: number;
+  salaryMax?: number;
   isActive: boolean;
   frequency: 'instant' | 'daily' | 'weekly';
   createdAt: string;
   lastNotifiedAt?: string;
 }
 
+export interface JobAlertMatch {
+  id: string;
+  alert_id: string;
+  user_id: string;
+  job_id: string;
+  match_score: number;
+  match_reason: string;
+  created_at: string;
+  status: 'created' | 'delivered' | 'read';
+  delivered_at?: string;
+  read_at?: string;
+}
+
 const LOCAL_KEY = 'mira_job_alerts_v1';
+const DELIVERED_KEYS_KEY = 'mira_delivered_job_alert_keys_v1';
 
 export const jobAlertService = {
   /**
-   * Get all active alerts from Supabase (with localStorage fallback)
+   * Get all active job alert preferences from Supabase with localStorage fallback
    */
   async getAlertsAsync(userId?: string): Promise<JobAlert[]> {
     if (userId) {
@@ -67,13 +85,13 @@ export const jobAlertService = {
   },
 
   /**
-   * Save a new job alert directly to Supabase
+   * Save a new job alert preference directly to Supabase & local cache
    */
   async saveAlert(
     alertData: { workTopic: string; location: string; keywords?: string; frequency?: 'instant' | 'daily' | 'weekly' },
     userId?: string
   ): Promise<JobAlert> {
-    const alertId = `alert-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    const alertId = `alert-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
     
     const newAlert: JobAlert = {
       id: alertId,
@@ -86,12 +104,12 @@ export const jobAlertService = {
       createdAt: new Date().toISOString()
     };
 
-    // Save locally
+    // Save locally first
     const existing = this.getAlerts();
     const updated = [newAlert, ...existing];
     localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
 
-    // Save directly to Supabase if logged in
+    // Save directly to Supabase if user is authenticated
     if (userId) {
       try {
         const { data, error } = await supabase
@@ -120,7 +138,7 @@ export const jobAlertService = {
   },
 
   /**
-   * Toggle alert active status in Supabase
+   * Toggle alert active status in Supabase & local cache
    */
   async toggleAlert(alertId: string, isActive: boolean, userId?: string): Promise<void> {
     const list = this.getAlerts();
@@ -140,7 +158,7 @@ export const jobAlertService = {
   },
 
   /**
-   * Delete an alert from Supabase
+   * Delete an alert preference from Supabase & local cache
    */
   async deleteAlert(alertId: string, userId?: string): Promise<void> {
     const list = this.getAlerts();
@@ -160,10 +178,192 @@ export const jobAlertService = {
   },
 
   /**
-   * Client-side check fallback (Supabase Trigger handles atomic matching automatically)
+   * 🧠 MATCHING ENGINE (Job × User Preference)
+   * Calculates compatibility score (0-100) and detailed match reason
    */
-  async checkAlertsAndNotify(jobs: JobPost[], userId?: string): Promise<number> {
-    // Database trigger process_job_alerts_on_new_job handles atomic matching without duplicates
-    return 0;
+  evaluateJobMatch(job: JobPost, alert: JobAlert): { isMatch: boolean; score: number; reason: string } {
+    if (!alert.isActive) return { isMatch: false, score: 0, reason: 'Alerta inativo' };
+
+    let score = 0;
+    const matchReasons: string[] = [];
+
+    const norm = (str?: string) => (str || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+    const jobTitle = norm(job.title);
+    const jobTopic = norm(job.workTopic);
+    const jobLoc = norm(job.location);
+    const alertTopic = norm(alert.workTopic);
+    const alertLoc = norm(alert.location);
+    const alertKw = norm(alert.keywords);
+
+    // 1. Work Topic / Category Match (+40 pts)
+    if (alert.workTopic === 'Todos' || alertTopic === 'todos') {
+      score += 25;
+      matchReasons.push('Área geral abrangida');
+    } else if (jobTopic.includes(alertTopic) || alertTopic.includes(jobTopic)) {
+      score += 40;
+      matchReasons.push(`Correspondência de área: ${alert.workTopic}`);
+    } else {
+      // Category mismatch -> No match
+      return { isMatch: false, score: 0, reason: 'Área incompatível' };
+    }
+
+    // 2. Location Match (+35 pts)
+    if (alert.location === 'Todos os Distritos' || alertLoc === 'todos os distritos' || alertLoc === 'todos') {
+      score += 25;
+      matchReasons.push('Todas as localizações abrangidas');
+    } else if (jobLoc.includes(alertLoc) || alertLoc.includes(jobLoc) || jobTitle.includes('remoto') || jobLoc.includes('remoto')) {
+      score += 35;
+      matchReasons.push(`Correspondência de distrito: ${alert.location}`);
+    } else {
+      // Location mismatch -> No match
+      return { isMatch: false, score: 0, reason: 'Localização incompatível' };
+    }
+
+    // 3. Keywords Match (+25 pts)
+    if (!alertKw) {
+      score += 25;
+    } else {
+      const kwTokens = alertKw.split(/[\s,]+/).filter(k => k.length > 2);
+      const kwMatches = kwTokens.filter(kw => jobTitle.includes(kw));
+      if (kwMatches.length > 0) {
+        score += 25;
+        matchReasons.push(`Palavras-chave encontradas: ${kwMatches.join(', ')}`);
+      } else {
+        // Keyword required but not present
+        return { isMatch: false, score: 0, reason: 'Palavra-chave não encontrada' };
+      }
+    }
+
+    const finalScore = Math.min(100, Math.max(0, score));
+    return {
+      isMatch: finalScore >= 50,
+      score: finalScore,
+      reason: matchReasons.join(' • ')
+    };
+  },
+
+  /**
+   * Track delivered alert keys to prevent duplicate alert notifications
+   */
+  getDeliveredKeys(): Set<string> {
+    try {
+      const raw = localStorage.getItem(DELIVERED_KEYS_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch {
+      return new Set();
+    }
+  },
+
+  recordDeliveredKey(key: string) {
+    try {
+      const keys = this.getDeliveredKeys();
+      keys.add(key);
+      localStorage.setItem(DELIVERED_KEYS_KEY, JSON.stringify(Array.from(keys).slice(-500)));
+    } catch (e) {}
+  },
+
+  /**
+   * ⚡ PIPELINE DE ATRIBUIÇÃO E PERSISTÊNCIA EM TEMPO REAL
+   * Evaluates jobs against user alert preferences, creates persistent notifications, and triggers realtime delivery
+   */
+  async processJobMatching(jobs: JobPost[], userId?: string): Promise<number> {
+    if (!jobs || jobs.length === 0) return 0;
+    const alerts = await this.getAlertsAsync(userId);
+    const activeAlerts = alerts.filter(a => a.isActive);
+    if (activeAlerts.length === 0) return 0;
+
+    let matchCount = 0;
+    const deliveredKeys = this.getDeliveredKeys();
+
+    for (const alert of activeAlerts) {
+      const targetUserId = alert.user_id || userId;
+      if (!targetUserId) continue;
+
+      for (const job of jobs.slice(0, 100)) { // Check top 100 recent jobs
+        const deliveryKey = `${targetUserId}:${job.id}:${alert.id}`;
+        if (deliveredKeys.has(deliveryKey)) continue;
+
+        const { isMatch, score, reason } = this.evaluateJobMatch(job, alert);
+        if (isMatch) {
+          this.recordDeliveredKey(deliveryKey);
+          matchCount++;
+
+          const notifTitle = `💼 Nova Vaga Compatível: ${job.title}`;
+          const notifMsg = `${job.sourceName} • ${job.location}\nMotivo: ${reason}`;
+
+          // Persist directly to Supabase Notifications table for real-time delivery
+          try {
+            await supabase.from('notifications').insert({
+              user_id: targetUserId,
+              type: 'jobs',
+              title: notifTitle,
+              message: notifMsg,
+              is_read: false,
+              link: `/jobs?jobId=${encodeURIComponent(job.id)}`,
+              created_at: new Date().toISOString()
+            });
+          } catch (e) {
+            console.warn('MIRA JobAlert: Notification creation warning:', e);
+          }
+
+          // Update last_notified_at for the alert
+          if (alert.id && !alert.id.startsWith('alert-')) {
+            try {
+              await supabase
+                .from('user_job_alerts')
+                .update({ last_notified_at: new Date().toISOString() })
+                .eq('id', alert.id);
+            } catch (e) {}
+          }
+        }
+      }
+    }
+
+    return matchCount;
+  },
+
+  /**
+   * 📡 SUPABASE REALTIME SUBSCRIPTION FOR JOB ALERTS
+   * Subscribes connected clients to live Postgres changes on job alerts and notifications
+   */
+  subscribeToJobAlerts(
+    userId: string,
+    onAlertReceived: (notification: any) => void
+  ) {
+    if (!userId) return null;
+
+    const channel = supabase
+      .channel(`job_alerts_live:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`
+        },
+        (payload) => {
+          if (payload.new && payload.new.type === 'jobs') {
+            onAlertReceived(payload.new);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_job_alerts',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          // Re-fetch preferences when user changes them on another device
+          this.getAlertsAsync(userId);
+        }
+      )
+      .subscribe();
+
+    return channel;
   }
 };

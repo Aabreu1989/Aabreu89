@@ -30,7 +30,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     public render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center font-['Plus_Jakarta_Sans']">
+                <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center font-sans">
                     <div className="relative mb-8">
                         <div className="w-16 h-16 bg-mira-blue/5 rounded-2xl flex items-center justify-center text-mira-blue animate-pulse">
                             <RefreshCcw size={32} className="animate-spin duration-[3000ms]" />

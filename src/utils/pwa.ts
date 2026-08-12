@@ -55,32 +55,72 @@ export const pwaService = {
     return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   },
 
-  triggerInstall: async (): Promise<'accepted' | 'dismissed' | 'not-supported'> => {
-    if (!deferredPrompt) {
-      return 'not-supported';
+  /**
+   * 📲 INSTANT SHORTCUT DOWNLOADER (MIRA IMIGRANTE)
+   * Downloads a direct Internet Shortcut file (.url & .html WebApp launcher) with logo to the user's phone or computer.
+   */
+  downloadShortcutFile: () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const appUrl = window.location.origin;
+      const iconUrl = `${appUrl}/logo-mira.png`;
+      
+      // 1. Internet Shortcut (.url) for Desktop/Mobile File System
+      const urlContent = `[InternetShortcut]\r\nURL=${appUrl}\r\nIconIndex=0\r\nIconFile=${iconUrl}\r\nTitle=MIRA IMIGRANTE\r\n`;
+      const blobUrl = new Blob([urlContent], { type: 'application/x-mswinurl;charset=utf-8' });
+      const linkUrl = document.createElement('a');
+      linkUrl.href = URL.createObjectURL(blobUrl);
+      linkUrl.download = 'MIRA IMIGRANTE.url';
+      document.body.appendChild(linkUrl);
+      linkUrl.click();
+      document.body.removeChild(linkUrl);
+      URL.revokeObjectURL(linkUrl.href);
+    } catch (e) {
+      console.error('Failed to download MIRA IMIGRANTE shortcut file', e);
     }
-    
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      deferredPrompt = null;
+  },
+
+  /**
+   * 📲 DIRECT PWA INSTALLER & DOWNLOADER TRIGGER
+   * Triggers native install prompt if available, AND downloads the MIRA IMIGRANTE shortcut file immediately to the user's device.
+   */
+  triggerInstall: async (): Promise<'accepted' | 'dismissed' | 'ios-safari' | 'downloaded'> => {
+    if (typeof window === 'undefined') return 'dismissed';
+
+    // ALWAYS trigger the direct shortcut file download ("MIRA IMIGRANTE.url")
+    pwaService.downloadShortcutFile();
+
+    // 1. If native beforeinstallprompt is ready, trigger it directly!
+    if (deferredPrompt) {
       try {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const platform = isMobile ? 'mobile' : 'desktop';
-        let userId = 'anonymous';
-        const savedUser = localStorage.getItem('mira_user');
-        if (savedUser) {
-          userId = JSON.parse(savedUser).id;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          deferredPrompt = null;
+          try {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const platform = isMobile ? 'mobile' : 'desktop';
+            let userId = 'anonymous';
+            const savedUser = localStorage.getItem('mira_user');
+            if (savedUser) {
+              userId = JSON.parse(savedUser).id;
+            }
+            import('../services/analyticsService').then(({ analytics }) => {
+              analytics.track('pwa_install', userId, 'pwa', { platform, source: 'button_prompt' });
+            });
+          } catch (e) {}
+          return 'accepted';
         }
-        import('../services/analyticsService').then(({ analytics }) => {
-          analytics.track('pwa_install', userId, 'pwa', { platform, source: 'button_prompt' });
-        });
       } catch (e) {
-        console.error('Failed to track PWA install accepted', e);
+        console.warn('PWA Prompt execution failed:', e);
       }
-      return 'accepted';
-    } else {
-      return 'dismissed';
     }
+
+    // 2. If iOS Safari, return 'ios-safari' to open visual guide
+    if (pwaService.isIOS()) {
+      return 'ios-safari';
+    }
+
+    return 'downloaded';
   }
 };

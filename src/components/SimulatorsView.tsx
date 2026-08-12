@@ -425,19 +425,6 @@ const translations: Record<string, Record<string, string>> = {
     household_size: 'Taille du Ménage',
     person: 'Personne',
     people: 'Personnes',
-    utilities_per_person: 'Par personne : {val}€',
-
-    effort_rate_title: 'Taux d\'Effort Logement',
-    effort_rate_sub: 'Ratio loyer / salaire net (Recommandation Banque du Portugal)',
-    effort_healthy: 'Sain (<= 35%)',
-    effort_warning: 'Alerte / Effort Modéré (36% - 50%)',
-    effort_critical: 'Risque Élevé (> 50%)',
-    net_surplus: 'Marge Financière Mensuelle',
-    net_deficit: 'Déficit Mensuel Estimé',
-    setup_budget_title: 'Capital d\'Installation Recommandé',
-    setup_budget_sub: '2 Mois Loyer + 1 Mois Caution (Art. 1076 C. Civil) + 3 Mois Coûts',
-    emergency_fund_title: 'Fonds d\'Urgence Recommandé',
-    emergency_fund_sub: '3 Mois de coûts de survie selon la Banque du Portugal'
   }
 };
 
@@ -475,12 +462,11 @@ const DISTRICT_COST_DATA: Record<string, CostProfile> = {
 };
 
 export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onViewChange }) => {
-  const [activeTab, setActiveTab] = useState<'salary' | 'cost' | 'health'>('salary');
-  const lang = ['PT', 'EN', 'ES', 'FR'].includes(language) ? language : 'PT';
-  const tLocal = (key: string) => translations[lang][key] || key;
-
-  // ─── REGIME SELECTOR: CONTA OUTREM VS RECIBOS VERDES ─────────────────────
+  const [activeTab, setActiveTab] = useState<'salary' | 'cost' | 'housing_health' | 'pension' | 'ss_protection'>('salary');
   const [salaryRegime, setSalaryRegime] = useState<'outrem' | 'recibos'>('outrem');
+
+  const lang = ['PT', 'EN', 'ES', 'FR'].includes(language) ? language : 'PT';
+  const tLocal = (key: string) => translations[lang]?.[key] || key;
 
   useEffect(() => {
     let userId = 'guest';
@@ -491,10 +477,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
         if (u && u.id) userId = u.id;
       }
     } catch (e) {}
-    const simName = activeTab === 'salary' 
-      ? (salaryRegime === 'outrem' ? 'Simulador Salário Líquido (Recibos Verdes vs TI)' : 'Simulador IRS Jovem & Escalões')
-      : activeTab === 'cost' ? 'Simulador Custo de Vida em Portugal' : 'Saúde Financeira & Taxa de Esforço';
-    analytics.track('use_simulator', userId, 'Finanças & Impostos', { simulatorId: simName });
+    analytics.track('use_simulator', userId, 'Finanças & Impostos', { simulatorId: activeTab });
   }, [activeTab, salaryRegime]);
 
   // ─── CONTA DE OUTREM SIMULATOR STATE ──────────────────────────────────────
@@ -766,7 +749,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const finHealth = calculateFinancialHealth();
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 overflow-hidden font-['Plus_Jakarta_Sans']">
+    <div className="flex flex-col h-full bg-slate-950 overflow-hidden font-sans">
       
       {/* ── STICKY HERO BANNER ─────────────────────────────────────────── */}
       <div className="relative shrink-0 overflow-hidden bg-gradient-to-b from-slate-950 via-indigo-950/20 to-slate-950 px-6 pt-5 pb-6 border-b border-white/5">
@@ -790,46 +773,66 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
         </div>
 
         <div className="relative z-10 space-y-2">
-          <h2 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter leading-tight">
+          <h2 className="mira-module-title !text-white">
             {tLocal('title')}
           </h2>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+          <p className="mira-module-subtitle !text-slate-400">
             {tLocal('subtitle')}
           </p>
         </div>
       </div>
 
       {/* ── TAB BAR ────────────────────────────────────────────────────── */}
-      <div className="flex border-b border-slate-200 bg-white relative z-10">
+      <div className="flex border-b border-slate-200 bg-white relative z-10 overflow-x-auto no-scrollbar shrink-0">
         <button
           onClick={() => setActiveTab('salary')}
-          className={`flex-1 py-3.5 text-[11px] font-black uppercase tracking-wider text-center transition-all ${
+          className={`px-4 py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all ${
             activeTab === 'salary' 
               ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50/50'
+              : 'text-slate-400 hover:text-slate-600'
           }`}
         >
-          {tLocal('tab_salary')}
+          💰 1. Salário & Recibos Verdes
         </button>
         <button
           onClick={() => setActiveTab('cost')}
-          className={`flex-1 py-3.5 text-[11px] font-black uppercase tracking-wider text-center transition-all ${
+          className={`px-4 py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all ${
             activeTab === 'cost' 
               ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50/50'
+              : 'text-slate-400 hover:text-slate-600'
           }`}
         >
-          {tLocal('tab_cost')}
+          🗺️ 2. Custo de Vida (20 Distritos)
         </button>
         <button
-          onClick={() => setActiveTab('health')}
-          className={`flex-1 py-3.5 text-[11px] font-black uppercase tracking-wider text-center transition-all ${
-            activeTab === 'health' 
+          onClick={() => setActiveTab('housing_health')}
+          className={`px-4 py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all ${
+            activeTab === 'housing_health' 
               ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50/50'
+              : 'text-slate-400 hover:text-slate-600'
           }`}
         >
-          {tLocal('tab_health')}
+          🏠 3. Habitação & AIMA
+        </button>
+        <button
+          onClick={() => setActiveTab('pension')}
+          className={`px-4 py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all ${
+            activeTab === 'pension' 
+              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
+              : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          👴 4. Reforma & CPLP/UE
+        </button>
+        <button
+          onClick={() => setActiveTab('ss_protection')}
+          className={`px-4 py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all ${
+            activeTab === 'ss_protection' 
+              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
+              : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          🛡️ 5. Proteção Seg. Social
         </button>
       </div>
 
@@ -1493,7 +1496,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
           )}
 
           {/* ════ TAB 3: FINANCIAL HEALTH & INSIGHTS ════════════════════ */}
-          {activeTab === 'health' && (
+          {activeTab === 'housing_health' && (
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* Financial Health Score Hero */}

@@ -138,21 +138,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         appAccesses?: number;
         totalLikes?: number;
     }>({ 
-        courses: { db: 312, prot: 0 }, 
-        services: { db: 450, prot: 0 }, 
-        users: 2033, 
-        usersToday: 0,
-        jobs: { db: 10652, prot: 0 }, 
+        courses: { db: 156, prot: 0 }, 
+        services: { db: 225, prot: 0 }, 
+        users: 1020, 
+        usersToday: 1,
+        jobs: { db: 2647, prot: 0 }, 
         reports: 0,
         suggestions: 0,
         posts: 8,
-        comments: 24,
+        comments: 0,
         retentionRate: 82.0,
         returningUsers: 832,
         pwaMobileDownloads: 629,
         pwaComputerDownloads: 233,
         horasPoupadas: 4567,
-        processosAjudados: 2033,
+        processosAjudados: 1020,
         aiQueries: 18642,
         simulations: 4872,
         downloads: 3451,
@@ -449,8 +449,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <ShieldCheck size={24} className="text-white" />
                     </div>
                     <div>
-                        <h1 className="text-lg font-black uppercase tracking-tighter">ADMIN HUB <span className="text-[#FF8C00]">MIRA</span></h1>
-                        <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white/30">Gestão Administrativa</p>
+                        <h1 className="mira-module-title !text-white">ADMIN HUB <span className="text-[#FF8C00]">MIRA</span></h1>
+                        <p className="mira-module-subtitle !text-white/40">Gestão Administrativa</p>
                     </div>
                 </div>
                 <button onClick={onBack} className="p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"><X size={20}/></button>

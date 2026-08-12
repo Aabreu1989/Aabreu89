@@ -89,13 +89,13 @@ const ChoiceButton = ({ icon, label, badgeText, onClick, idx, isRevoked }: {
         style={{ animationDelay: `${idx * 60}ms` }}
         className={`group w-full animate-in slide-in-from-bottom-4 duration-500 bg-white border rounded-[2.25rem] p-5 flex items-center gap-4 text-left transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/5 active:scale-[0.97]
             ${isRevoked 
-                ? 'border-red-100 hover:border-red-400/40 shadow-sm' 
+                ? 'border-amber-200/80 hover:border-amber-400/50 shadow-sm' 
                 : 'border-slate-100 hover:border-orange-400/30 shadow-sm'}`}
     >
         {/* Icon Box */}
         <div className={`relative w-14 h-14 rounded-2xl border flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-white transition-all duration-500
             ${isRevoked
-                ? 'bg-red-50/50 border-red-100 text-red-500'
+                ? 'bg-amber-50 border-amber-200 text-amber-600'
                 : 'bg-slate-50 border-slate-100 text-slate-600'}`}
         >
             {icon}
@@ -107,15 +107,15 @@ const ChoiceButton = ({ icon, label, badgeText, onClick, idx, isRevoked }: {
                 {badgeText && (
                     <span className={`px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider border rounded-full
                         ${isRevoked
-                            ? 'bg-red-500/10 text-red-500 border-red-500/20'
+                            ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                             : 'bg-orange-500/10 text-orange-400 border-orange-500/20'}`}
                     >
                         {badgeText}
                     </span>
                 )}
                 {isRevoked && (
-                    <span className="px-2 py-0.5 text-[7px] font-black uppercase tracking-wider bg-red-600 text-white rounded-md animate-pulse">
-                        Revogado / Votado
+                    <span className="px-2 py-0.5 text-[7px] font-black uppercase tracking-wider bg-amber-500 text-white rounded-md">
+                        Pendente de Alteração
                     </span>
                 )}
             </div>
@@ -291,27 +291,27 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.docs.push("aima_audiencia_previa");
         }
 
-        // 📝 MIRA LEGISLATIVO: Telemetria de atualizações parlamentares em tempo real (18 de Julho 2026)
+        // 📝 MIRA LEGISLATIVO: Telemetria de acompanhamento parlamentar em tempo real
         const warningsList: string[] = [];
         if (sit === "family" || purpose === "art122") {
             warningsList.push(
                 language.toLowerCase() === 'pt' 
-                    ? "ATENÇÃO: O Parlamento português aprovou a revogação da regularização automática por filho menor matriculado em escola (Artigo 122). Este caminho encontra-se atualmente suspenso/revogado." 
-                    : "WARNING: The Portuguese Parliament voted to revoke automatic regularization through minor children enrolled in Portuguese schools (Article 122). This pathway is currently suspended/revoked."
+                    ? "AVISO LEGISLATIVO: Existem propostas em apreciação parlamentar sobre a regularização por filho menor (Artigo 122). Este procedimento encontra-se pendente de alteração regulamentar." 
+                    : "LEGISLATIVE NOTICE: Proposals are currently under parliamentary review regarding regularization via minor children (Article 122). This pathway is pending legislative amendment."
             );
         }
         if (sit === "student" || purpose === "visa_d4") {
             warningsList.push(
                 language.toLowerCase() === 'pt'
-                    ? "ATENÇÃO: Foi aprovada a eliminação da regularização por matrícula em cursos profissionais iniciados após a entrada em Portugal. Vistos de estudante devem ser requeridos no país de origem."
-                    : "WARNING: Regularization via professional course enrollment initiated inside Portugal has been eliminated. Student visas must now be requested in the country of origin."
+                    ? "AVISO LEGISLATIVO: Existem propostas em análise para alteração das regras de cursos profissionais. Acompanhe os desenvolvimentos e consulte sempre os canais oficiais."
+                    : "LEGISLATIVE NOTICE: Proposed changes exist regarding professional course rules. Monitor ongoing legislative proceedings."
             );
         }
         if (sit === "contract" || sit === "student" || result.docs.includes("aima_deferimento_tacito")) {
             warningsList.push(
                 language.toLowerCase() === 'pt'
-                    ? "AVISO LEGAL: O mecanismo de 'Deferimento Tácito' (aprovação automática por falta de resposta da AIMA no prazo legal) foi formalmente extinto pelo Parlamento português hoje."
-                    : "LEGAL NOTICE: The 'Tacit Deferral' mechanism (automatic approval due to lack of response from AIMA within the legal period) was formally abolished by the Portuguese Parliament today."
+                    ? "AVISO LEGAL: A aplicação do 'Deferimento Tácito' encontra-se em debate legislativo e pendente de regulamentação e decisão final."
+                    : "LEGAL NOTICE: The application of 'Tacit Deferral' is under parliamentary debate and pending final legislative decision."
             );
         }
         result.warnings = warningsList;
@@ -598,8 +598,8 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                             {t('wizard_view_fill_template', language)}
                                                         </p>
                                                         {docId === 'aima_deferimento_tacito' && (
-                                                            <span className="px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-red-600 text-white rounded">
-                                                                Extinto / Revogado
+                                                            <span className="px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-amber-500 text-white rounded">
+                                                                Pendente de Alteração
                                                             </span>
                                                         )}
                                                     </div>

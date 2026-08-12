@@ -104,7 +104,7 @@ const MiraChatHeader = ({
                         <img src={MIRA_PHOTO_URL || '/mira-robot.png'} alt="MIRA" className="w-full h-full object-cover" />
                     </div>
                     <div>
-                        <h1 className="text-xl font-black text-slate-800 tracking-tighter uppercase leading-none">MIRA</h1>
+                        <h1 className="mira-module-title !text-slate-800">ASSISTENTE MIRA IA</h1>
                         <div className="flex items-center gap-1.5 mt-1 px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-100 w-fit">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                             <span className="text-[7px] font-black text-emerald-600 uppercase tracking-widest">ONLINE</span>

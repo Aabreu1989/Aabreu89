@@ -709,7 +709,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
 
   if (displayedArticle) {
     return (
-      <div className="flex flex-col h-full bg-white animate-in slide-in-from-right-10 duration-500 font-['Plus_Jakarta_Sans']">
+      <div className="flex flex-col h-full bg-white animate-in slide-in-from-right-10 duration-500 font-sans">
         <div className="relative h-80 sm:h-[32rem] w-full overflow-hidden">
           <img 
             src={getImageUrl(displayedArticle.image) || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80'} 
@@ -798,7 +798,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 pb-24 font-['Plus_Jakarta_Sans'] overflow-hidden">
+    <div className="flex flex-col h-full bg-slate-50 pb-24 font-sans overflow-hidden">
       <div className="bg-white/80 backdrop-blur-2xl border-b border-slate-100 p-6 space-y-6 sticky top-0 z-20 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
           <div>

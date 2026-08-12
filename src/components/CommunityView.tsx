@@ -122,8 +122,8 @@ const CommunityViewComponent = ({
         .map(a => ({
             id: `local-${a.id}`,
             authorId: a.payload.authorId || user?.id,
-            authorName: user?.name || 'Membro MIRA',
-            authorAvatar: user?.avatar_url || '',
+            authorName: user?.name || user?.full_name || user?.user_metadata?.full_name || 'Amanda Abreu',
+            authorAvatar: user?.avatar || user?.avatar_url || user?.user_metadata?.avatar_url || '',
             content: a.payload.content,
             title: a.payload.title || 'Nova Partilha',
             category: a.payload.category,
@@ -189,7 +189,24 @@ const CommunityViewComponent = ({
   // 🧬 MIRA STORIES: Cálculo Reativo via useMemo (Prevenção de Loops de Render)
   const stories = useMemo(() => {
     const manualStory = MANUAL_STORY;
-    let refinedStories = dbStories.length > 0 ? dbStories : [...masterPostsWithLocal];
+    // Combina dbStories com masterPostsWithLocal fundindo dados de perfil para evitar piscar ou desparecer
+    const combinedMap = new Map<string, Post>();
+    [...masterPostsWithLocal, ...dbStories].forEach(p => {
+      if (p?.id) {
+        const existing = combinedMap.get(p.id);
+        if (!existing) {
+          combinedMap.set(p.id, { ...p });
+        } else {
+          combinedMap.set(p.id, {
+            ...existing,
+            ...p,
+            authorAvatar: (p.authorAvatar && p.authorAvatar.trim() !== '') ? p.authorAvatar : (existing.authorAvatar || ''),
+            authorName: (p.authorName && p.authorName !== 'Membro MIRA') ? p.authorName : (existing.authorName || 'Membro MIRA')
+          });
+        }
+      }
+    });
+    let refinedStories = Array.from(combinedMap.values());
 
     // 1. Filtro de Segurança: Apenas posts REAIS
     refinedStories = refinedStories.filter(p => 
@@ -290,19 +307,49 @@ const CommunityViewComponent = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 🧬 2. EXTERMÍNÍO NUCLEAR (ANTI-ZOMBIES)
-  const handleDeletePost = async (postId: string) => {
-    // 🛡️ MIRA SNIPER: Extermínio Otimista (Anti-Zombie)
-    setMasterPosts(prev => prev.filter(p => p.id !== postId));
-    try {
-      // Registrar no syncService para que o refreshData respeite o extermínio
-      await syncService.enqueue('delete', { postId });
-      const userIsAdmin = user.role === 'admin' || ['amandasabreu89@gmail.com'].includes(user.email?.toLowerCase() || '');
-      showToast(t('toast_post_deleted', language), 'success');
-      analytics.track('post_deleted', user.id, 'comunidade', { postId });
-    } catch (e) {
-      showToast(t('toast_server_error', language), "error");
-    }
-  };
+const handleDeletePost = async (postId: string) => {
+  const targetPost = masterPosts.find(p => p.id === postId);
+
+  if (!targetPost) {
+    showToast(t('toast_server_error', language), "error");
+    return;
+  }
+
+  const userIsAdmin =
+    user?.role === 'admin' ||
+    user?.email?.toLowerCase() === 'amandasabreu89@gmail.com';
+
+  const canDelete =
+    userIsAdmin ||
+    targetPost.authorId === user?.id;
+
+  if (!canDelete) {
+    showToast('Você só pode apagar os seus próprios posts.', 'error');
+    return;
+  }
+
+  setMasterPosts(prev => prev.filter(p => p.id !== postId));
+
+  try {
+    await syncService.enqueue('delete_post', {
+      postId,
+      userId: user.id,
+      isAdmin: userIsAdmin
+    });
+
+    showToast(t('toast_post_deleted', language), 'success');
+
+    analytics.track(
+      'post_deleted',
+      user.id,
+      'comunidade',
+      { postId }
+    );
+
+  } catch (e) {
+    showToast(t('toast_server_error', language), "error");
+  }
+};
 
   const handleToggleTranslate = (postId: string) => {
     if (setTranslatedPosts) {
@@ -347,8 +394,8 @@ const CommunityViewComponent = ({
       const displayPost: Post = {
           id: localId,
           authorId: user.id,
-          authorName: user.name,
-          authorAvatar: user.avatar,
+          authorName: user.name || user.full_name || user.user_metadata?.full_name || 'Amanda Abreu',
+          authorAvatar: user.avatar || user.avatar_url || user.user_metadata?.avatar_url || '',
           authorIsVerified: user.isVerified,
           authorFollowersCount: user.followers_count || 0,
           authorFollowingCount: user.following_count || 0,
@@ -735,7 +782,7 @@ const CommunityViewComponent = ({
   }, [masterPostsWithLocal, activeCategory, searchFilter]);
 
   return (
-    <div className="flex flex-col h-full bg-white overflow-hidden relative font-['Plus_Jakarta_Sans'] text-slate-900 border-none shadow-none outline-none">
+    <div className="flex flex-col h-full bg-white overflow-hidden relative font-sans text-slate-900 border-none shadow-none outline-none">
       
       {/* 🚀 MODAL "NOVA PARTILHA" - RECONSTRUÇÃO FIEL E RESPONSIVA */}
       {showCreateModal && (
@@ -833,7 +880,7 @@ const CommunityViewComponent = ({
                 <img src={user.avatar} className="w-full h-full object-cover rounded-full border-2 border-transparent" alt="Perfil" />
               </button>
               <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tighter uppercase leading-none">MIRA HUB</h2>
+                <h2 className="mira-module-title !text-slate-900">COMUNIDADE MIRA</h2>
               </div>
             </div>
             <button 
@@ -957,9 +1004,18 @@ const CommunityViewComponent = ({
                      {/* Top Bar do Modal */}
                      <div className="flex justify-between items-center mb-6 pointer-events-auto">
                         <div className="flex items-center gap-3">
-                           <img src={story.authorAvatar} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-orange-500 shadow-xl object-cover" alt="" />
+                           <img 
+                               src={story.authorAvatar && story.authorAvatar.trim() !== '' ? story.authorAvatar : `https://ui-avatars.com/api/?name=${encodeURIComponent(story.authorName || 'Membro')}&background=f97316&color=fff`} 
+                               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-orange-500 shadow-xl object-cover" 
+                               alt={story.authorName || 'Membro'} 
+                               onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.onerror = null;
+                                  target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(story.authorName || 'Membro')}&background=f97316&color=fff`;
+                               }}
+                            />
                            <div>
-                              <p className="text-white font-black text-xs uppercase tracking-widest">{story.authorName}</p>
+                              <p className="text-white font-black text-xs uppercase tracking-widest">{story.authorName || 'Membro MIRA'}</p>
                               <p className="text-white/40 text-[9px] font-bold uppercase tracking-tighter">Destaque Oficial</p>
                            </div>
                         </div>

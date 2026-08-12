@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { persistence } from './utils/persistence';
 import { supabase } from './lib/supabase';
 import Navigation from './components/Navigation';
@@ -119,6 +119,40 @@ const AppContent: React.FC = () => {
         return false;
     });
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    const triggerConsentModalIfNeeded = useCallback(() => {
+        const todayStr = new Date().toDateString();
+        const isConsentAccepted = localStorage.getItem('mira_consent_v26') === 'true';
+        const lastConsentDate = localStorage.getItem('mira_consent_last_shown_date');
+
+        if (isConsentAccepted || lastConsentDate === todayStr) {
+            setShowConsent(false);
+            return;
+        }
+
+        localStorage.setItem('mira_consent_last_shown_date', todayStr);
+        setShowConsent(true);
+    }, []);
+
+    const triggerPwaInstallModalIfNeeded = useCallback(() => {
+        // 🛡️ CRITICAL RULE: If user already has the app (standalone mode), NEVER show install modal!
+        if (pwaService.isStandalone()) {
+            setShowPostLoginInstallModal(false);
+            return;
+        }
+
+        const todayStr = new Date().toDateString();
+        const lastInstallModalDate = localStorage.getItem('mira_pwa_install_modal_shown_date');
+        const isAppInstalled = localStorage.getItem('mira_pwa_installed') === 'true';
+
+        if (isAppInstalled || lastInstallModalDate === todayStr) {
+            setShowPostLoginInstallModal(false);
+            return;
+        }
+
+        localStorage.setItem('mira_pwa_install_modal_shown_date', todayStr);
+        setShowPostLoginInstallModal(true);
+    }, []);
 
     useEffect(() => {
         const handleInstallable = () => setIsInstallable(true);
@@ -269,12 +303,10 @@ const AppContent: React.FC = () => {
         }
     }, [user]);
 
-    // GDPR Consent Enforcement Effect
+    // GDPR Consent Enforcement Effect (Max 1 time per day / 0 if accepted)
     useEffect(() => {
-        if (localStorage.getItem('mira_consent_v26') !== 'true') {
-            setShowConsent(true);
-        }
-    }, []);
+        triggerConsentModalIfNeeded();
+    }, [triggerConsentModalIfNeeded]);
 
     // ⚡ Real-Time Automatic App Access Telemetry
     useEffect(() => {
@@ -671,7 +703,7 @@ const AppContent: React.FC = () => {
                 setShowSplash(false);
                 setIsInitializing(false);
                 sessionStorage.setItem('mira_splash_shown', 'true');
-                setShowConsent(true);
+                triggerConsentModalIfNeeded();
             }
         };
 
@@ -728,11 +760,8 @@ const AppContent: React.FC = () => {
                         setShowSplash(false);
                         setIsInitializing(false);
                         sessionStorage.setItem('mira_splash_shown', 'true');
-                        setShowConsent(true);
-                        
-                        if (!pwaService.isStandalone()) {
-                            setShowPostLoginInstallModal(true);
-                        }
+                        triggerConsentModalIfNeeded();
+                        triggerPwaInstallModalIfNeeded();
 
                         // Clean URL hash but preserve view parameters (V55.1)
                         if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
@@ -1216,7 +1245,7 @@ const AppContent: React.FC = () => {
     const renderView = () => {
         if (!user) return null;
         switch (currentView) {
-            case ViewType.HOME: return <HomeView user={user} onViewChange={handleViewChange} language={language} onLogout={handleLogout} masterPosts={masterPosts} />;
+            case ViewType.HOME: return <HomeView user={user} onViewChange={handleViewChange} language={language} onLogout={handleLogout} masterPosts={masterPosts} onInstallApp={handleTriggerPwaInstall} />;
             case ViewType.COMMUNITY: return <CommunityView 
                 language={language} 
                 user={user} 
@@ -1375,6 +1404,14 @@ const AppContent: React.FC = () => {
     };
 
 
+    const handleTriggerPwaInstall = async () => {
+        if (pwaService.isIOS()) {
+            setShowSafariGuide(true);
+            return;
+        }
+        await pwaService.triggerInstall();
+    };
+
     return (
         <>
             {showSplash && <SplashScreen onFinish={handleFinishSplash} />}
@@ -1392,7 +1429,10 @@ const AppContent: React.FC = () => {
                 <div className="fixed inset-0 z-[6000] bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
                     <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 max-w-sm w-full space-y-6 text-center shadow-2xl relative text-slate-900">
                         <button
-                            onClick={() => setShowPostLoginInstallModal(false)}
+                            onClick={() => {
+                                localStorage.setItem('mira_pwa_install_modal_shown_date', new Date().toDateString());
+                                setShowPostLoginInstallModal(false);
+                            }}
                             className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition-colors p-1"
                         >
                             <X size={20} />
@@ -1421,7 +1461,7 @@ const AppContent: React.FC = () => {
                                 'Would you like to add a MIRA shortcut to your phone\'s home screen for quick and secure access?'
                             ) : (
                                 language === 'PT' ? 'Deseja instalar a aplicação MIRA no seu computador para um acesso rápido e seguro a partir do seu ambiente de trabalho?' :
-                                language === 'ES' ? '¿Desea instalar la aplicación MIRA en su ordenador para un acceso rápido y seguro desde su escritorio?' :
+                                language === 'ES' ? '¿Desea instalar la aplicação MIRA en su ordenador para un acceso rápido y seguro desde su escritorio?' :
                                 language === 'FR' ? 'Voulez-vous installer l\'application MIRA sur votre ordinateur pour un accès rapide et sécurisé depuis votre bureau ?' :
                                 'Would you like to install the MIRA application on your computer for quick and secure access from your desktop?'
                             )}
@@ -1429,17 +1469,18 @@ const AppContent: React.FC = () => {
                         <div className="flex flex-col gap-3">
                             <button
                                 onClick={async () => {
+                                    localStorage.setItem('mira_pwa_install_modal_shown_date', new Date().toDateString());
                                     setShowPostLoginInstallModal(false);
-                                    if (pwaService.isInstallable()) {
-                                        await pwaService.triggerInstall();
-                                    } else if (pwaService.isIOS()) {
+                                    try {
+                                        let localCount = parseInt(localStorage.getItem('mira_realtime_pwa_downloads') || '0', 10);
+                                        localStorage.setItem('mira_realtime_pwa_downloads', (localCount + 1).toString());
+                                        analytics.track('pwa_install', user?.id || 'guest', 'pwa', { platform: isMobile ? 'mobile' : 'desktop' });
+                                    } catch (e) {}
+
+                                    if (pwaService.isIOS()) {
                                         setShowSafariGuide(true);
                                     } else {
-                                        alert(
-                                            language === 'PT' ? "Para instalar o MIRA no seu dispositivo, aceda ao menu do seu navegador e selecione 'Instalar' ou 'Adicionar ao ecrã principal'." :
-                                            language === 'ES' ? "Para instalar MIRA en su dispositivo, acceda al menú de su navegador y seleccione 'Instalar' o 'Agregar a la pantalla de inicio'." :
-                                            "To install MIRA on your device, access your browser menu and select 'Install' or 'Add to home screen'."
-                                        );
+                                        await pwaService.triggerInstall();
                                     }
                                 }}
                                 className="w-full py-4 bg-mira-orange text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-orange-500/25"
@@ -1450,7 +1491,10 @@ const AppContent: React.FC = () => {
                                  'Install Shortcut'}
                             </button>
                             <button
-                                onClick={() => setShowPostLoginInstallModal(false)}
+                                onClick={() => {
+                                    localStorage.setItem('mira_pwa_install_modal_shown_date', new Date().toDateString());
+                                    setShowPostLoginInstallModal(false);
+                                }}
                                 className="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all"
                             >
                                 {language === 'PT' ? 'Agora Não' :
@@ -1518,10 +1562,8 @@ const AppContent: React.FC = () => {
                         onLogin={(u) => { 
                             setUser(u); 
                             handleViewChange(ViewType.HOME); 
-                            setShowConsent(true);
-                            if (!pwaService.isStandalone()) {
-                                setShowPostLoginInstallModal(true);
-                            }
+                            triggerConsentModalIfNeeded();
+                            triggerPwaInstallModalIfNeeded();
                         }} 
                         language={language} 
                         setLanguage={handleSetLanguage}
@@ -1563,6 +1605,7 @@ const AppContent: React.FC = () => {
                             onNotifClear={clearAll}
                             onNotifNavigate={() => handleViewChange(ViewType.NOTIFICATIONS)}
                             onSetLanguage={handleSetLanguage}
+                            onInstallApp={handleTriggerPwaInstall}
                         />
                     </div>
 
@@ -1618,3 +1661,4 @@ const App: React.FC = () => (
 );
 
 export default App;
+

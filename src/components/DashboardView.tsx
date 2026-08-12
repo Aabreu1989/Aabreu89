@@ -70,18 +70,18 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         retentionRate: number;
         aiQueries: number;
     }>({ 
-        jobs: 10652, 
+        jobs: 2647, 
         jobSources: 66,
-        courses: 312, 
-        services: 450, 
-        users: 2033, 
+        courses: 156, 
+        services: 225, 
+        users: 1020, 
         reports: 0, 
         downloads: 3451, 
         comments: 0, 
         posts: 8, 
         verifiedPosts: 0, 
         fakePosts: 0, 
-        totalLikes: 0, 
+        totalLikes: 124, 
         totalComments: 0, 
         totalUseful: 0,
         appAccesses: 52198,
@@ -447,7 +447,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#001F3F] text-white overflow-hidden no-scrollbar font-['Plus_Jakarta_Sans']">
+        <div className="flex flex-col h-full bg-[#001F3F] text-white overflow-hidden no-scrollbar font-sans">
             <header className="bg-white/5 border-b border-white/10 px-6 py-6 sticky top-0 z-[100] backdrop-blur-2xl">
                 <div className="flex flex-col gap-6">
                     <div className="flex items-center justify-between">

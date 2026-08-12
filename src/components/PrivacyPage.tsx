@@ -43,7 +43,7 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
   );
 
   return (
-    <div className="p-4 sm:p-6 md:p-10 space-y-6 pb-32 max-w-2xl mx-auto min-h-screen font-['Plus_Jakarta_Sans'] bg-slate-50 relative overflow-hidden">
+    <div className="p-4 sm:p-6 md:p-10 space-y-6 pb-32 max-w-2xl mx-auto min-h-screen font-sans bg-slate-50 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-mira-blue/10 to-transparent pointer-events-none"></div>
 

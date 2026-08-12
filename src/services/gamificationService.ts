@@ -3,7 +3,39 @@ import { supabase } from '../lib/supabase';
 import { analytics } from './analyticsService';
 import { syncService } from './syncService';
 
+export const DEFAULT_GAMIFICATION_RULES: Record<string, number> = {
+    publish_post: 10,
+    add_comment: 5,
+    like_given: 1,
+    like_received: 2,
+    vote_true: 3,
+    vote_fake: 3,
+    follow_user: 2,
+    report_content: 1,
+    curate_guide: 15
+};
+
 export const gamificationService = {
+    /**
+     * Obtém os pontos de uma regra central do Supabase (com fallback seguro).
+     */
+    async getRulePoints(actionKey: string): Promise<number> {
+        try {
+            const { data } = await supabase
+                .from('gamification_rules')
+                .select('points')
+                .eq('action_key', actionKey)
+                .maybeSingle();
+
+            if (data && typeof data.points === 'number') {
+                return data.points;
+            }
+        } catch (e) {
+            // Silencioso em caso de tabela ainda não existente
+        }
+        return DEFAULT_GAMIFICATION_RULES[actionKey] || 5;
+    },
+
     /**
      * Adiciona pontos de reputação ao utilizador de forma persistente.
      */

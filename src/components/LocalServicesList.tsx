@@ -343,16 +343,16 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
     }, [filteredServicesResult.length, loading]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-white font-['Plus_Jakarta_Sans'] pb-24">
+        <div className="flex flex-col min-h-screen bg-white font-sans pb-24">
             <div className="bg-white px-6 pt-8 pb-4 space-y-6 z-30 border-b border-slate-50">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="space-y-1">
-                         <h2 className="mira-module-title">
+                         <h2 className="mira-module-title uppercase">
                             {t('service_guide_title', language)}
                         </h2>
                         <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-mira-blue animate-pulse"></div>
-                            <p className="mira-module-subtitle !mb-0">
+                            <p className="mira-module-subtitle !mb-0 uppercase">
                                 {t('service_guide_subtitle', language)}
                             </p>
                         </div>

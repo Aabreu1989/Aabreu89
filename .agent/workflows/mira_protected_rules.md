@@ -6,6 +6,7 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
 
 ## ANTES de editar qualquer ficheiro:
 
+0. **LER O FICHEIRO PROTEGIDO [`MEMORIA.md`](file:///c:/Users/Utilizador/mira-projeto/MEMORIA.md)** na raiz para todas as regras rígidas do projeto MIRA
 1. **LER `PROTECTED_CONTENT.md`** na raiz do projeto para saber o que NUNCA pode ser removido
 2. **NUNCA usar `write_to_file` com `Overwrite: true`** em ficheiros com listas de dados (usar sempre `multi_replace_file_content` ou `replace_file_content`)
 3. **NUNCA remover funcionalidades existentes** sem perguntar explicitamente à utilizadora

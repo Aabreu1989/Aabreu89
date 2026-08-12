@@ -60,7 +60,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   return (
     <div ref={ref} className="relative">
       <button
-        onClick={onToggle}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle();
+        }}
         id="notification-bell-btn"
         className={`relative p-2.5 rounded-2xl transition-all active:scale-90 border ${isDark ? 'bg-white/5 text-white hover:bg-white/10 border-white/5' : 'bg-slate-100 text-slate-800 hover:bg-slate-200 border-slate-200'}`}
         title="Notificações"
@@ -74,7 +77,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       </button>
 
       {isOpen && (
-        <div className="fixed sm:absolute top-16 sm:top-12 left-4 right-4 sm:left-auto sm:right-0 sm:w-80 bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-0 z-[9999] animate-in slide-in-from-top-4 overflow-hidden max-w-[calc(100vw-32px)]">
+        <div className="fixed sm:absolute top-16 sm:top-12 left-3 right-3 sm:left-auto sm:right-0 sm:w-80 md:w-96 bg-white rounded-[2rem] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] border border-slate-200 p-0 z-[99999] animate-in slide-in-from-top-3 overflow-hidden max-w-[calc(100vw-24px)] text-slate-900">
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <p className="text-xs font-black uppercase tracking-widest text-slate-900">Notificações</p>

@@ -606,7 +606,7 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#f8fbff] relative overflow-hidden font-['Plus_Jakarta_Sans'] pb-[62px] md:pb-0">
+    <div className="flex flex-col h-full bg-[#f8fbff] relative overflow-hidden font-sans pb-[62px] md:pb-0">
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none select-none" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230066ff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
 

@@ -20,6 +20,7 @@ interface HomeViewProps {
   language: string;
   onLogout: () => void;
   masterPosts: Post[];
+  onInstallApp?: () => void;
 }
 
 // getMockPosts removed as Stories/Highlights are only for Community section
@@ -27,7 +28,7 @@ interface HomeViewProps {
 import { useToast } from './Toast';
 import { SuggestionModal } from './SuggestionModal';
 
-export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, language, onLogout, masterPosts }) => {
+export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, language, onLogout, masterPosts, onInstallApp }) => {
   const { showToast } = useToast();
   const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const [showNotifSettings, setShowNotifSettings] = useState(false);
@@ -41,19 +42,29 @@ export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, lan
   }, []);
 
   const handleInstallApp = async () => {
-    if (pwaService.isInstallable()) {
-      const outcome = await pwaService.triggerInstall();
-      if (outcome === 'accepted') {
-        setIsInstallable(false);
-      }
-    } else if (pwaService.isIOS()) {
+    if (pwaService.isIOS()) {
       setShowSafariGuide(true);
-    } else {
-      if (isMobile) {
-        showToast("Para instalar o atalho no telemóvel, aceda ao menu do seu navegador e selecione 'Adicionar ao ecrã principal'.", "info");
-      } else {
-        showToast("Para instalar o atalho no computador, aceda ao menu do seu navegador e selecione 'Instalar MIRA' ou 'Adicionar'.", "info");
+      return;
+    }
+    await pwaService.triggerInstall();
+  };
+
+  const handleSendSuggestionEmail = () => {
+    const targetEmail = "mira.app@hotmail.com";
+    const subject = encodeURIComponent("Sugestão de Melhoria - MIRA Imigrante");
+    const body = encodeURIComponent(
+      `Olá Equipa MIRA,\n\nTenho a seguinte sugestão para a plataforma MIRA Imigrante:\n\n[Escreva aqui a sua sugestão]\n\nAtenciosamente,\n${user.name || user.email || 'Utilizador MIRA'}`
+    );
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${subject}&body=${body}`;
+    const mailtoUrl = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+
+    try {
+      const win = window.open(gmailUrl, '_blank');
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        window.location.href = mailtoUrl;
       }
+    } catch {
+      window.location.href = mailtoUrl;
     }
   };
   const [prefs, setPrefs] = useState<NotificationPreferences>({
@@ -91,7 +102,7 @@ export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, lan
   };
 
   return (
-    <div className="bg-transparent min-h-screen pb-20 animate-fade-in px-4 md:px-0 relative font-['Plus_Jakarta_Sans']">
+    <div className="bg-transparent min-h-screen pb-20 animate-fade-in px-4 md:px-0 relative font-sans">
       
       {/* Notif Modal - Light Theme */}
       {showNotifSettings && (
@@ -137,8 +148,8 @@ export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, lan
         </div>
       </div>
 
-      {/* PWA Install Banner */}
-      {(isInstallable || pwaService.isIOS()) && !pwaService.isStandalone() && (
+      {/* PWA Install Banner — ALWAYS VISIBLE */}
+      {!pwaService.isStandalone() && (
         <div className="w-full flex justify-center mb-8">
           <button 
             onClick={handleInstallApp}
@@ -264,7 +275,7 @@ export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, lan
 
       {/* Suggestion Hub - Community Logic */}
       <button 
-        onClick={() => setShowSuggestionModal(true)}
+        onClick={handleSendSuggestionEmail}
         className="w-full bg-white border-2 border-slate-100 rounded-[2rem] p-6 mb-12 flex items-center justify-between group hover:border-mira-orange hover:shadow-xl transition-all active:scale-[0.98] sm:mx-1"
       >
         <div className="flex items-center gap-4">

@@ -8,6 +8,7 @@ interface JobAlertModalProps {
   isOpen: boolean;
   onClose: () => void;
   language: string;
+  user?: any;
   onAlertsChanged?: () => void;
 }
 
@@ -106,6 +107,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
   isOpen,
   onClose,
   language,
+  user,
   onAlertsChanged
 }) => {
   const [workTopic, setWorkTopic] = useState('Todos');
@@ -122,10 +124,10 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
     if (isOpen) {
       loadAlerts();
     }
-  }, [isOpen]);
+  }, [isOpen, user?.id]);
 
-  const loadAlerts = () => {
-    const alerts = jobAlertService.getAlerts();
+  const loadAlerts = async () => {
+    const alerts = await jobAlertService.getAlertsAsync(user?.id);
     setExistingAlerts(alerts);
   };
 
@@ -138,23 +140,23 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
       location,
       keywords,
       frequency
-    });
+    }, user?.id);
     setSuccessToast(true);
     setTimeout(() => setSuccessToast(false), 3000);
     setKeywords('');
-    loadAlerts();
+    await loadAlerts();
     if (onAlertsChanged) onAlertsChanged();
   };
 
   const handleToggle = async (alertId: string, currentStatus: boolean) => {
-    await jobAlertService.toggleAlert(alertId, !currentStatus);
-    loadAlerts();
+    await jobAlertService.toggleAlert(alertId, !currentStatus, user?.id);
+    await loadAlerts();
     if (onAlertsChanged) onAlertsChanged();
   };
 
   const handleDelete = async (alertId: string) => {
-    await jobAlertService.deleteAlert(alertId);
-    loadAlerts();
+    await jobAlertService.deleteAlert(alertId, user?.id);
+    await loadAlerts();
     if (onAlertsChanged) onAlertsChanged();
   };
 
@@ -164,7 +166,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Main Modal Container */}
-      <div className="bg-white text-slate-900 border border-slate-200/80 w-full max-w-lg sm:max-w-xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 relative z-10 font-['Plus_Jakarta_Sans'] mb-0">
+      <div className="bg-white text-slate-900 border border-slate-200/80 w-full max-w-lg sm:max-w-xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 relative z-10 font-sans mb-0">
         
         {/* Mobile Grab Bar Indicator */}
         <div className="w-14 h-1.5 bg-slate-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0 shadow-inner cursor-grab" />

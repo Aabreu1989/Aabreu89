@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Post, Comment } from '../types';
+import { gamificationService } from './gamificationService';
 
 /**
  * 👑 MIRA COMMUNITY SERVICE V2026.GOLD - PERSISTÊNCIA REAL SUPABASE
@@ -17,7 +18,9 @@ export const communityService = {
    */
   subscribeToCommunityChanges: (
     onPostInserted: (newPost: Post) => void,
-    onCommentInserted: (newComment: any) => void
+    onCommentInserted: (newComment: any) => void,
+    onPostDeleted?: (deletedId: string) => void,
+    onVoteChanged?: (payload: any) => void
   ) => {
     const channel = supabase
       .channel('public:community_realtime')
@@ -36,12 +39,30 @@ export const communityService = {
       )
       .on(
         'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'posts' },
+        (payload: any) => {
+          if (payload.old && payload.old.id) {
+            console.log("⚡ [MIRA Realtime] Post eliminado:", payload.old.id);
+            if (onPostDeleted) onPostDeleted(payload.old.id);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'comments' },
         (payload: any) => {
           if (payload.new) {
             console.log("⚡ [MIRA Realtime] Novo comentário inserido:", payload.new.id);
             onCommentInserted(payload.new);
           }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'post_votes' },
+        (payload: any) => {
+          console.log("⚡ [MIRA Realtime] Voto alterado:", payload);
+          if (onVoteChanged) onVoteChanged(payload);
         }
       )
       .subscribe();
@@ -287,6 +308,19 @@ export const communityService = {
 
       if (error) throw error;
       console.log("✅ [MIRA DB] Post publicado e gravado com sucesso no Supabase:", data.id);
+
+      if (postData.authorId) {
+        try {
+          const pts = await gamificationService.getRulePoints('publish_post');
+          const newRep = await gamificationService.earnPoints(postData.authorId, pts, 'Publicação de Post');
+          if (newRep !== null) {
+            await gamificationService.autoAwardBadges(postData.authorId, newRep);
+          }
+        } catch (e) {
+          console.warn("MIRA Gamification trigger warning:", e);
+        }
+      }
+
       return communityService.mapRowToPost(data);
     } catch (err: any) {
       console.error("🚨 [MIRA Erro ao publicar no Supabase]:", err.message);
@@ -433,6 +467,19 @@ export const communityService = {
 
       if (error) throw error;
       console.log("✅ Comentário gravado no Supabase:", data.id);
+
+      if (userId) {
+        try {
+          const pts = await gamificationService.getRulePoints('add_comment');
+          const newRep = await gamificationService.earnPoints(userId, pts, 'Comentário em Post');
+          if (newRep !== null) {
+            await gamificationService.autoAwardBadges(userId, newRep);
+          }
+        } catch (e) {
+          console.warn("MIRA Gamification trigger warning:", e);
+        }
+      }
+
       return data;
     } catch (err) {
       console.error('🚨 Erro ao comentar no Supabase:', err);
@@ -471,13 +518,40 @@ export const communityService = {
         .from('posts')
         .select(`
           *,
-          profiles ( id, full_name, username, avatar_url, is_verified )
+          profiles ( id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count )
         `)
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (error) return [];
-      return (posts || []).map((row: any) => communityService.mapRowToPost(row));
+      if (!error && posts && posts.length > 0) {
+        const hasProfiles = posts.some((p: any) => p.profiles && (p.profiles.full_name || p.profiles.username));
+        if (hasProfiles) {
+          return posts.map((row: any) => communityService.mapRowToPost(row));
+        }
+      }
+
+      // Fallback: Busca manual de posts e perfis se o join do PostgREST não trouxer profiles
+      const { data: rawPosts } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (!rawPosts || rawPosts.length === 0) return [];
+
+      const authorIds = Array.from(new Set(rawPosts.map((p: any) => p.author_id).filter(Boolean)));
+      const { data: profilesData } = authorIds.length > 0
+        ? await supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count').in('id', authorIds)
+        : { data: [] };
+
+      const profileMap = new Map((profilesData || []).map((pr: any) => [pr.id, pr]));
+
+      const combined = rawPosts.map((p: any) => ({
+        ...p,
+        profiles: profileMap.get(p.author_id) || null
+      }));
+
+      return combined.map((row: any) => communityService.mapRowToPost(row));
     } catch (err) {
       return [];
     }

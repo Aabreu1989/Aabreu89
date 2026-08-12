@@ -1,5 +1,7 @@
 # REGRAS VITAIS DE ARQUITETURA - MIRA IMIGRANTE (NÃO APAGAR)
 
+> ⚠️ **CONSULTA OBRIGATÓRIA DA MEMÓRIA:** Antes de qualquer alteração, consultar obrigatoriamente o ficheiro [`MEMORIA.md`](file:///c:/Users/Utilizador/mira-projeto/MEMORIA.md) para todas as regras rígidas do projeto.
+
 1. PROIBIDO USO DE MOCKS OU LOCALSTORAGE PARA DADOS MESTRES:
    - Todo post, comentário, curtida e ponto de gamificação DEVE ser gravado e lido DIRETAMENTE do Supabase PostgreSQL.
    - O LocalStorage só serve como cache visual secundário, JAMAIS como fonte primária de dados.
@@ -32,3 +34,7 @@
 6. PRESERVAÇÃO INTEGRAL DE DADOS E CONTEÚDO DOS UTILIZADORES:
    - Ao adicionar ou modificar funcionalidades em qualquer módulo do MIRA, É ESTRITAMENTE PROIBIDO apagar, substituir ou eliminar informações ou dados inseridos pelos utilizadores que não tenham sido expressamente pedidos para remoção.
    - Qualquer conteúdo criado pela comunidade ou inserido na plataforma DEVE SER PRESERVADO E MANTIDO INTACTO na base de dados PostgreSQL, salvo ordem direta de eliminação por parte da Administração/CEO.
+
+7. PURGA E FILTRAGEM OBRIGATÓRIA DE VAGAS DE EMPREGO (MÁXIMO 60 DIAS):
+   - SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS DE ATÉ 60 DIAS (MÁXIMO 60 DIAS DE IDADE).
+   - Qualquer vaga com mais de 60 dias da data de publicação NUNCA deve ser exibida aos utilizadores e DEVE SER EXPURGADA/FILTRADA AUTOMATICAMENTE no código, consultas Supabase e rotinas de sincronização em `JobBoard.tsx`, serviços e APIs.

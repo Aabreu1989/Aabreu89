@@ -53,16 +53,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     }, []);
 
     const handleInstallApp = async () => {
-        if (pwaService.isInstallable()) {
-            const outcome = await pwaService.triggerInstall();
-            if (outcome === 'accepted') {
-                setIsInstallable(false);
-            }
-        } else if (pwaService.isIOS()) {
+        if (pwaService.isIOS()) {
             setShowSafariGuide(true);
-        } else {
-            showToast("Para instalar o atalho no telemóvel, aceda ao menu do seu navegador e selecione 'Adicionar ao ecrã principal'.", "info");
+            return;
         }
+        await pwaService.triggerInstall();
     };
 
     // V26.92: Sync local state if isRecoveryMode is detected via URL delay
@@ -169,7 +164,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                             to: targetEmail,
                             subject: 'MIRA Imigrante - Recuperação de Acesso',
                             html: `
-                                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 20px; border: 1px solid #f1f5f9; color: #0F172A; text-align: center;">
+                                <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 20px; border: 1px solid #f1f5f9; color: #0F172A; text-align: center;">
                                     <h1 style="color: #FF8C00; font-size: 24px; font-weight: 800; margin-bottom: 10px;">MIRA IMIGRANTE</h1>
                                     <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Recuperação de Palavra-Passe</p>
                                     <p style="color: #334155; font-size: 15px; line-height: 1.6; margin-bottom: 30px;">
@@ -487,24 +482,22 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 {/* Sub-Card Actions (PWA install option, Disclaimer, Footer) closely grouped below */}
                 <div className="w-full flex flex-col items-center gap-2.5 px-2 text-center mt-0.5 shrink-0">
                     
-                    {/* PWA Install Button */}
-                    {(isInstallable || pwaService.isIOS()) && !pwaService.isStandalone() && (
-                        <div className="w-full flex justify-center mt-1 z-10 animate-in fade-in duration-300">
-                            <button
-                                onClick={handleInstallApp}
-                                className="w-[200px] py-2 px-3 text-white font-extrabold uppercase text-[9px] tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all border border-white/10"
-                                style={{ background: 'linear-gradient(135deg, #FF8C00 0%, #FF5E00 100%)' }}
-                            >
-                                <Smartphone size={13} className="animate-pulse" />
-                                <span>
-                                    {language === 'PT' ? 'Instalar Aplicação' :
-                                     language === 'ES' ? 'Instalar Aplicación' :
-                                     language === 'FR' ? 'Installer l\'App' :
-                                     'Install Application'}
-                                </span>
-                            </button>
-                        </div>
-                    )}
+                    {/* 📲 PWA Install Button — PERMANENT ON LOGIN SCREEN */}
+                    <div className="w-full flex justify-center mt-1 z-10 animate-in fade-in duration-300">
+                        <button
+                            onClick={handleInstallApp}
+                            className="w-[200px] py-2 px-3 text-white font-extrabold uppercase text-[9px] tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all border border-white/10"
+                            style={{ background: 'linear-gradient(135deg, #FF8C00 0%, #FF5E00 100%)' }}
+                        >
+                            <Smartphone size={13} className="animate-pulse" />
+                            <span>
+                                {language === 'PT' ? 'Instalar Aplicação' :
+                                 language === 'ES' ? 'Instalar Aplicación' :
+                                 language === 'FR' ? 'Installer l\'App' :
+                                 'Install Application'}
+                            </span>
+                        </button>
+                    </div>
 
                     {/* Educational Disclaimer */}
                     <p className="text-[6px] text-white/30 font-bold uppercase tracking-wider leading-relaxed max-w-[260px]">
