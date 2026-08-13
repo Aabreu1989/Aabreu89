@@ -7,17 +7,67 @@
 
 ---
 
+## 🔴 BLOCO ANTI-ALUCINAÇÃO — LEITURA OBRIGATÓRIA ANTES DE QUALQUER AUDITORIA
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║              MIRA — PROIBIÇÕES ABSOLUTAS DA IA                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  🔴 NUNCA declarar 🟢 HOMOLOGADO sem query SQL real visível     ║
+║  🔴 NUNCA declarar HOMOLOGADO na mesma sessão em que o          ║
+║     código foi escrito                                           ║
+║  🔴 NUNCA usar testes Node.js em memória como prova             ║
+║  🔴 NUNCA afirmar que um evento de telemetria funciona          ║
+║     sem verificar que o nome do action no código                 ║
+║     é IDÊNTICO ao nome que a query procura                      ║
+║  🔴 NUNCA afirmar que RLS não bloqueia sem testar INSERT        ║
+║     com anon key e confirmar o registo no Supabase              ║
+║  🔴 NUNCA usar Math.max(baseline,...) ou ?? valor_fixo          ║
+║     em métricas do Admin Hub                                     ║
+║  🔴 NUNCA apresentar números do dashboard como "reais"          ║
+║     sem provar a tabela e query de origem                        ║
+║  🔴 NUNCA confundir "teste que passa" com "funciona"            ║
+║  🔴 NUNCA confundir "build verde" com "funciona"                ║
+║  🔴 NUNCA confundir "tsc = 0" com "funciona"                   ║
+║                                                                  ║
+║  ✅ PROVA REAL EXIGE:                                           ║
+║     1. Query SQL executada → resultado numérico visível          ║
+║     2. INSERT confirmado no Supabase (não apenas sem erro)       ║
+║     3. Nome do evento no código === nome na query               ║
+║     4. Número UI === Número SQL (reconciliação)                 ║
+║                                                                  ║
+║  SE NÃO TENS OS 4 → DECLARAR: ⚪ NÃO VERIFICADO               ║
+║  NUNCA DECLARAR:               🟢 HOMOLOGADO                    ║
+║                                                                  ║
+║  ESTA REGRA EXISTE PORQUE A IA FALHOU EM 2026-08-12:            ║
+║  - Declarou 46/46 PASS com testes em memória fabricados         ║
+║  - Declarou HOMOLOGADO sem testar RLS                           ║
+║  - Não detectou event names errados (session_start vs           ║
+║    app_access, simulation_completed vs use_simulator)            ║
+║  - Não encontrou todos os baselines hardcoded                   ║
+║  - Apresentou números falsos como reais                         ║
+╚══════════════════════════════════════════════════════════════════╝
+```
+
+
+
+---
+
 ## 🏛️ REGRAS ABSOLUTAS DO PROJETO (PILARES FUNDAMENTAIS)
 
-- **Supabase** = Fonte de verdade dos dados (Alvo)
-- **React** = Representação dos dados
-- **Services** = Camada de acesso
-- **PostgreSQL** = Persistência
-- **RPC/Functions** = Regras/transações críticas (Alvo)
-- **Realtime** = Distribuição de mudanças (Alvo/Homologado)
-- **Backups** = Estritamente leitura / recuperação
-- **F5** = NÃO é mecanismo de sincronização
+- **GitHub** = Fonte soberana de versionamento do **CÓDIGO**
+- **Supabase** = Fonte de verdade soberana dos **DADOS** (apenas para tabelas efetivamente modeladas e persistidas no PostgreSQL com RLS)
+- **Vercel** = Ambiente automatizado de **BUILD E DEPLOYMENT**
+- **Backups** = Estritamente **RECUPERAÇÃO / REFERÊNCIA HISTÓRICA** (Somente Leitura)
+- **React** = Representação dos dados na interface
+- **Services** = Camada de acesso e transporte de dados
+- **PostgreSQL** = Persistência relacional no Supabase
+- **RPC/Functions** = Regras/transações críticas em base de dados
+- **Realtime** = Distribuição instantânea de mudanças sem necessidade de F5
+- **F5 / Manual Refresh** = NÃO é mecanismo de sincronização aceitável
 - **Deployment verde** ≠ Sistema homologado
+- **localStorage / Estado React / Fallbacks** = Estado local volátil (É ESTRITAMENTE PROIBIDO apresentar dados em cache local como "dados persistentes da plataforma")
 
 ---
 
@@ -370,4 +420,114 @@ BADGE ENGINE
 
 ---
 
+## 📌 16. PROTOCOLO MIRA — SEQUÊNCIA INEGOCIÁVEL EM 23 ETAPAS
+
+```
+AUDITAR
+   ↓
+IDENTIFICAR FONTE
+   ↓
+IDENTIFICAR ARQUIVO
+   ↓
+IDENTIFICAR DEPENDÊNCIAS
+   ↓
+IDENTIFICAR DADOS / TABELAS / RPC
+   ↓
+PRESERVAR BACKUP
+   ↓
+ALTERAÇÃO CONTROLADA
+   ↓
+TSC = 0
+   ↓
+BUILD = OK
+   ↓
+TESTE LOCAL
+   ↓
+DIFF
+   ↓
+TESTE FUNCIONAL
+   ↓
+COMMIT
+   ↓
+PUSH
+   ↓
+VERCEL
+   ↓
+PRODUÇÃO
+   ↓
+TESTE REAL
+   ↓
+REALTIME
+   ↓
+DOIS CLIENTES
+   ↓
+SEM F5
+   ↓
+HOMOLOGAÇÃO
+```
+
+---
+
+## 📌 17. A REGRA DE OURO FINAL DO MIRA
+
+```
+╔══════════════════════════════════════════════════════════╗
+║                  MIRA — REGRA DE OURO                   ║
+╠══════════════════════════════════════════════════════════╣
+║                                                          ║
+║ Supabase = fonte de verdade dos DADOS                   ║
+║                                                          ║
+║ GitHub = fonte de verdade do CÓDIGO                     ║
+║                                                          ║
+║ Vercel = DEPLOYMENT                                      ║
+║                                                          ║
+║ React = REPRESENTAÇÃO                                    ║
+║                                                          ║
+║ Services = ACESSO ORGANIZADO                             ║
+║                                                          ║
+║ PostgreSQL = PERSISTÊNCIA                                ║
+║                                                          ║
+║ RPC/Functions = REGRAS CRÍTICAS                          ║
+║                                                          ║
+║ Realtime = SINCRONIZAÇÃO                                 ║
+║                                                          ║
+║ localStorage = ESTADO LOCAL AUXILIAR                    ║
+║                                                          ║
+║ Backups = RECUPERAÇÃO                                    ║
+║                                                          ║
+║ F5 NÃO É SINCRONIZAÇÃO                                   ║
+║                                                          ║
+║ TSC = 0 NÃO SIGNIFICA HOMOLOGAÇÃO                        ║
+║                                                          ║
+║ BUILD VERDE NÃO SIGNIFICA HOMOLOGAÇÃO                    ║
+║                                                          ║
+║ VERCEL VERDE NÃO SIGNIFICA HOMOLOGAÇÃO                   ║
+║                                                          ║
+║ TABELA EXISTENTE NÃO SIGNIFICA FUNCIONALIDADE ATIVA      ║
+║                                                          ║
+║ SERVICE EXISTENTE NÃO SIGNIFICA SERVIÇO HOMOLOGADO       ║
+║                                                          ║
+║ BADGE EXISTENTE NÃO SIGNIFICA BADGE CONCEDIDO            ║
+║                                                          ║
+║ NOTIFICATION EXISTENTE NÃO SIGNIFICA ENTREGA REAL        ║
+║                                                          ║
+║ 1020 NO ADMIN NÃO SIGNIFICA 1020 USUÁRIOS REAIS          ║
+║                                                          ║
+║ 32 AUTH.USERS É A CONTAGEM COMPROVADA ATUALMENTE         ║
+║                                                          ║
+║ TODA AFIRMAÇÃO DEVE TER UMA FONTE VERIFICÁVEL            ║
+║                                                          ║
+║ PIPELINE DE TELEMETRIA SOBERANA:                         ║
+║ EVENTO REAL -> REGISTRO PERSISTENTE -> AGREGAÇÃO ->     ║
+║ MÉTRICA -> REALTIME -> ADMIN HUB                        ║
+║                                                          ║
+║ PROIBIDO: NÚMERO DESEJADO -> FALLBACK -> 1020            ║
+║ PROIBIDO: HISTÓRICO + LOCALSTORAGE + ESTIMATIVA -> LIVE  ║
+║                                                          ║
+╚══════════════════════════════════════════════════════════╝
+```
+
+---
+
 > 🔒 **ESTE ARQUIVO É A REGRA MESTRA E MEMÓRIA PERMANENTE DO PROJETO MIRA. CONSULTAR ANTES DE QUALQUER AÇÃO OU ALTERAÇÃO.**
+> 📜 **O PROTOCOLO INTEGRAL DE AUDITORIA E HOMOLOGAÇÃO ESTÁ REGISTADO EM [`STANDARD_OF_AUDIT.md`](file:///c:/Users/Utilizador/mira-projeto/STANDARD_OF_AUDIT.md).**

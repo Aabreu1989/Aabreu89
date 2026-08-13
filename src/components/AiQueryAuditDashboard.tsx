@@ -112,7 +112,7 @@ export const AiQueryAuditDashboard: React.FC = () => {
   const handleExportCSV = async () => {
     if (!data) return;
     try {
-      await generateAuditExcel({ users: 0, retentionRate: 82, returningUsers: 832, aiQueries: data.totalQueries, horasPoupadas: 0, simulations: 0, downloads: 0, appAccesses: 0, pwaMobileDownloads: 0, pwaComputerDownloads: 0, processosAjudados: 0, posts: 0, comments: 0 }, data, 'chat');
+      await generateAuditExcel({ users: 0, retentionRate: 0, returningUsers: 0, aiQueries: data.totalQueries, horasPoupadas: 0, simulations: 0, downloads: 0, appAccesses: 0, pwaMobileDownloads: 0, pwaComputerDownloads: 0, processosAjudados: 0, posts: 0, comments: 0 }, data, 'chat');
     } catch (e) {
       console.error('Excel export error:', e);
     }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { adminService } from '../services/adminService';
 import { 
   Award, 
   TrendingUp, 
@@ -53,11 +54,11 @@ export default function PremiosView({ language: initialLanguage, onBack }: Premi
     return ['PT', 'EN', 'ES', 'FR'].includes(l) ? l : 'PT';
   });
   const [metrics, setMetrics] = useState<ImpactMetrics>({
-    tempo_poupado_horas: 4567,
-    processos_ajudados: 1020,
-    indice_transparencia: 98,
-    usuarios_ativos_mensais: 1020,
-    taxa_resolucao_sucesso: 95
+    tempo_poupado_horas: 0,
+    processos_ajudados: 0,
+    indice_transparencia: 100,
+    usuarios_ativos_mensais: 0,
+    taxa_resolucao_sucesso: 0
   });
   const [loading, setLoading] = useState(false);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
@@ -66,45 +67,24 @@ export default function PremiosView({ language: initialLanguage, onBack }: Premi
   useEffect(() => {
     async function loadMetrics() {
       try {
-        const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout 800ms')), 800)
-        );
+        const stats = await adminService.fetchSyncStatus();
+        const actualUsers = stats.users || 0;
+        const totalPosts = stats.posts || 0;
+        const verified = stats.verifiedPosts || 0;
+        const fake = stats.fakePosts || 0;
 
-        const fetchPromise = Promise.all([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }),
-          supabase.from('posts').select('id', { count: 'exact', head: true }),
-          supabase.from('posts').select('id', { count: 'exact', head: true }).eq('is_verified', true),
-          supabase.from('posts').select('id', { count: 'exact', head: true }).eq('validation_status', 'fraud')
-        ]);
-
-        const [
-          { count: realUserCount },
-          { count: totalPosts },
-          { count: verifiedPosts },
-          { count: fakePosts }
-        ] = await Promise.race([fetchPromise, timeoutPromise]);
-
-        const actualUsers = Math.max(realUserCount || 0, 1015);
-        const postsCount = totalPosts || 1;
-        const verified = verifiedPosts || 0;
-        const fake = fakePosts || 0;
-
-        const transparencia = Math.min(100, Math.max(0, Math.round(((postsCount - fake) / postsCount) * 100)));
-
-        let resolucao = 95;
-        if ((verified + fake) > 0) {
-          resolucao = Math.max(90, Math.round((verified / (verified + fake)) * 100));
-        }
+        const transparencia = totalPosts > 0 ? Math.min(100, Math.max(0, Math.round(((totalPosts - fake) / totalPosts) * 100))) : 100;
+        const resolucao = (verified + fake) > 0 ? Math.round((verified / (verified + fake)) * 100) : 0;
 
         setMetrics({
-          tempo_poupado_horas: Math.max(4567, Math.floor(actualUsers * 4.5)),
-          processos_ajudados: actualUsers,
+          tempo_poupado_horas: stats.horasPoupadas || 0,
+          processos_ajudados: stats.processosAjudados || 0,
           indice_transparencia: transparencia,
           usuarios_ativos_mensais: actualUsers,
           taxa_resolucao_sucesso: resolucao,
         });
       } catch (err) {
-        // Fallback default values already active
+        console.warn('PremiosView load error:', err);
       } finally {
         setLoading(false);
       }

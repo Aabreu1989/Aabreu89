@@ -25,20 +25,55 @@ export enum ViewType {
 export type TrustLevel = "Observador" | "Colaborador" | "Curador Comunitário";
 export type ValidationStatus = "pending" | "validated" | "under_review" | "hidden" | "fraud" | "banned";
 
+export type BadgeId = 
+  | 'pioneiro'
+  | 'verificado'
+  | 'verificada'
+  | 'sentinela'
+  | 'escudo_anti_burla'
+  | 'mestre_docs'
+  | 'curador'
+  | 'exemplar'
+  | 'voz_autoridade'
+  | 'guia_local'
+  | 'coracao';
+
+export interface BadgeRegistryItem {
+  id: BadgeId;
+  name: string;
+  description: string;
+  icon: string;
+  icon_emoji?: string;
+  rule: string;
+  requiredValue: number;
+  isActive: boolean;
+  createdAt: string;
+  category: string;
+  rarity_level?: number;
+}
+
+export interface UserBadgeConcession {
+  userId: string;
+  badgeId: BadgeId;
+  earnedAt: string;
+  sourceEvent: string;
+}
+
 export interface Badge {
-  id: string;
+  id: BadgeId | string;
   name: string;
   icon: string; // Lucide fallback
   icon_emoji?: string; // SOBERANIA V500
   description: string;
   unlocked: boolean;
   category: string; // Flexible category
-  rarity_level?: string; // SOBERANIA V500
+  rarity_level?: string | number; // SOBERANIA V500
 }
 
 export interface UserBadge {
-  badge_id: string;
+  badge_id: BadgeId | string;
   awarded_at: string;
+  source_event?: string;
   details?: Badge;
 }
 

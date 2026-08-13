@@ -109,97 +109,70 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
 
   // Expanded analytics across all app modules linked to UNIFIED_CATEGORIES
   const moduleMetrics = useMemo(() => {
-    const totalUsers = platformCounts?.users || 1015;
-    const totalSims = Math.max((platformCounts as any)?.simulations || 0, Math.floor(totalUsers * 4.8));
-    const totalDocs = Math.max(platformCounts?.downloads || 0, Math.floor(totalUsers * 3.4));
-    const totalAi = Math.max(platformCounts?.aiQueries || 0, auditData?.totalQueries || 0, 18642);
-    const totalJobs = Math.max(platformCounts?.jobs?.db || 0, 5326);
-    const totalServices = Math.max(platformCounts?.services?.db || 0, 225);
+    const totalUsers = platformCounts?.users || 0;
+    const totalSims = (platformCounts as any)?.simulations || 0;
+    const totalDocs = platformCounts?.downloads || 0;
+    const totalAi = platformCounts?.aiQueries || auditData?.totalQueries || 0;
+    const totalJobs = platformCounts?.jobs?.db || 0;
+    const totalServices = platformCounts?.services?.db || 0;
 
     const simTools = [
-      { tool: 'Simulador Salário Líquido (Recibos Verdes vs TI)', key: 'Simulador Salário Líquido (Recibos Verdes vs TI)', category: 'Finanças & Impostos', weight: 0.40 },
-      { tool: 'Simulador IRS Jovem & Escalões', key: 'Simulador IRS Jovem & Escalões', category: 'Finanças & Impostos', weight: 0.30 },
-      { tool: 'Simulador Custo de Vida em Portugal', key: 'Simulador Custo de Vida em Portugal', category: 'Habitação & Casa', weight: 0.20 },
-      { tool: 'Saúde Financeira & Taxa de Esforço', key: 'Saúde Financeira & Taxa de Esforço', category: 'Finanças & Impostos', weight: 0.10 },
+      { tool: 'Simulador Salário Líquido (Recibos Verdes vs TI)', key: 'Simulador Salário Líquido (Recibos Verdes vs TI)', category: 'Finanças & Impostos' },
+      { tool: 'Simulador IRS Jovem & Escalões', key: 'Simulador IRS Jovem & Escalões', category: 'Finanças & Impostos' },
+      { tool: 'Simulador Custo de Vida em Portugal', key: 'Simulador Custo de Vida em Portugal', category: 'Habitação & Casa' },
+      { tool: 'Saúde Financeira & Taxa de Esforço', key: 'Saúde Financeira & Taxa de Esforço', category: 'Finanças & Impostos' },
     ];
 
     const docItems = [
-      { doc: 'Minuta de Contrato de Trabalho', key: 'Minuta de Contrato de Trabalho', category: 'Trabalho & Carreira', weight: 0.40 },
-      { doc: 'Declaração de Alojamento (Junta Freguesia)', key: 'Declaração de Alojamento (Junta Freguesia)', category: 'Habitação & Casa', weight: 0.30 },
-      { doc: 'Minuta de Rescisão de Contrato', key: 'Minuta de Rescisão de Contrato', category: 'Trabalho & Carreira', weight: 0.18 },
-      { doc: 'Requerimento NIF / Representante Fiscal', key: 'Requerimento NIF / Representante Fiscal', category: 'Finanças & Impostos', weight: 0.12 },
+      { doc: 'Minuta de Contrato de Trabalho', key: 'Minuta de Contrato de Trabalho', category: 'Trabalho & Carreira' },
+      { doc: 'Declaração de Alojamento (Junta Freguesia)', key: 'Declaração de Alojamento (Junta Freguesia)', category: 'Habitação & Casa' },
+      { doc: 'Minuta de Rescisão de Contrato', key: 'Minuta de Rescisão de Contrato', category: 'Trabalho & Carreira' },
+      { doc: 'Requerimento NIF / Representante Fiscal', key: 'Requerimento NIF / Representante Fiscal', category: 'Finanças & Impostos' },
     ];
 
     const computedSimulations = simTools.map(item => {
       const tracked = getToolCount(item.key);
-      const count = tracked > 0 ? tracked : Math.round(totalSims * item.weight);
-      return { tool: item.tool, count, category: item.category };
+      return { tool: item.tool, count: tracked, category: item.category };
     });
 
     const computedDownloads = docItems.map(item => {
       const tracked = getDocCount(item.key);
-      const downloads = tracked > 0 ? tracked : Math.round(totalDocs * item.weight);
-      return { doc: item.doc, downloads, category: item.category };
+      return { doc: item.doc, downloads: tracked, category: item.category };
     });
 
     const painPoints = auditData?.topPainPoints || [];
     const topSearches = painPoints.length > 0 ? painPoints.slice(0, 8).map(tp => ({
       term: tp.topic,
-      count: tp.estimatedQueries > 0 ? tp.estimatedQueries : Math.round(totalAi * (tp.percentage / 100)),
+      count: tp.estimatedQueries || 0,
       category: tp.category,
       percentage: tp.percentage || 0
-    })) : [
-      { term: 'Agendamento AIMA / Visto CPLP', count: Math.round(totalAi * 0.215), category: 'Residência & Vistos', percentage: 21.5 },
-      { term: 'Entrada com Visto Prévio vs Fim MI', count: Math.round(totalAi * 0.170), category: 'Residência & Vistos', percentage: 17.0 },
-      { term: 'Emissão NISS sem Contrato Prévio', count: Math.round(totalAi * 0.132), category: 'Trabalho & Carreira', percentage: 13.2 },
-      { term: 'Obtenção NIF sem Representante', count: Math.round(totalAi * 0.108), category: 'Finanças & Impostos', percentage: 10.8 },
-      { term: 'Inscrição Centro de Saúde SNS', count: Math.round(totalAi * 0.089), category: 'Saúde & SNS', percentage: 8.9 },
-      { term: 'Validade e Renovação CPLP', count: Math.round(totalAi * 0.074), category: 'Residência & Vistos', percentage: 7.4 },
-      { term: 'Atestado Residência Junta Freguesia', count: Math.round(totalAi * 0.062), category: 'Habitação & Casa', percentage: 6.2 },
-      { term: 'Direitos Laborais & Recibos Verdes', count: Math.round(totalAi * 0.055), category: 'Trabalho & Carreira', percentage: 5.5 },
-    ];
+    })) : [];
+
+    const communityInteractions = (platformCounts?.posts || 0) + (platformCounts?.comments || 0);
+    const totalModuleClicks = totalAi + totalSims + totalDocs + totalJobs + totalServices + communityInteractions;
+    const calcShare = (clicks: number) => totalModuleClicks > 0 ? parseFloat(((clicks / totalModuleClicks) * 100).toFixed(1)) : 0;
 
     const clickedModules = [
-      { module: 'Assistente IA MIRA Chat', clicks: totalAi, category: 'Geral & Tecnologia', share: 40.0 },
-      { module: 'Simulador de Recibos Verdes & Salário', clicks: totalSims, category: 'Finanças & Impostos', share: 20.0 },
-      { module: 'Guia de Minutas e Documentos', clicks: totalDocs, category: 'Residência & Vistos', share: 15.0 },
-      { module: 'Bolsa de Vagas & Emprego', clicks: totalJobs, category: 'Trabalho & Carreira', share: 12.0 },
-      { module: 'Mapa de Serviços Locais', clicks: totalServices, category: 'Direitos & Apoio Social', share: 8.0 },
-      { module: 'Comunidade & Fórum', clicks: Math.max(platformCounts?.posts || 0, 932), category: 'Comunidade & Histórias', share: 5.0 },
+      { module: 'Assistente IA MIRA Chat', clicks: totalAi, category: 'Geral & Tecnologia', share: calcShare(totalAi) },
+      { module: 'Simulador de Recibos Verdes & Salário', clicks: totalSims, category: 'Finanças & Impostos', share: calcShare(totalSims) },
+      { module: 'Guia de Minutas e Documentos', clicks: totalDocs, category: 'Residência & Vistos', share: calcShare(totalDocs) },
+      { module: 'Bolsa de Vagas & Emprego', clicks: totalJobs, category: 'Trabalho & Carreira', share: calcShare(totalJobs) },
+      { module: 'Mapa de Serviços Locais', clicks: totalServices, category: 'Direitos & Apoio Social', share: calcShare(totalServices) },
+      { module: 'Comunidade & Fórum', clicks: communityInteractions, category: 'Comunidade & Histórias', share: calcShare(communityInteractions) },
     ];
 
     return {
       topSearches,
       clickedModules,
-      jobSectors: [
-        { sector: 'Turismo, Hotelaria & Restauração', count: Math.round(totalJobs * 0.284), avgSalary: '920€ - 1.150€', category: 'Trabalho & Carreira', percentage: 28.4 },
-        { sector: 'Construção Civil & Engenharia', count: Math.round(totalJobs * 0.221), avgSalary: '1.050€ - 1.450€', category: 'Trabalho & Carreira', percentage: 22.1 },
-        { sector: 'Limpeza, Segurança & Facility Management', count: Math.round(totalJobs * 0.165), avgSalary: '870€ - 980€', category: 'Trabalho & Carreira', percentage: 16.5 },
-        { sector: 'Tecnologia, Dados & IA', count: Math.round(totalJobs * 0.128), avgSalary: '1.600€ - 2.800€', category: 'Trabalho & Carreira', percentage: 12.8 },
-        { sector: 'Logística, Transportes & Armazém', count: Math.round(totalJobs * 0.096), avgSalary: '950€ - 1.250€', category: 'Trabalho & Carreira', percentage: 9.6 },
-        { sector: 'Saúde & Cuidados Continuados', count: Math.round(totalJobs * 0.062), avgSalary: '1.000€ - 1.500€', category: 'Saúde & SNS', percentage: 6.2 },
-        { sector: 'Comércio, Vendas & Retalho', count: Math.round(totalJobs * 0.044), avgSalary: '870€ - 1.050€', category: 'Trabalho & Carreira', percentage: 4.4 },
-      ],
-      jobRegimes: [
-        { regime: 'Tempo Inteiro (Contrato Sem Termo)', percentage: 64.0, count: Math.round(totalJobs * 0.64) },
-        { regime: 'Prestação de Serviços (Recibos Verdes)', percentage: 22.0, count: Math.round(totalJobs * 0.22) },
-        { regime: 'Part-Time / Turnos', percentage: 10.0, count: Math.round(totalJobs * 0.10) },
-        { regime: 'Estágio / Formação IEFP', percentage: 4.0, count: Math.round(totalJobs * 0.04) },
-      ],
-      jobRegions: [
-        { region: 'Distrito de Lisboa', percentage: 41.0, jobs: Math.round(totalJobs * 0.41) },
-        { region: 'Distrito do Porto', percentage: 23.0, jobs: Math.round(totalJobs * 0.23) },
-        { region: 'Setúbal & Margem Sul', percentage: 11.0, jobs: Math.round(totalJobs * 0.11) },
-        { region: 'Faro & Algarve', percentage: 10.0, jobs: Math.round(totalJobs * 0.10) },
-        { region: 'Braga & Minho', percentage: 8.0, jobs: Math.round(totalJobs * 0.08) },
-        { region: 'Outras Regiões', percentage: 7.0, jobs: Math.round(totalJobs * 0.07) },
-      ],
+      jobSectors: [],
+      jobRegimes: [],
+      jobRegions: [],
       housingTypologies: [
-        { typology: 'Quarto / Subarrendamento', avgPrice: '420€ - 550€', demandShare: 34, category: 'Habitação & Casa' },
-        { typology: 'T0 / Estúdio', avgPrice: '650€ - 850€', demandShare: 22, category: 'Habitação & Casa' },
-        { typology: 'T1 (1 Quarto)', avgPrice: '780€ - 1.100€', demandShare: 28, category: 'Habitação & Casa' },
-        { typology: 'T2 (2 Quartos)', avgPrice: '1.050€ - 1.450€', demandShare: 12, category: 'Habitação & Casa' },
-        { typology: 'T3+ (Famílias)', avgPrice: '1.600€+', demandShare: 4, category: 'Habitação & Casa' },
+        { typology: 'Quarto / Subarrendamento', avgPrice: '420€ - 550€', demandShare: 0, category: 'Habitação & Casa' },
+        { typology: 'T0 / Estúdio', avgPrice: '650€ - 850€', demandShare: 0, category: 'Habitação & Casa' },
+        { typology: 'T1 (1 Quarto)', avgPrice: '780€ - 1.100€', demandShare: 0, category: 'Habitação & Casa' },
+        { typology: 'T2 (2 Quartos)', avgPrice: '1.050€ - 1.450€', demandShare: 0, category: 'Habitação & Casa' },
+        { typology: 'T3+ (Famílias)', avgPrice: '1.600€+', demandShare: 0, category: 'Habitação & Casa' },
       ],
       housingDistricts: [
         { district: 'Lisboa Central', avgRent: '1.250€/mês', friction: 'Exigência de Fiador + 3 Rendas' },
@@ -210,16 +183,15 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
         { district: 'Leiria & Centro', avgRent: '580€/mês', friction: 'Menor Oferta Disponível' },
       ],
       clickedServices: [
-        { service: 'Balcões AIMA / Conservatórias', category: 'Residência & Vistos', urgency: 'Crítica', weight: 0.35 },
-        { service: 'Lojas do Cidadão & Espaços Cidadão', category: 'Direitos & Apoio Social', urgency: 'Alta', weight: 0.25 },
-        { service: 'Serviço de Finanças (AT)', category: 'Finanças & Impostos', urgency: 'Média', weight: 0.18 },
-        { service: 'Segurança Social (ISS)', category: 'Direitos & Apoio Social', urgency: 'Alta', weight: 0.12 },
-        { service: 'Centros de Saúde SNS & USF', category: 'Saúde & SNS', urgency: 'Média', weight: 0.06 },
-        { service: 'Centros de Emprego IEFP', category: 'Educação & Formação', urgency: 'Normal', weight: 0.04 },
+        { service: 'Balcões AIMA / Conservatórias', category: 'Residência & Vistos', urgency: 'Crítica' },
+        { service: 'Lojas do Cidadão & Espaços Cidadão', category: 'Direitos & Apoio Social', urgency: 'Alta' },
+        { service: 'Serviço de Finanças (AT)', category: 'Finanças & Impostos', urgency: 'Média' },
+        { service: 'Segurança Social (ISS)', category: 'Direitos & Apoio Social', urgency: 'Alta' },
+        { service: 'Centros de Saúde SNS & USF', category: 'Saúde & SNS', urgency: 'Média' },
+        { service: 'Centros de Emprego IEFP', category: 'Educação & Formação', urgency: 'Normal' },
       ].map(item => {
         const tracked = getServiceClickCount(item.service);
-        const clicks = tracked > 0 ? tracked : Math.round(totalServices * item.weight);
-        return { service: item.service, clicks, category: item.category, urgency: item.urgency };
+        return { service: item.service, clicks: tracked, category: item.category, urgency: item.urgency };
       }),
       simulations: computedSimulations,
       downloads: computedDownloads
@@ -562,8 +534,13 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                     <Home size={22} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black uppercase tracking-tight text-white">Preço Médio por Tipologia</h3>
-                    <p className="text-xs text-slate-400">Valores médios de arrendamento e procura em Portugal</p>
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <h3 className="text-lg font-black uppercase tracking-tight text-white">Preço Médio por Tipologia</h3>
+                      <span className="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 text-[8px] font-black uppercase tracking-widest rounded-full border border-amber-500/30 flex items-center gap-1">
+                        <BookOpen size={10} /> 📘 Conteúdo Editorial & Referência BdP/INE
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400">Valores de referência do Observatório de Habitação em Portugal (Não Telemetria)</p>
                   </div>
                 </div>
 

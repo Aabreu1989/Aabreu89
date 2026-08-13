@@ -70,26 +70,26 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         retentionRate: number;
         aiQueries: number;
     }>({ 
-        jobs: 2647, 
-        jobSources: 66,
-        courses: 156, 
-        services: 225, 
-        users: 1020, 
+        jobs: 0, 
+        jobSources: 0,
+        courses: 0, 
+        services: 0, 
+        users: 0, 
         reports: 0, 
-        downloads: 3451, 
+        downloads: 0, 
         comments: 0, 
-        posts: 8, 
+        posts: 0, 
         verifiedPosts: 0, 
         fakePosts: 0, 
-        totalLikes: 124, 
+        totalLikes: 0, 
         totalComments: 0, 
         totalUseful: 0,
-        appAccesses: 52198,
-        articleViews: 5278,
-        pwaMobileDownloads: 629,
-        pwaComputerDownloads: 233,
-        retentionRate: 82.0,
-        aiQueries: 18642
+        appAccesses: 0,
+        articleViews: 0,
+        pwaMobileDownloads: 0,
+        pwaComputerDownloads: 0,
+        retentionRate: 0,
+        aiQueries: 0
     });
 
     useEffect(() => {
@@ -117,7 +117,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                     totalUseful: stats.verifiedPosts ?? 0,
                     pwaMobileDownloads: stats.pwaMobileDownloads ?? 0,
                     pwaComputerDownloads: stats.pwaComputerDownloads ?? 0,
-                    retentionRate: stats.retentionRate ?? 82.0,
+                    retentionRate: stats.retentionRate ?? 0,
                     aiQueries: stats.aiQueries ?? 0
                 });
                 

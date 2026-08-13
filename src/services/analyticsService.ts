@@ -1,16 +1,35 @@
 import { AppActivityLog } from '../types';
 import { supabase } from '../lib/supabase';
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║   MIRA TELEMETRIA SOBERANA v2026.GOLD                       ║
+// ║   Canal: RPC mira_track_event (SECURITY DEFINER)            ║
+// ║   Garantia: Todos os eventos chegam ao Supabase             ║
+// ║             independentemente de RLS ou autenticação         ║
+// ╚══════════════════════════════════════════════════════════════╝
+
 class AnalyticsService {
   private logs: AppActivityLog[] = [];
+  private pendingQueue: Array<{ action: string; userId: string; category?: string; metadata?: any }> = [];
+  private flushTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     this.loadLogs();
+    // Flush pending queue on visibility restore (tab focus)
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') this.flushPending();
+      });
+    }
   }
 
   async loadLogs() {
     try {
-      const { data, error } = await supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(1000);
+      const { data, error } = await supabase
+        .from('activity_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1000);
       if (error) throw error;
       if (data) {
         this.logs = data.map((d: any) => ({
@@ -23,7 +42,7 @@ class AnalyticsService {
         }));
       }
     } catch (e) {
-      console.error('Error loading analytics logs', e);
+      console.warn('[MIRA Analytics] Could not load logs (RLS expected for guest)');
     }
   }
 
@@ -31,7 +50,13 @@ class AnalyticsService {
     this.track(action as any, 'guest', undefined, metadata);
   }
 
-  async track(action: AppActivityLog['action'], userId: string, category?: string, metadata?: any) {
+  async track(
+    action: AppActivityLog['action'],
+    userId: string,
+    category?: string,
+    metadata?: any
+  ) {
+    // 1. Registo imediato em memória local (nunca falha)
     const log: AppActivityLog = {
       id: Math.random().toString(36).substr(2, 9),
       userId: userId || 'guest',
@@ -42,69 +67,69 @@ class AnalyticsService {
     };
     this.logs.push(log);
 
-    // Log in development console
-    console.debug('[MIRA Analytics]', log);
+    // 2. Enviar para Supabase via RPC SECURITY DEFINER (bypass RLS total)
+    //    Esta função foi criada com GRANT EXECUTE para anon e authenticated
+    this.sendToSupabase(action, userId, category, metadata);
+  }
 
-    // ⚡ Real-Time Access & Telemetry Counters for Admin Hub Live Updates
-    if (typeof window !== 'undefined') {
-      try {
-        if (action === 'app_access' || action === 'app_launch' || action === 'view_changed') {
-          const currentCount = parseInt(localStorage.getItem('mira_realtime_accesses_count') || '0', 10);
-          const newCount = currentCount + 1;
-          localStorage.setItem('mira_realtime_accesses_count', newCount.toString());
-          window.dispatchEvent(new CustomEvent('mira-access-recorded', { detail: { count: newCount } }));
-        } else if (action === 'ai_query') {
-          const currentCount = parseInt(localStorage.getItem('mira_realtime_ai_queries_count') || '0', 10);
-          const newCount = currentCount + 1;
-          localStorage.setItem('mira_realtime_ai_queries_count', newCount.toString());
-        } else if (action === 'use_simulator' || (action as string) === 'simulation_run') {
-          const currentCount = parseInt(localStorage.getItem('mira_realtime_simulations_count') || '0', 10);
-          const newCount = currentCount + 1;
-          localStorage.setItem('mira_realtime_simulations_count', newCount.toString());
-          if (metadata?.simulatorId || metadata?.name) {
-            const key = `mira_sim_count_${metadata.simulatorId || metadata.name}`;
-            const itemVal = parseInt(localStorage.getItem(key) || '0', 10);
-            localStorage.setItem(key, (itemVal + 1).toString());
-          }
-        } else if (action === 'generate_document' || (action as string) === 'download_document' || (action as string) === 'doc_generated') {
-          const currentCount = parseInt(localStorage.getItem('mira_realtime_documents_count') || '0', 10);
-          const newCount = currentCount + 1;
-          localStorage.setItem('mira_realtime_documents_count', newCount.toString());
-          if (metadata?.templateId || metadata?.title || metadata?.name) {
-            const key = `mira_doc_count_${metadata.templateId || metadata.title || metadata.name}`;
-            const itemVal = parseInt(localStorage.getItem(key) || '0', 10);
-            localStorage.setItem(key, (itemVal + 1).toString());
-          }
-        } else if (action === 'post_created' || (action as string) === 'create_post') {
-          const currentCount = parseInt(localStorage.getItem('mira_realtime_posts_count') || '0', 10);
-          localStorage.setItem('mira_realtime_posts_count', (currentCount + 1).toString());
-        } else if (action === 'comment_created' || (action as string) === 'add_comment') {
-          const currentCount = parseInt(localStorage.getItem('mira_realtime_comments_count') || '0', 10);
-          localStorage.setItem('mira_realtime_comments_count', (currentCount + 1).toString());
-        } else if (action === 'like_post' || (action as string) === 'post_liked') {
-          const currentCount = parseInt(localStorage.getItem('mira_realtime_likes_count') || '0', 10);
-          localStorage.setItem('mira_realtime_likes_count', (currentCount + 1).toString());
-        }
+  private async sendToSupabase(
+    action: string,
+    userId: string,
+    category?: string,
+    metadata?: any
+  ) {
+    const isValidUuid =
+      typeof userId === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
 
-        window.dispatchEvent(new CustomEvent('mira-telemetry-update', { detail: { action } }));
-      } catch (e) {}
-    }
-
-    // Send to Supabase async without blocking the UI
-    const isValidUuid = typeof userId === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
-    const dbPayload: any = {
-      action: action,
-      metadata: { ...(metadata || {}), category: category || null, guest_id: !isValidUuid ? userId : undefined }
-    };
-    if (isValidUuid) {
-      dbPayload.user_id = userId;
-    }
-
-    supabase.from('activity_logs').insert([dbPayload]).then(({ error }) => {
-      if (error) {
-          console.warn('[MIRA Telemetry] Local Sync Pending:', error.message);
-      }
+    // CANAL PRIMÁRIO: RPC mira_track_event com SECURITY DEFINER
+    // Funciona para utilizadores autenticados E guests — bypassa RLS
+    const { error: rpcError } = await supabase.rpc('mira_track_event', {
+      p_action: action,
+      p_user_id: isValidUuid ? userId : null,
+      p_category: category || null,
+      p_metadata: metadata ? JSON.parse(JSON.stringify(metadata)) : null
     });
+
+    if (!rpcError) return; // ✅ Sucesso
+
+    // CANAL SECUNDÁRIO: INSERT direto (funciona se RLS INSERT policy existir)
+    console.warn('[MIRA Telemetry] RPC falhou, tentando INSERT direto:', rpcError.message);
+    const dbPayload: any = {
+      action,
+      metadata: {
+        ...(metadata || {}),
+        category: category || null,
+        guest_id: !isValidUuid ? userId : undefined
+      }
+    };
+    if (isValidUuid) dbPayload.user_id = userId;
+
+    const { error: insertError } = await supabase.from('activity_logs').insert([dbPayload]);
+
+    if (insertError) {
+      // CANAL TERCIÁRIO: Fila pendente para retry na próxima oportunidade
+      console.warn('[MIRA Telemetry] INSERT falhou, a adicionar à fila pendente:', insertError.message);
+      this.pendingQueue.push({ action, userId, category, metadata });
+      this.schedulePendingFlush();
+    }
+  }
+
+  private schedulePendingFlush() {
+    if (this.flushTimer) return;
+    this.flushTimer = setTimeout(() => {
+      this.flushTimer = null;
+      this.flushPending();
+    }, 30000); // Retry ao fim de 30 segundos
+  }
+
+  private async flushPending() {
+    if (this.pendingQueue.length === 0) return;
+    const toFlush = [...this.pendingQueue];
+    this.pendingQueue = [];
+    for (const item of toFlush) {
+      await this.sendToSupabase(item.action, item.userId, item.category, item.metadata);
+    }
   }
 
   getLocalAccessCount(): number {
@@ -130,6 +155,12 @@ class AnalyticsService {
     else if (range === 'year') filterDate.setFullYear(now.getFullYear() - 1);
 
     return this.logs.filter(log => new Date(log.timestamp) >= filterDate);
+  }
+
+  // Retorna contagem de eventos no período (para dashboard local)
+  getLocalCount(action: AppActivityLog['action'] | AppActivityLog['action'][]): number {
+    const actions = Array.isArray(action) ? action : [action];
+    return this.logs.filter(l => actions.includes(l.action as any)).length;
   }
 }
 

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { templates } from '../utils/documentsDatabase';
 import { TranslatedText } from './TranslatedText';
+import { analytics } from '../services/analyticsService';
 
 interface IrsWizardProps {
     language: string;
@@ -561,6 +562,22 @@ export const IrsWizard: React.FC<IrsWizardProps> = ({ language, onBack, onSelect
     const lang = language.toLowerCase() === 'fr' ? 'fr' : language.toLowerCase() === 'es' ? 'es' : language.toLowerCase() === 'en' ? 'en' : 'pt';
     
     const tLocal = (key: string) => LOCAL_TRANS[lang]?.[key] || LOCAL_TRANS['pt'][key] || key;
+
+    // 🎯 MIRA TELEMETRIA: Contar entrada na página do Simulador/Guia de IRS
+    React.useEffect(() => {
+        let userId = 'guest';
+        try {
+            const currentUserStr = localStorage.getItem('mira_user');
+            if (currentUserStr) {
+                const u = JSON.parse(currentUserStr);
+                if (u && u.id) userId = u.id;
+            }
+        } catch (e) {}
+        analytics.track('use_simulator', userId, 'Finanças & Impostos', {
+            simulatorId: 'irs_wizard',
+            simulatorName: 'Guia & Simulador de IRS'
+        });
+    }, []);
 
     const handleProfileSelect = (profileId: 'dep' | 'ind' | 'rnh' | 'jovem' | 'pension' | 'investor' | 'expat') => {
         audioService.playClick();

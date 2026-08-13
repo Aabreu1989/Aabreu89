@@ -6,6 +6,7 @@ import {
     Calculator, Calendar, DollarSign, Lightbulb, Check, Copy, HelpCircle, AlertTriangle
 } from 'lucide-react';
 import { t } from '../utils/translations';
+import { analytics } from '../services/analyticsService';
 
 interface NissWizardProps {
     language: string;
@@ -202,6 +203,24 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     const lang: 'pt' | 'en' = (language?.toLowerCase() === 'en' ? 'en' : 'pt');
+
+    // 🎯 MIRA TELEMETRIA: Contar entrada na página do Simulador SS
+    React.useEffect(() => {
+        if (flow === 'simulador_ss') {
+            let userId = 'guest';
+            try {
+                const currentUserStr = localStorage.getItem('mira_user');
+                if (currentUserStr) {
+                    const u = JSON.parse(currentUserStr);
+                    if (u && u.id) userId = u.id;
+                }
+            } catch (e) {}
+            analytics.track('use_simulator', userId, 'Segurança Social', {
+                simulatorId: 'ss_niss_contribution',
+                simulatorName: 'Simulador de Contribuição SS'
+            });
+        }
+    }, [flow]);
 
     // Simulator Calculations
     const activityCoeff = simActivity === 'servicos' ? 0.70 : simActivity === 'vendas' ? 0.20 : 0.50;

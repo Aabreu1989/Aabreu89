@@ -64,13 +64,13 @@ const TopBar: React.FC<TopBarProps> = ({
                     title={isSystemAdmin ? 'Admin Hub' : 'MIRA'}
                 >
                      <div className="flex-shrink-0 flex items-center">
-                        <div className="w-8 h-8 sm:w-11 sm:h-11 flex items-center justify-center relative group-hover:scale-110 transition-transform duration-500 bg-transparent">
-                             <img src="/logo-mira.png" alt="MIRA" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] object-contain relative z-10 bg-transparent" style={{ background: 'transparent' }} />
+                        <div className="w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center relative group-hover:scale-110 transition-transform duration-500 bg-transparent">
+                             <img src="/logo-mira.png" alt="MIRA" className="w-[34px] h-[34px] sm:w-[46px] sm:h-[46px] object-contain relative z-10 bg-transparent" style={{ background: 'transparent' }} />
                              {isSystemAdmin && <div className="absolute inset-0 bg-mira-orange/20 blur-xl rounded-full animate-pulse" />}
                          </div>
                      </div>
                       <div className="min-w-0">
-                           <h2 className={`font-black text-base sm:text-xl tracking-tighter uppercase truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{isSystemAdmin ? 'ADMIN HUB' : 'MIRA'}</h2>
+                           <h2 className={`font-black text-xl sm:text-2xl md:text-3xl tracking-tight uppercase truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{isSystemAdmin ? 'ADMIN HUB' : 'MIRA'}</h2>
                       </div>
                 </div>
             </div>

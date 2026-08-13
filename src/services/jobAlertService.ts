@@ -2,6 +2,21 @@ import { supabase } from '../lib/supabase';
 import { JobPost } from '../types';
 import { notificationService } from './notificationService';
 
+export type JobAlertStatus = 'configured' | 'generated' | 'delivered' | 'read';
+
+export interface JobAlertLog {
+  id: string;
+  userId: string;
+  jobId: string;
+  alertId: string;
+  matchScore: number;
+  matchReason: string;
+  status: JobAlertStatus;
+  createdAt: string;
+  deliveredAt?: string;
+  readAt?: string;
+}
+
 export interface JobAlert {
   id: string;
   user_id?: string;
@@ -25,7 +40,7 @@ export interface JobAlertMatch {
   match_score: number;
   match_reason: string;
   created_at: string;
-  status: 'created' | 'delivered' | 'read';
+  status: JobAlertStatus;
   delivered_at?: string;
   read_at?: string;
 }

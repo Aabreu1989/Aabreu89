@@ -368,9 +368,11 @@ export const communityService = {
   /**
    * 📊 MUTAÇÃO DE INTERAÇÃO / CURTIDA (post_likes & post_votes no Supabase)
    */
-  vote: async (postId: string, userId: string, voteType: 'like' | 'useful' | 'fake') => {
+  vote: async (postId: string, userId: string, voteType: 'like' | 'true' | 'fake' | 'useful') => {
     try {
-      console.log(`⚡ [MIRA DB] Interação ${voteType} de User ${userId} no Post ${postId}`);
+      // Normalizar 'useful' para 'true' para garantir alinhamento semântico absoluto
+      const normalizedVoteType = voteType === 'useful' ? 'true' : voteType;
+      console.log(`⚡ [MIRA DB] Interação ${normalizedVoteType} de User ${userId} no Post ${postId}`);
       
       if (voteType === 'like') {
         const { error: likeErr } = await supabase
@@ -400,18 +402,26 @@ export const communityService = {
 
         return { success: true, action: 'added' };
       } else {
-        const { data: existing } = await supabase
+        // 🛡️ MIRA VERACIDADE: Auditoria de Voto Único por Utilizador (post_votes)
+        const { data: existingVote } = await supabase
           .from('post_votes')
-          .select('id')
+          .select('id, vote_type')
           .eq('post_id', postId)
           .eq('user_id', userId)
-          .eq('vote_type', voteType)
           .maybeSingle();
 
-        if (existing) {
-          await supabase.from('post_votes').delete().eq('id', existing.id);
-          return { success: true, action: 'removed' };
+        if (existingVote) {
+          if (existingVote.vote_type === voteType) {
+            // Se clicou no mesmo tipo de voto -> Remover voto (Unvote)
+            await supabase.from('post_votes').delete().eq('id', existingVote.id);
+            return { success: true, action: 'removed' };
+          } else {
+            // Se clicou no voto oposto (TRUE -> FAKE ou FAKE -> TRUE) -> Atualizar tipo de voto (Switch Vote)
+            await supabase.from('post_votes').update({ vote_type: voteType }).eq('id', existingVote.id);
+            return { success: true, action: 'switched' };
+          }
         } else {
+          // Sem voto prévio -> Inserir novo voto na tabela post_votes
           await supabase.from('post_votes').insert({ post_id: postId, user_id: userId, vote_type: voteType });
           return { success: true, action: 'added' };
         }

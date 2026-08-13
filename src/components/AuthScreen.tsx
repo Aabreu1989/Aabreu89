@@ -146,54 +146,35 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             }
 
             if (isForgotPassword) {
-                const resendApiKey = (import.meta.env.VITE_RESEND_API_KEY || '').trim();
                 const targetEmail = email.trim().toLowerCase();
-                const recoveryLink = `${window.location.origin}/?type=recovery`;
+                if (!targetEmail) {
+                    throw new Error(t('auth_error_email_required', language) || 'Por favor, introduza o seu e-mail.');
+                }
+
+                const recoveryLink = `${window.location.origin}/auth/callback?type=recovery`;
 
                 try {
-                    console.log("📡 [MIRA RESEND] Enviando e-mail de recuperação via Resend API...");
-                    
-                    const resendRes = await fetch('https://api.resend.com/emails', {
+                    console.log("📡 [MIRA RESEND] Solicitando recuperação via API Gateway /api/recover...");
+                    const apiRes = await fetch('/api/recover', {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${resendApiKey}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            from: 'MIRA Imigrante <no-reply@miraimigrante.pt>',
-                            to: targetEmail,
-                            subject: 'MIRA Imigrante - Recuperação de Acesso',
-                            html: `
-                                <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 20px; border: 1px solid #f1f5f9; color: #0F172A; text-align: center;">
-                                    <h1 style="color: #FF8C00; font-size: 24px; font-weight: 800; margin-bottom: 10px;">MIRA IMIGRANTE</h1>
-                                    <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Recuperação de Palavra-Passe</p>
-                                    <p style="color: #334155; font-size: 15px; line-height: 1.6; margin-bottom: 30px;">
-                                        Recebemos um pedido para redefinir a tua palavra-passe. Clica no botão abaixo para definir uma nova senha:
-                                    </p>
-                                    <a href="${recoveryLink}" style="display: inline-block; background-color: #FF8C00; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 14px; text-transform: uppercase;">Definir Nova Senha</a>
-                                    <p style="color: #94a3b8; font-size: 12px; margin-top: 30px;">Se não fizeste este pedido, podes ignorar esta mensagem.</p>
-                                </div>
-                            `
-                        })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: targetEmail, language })
                     });
 
-                    // Trigger Supabase Auth recovery in background as backup
-                    supabase.auth.resetPasswordForEmail(targetEmail, { redirectTo: recoveryLink }).catch(() => {});
-
-                    if (resendRes.ok) {
-                        console.log("✅ [MIRA RESEND] E-mail de recuperação enviado com sucesso via Resend.");
-                        showToast(t('auth_forgot_pw_email_sent', language), 'success');
-                    } else {
-                        const errText = await resendRes.text();
-                        console.warn("⚠️ [MIRA RESEND] Resend API Warning:", errText);
-                        showToast(t('auth_forgot_pw_email_sent', language), 'success');
+                    if (!apiRes.ok) {
+                        const apiData = await apiRes.json().catch(() => ({}));
+                        console.warn("⚠️ [MIRA RECOVER] API Gateway aviso:", apiData.error);
                     }
+                    
+                    // Backup Supabase Auth Reset
+                    await supabase.auth.resetPasswordForEmail(targetEmail, { redirectTo: recoveryLink }).catch(() => {});
 
+                    showToast(t('auth_forgot_pw_email_sent', language), 'success');
                     setIsForgotPassword(false);
                     setShowAuthMethod(true);
                     return;
                 } catch (resendErr: any) {
-                    console.error("🚨 [MIRA RESEND] Falha no envio via Resend:", resendErr);
+                    console.error("🚨 [MIRA RECOVER] Falha no envio:", resendErr);
                     showToast(t('auth_forgot_pw_email_sent', language), 'success');
                     setIsForgotPassword(false);
                     setShowAuthMethod(true);
@@ -253,7 +234,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 // V2026.SUPREMO: Unified Registration Protocol
                 try {
                     const result = await authService.signUp(email, password, '', language);
-                    showToast(result.message, 'success');
+                    showToast(result.message || t('auth_confirm_email', language), 'success');
                     setIsLogin(true);
                 } catch (err: any) {
                     setErrorMsg(err.message);

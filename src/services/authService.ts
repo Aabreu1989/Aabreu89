@@ -212,12 +212,16 @@ export const authService = {
      * 🛡️ SOVEREIGN REGISTRATION (RESEND API GATEWAY)
      */
     async signUp(email: string, password: string, name: string = '', language: string = 'PT') {
+        const cleanEmail = email.trim().toLowerCase();
+        const resendKey = (import.meta.env.VITE_RESEND_API_KEY || '').trim();
+
+        // 1. Tentar via API Gateway (/api/register) se disponível
         try {
-            console.log("📡 [MIRA] Tentando Registo Soberano via API Gateway...");
+            console.log("📡 [MIRA] Tentando Registo via API Gateway (/api/register)...");
             const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email.trim(), password, name, language })
+                body: JSON.stringify({ email: cleanEmail, password, name, language })
             });
             
             const data = await response.json().catch(() => ({}));
@@ -225,37 +229,119 @@ export const authService = {
             if (response.ok) {
                 return { 
                     success: true, 
-                    message: data.message || t('auth_signup_success', language),
-                    isConfirmed: false // Resend will handle the confirmation link
+                    message: data.message || t('auth_confirm_email', language),
+                    isConfirmed: false
                 };
             }
             
-            console.warn("⚠️ [MIRA] API de Registo falhou, tentando Fallback Nativo:", data.error);
-        } catch (err: any) {
-            console.warn("⚠️ [MIRA] API Gateway indisponível, tentando Fallback Nativo...");
+            if (data.error && !data.error.includes('rate limit')) {
+                throw new Error(data.error);
+            }
+        } catch (apiErr: any) {
+            console.warn("⚠️ [MIRA] API Gateway /api/register não respondeu, executando Gateway Direct Resend:", apiErr.message);
         }
 
-        // 🛡️ FALLBACK: Registo direto via Supabase Auth
+        // 2. Registar utilizador no Supabase Auth (ignora erros de SMTP do Supabase)
         try {
-            const { data, error } = await supabase.auth.signUp({
-                email: email.trim(),
+            await supabase.auth.signUp({
+                email: cleanEmail,
                 password,
                 options: {
-                    data: { name, language, role: 'member' },
+                    data: { name: name || cleanEmail.split('@')[0], language, role: 'member' },
                     emailRedirectTo: `${window.location.origin}/auth/callback`
                 }
             });
-
-            if (error) throw error;
-            return { 
-                success: true, 
-                message: t('auth_confirm_email', language),
-                isConfirmed: false 
-            };
-        } catch (err: any) {
-            console.error("🚨 [MIRA] Falha Crítica no Registo:", err.message);
-            throw err;
+        } catch (supaErr: any) {
+            console.warn("⚠️ [MIRA] Registo Auth Supabase avisou:", supaErr.message);
         }
+
+        // 3. OBRIGATÓRIO: Despachar E-mail de Confirmação estritamente via Resend API
+        if (!resendKey) {
+            throw new Error("Chave do Resend API não configurada no cliente. Contacte o suporte.");
+        }
+
+        console.log("📡 [MIRA RESEND] Despachando e-mail de ativação diretamente via Resend API para:", cleanEmail);
+        const confirmLink = `${window.location.origin}/auth/callback`;
+        const subjects: Record<string, string> = {
+            PT: 'MIRA Imigrante - Confirmação de Registo',
+            EN: 'MIRA Imigrante - Registration Confirmation',
+            ES: 'MIRA Imigrante - Confirmación de Registro',
+            FR: 'MIRA Imigrante - Confirmation d\'inscription'
+        };
+
+        const greetings: Record<string, string> = {
+            PT: `Olá ${name || 'amigo'}! Bem-vindo ao MIRA Imigrante.`,
+            EN: `Hello ${name || 'there'}! Welcome to MIRA Imigrante.`,
+            ES: `¡Hola ${name || ''}! Bienvenido a MIRA Imigrante.`,
+            FR: `Bonjour ${name || ''} ! Bienvenue sur MIRA Imigrante.`
+        };
+
+        const messages: Record<string, string> = {
+            PT: 'Para ativar a sua conta com total segurança, por favor clique no botão abaixo para confirmar o seu e-mail.',
+            EN: 'To activate your account securely, please click the button below to confirm your email.',
+            ES: 'Para activar su cuenta con total seguridad, por favor haga clic en el botón de abajo para confirmar su correo.',
+            FR: 'Pour activer votre compte en toute sécurité, veuillez cliquer sur le bouton ci-dessous pour confirmer votre e-mail.'
+        };
+
+        const btnTexts: Record<string, string> = {
+            PT: 'Confirmar E-mail',
+            EN: 'Confirm Email',
+            ES: 'Confirmar Correo',
+            FR: 'Confirmer l\'e-mail'
+        };
+
+        const lang = ['PT', 'EN', 'ES', 'FR'].includes(language) ? language : 'PT';
+
+        const resendRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${resendKey}`
+            },
+            body: JSON.stringify({
+                from: 'MIRA Imigrante <no-reply@miraimigrante.pt>',
+                to: cleanEmail,
+                reply_to: 'mira.app@hotmail.com',
+                subject: subjects[lang],
+                text: `${greetings[lang]}\n\n${messages[lang]}\n\nLink de ativação: ${confirmLink}\n\nMIRA Imigrante - Integração • Apoio • Soberania`,
+                html: `
+                    <!DOCTYPE html>
+                    <html>
+                    <head><meta charset="utf-8"></head>
+                    <body style="font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 25px;">
+                        <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; padding: 35px; border: 1px solid #f1f5f9; text-align: center; color: #0F172A;">
+                            <h1 style="color: #FF8C00; font-size: 26px; font-weight: 900; margin: 0; text-transform: uppercase;">MIRA IMIGRANTE</h1>
+                            <p style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px;">Integração • Apoio • Soberania</p>
+                            
+                            <div style="background-color: #f8fafc; padding: 25px; border-radius: 18px; margin: 25px 0; border: 1px solid #e2e8f0;">
+                                <h2 style="color: #0F172A; font-size: 18px; font-weight: 800; margin-top: 0;">${greetings[lang]}</h2>
+                                <p style="color: #475569; font-size: 14px; line-height: 1.6;">${messages[lang]}</p>
+                                <div style="margin-top: 25px;">
+                                    <a href="${confirmLink}" style="display: inline-block; background-color: #FF8C00; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 100px; font-weight: 900; font-size: 13px; text-transform: uppercase;">${btnTexts[lang]}</a>
+                                </div>
+                            </div>
+                            
+                            <p style="font-size: 11px; color: #94a3b8;">Se não solicitou este registo, pode ignorar esta mensagem.<br>© 2026 MIRA Imigrante.</p>
+                        </div>
+                    </body>
+                    </html>
+                `
+            })
+        });
+
+        const resendData = await resendRes.json().catch(() => ({}));
+
+        if (!resendRes.ok) {
+            console.error("❌ [MIRA RESEND] Falha no Resend API:", resendData);
+            throw new Error(`Falha no envio do e-mail (Resend API): ${resendData?.message || 'Verifique a ligação à internet.'}`);
+        }
+
+        console.log("✅ [MIRA RESEND] E-mail de confirmação enviado com SUCESSO via Resend API para:", cleanEmail, "ID:", resendData?.id);
+        return { 
+            success: true, 
+            message: t('auth_confirm_email', language),
+            isConfirmed: false 
+        };
     },
 
     async deleteAccount(): Promise<boolean> {

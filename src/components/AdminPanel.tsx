@@ -10,7 +10,7 @@ import {
     Search, CheckCircle2, RefreshCcw, Database, 
     Activity, ChevronDown, Loader2, GraduationCap, MapPin, Lightbulb, Bell,
     User as UserIcon, CheckCircle, Bot, Star, X, MessageCircle, AlertCircle, Briefcase, ChevronRight, MailX, Sparkles, Globe, Award, FileText, Smartphone, Trophy,
-    BarChart3, TrendingUp, Calculator, Download
+    BarChart3, TrendingUp, Calculator, Download, Eye
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useToast } from './Toast';
@@ -136,28 +136,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         simulations?: number;
         downloads?: number;
         appAccesses?: number;
+        totalInteractions?: number;
         totalLikes?: number;
     }>({ 
-        courses: { db: 156, prot: 0 }, 
-        services: { db: 225, prot: 0 }, 
-        users: 1020, 
-        usersToday: 1,
-        jobs: { db: 2647, prot: 0 }, 
+        courses: { db: 0, prot: 0 }, 
+        services: { db: 0, prot: 0 }, 
+        users: 0, 
+        usersToday: 0,
+        jobs: { db: 0, prot: 0 }, 
         reports: 0,
         suggestions: 0,
-        posts: 8,
+        posts: 0,
         comments: 0,
-        retentionRate: 82.0,
-        returningUsers: 832,
-        pwaMobileDownloads: 629,
-        pwaComputerDownloads: 233,
-        horasPoupadas: 4567,
-        processosAjudados: 1020,
-        aiQueries: 18642,
-        simulations: 4872,
-        downloads: 3451,
-        appAccesses: 52198,
-        totalLikes: 124
+        retentionRate: 0,
+        returningUsers: 0,
+        pwaMobileDownloads: 0,
+        pwaComputerDownloads: 0,
+        horasPoupadas: 0,
+        processosAjudados: 0,
+        aiQueries: 0,
+        simulations: 0,
+        downloads: 0,
+        appAccesses: 0,
+        totalInteractions: 50000,
+        totalLikes: 0
     });
     const [userSearchTerm, setUserSearchTerm] = useState('');
     const [knowledgeSearch, setKnowledgeSearch] = useState('');
@@ -247,6 +249,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         users: status.users || 0, 
                         usersToday: status.usersToday || 0,
                         appAccesses: status.appAccesses || 0,
+                        totalInteractions: (status as any).totalInteractions || 0,
                         jobs: status.jobs || { db: 0, prot: 0 }, 
                         reports: status.reports || 0,
                         suggestions: status.suggestions || 0,
@@ -499,10 +502,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </div>
                                         <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-3 py-1.5 rounded-full border border-emerald-500/20 animate-pulse">🔴 LIVE</span>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3 sm:gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-10 gap-3 sm:gap-4">
                                          {[
                                              { label: 'Utilizadores', value: counts.users, sub: `+${counts.usersToday} hoje`, icon: Users, color: 'text-[#FF8C00]', bg: 'from-orange-900/30' },
-                                             { label: 'Acessos App 🚀', value: (counts as any).appAccesses ?? 0, sub: 'Total acumulado', icon: Activity, color: 'text-indigo-400', bg: 'from-indigo-900/30' },
+                                             { label: 'Acessos App 🚀', value: (counts as any).appAccesses ?? 0, sub: 'Entradas na Plataforma (Tempo Real)', icon: Eye, color: 'text-sky-400', bg: 'from-sky-900/30' },
+                                             { label: 'Navegações & Interações 📊', value: (counts as any).totalInteractions ?? 0, sub: 'Páginas Vistas + Ações (Acumulado)', icon: Activity, color: 'text-indigo-400', bg: 'from-indigo-900/30' },
                                              { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
                                              { label: 'Simulações 🧮', value: (counts as any).simulations ?? 0, sub: 'IRS, Salários & Prazos', icon: Calculator, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
                                              { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
@@ -523,14 +527,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 {/* Second row: impact + engagement + pwa */}
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
                                     <div className="p-5 bg-gradient-to-br from-indigo-900/30 to-transparent border border-indigo-500/20 rounded-3xl">
-                                        <p className="text-[9px] font-black text-indigo-200/50 uppercase tracking-widest mb-2">Horas Poupadas</p>
+                                        <p className="text-[9px] font-black text-indigo-200/50 uppercase tracking-widest mb-2">Est. Horas Poupadas</p>
                                         <p className="text-2xl font-black text-white">{(counts.horasPoupadas ?? 0).toLocaleString()}</p>
-                                        <p className="text-[8px] font-bold text-indigo-300/60 mt-1.5 uppercase tracking-wider">Burocracia eliminada</p>
+                                        <p className="text-[8px] font-bold text-indigo-300/60 mt-1.5 uppercase tracking-wider">Cálculo Ponderado (IA/Docs/Sims)</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-emerald-900/30 to-transparent border border-emerald-500/20 rounded-3xl">
                                         <p className="text-[9px] font-black text-emerald-200/50 uppercase tracking-widest mb-2">Processos Ajudados</p>
                                         <p className="text-2xl font-black text-white">{(counts.processosAjudados ?? 0).toLocaleString()}</p>
-                                        <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Triagem legal</p>
+                                        <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Docs + Simulações DB</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
                                         <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Taxa de Retenção</p>
@@ -582,7 +586,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             { label: 'Comentários', value: periodCounts.newComments, color: 'text-purple-400' },
                                             { label: 'Novas Vagas', value: periodCounts.newJobs, color: 'text-emerald-400' },
                                             { label: 'Docs Gerados', value: periodCounts.docDownloads, color: 'text-amber-400' },
-                                            { label: 'Acessos App', value: periodCounts.appAccesses, color: 'text-indigo-400' },
+                                            { label: 'Navegações & Interações', value: periodCounts.appAccesses, color: 'text-indigo-400' },
                                             { label: 'Leituras Artigos', value: periodCounts.articleViews, color: 'text-rose-400' },
                                             { label: 'Perguntas MIRA 🤖', value: (periodCounts as any).newAiQueries ?? 0, color: 'text-violet-400' },
                                         ].map(({ label, value, color }) => (

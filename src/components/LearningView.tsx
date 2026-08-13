@@ -412,7 +412,7 @@ Il te suffit de cliquer dessus pour parler à notre Assistant. C'est une intelli
 };
 
 export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateToChat, onEarnPoints, onNavigateToContact, language, initialArticleId }) => {
-  const [activeTab, setActiveTab] = useState<'articles' | 'courses'>('articles');
+  const [activeTab, setActiveTab] = useState<'articles' | 'courses'>('courses');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Todos');

@@ -2,6 +2,7 @@
 import { supabase } from '../lib/supabase';
 import { analytics } from './analyticsService';
 import { syncService } from './syncService';
+import { BadgeId, BadgeRegistryItem, UserBadgeConcession } from '../types';
 
 export const DEFAULT_GAMIFICATION_RULES: Record<string, number> = {
     publish_post: 10,
@@ -39,8 +40,22 @@ export const gamificationService = {
     /**
      * Adiciona pontos de reputação ao utilizador de forma persistente.
      */
-    async earnPoints(userId: string, amount: number, reason: string): Promise<number | null> {
+    /**
+     * Adiciona pontos de reputação ao utilizador de forma persistente com trava de idempotência.
+     */
+    async earnPoints(userId: string, amount: number, reason: string, entityId?: string): Promise<number | null> {
         if (!userId || amount <= 0) return null;
+
+        // 🛡️ TRAVA DE IDEMPOTÊNCIA: Evitar duplicação de XP no mesmo segundo ou no mesmo entityId
+        try {
+            const idempotencyKey = entityId ? `xp_${userId}_${entityId}` : `xp_${userId}_${reason}_${Math.floor(Date.now() / 5000)}`;
+            const lastAwarded = sessionStorage.getItem(idempotencyKey);
+            if (lastAwarded) {
+                console.log(`🛡️ [MIRA Gamification] XP duplicado bloqueado pela trava de idempotência (${idempotencyKey})`);
+                return null;
+            }
+            sessionStorage.setItem(idempotencyKey, new Date().toISOString());
+        } catch (e) {}
 
         try {
             // 1. Tentar atualizar via RPC para garantir atomicidade
@@ -54,6 +69,14 @@ export const gamificationService = {
                 user_id: userId, 
                 amount: amount, 
                 reason: reason 
+            }]);
+
+            // 3. Registrar no Log de Atividades (Audit Trail Geral)
+            await supabase.from('activity_logs').insert([{
+                user_id: userId,
+                action_type: 'reputation_gained',
+                details: { amount, reason, entity_id: entityId },
+                created_at: new Date().toISOString()
             }]);
 
             if (error) {
@@ -123,12 +146,14 @@ export const gamificationService = {
             const badgeMetadata: Record<string, any> = {
                 pioneiro:          { icon: 'Star',          icon_emoji: '⭐', category: 'social', rarity_level: 3 },
                 verificado:        { icon: 'CheckCircle2',  icon_emoji: '✅', category: 'trust',  rarity_level: 4 },
+                verificada:        { icon: 'CheckCircle2',  icon_emoji: '✅', category: 'trust',  rarity_level: 4 },
                 sentinela:         { icon: 'ShieldAlert',   icon_emoji: '🛡️', category: 'trust',  rarity_level: 2 },
+                escudo_anti_burla: { icon: 'ShieldCheck',   icon_emoji: '🔰', category: 'trust',  rarity_level: 4 },
                 mestre_docs:       { icon: 'Bookmark',      icon_emoji: '📚', category: 'help',   rarity_level: 2 },
                 curador:           { icon: 'Check',         icon_emoji: '🔍', category: 'trust',  rarity_level: 1 },
                 exemplar:          { icon: 'Award',         icon_emoji: '💎', category: 'social', rarity_level: 2 },
-                especialista_leis: { icon: 'Book',          icon_emoji: '📖', category: 'help',   rarity_level: 3 },
-                mentor_emprego:    { icon: 'Flame',         icon_emoji: '🔥', category: 'help',   rarity_level: 3 },
+                voz_autoridade:    { icon: 'Zap',           icon_emoji: '🎙️', category: 'help',   rarity_level: 3 },
+                guia_local:        { icon: 'MapPin',        icon_emoji: '🗺️', category: 'social', rarity_level: 2 },
                 coracao:           { icon: 'Heart',         icon_emoji: '❤️', category: 'social', rarity_level: 1 },
             };
 
@@ -149,19 +174,21 @@ export const gamificationService = {
     },
 
     /**
-     * 🛡️ MIRA BADGES BOOTSTRAP: Garante que todos os selos padrão existem no banco de dados.
+     * 🛡️ MIRA BADGES BOOTSTRAP: Garante que os 10 selos oficiais padrão existem no banco de dados.
      */
     async bootstrapBadges(): Promise<void> {
         const defaultBadges = [
-            { id: 'coracao', name: 'Coração da Tribo', description: 'Reputação de nível bronze na ajuda comunitária (10+ pts)', icon_emoji: '❤️', category: 'social', rarity_level: 1 },
-            { id: 'curador', name: 'Curador de Conteúdo', description: 'Validou ou sugeriu guias oficiais (50+ pts)', icon_emoji: '🔍', category: 'trust', rarity_level: 1 },
-            { id: 'mestre_docs', name: 'Mestre dos Documentos', description: 'Preencheu minutas e formulários úteis (80+ pts)', icon_emoji: '📚', category: 'help', rarity_level: 2 },
-            { id: 'exemplar', name: 'Cidadão Exemplar', description: 'Membro com alta reputação de integridade (100+ pts)', icon_emoji: '💎', category: 'social', rarity_level: 2 },
-            { id: 'mentor_emprego', name: 'Mentor de Emprego', description: 'Apoiou cidadãos na inserção laboral (120+ pts)', icon_emoji: '🔥', category: 'help', rarity_level: 3 },
-            { id: 'sentinela', name: 'Sentinela MIRA', description: 'Ajudou a manter a plataforma livre de spam (150+ pts)', icon_emoji: '🛡️', category: 'trust', rarity_level: 2 },
-            { id: 'especialista_leis', name: 'Especialista em Leis', description: 'Prestou esclarecimentos sobre a lei portuguesa (200+ pts)', icon_emoji: '📖', category: 'help', rarity_level: 3 },
-            { id: 'pioneiro', name: 'Membro Pioneiro', description: 'Pertence à primeira geração de utilizadores', icon_emoji: '⭐', category: 'social', rarity_level: 3 },
-            { id: 'verificado', name: 'Cidadão Verificado', description: 'Conta validada com estatuto de confiança', icon_emoji: '✅', category: 'trust', rarity_level: 4 }
+            { id: 'pioneiro', name: 'Membro Pioneiro', description: 'Pertence à primeira geração de utilizadores do MIRA', icon_emoji: '⭐', category: 'social', rarity_level: 3 },
+            { id: 'verificado', name: 'Cidadão Verificado', description: 'Conta com identidade pessoalmente validada', icon_emoji: '✅', category: 'trust', rarity_level: 4 },
+            { id: 'verificada', name: 'Cidadã Verificada', description: 'Conta com identidade pessoalmente validada', icon_emoji: '✅', category: 'trust', rarity_level: 4 },
+            { id: 'sentinela', name: 'Sentinela MIRA', description: 'Atuação constante na manutenção da qualidade da comunidade', icon_emoji: '🛡️', category: 'trust', rarity_level: 2 },
+            { id: 'escudo_anti_burla', name: 'Escudo Anti-Burla', description: 'Denunciador verificado de esquemas e fraudes de agendamento', icon_emoji: '🔰', category: 'trust', rarity_level: 4 },
+            { id: 'mestre_docs', name: 'Mestre dos Documentos', description: 'Preencheu minutas e assistentes documentais com sucesso', icon_emoji: '📚', category: 'help', rarity_level: 2 },
+            { id: 'curador', name: 'Curador de Conteúdo', description: 'Publicou guias informativos de elevadíssima utilidade pública', icon_emoji: '🔍', category: 'trust', rarity_level: 1 },
+            { id: 'exemplar', name: 'Cidadão Exemplar', description: 'Membro altamente ativo nas avaliações de veracidade', icon_emoji: '💎', category: 'social', rarity_level: 2 },
+            { id: 'voz_autoridade', name: 'Voz de Autoridade', description: 'Alcançou 500+ pontos de reputação e autoridade na comunidade', icon_emoji: '🎙️', category: 'help', rarity_level: 3 },
+            { id: 'guia_local', name: 'Guia Local', description: 'Contribuiu com avaliações de serviços locais de apoio ao imigrante', icon_emoji: '🗺️', category: 'social', rarity_level: 2 },
+            { id: 'coracao', name: 'Coração da Tribo', description: 'Reputação de ajuda comunitária generosa na tribo MIRA', icon_emoji: '❤️', category: 'social', rarity_level: 1 }
         ];
 
         for (const badge of defaultBadges) {
@@ -220,10 +247,10 @@ export const gamificationService = {
             { id: 'curador', threshold: 50, name: 'Curador de Conteúdo', icon_emoji: '🔍' },
             { id: 'mestre_docs', threshold: 80, name: 'Mestre dos Documentos', icon_emoji: '📚' },
             { id: 'exemplar', threshold: 100, name: 'Cidadão Exemplar', icon_emoji: '💎' },
-            { id: 'mentor_emprego', threshold: 120, name: 'Mentor de Emprego', icon_emoji: '🔥' },
             { id: 'sentinela', threshold: 150, name: 'Sentinela MIRA', icon_emoji: '🛡️' },
-            { id: 'especialista_leis', threshold: 200, name: 'Especialista em Leis', icon_emoji: '📖' },
-            { id: 'verificado', threshold: 0, name: 'Cidadão Verificado', icon_emoji: '✅', requireVerified: true }
+            { id: 'voz_autoridade', threshold: 500, name: 'Voz de Autoridade', icon_emoji: '🎙️' },
+            { id: 'verificado', threshold: 0, name: 'Cidadão Verificado', icon_emoji: '✅', requireVerified: true },
+            { id: 'verificada', threshold: 0, name: 'Cidadã Verificada', icon_emoji: '✅', requireVerified: true }
         ];
 
         for (const milestone of milestones) {
