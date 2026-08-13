@@ -331,23 +331,19 @@ const handleDeletePost = async (postId: string) => {
   setMasterPosts(prev => prev.filter(p => p.id !== postId));
 
   try {
-    await syncService.enqueue('delete_post', {
-      postId,
-      userId: user.id,
-      isAdmin: userIsAdmin
-    });
-
+    await communityService.deletePost(postId, user.id);
     showToast(t('toast_post_deleted', language), 'success');
-
     analytics.track(
       'post_deleted',
       user.id,
       'comunidade',
       { postId }
     );
-
   } catch (e) {
+    console.error("🚨 Erro ao eliminar post:", e);
     showToast(t('toast_server_error', language), "error");
+    // Re-adicionar post se a eliminação falhar no servidor
+    setMasterPosts(prev => [...prev, targetPost]);
   }
 };
 
@@ -377,75 +373,63 @@ const handleDeletePost = async (postId: string) => {
     setShowCreateModal(false);
     setNewPostContent('');
 
-    try {
-      // 📡 Envio em background via syncService primeiro para obter o ID da fila de espera
-      const queueItemId = await syncService.enqueue('post', {
+    const tempId = `temp-${Date.now()}`;
+    const displayPost: Post = {
+        id: tempId,
         authorId: user.id,
+        authorName: user.name || user.full_name || user.user_metadata?.full_name || 'Amanda Abreu',
+        authorAvatar: user.avatar || user.avatar_url || user.user_metadata?.avatar_url || '',
+        authorIsVerified: user.isVerified,
+        authorFollowersCount: user.followers_count || 0,
+        authorFollowingCount: user.following_count || 0,
+        authorityLevel: user.level || 0,
+        content: initialContent,
+        category: initialCategory,
+        backgroundImage: initialBackground,
+        title: 'Nova Partilha',
+        timestamp: new Date().toISOString(),
+        isVerified: user.isVerified || false,
+        likes: 0,
+        usefulVotes: 0,
+        fakeVotes: 0,
+        reports: 0,
+        nobelScore: 10,
+        tags: [],
+        isFraudWarning: false,
+        urgency: 0,
+        validationStatus: 'validated',
+        reviewVotes: 0,
+        comments: [],
+        translations: {}
+    };
+
+    // 🚀 OTIMISMO DE INTERFACE: Exibir post imediatamente no feed
+    setMasterPosts(prev => [displayPost, ...prev]);
+    showToast(t('toast_post_created', language), "success");
+
+    try {
+      // 🛡️ PERSISTÊNCIA SOBERANA: Inserção atómica direta no PostgreSQL Supabase
+      const createdPost = await communityService.createPost({
+        authorId: user.id,
+        authorName: user.name || user.full_name || 'Membro MIRA',
+        authorAvatar: user.avatar || user.avatar_url || '',
         content: initialContent,
         category: initialCategory,
         backgroundImage: initialBackground,
         title: 'Nova Partilha'
       });
 
-      // Identificador único alinhado com o reconciliador do syncService
-      const localId = `local-${queueItemId}`;
+      if (createdPost && createdPost.id) {
+        console.log("✅ [MIRA DB] Post reconciliado com ID permanente PostgreSQL:", createdPost.id);
+        setMasterPosts(prev => prev.map(p => p.id === tempId ? createdPost : p));
+      }
 
-      // Criar o objeto Post Otimista
-      const displayPost: Post = {
-          id: localId,
-          authorId: user.id,
-          authorName: user.name || user.full_name || user.user_metadata?.full_name || 'Amanda Abreu',
-          authorAvatar: user.avatar || user.avatar_url || user.user_metadata?.avatar_url || '',
-          authorIsVerified: user.isVerified,
-          authorFollowersCount: user.followers_count || 0,
-          authorFollowingCount: user.following_count || 0,
-          authorityLevel: user.level || 0,
-          content: initialContent,
-          category: initialCategory,
-          backgroundImage: initialBackground,
-          title: 'Nova Partilha',
-          timestamp: new Date().toISOString(),
-          isVerified: user.isVerified || false,
-          likes: 0,
-          usefulVotes: 0,
-          fakeVotes: 0,
-          reports: 0,
-          nobelScore: 10,
-          tags: [],
-          isFraudWarning: false,
-          urgency: 0,
-          validationStatus: 'pending',
-          reviewVotes: 0,
-          comments: [],
-          translations: {}
-      };
-
-      // 🚀 AÇÃO INSTANTÂNEA: Inserir no Feed e guardar cópia local
-      setMasterPosts(prev => [displayPost, ...prev]);
-
-      try {
-        const rawLocal = localStorage.getItem('mira_local_user_posts');
-        const localList = rawLocal ? JSON.parse(rawLocal) : [];
-        localList.unshift({
-          id: localId,
-          author_id: user.id,
-          title: 'Nova Partilha',
-          content: initialContent,
-          category: initialCategory,
-          background_image: initialBackground,
-          created_at: new Date().toISOString()
-        });
-        localStorage.setItem('mira_local_user_posts', JSON.stringify(localList.slice(0, 50)));
-      } catch (e) {}
-      
-      // Feedback visual imediato
-      showToast(t('toast_post_created', language), "success");
-      
       onEarnPoints && onEarnPoints(10);
       analytics.track('post_created', user.id, 'comunidade', { category: initialCategory });
-    } catch (error) {
-      console.error("MIRA: Erro no envio otimista:", error);
-      showToast(t('toast_local_post_error', language), "error");
+    } catch (err: any) {
+      console.error("🚨 [MIRA ERRO CRÍTICO NA GRAVAÇÃO DO POST]:", err);
+      showToast("Erro ao gravar post no banco de dados. Tente novamente.", "error");
+      setMasterPosts(prev => prev.filter(p => p.id !== tempId));
     }
   };
 
@@ -880,7 +864,7 @@ const handleDeletePost = async (postId: string) => {
                 <img src={user.avatar} className="w-full h-full object-cover rounded-full border-2 border-transparent" alt="Perfil" />
               </button>
               <div>
-                <h2 className="mira-module-title !text-slate-900">COMUNIDADE MIRA</h2>
+                <h2 className="mira-module-title !text-slate-900">MIRA HUB</h2>
               </div>
             </div>
             <button 

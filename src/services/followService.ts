@@ -10,7 +10,6 @@ export const followService = {
             return { error: null };
         }
 
-        // 1. Persistência Local Garantida e Escopada por Utilizador
         try {
             const key = this.getLocalKey(followerId);
             const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
@@ -20,31 +19,29 @@ export const followService = {
             }
         } catch (e) {}
 
-        // 2. Registos remotos na tabela user_follows
         try {
-            await supabase.from('user_follows').upsert([{ follower_id: followerId, following_id: followedId }], { onConflict: 'follower_id,following_id' });
-        } catch (e) {
-            try {
-                await supabase.from('user_follows').insert([{ follower_id: followerId, following_id: followedId }]);
-            } catch (err) {}
-        }
+            const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+            const token = sessionRes.data.session?.access_token || '';
 
-        try {
-            await supabase.from('activity_logs').insert([{
-                user_id: followerId,
-                action: 'user_followed',
-                metadata: { target_id: followedId }
-            }]);
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            await fetch('/api/community', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    action: 'follow',
+                    reqUserId: followerId,
+                    targetUserId: followedId
+                })
+            });
         } catch (e) {}
 
-        // 3. 🏆 GAMIFICAÇÃO INTEGRAL: Atribuição imediata de Pontos e Selos
         try {
             const { gamificationService } = await import('./gamificationService');
             const newRep = await gamificationService.earnPoints(followerId, 5, 'Seguir Utilizador');
             if (newRep !== null) {
                 await gamificationService.autoAwardBadges(followerId, newRep);
-            } else {
-                await gamificationService.autoAwardBadges(followerId, 15);
             }
         } catch (e) {
             console.error("MIRA: Error earning points on follow:", e);
@@ -64,7 +61,21 @@ export const followService = {
         } catch (e) {}
 
         try {
-            await supabase.from('user_follows').delete().eq('follower_id', followerId).eq('following_id', followedId);
+            const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+            const token = sessionRes.data.session?.access_token || '';
+
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            await fetch('/api/community', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    action: 'unfollow',
+                    reqUserId: followerId,
+                    targetUserId: followedId
+                })
+            });
         } catch (e) {}
         
         return { error: null };

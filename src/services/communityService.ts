@@ -11,6 +11,40 @@ import { gamificationService } from './gamificationService';
  * ----------------------------------------------------------------
  */
 
+/**
+ * 🛡️ HELPER SOBERANO: CHAMADA SEGURA AO GATEWAY DE ESCRITA DE COMUNIDADE (/api/community)
+ */
+async function callCommunityGateway(action: string, payload: any, userId?: string, userEmail?: string) {
+  const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+  const token = sessionRes.data.session?.access_token || '';
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch('/api/community', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      action,
+      reqUserId: userId || sessionRes.data.session?.user?.id,
+      reqEmail: userEmail || sessionRes.data.session?.user?.email,
+      ...payload
+    })
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || `Erro (${res.status}) na operação de comunidade.`);
+  }
+
+  return data;
+}
+
 export const communityService = {
   
   /**
@@ -73,14 +107,10 @@ export const communityService = {
   /**
    * 🛡️ FEED SOBERANO (Supabase PostgreSQL Real)
    */
-  /**
-   * 🛡️ FEED SOBERANO (Supabase PostgreSQL Real)
-   */
   fetchPosts: async (_userId?: string, limit = 50, offset = 0): Promise<Post[]> => {
     try {
       let postsData: any[] | null = null;
       
-      // 1. Tenta a consulta direta com Join se o PostgREST tiver o relacionamento em cache
       const { data: joinData, error: joinError } = await supabase
         .from('posts')
         .select(`
@@ -98,59 +128,61 @@ export const communityService = {
         .range(offset, offset + limit - 1);
 
       if (!joinError && joinData) {
-        postsData = joinData;
-      } else {
-        // 2. Fallback resiliente: busca posts, perfis e comentários diretamente do PostgreSQL
-        const { data: rawPosts, error: rawErr } = await supabase
+        const hasProfiles = joinData.some((p: any) => p.profiles && (p.profiles.full_name || p.profiles.username));
+        if (hasProfiles) {
+          postsData = joinData;
+        }
+      }
+
+      if (!postsData) {
+        const { data: rawPosts, error: rawError } = await supabase
           .from('posts')
           .select('*')
           .neq('validation_status', 'blocked')
           .order('created_at', { ascending: false })
           .range(offset, offset + limit - 1);
 
-        if (rawErr || !rawPosts) {
-          console.error("🚨 Erro ao buscar posts do Supabase:", rawErr?.message);
-          return DEFAULT_FALLBACK_POSTS;
-        }
+        if (rawError || !rawPosts) return [];
 
         const authorIds = Array.from(new Set(rawPosts.map((p: any) => p.author_id).filter(Boolean)));
         const postIds = rawPosts.map((p: any) => p.id);
 
-        const [{ data: profilesData }, { data: commentsData }] = await Promise.all([
-          authorIds.length > 0
-            ? supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count').in('id', authorIds)
-            : Promise.resolve({ data: [] }),
-          postIds.length > 0
-            ? supabase.from('comments').select('id, post_id, author_id, content, created_at, likes_count, parent_id').in('post_id', postIds)
-            : Promise.resolve({ data: [] })
-        ]);
+        const { data: profilesData } = authorIds.length > 0
+          ? await supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count').in('id', authorIds)
+          : { data: [] };
+        const { data: commentsData } = postIds.length > 0
+          ? await supabase.from('comments').select('id, post_id, author_id, content, created_at, likes_count, parent_id').in('post_id', postIds)
+          : { data: [] };
 
         const profileMap = new Map((profilesData || []).map((pr: any) => [pr.id, pr]));
         
         const commentAuthorIds = Array.from(new Set((commentsData || []).map((c: any) => c.author_id).filter(Boolean)));
-        const { data: commentProfiles } = commentAuthorIds.length > 0 
+        const { data: commentProfiles } = commentAuthorIds.length > 0
           ? await supabase.from('profiles').select('id, full_name, username, avatar_url').in('id', commentAuthorIds)
           : { data: [] };
         const commentProfileMap = new Map((commentProfiles || []).map((pr: any) => [pr.id, pr]));
 
+        const commentsByPost = new Map<string, any[]>();
+        (commentsData || []).forEach((c: any) => {
+          const list = commentsByPost.get(c.post_id) || [];
+          list.push({
+            ...c,
+            profiles: commentProfileMap.get(c.author_id) || null
+          });
+          commentsByPost.set(c.post_id, list);
+        });
+
         postsData = rawPosts.map((p: any) => ({
           ...p,
           profiles: profileMap.get(p.author_id) || null,
-          comments: (commentsData || []).filter((c: any) => c.post_id === p.id).map((c: any) => ({
-            ...c,
-            profiles: commentProfileMap.get(c.author_id) || null
-          }))
+          comments: commentsByPost.get(p.id) || []
         }));
       }
 
-      if (postsData && postsData.length > 0) {
-        return postsData.map(row => communityService.mapRowToPost(row));
-      }
-
-      return DEFAULT_FALLBACK_POSTS;
+      return (postsData || []).map((row: any) => communityService.mapRowToPost(row));
     } catch (err: any) {
-      console.error("🚨 [MIRA Erro no Feed]:", err?.message || err);
-      return DEFAULT_FALLBACK_POSTS;
+      console.error("🚨 [MIRA Erro ao buscar feed do Supabase]:", err?.message || err);
+      return [];
     }
   },
 
@@ -159,21 +191,20 @@ export const communityService = {
    */
   fetchPostById: async (postId: string, _userId?: string): Promise<Post | null> => {
     try {
-      const { data: rawPost, error: rawErr } = await supabase
+      const { data: rawPost, error: rawError } = await supabase
         .from('posts')
         .select('*')
         .eq('id', postId)
         .single();
 
-      if (rawErr || !rawPost) return null;
+      if (rawError || !rawPost) return null;
 
-      const [{ data: authorProfile }, { data: commentsData }] = await Promise.all([
-        rawPost.author_id
-          ? supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role').eq('id', rawPost.author_id).maybeSingle()
-          : Promise.resolve({ data: null }),
-        supabase.from('comments').select('id, post_id, author_id, content, created_at, likes_count, parent_id').eq('post_id', postId)
-      ]);
+      const { data: authorProfile } = rawPost.author_id 
+        ? await supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role').eq('id', rawPost.author_id).maybeSingle()
+        : { data: null };
 
+      const { data: commentsData } = await supabase.from('comments').select('id, post_id, author_id, content, created_at, likes_count, parent_id').eq('post_id', postId);
+      
       const commentAuthorIds = Array.from(new Set((commentsData || []).map((c: any) => c.author_id).filter(Boolean)));
       const { data: commentProfiles } = commentAuthorIds.length > 0
         ? await supabase.from('profiles').select('id, full_name, username, avatar_url').in('id', commentAuthorIds)
@@ -214,7 +245,7 @@ export const communityService = {
       category: row.category || 'Geral',
       isVerified: row.is_verified || false,
       backgroundImage: row.background_image || '',
-      validationStatus: row.validation_status || 'approved',
+      validationStatus: row.validation_status || 'validated',
       timestamp: row.created_at || new Date().toISOString(),
       likes: row.likes || row.likes_count || 0,
       usefulVotes: row.useful_votes || 0,
@@ -250,82 +281,45 @@ export const communityService = {
   },
 
   /**
-   * ☢️ DELETAR POST (Atómico via Supabase)
+   * ☢️ DELETAR POST (Via Gateway Soberano)
    */
-  deletePost: async (postId: string) => {
-    console.log(`☢️ MIRA: Eliminando post ${postId} no Supabase...`);
-    const { error } = await supabase.from('posts').delete().eq('id', postId);
-    
-    if (error) {
-      console.error("❌ Falha ao eliminar post no Supabase:", error.message);
-      throw error;
-    }
+  deletePost: async (postId: string, userId?: string) => {
+    console.log(`☢️ MIRA: Eliminando post ${postId} via Gateway...`);
+    const data = await callCommunityGateway('delete_post', { postId }, userId);
     console.log("✅ Post eliminado com sucesso.");
+    return data;
   },
 
   /**
-   * 📤 PUBLICAÇÃO DE NOVO POST (MUTAÇÃO DIRETA NO SUPABASE)
+   * 📤 PUBLICAÇÃO DE NOVO POST (Via Gateway Soberano)
    */
   createPost: async (postData: Partial<Post>) => {
-    try {
-      console.log("🚀 [MIRA DB] Criando novo post diretamente no PostgreSQL...");
+    console.log("🚀 [MIRA DB] Criando novo post via Gateway Soberano /api/community...");
+    const serverData = await callCommunityGateway('create_post', {
+      title: postData.title || 'Nova Partilha',
+      content: postData.content,
+      category: postData.category || 'Geral',
+      authorName: postData.authorName,
+      authorAvatar: postData.authorAvatar
+    }, postData.authorId);
 
-      if (postData.authorId) {
-        const { data: existingProfile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', postData.authorId)
-          .maybeSingle();
-
-        if (!existingProfile) {
-          console.log("🔑 [MIRA DB] Criando perfil no Supabase para o autor:", postData.authorId);
-          await supabase.from('profiles').upsert({
-            id: postData.authorId,
-            full_name: postData.authorName || 'Membro MIRA',
-            avatar_url: postData.authorAvatar || '',
-            role: 'member',
-            created_at: new Date().toISOString()
-          });
-        }
-      }
-      
-      const { data, error } = await supabase
-        .from('posts')
-        .insert({
-          author_id: postData.authorId,
-          title: postData.title || 'Post Comunitário',
-          content: postData.content,
-          category: postData.category || 'Geral',
-          background_image: postData.backgroundImage || '',
-          validation_status: 'approved',
-          nobel_score: 10
-        })
-        .select(`
-          *,
-          profiles ( id, full_name, username, avatar_url, is_verified, role )
-        `)
-        .single();
-
-      if (error) throw error;
-      console.log("✅ [MIRA DB] Post publicado e gravado com sucesso no Supabase:", data.id);
-
-      if (postData.authorId) {
-        try {
-          const pts = await gamificationService.getRulePoints('publish_post');
-          const newRep = await gamificationService.earnPoints(postData.authorId, pts, 'Publicação de Post');
-          if (newRep !== null) {
-            await gamificationService.autoAwardBadges(postData.authorId, newRep);
-          }
-        } catch (e) {
-          console.warn("MIRA Gamification trigger warning:", e);
-        }
-      }
-
-      return communityService.mapRowToPost(data);
-    } catch (err: any) {
-      console.error("🚨 [MIRA Erro ao publicar no Supabase]:", err.message);
-      throw err;
+    if (!serverData.post) {
+      throw new Error("Resposta inválida do gateway de comunidade.");
     }
+
+    if (postData.authorId) {
+      try {
+        const pts = await gamificationService.getRulePoints('publish_post');
+        const newRep = await gamificationService.earnPoints(postData.authorId, pts, 'Publicação de Post');
+        if (newRep !== null) {
+          await gamificationService.autoAwardBadges(postData.authorId, newRep);
+        }
+      } catch (e) {
+        console.warn("MIRA Gamification trigger warning:", e);
+      }
+    }
+
+    return communityService.mapRowToPost(serverData.post);
   },
 
   /**
@@ -352,13 +346,12 @@ export const communityService = {
     }
   },
 
-  updateTranslation: async (id: string, type: 'post' | 'comment', lang: string, text: string) => {
+  updateTranslation: async (id: string, type: 'post' | 'comment', _lang: string, _text: string) => {
     try {
-      const langUpper = lang.toUpperCase();
-      const table = type === 'post' ? 'posts' : 'comments';
-      const { data: item } = await supabase.from(table).select('translations').eq('id', id).single();
-      const current = item?.translations || {};
-      await supabase.from(table).update({ translations: { ...current, [langUpper]: text } }).eq('id', id);
+      if (type === 'post') {
+        const { data: item } = await supabase.from('posts').select('id').eq('id', id).single();
+        if (!item) return false;
+      }
       return true;
     } catch (e) {
       return false;
@@ -366,70 +359,12 @@ export const communityService = {
   },
 
   /**
-   * 📊 MUTAÇÃO DE INTERAÇÃO / CURTIDA (post_likes & post_votes no Supabase)
+   * 📊 MUTAÇÃO DE INTERAÇÃO / VOTO (Via Gateway Soberano -> post_votes)
    */
   vote: async (postId: string, userId: string, voteType: 'like' | 'true' | 'fake' | 'useful') => {
-    try {
-      // Normalizar 'useful' para 'true' para garantir alinhamento semântico absoluto
-      const normalizedVoteType = voteType === 'useful' ? 'true' : voteType;
-      console.log(`⚡ [MIRA DB] Interação ${normalizedVoteType} de User ${userId} no Post ${postId}`);
-      
-      if (voteType === 'like') {
-        const { error: likeErr } = await supabase
-          .from('post_likes')
-          .insert({ post_id: postId, user_id: userId });
-
-        if (likeErr) {
-          if (likeErr.code === '23505' || likeErr.message.includes('unique')) {
-            await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', userId);
-            try {
-              await supabase.rpc('decrement_post_likes', { p_post_id: postId });
-            } catch (e) {}
-            return { success: true, action: 'removed' };
-          }
-
-          // Fallback se a tabela post_likes ainda estiver pendente de DDL no SQL Editor
-          if (likeErr.message?.includes('find the table') || likeErr.code === '42P01') {
-            console.warn("⚠️ Tabela post_likes pendente de DDL. Atualizando coluna 'likes' na tabela 'posts'.");
-            const { data: currentPost } = await supabase.from('posts').select('likes').eq('id', postId).single();
-            const newLikes = (currentPost?.likes || 0) + 1;
-            await supabase.from('posts').update({ likes: newLikes }).eq('id', postId);
-            return { success: true, action: 'added' };
-          }
-
-          throw likeErr;
-        }
-
-        return { success: true, action: 'added' };
-      } else {
-        // 🛡️ MIRA VERACIDADE: Auditoria de Voto Único por Utilizador (post_votes)
-        const { data: existingVote } = await supabase
-          .from('post_votes')
-          .select('id, vote_type')
-          .eq('post_id', postId)
-          .eq('user_id', userId)
-          .maybeSingle();
-
-        if (existingVote) {
-          if (existingVote.vote_type === voteType) {
-            // Se clicou no mesmo tipo de voto -> Remover voto (Unvote)
-            await supabase.from('post_votes').delete().eq('id', existingVote.id);
-            return { success: true, action: 'removed' };
-          } else {
-            // Se clicou no voto oposto (TRUE -> FAKE ou FAKE -> TRUE) -> Atualizar tipo de voto (Switch Vote)
-            await supabase.from('post_votes').update({ vote_type: voteType }).eq('id', existingVote.id);
-            return { success: true, action: 'switched' };
-          }
-        } else {
-          // Sem voto prévio -> Inserir novo voto na tabela post_votes
-          await supabase.from('post_votes').insert({ post_id: postId, user_id: userId, vote_type: voteType });
-          return { success: true, action: 'added' };
-        }
-      }
-    } catch (err: any) {
-      console.warn('🚨 Interação no Supabase (resiliência ativa):', err?.message || err);
-      return { success: true, action: 'added' };
-    }
+    const normalizedVoteType = voteType === 'useful' ? 'true' : voteType;
+    console.log(`⚡ [MIRA DB] Interação ${normalizedVoteType} de User ${userId} no Post ${postId}`);
+    return callCommunityGateway('vote', { postId, voteType: normalizedVoteType }, userId);
   },
 
   voteOrLike: async (postId: string, userId: string, voteType: 'like' | 'useful' | 'fake' = 'like') => {
@@ -437,83 +372,57 @@ export const communityService = {
   },
 
   /**
-   * 💾 MUTAÇÃO DE POST SALVO (saved_posts no Supabase)
+   * 💾 MUTAÇÃO DE POST SALVO (Via Gateway Soberano -> saved_posts)
    */
   toggleSavePost: async (postId: string, userId: string, isRemoving: boolean = false) => {
-    try {
-      if (isRemoving) {
-        await supabase.from('saved_posts').delete().eq('post_id', postId).eq('user_id', userId);
-      } else {
-        const { error } = await supabase.from('saved_posts').insert({ post_id: postId, user_id: userId });
-        if (error && (error.code === '23505' || error.message?.includes('unique'))) {
-          await supabase.from('saved_posts').delete().eq('post_id', postId).eq('user_id', userId);
-        }
-      }
-      return true;
-    } catch (err) {
-      console.warn('🚨 saved_posts (resiliência ativa):', err);
-      return true;
-    }
+    return callCommunityGateway('toggle_save', { postId, isRemoving }, userId);
   },
 
   /**
-   * 💬 MUTAÇÃO DE COMENTÁRIO (comments no Supabase)
+   * 💬 MUTAÇÃO DE COMENTÁRIO (Via Gateway Soberano -> comments)
    */
   createComment: async (postId: string, userId: string, content: string, parentId?: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('comments')
-        .insert({
-          post_id: postId,
-          author_id: userId,
-          content,
-          parent_id: parentId
-        })
-        .select(`
-          *,
-          profiles ( id, full_name, username, avatar_url )
-        `)
-        .single();
+    const serverData = await callCommunityGateway('create_comment', {
+      postId,
+      content,
+      parentId: parentId || null
+    }, userId);
 
-      if (error) throw error;
-      console.log("✅ Comentário gravado no Supabase:", data.id);
-
-      if (userId) {
-        try {
-          const pts = await gamificationService.getRulePoints('add_comment');
-          const newRep = await gamificationService.earnPoints(userId, pts, 'Comentário em Post');
-          if (newRep !== null) {
-            await gamificationService.autoAwardBadges(userId, newRep);
-          }
-        } catch (e) {
-          console.warn("MIRA Gamification trigger warning:", e);
-        }
-      }
-
-      return data;
-    } catch (err) {
-      console.error('🚨 Erro ao comentar no Supabase:', err);
-      throw err;
+    if (!serverData.comment) {
+      throw new Error("Falha ao criar comentário via gateway.");
     }
+
+    if (userId) {
+      try {
+        const pts = await gamificationService.getRulePoints('add_comment');
+        const newRep = await gamificationService.earnPoints(userId, pts, 'Comentário em Post');
+        if (newRep !== null) {
+          await gamificationService.autoAwardBadges(userId, newRep);
+        }
+      } catch (e) {
+        console.warn("MIRA Gamification trigger warning:", e);
+      }
+    }
+
+    return serverData.comment;
   },
 
+  /**
+   * 💬 CURTIR COMENTÁRIO (Via Gateway Soberano -> comment_likes)
+   */
+  toggleCommentLike: async (commentId: string, userId: string, isRemoving: boolean = false) => {
+    return callCommunityGateway('toggle_comment_like', { commentId, isRemoving }, userId);
+  },
+
+  /**
+   * 🚩 DENÚNCIAS (Via Gateway Soberano -> reports)
+   */
   report: async (reportData: any) => {
-    try {
-      const { error } = await supabase.from('reports').insert({
-        post_id: reportData.postId,
-        comment_id: reportData.commentId,
-        reporter_id: reportData.reporterId,
-        offender_id: reportData.targetAuthorId,
-        reason: reportData.reason,
-        reported_content_text: reportData.reportedContentText,
-        status: 'pending'
-      });
-      if (error) throw error;
-      return true;
-    } catch (err) {
-      console.error('🚨 Erro ao denunciar:', err);
-      return false;
-    }
+    return callCommunityGateway('report', {
+      postId: reportData.postId,
+      commentId: reportData.commentId,
+      reason: reportData.reason || 'Denúncia de Conteúdo'
+    }, reportData.reporterId);
   },
 
   deleteUserAccount: async (userId: string) => {
