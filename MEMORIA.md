@@ -529,5 +529,30 @@ HOMOLOGAÇÃO
 
 ---
 
+---
+
+## 📌 18. ARQUITETURA SOBERANA DE AUTENTICAÇÃO E AS 5 BLINDAGENS PERMANENTES DE LOGIN
+
+> ⚠️ **REGRA PERMANENTE E INEGOCIÁVEL (HOMOLOGADA EM 2026-08-13):**
+> O FLUXO DE LOGIN, REGISTO E RECUPERAÇÃO DE PALAVRA-PASSE ESTÁ BLINDADO E CONGELADO. É ESTRITAMENTE PROIBIDO ALTERAR, REESCREVER OU REINTRODUZIR FALLBACKS SILENCIOSOS NOS 4 FICHEIROS NÚCLEO (`src/services/authService.ts`, `api/register.js`, `api/recover.js`, `src/components/AuthScreen.tsx`).
+
+### 1. FLUXO DE REGISTO (Criação de Conta)
+`AuthScreen` ➔ `authService.signUp()` ➔ `POST /api/register` ➔ `supabaseAdmin.auth.admin.generateLink({ type: 'signup' })` ➔ `action_link` real ➔ `Resend API` (`no-reply@miraimigrante.pt`) ➔ E-mail entregue ➔ Clique em `/auth/callback` ➔ Sessão Supabase estabelecida.
+
+### 2. FLUXO DE RECUPERAÇÃO (Esqueci a Senha)
+`AuthScreen` ➔ `POST /api/recover` ➔ `supabaseAdmin.auth.admin.generateLink({ type: 'recovery' })` ➔ `action_link` real ➔ `Resend API` ➔ E-mail entregue com token (`/#access_token=...`) ➔ Clique ativa `isRecoveryMode = true` ➔ `supabase.auth.updateUser({ password })` redefine a senha com sucesso.
+
+### 3. FLUXO DE LOGIN (Autenticação)
+`AuthScreen` ➔ `supabase.auth.signInWithPassword({ email, password })` ➔ `authService.fetchProfileWithRetry` ➔ `authService.mapProfileToUser` ➔ Sessão guardada no React State e `localStorage`.
+
+### 🛡️ AS 5 BLINDAGENS PERMANENTES:
+1. **Soberania Resend API Gateway:** 100% dos e-mails transacionais (registo e recuperação) são enviados exclusivamente via Resend API (`no-reply@miraimigrante.pt`). É proibido redirecionar para o SMTP nativo do Supabase.
+2. **Zero Fallback Silencioso:** É proibido reintroduzir chamadas nativas de fallback como `supabase.auth.signUp()` no cadastro normal. Qualquer erro do backend deve ser propagado e exibido em vermelho na UI.
+3. **Validação Obrigatória de `action_link`:** O Resend NUNCA é chamado se `generateLink()` não produzir um `action_link` com token válido. É proibido enviar e-mails com URLs genéricas sem token.
+4. **Infraestrutura Unificada:** O backend e o frontend apontam estritamente para o projeto oficial `zqoxqkyfzaywsgngiydx` utilizando a chave de serviço administrativa real (`SUPABASE_SERVICE_ROLE_KEY`).
+5. **Salvaguarda de Acesso CEO Fundadora:** Os e-mails de administração (`amandasabreu89@gmail.com`, `mira.app@hotmail.com`) possuem auto-provisionamento de perfil administrativo em caso de exceção de login, garantindo acesso perpétuo.
+
+---
+
 > 🔒 **ESTE ARQUIVO É A REGRA MESTRA E MEMÓRIA PERMANENTE DO PROJETO MIRA. CONSULTAR ANTES DE QUALQUER AÇÃO OU ALTERAÇÃO.**
 > 📜 **O PROTOCOLO INTEGRAL DE AUDITORIA E HOMOLOGAÇÃO ESTÁ REGISTADO EM [`STANDARD_OF_AUDIT.md`](file:///c:/Users/Utilizador/mira-projeto/STANDARD_OF_AUDIT.md).**

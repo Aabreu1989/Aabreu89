@@ -24,9 +24,12 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
 ## Ficheiros onde o mapa foi intencionalmente REMOVIDO:
 - `LocalServicesMap.tsx` — mapa Leaflet foi removido a pedido. NÃO VOLTAR A ADICIONAR.
 
-## Login:
-- SEMPRE email + password
-- NUNCA OTP / passwordless / magic link
+## Login, Registo & Recuperação (REGRA PERMANENTE HOMOLOGADA):
+- **E-mails Transacionais:** 100% via Resend API Gateway (`no-reply@miraimigrante.pt`). NUNCA usar SMTP nativo do Supabase.
+- **Formulários:** SEMPRE email + password. NUNCA OTP / passwordless / magic link.
+- **Zero Fallback Silencioso:** NUNCA reintroduzir fallback nativo em `authService.signUp()`.
+- **Validação de Token:** NUNCA enviar e-mails de recuperação/confirmação sem `action_link` real gerado pelo Supabase Admin.
+- **Ficheiros Núcleo Protegidos:** `src/services/authService.ts`, `api/register.js`, `api/recover.js`, `src/components/AuthScreen.tsx`. NUNCA alterar a arquitetura soberana.
 
 ## Vagas de Emprego (REGRA PERMANENTE):
 - **SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS DE ATÉ 60 DIAS (MÁXIMO 60 DIAS DE IDADE)**
