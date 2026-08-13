@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase, getAuthRedirectUrl } from '../lib/supabase';
 import { User } from '../types';
 import { 
@@ -53,15 +53,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     }, []);
 
     const handleInstallApp = async () => {
-        if (pwaService.isInstallable()) {
+        if (pwaService.isIOS()) {
+            setShowSafariGuide(true);
+        } else if (pwaService.isInstallable()) {
             const outcome = await pwaService.triggerInstall();
             if (outcome === 'accepted') {
                 setIsInstallable(false);
             }
-        } else if (pwaService.isIOS()) {
-            setShowSafariGuide(true);
         } else {
-            showToast("Para instalar o atalho no telem├│vel, aceda ao menu do seu navegador e selecione 'Adicionar ao ecr├ú principal'.", "info");
+            showToast("Para instalar o atalho no telemóvel, aceda ao menu do seu navegador e selecione 'Adicionar ao ecrã principal'.", "info");
         }
     };
 
@@ -487,8 +487,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 {/* Sub-Card Actions (PWA install option, Disclaimer, Footer) closely grouped below */}
                 <div className="w-full flex flex-col items-center gap-2.5 px-2 text-center mt-0.5 shrink-0">
                     
-                    {/* PWA Install Button */}
-                    {(isInstallable || pwaService.isIOS()) && !pwaService.isStandalone() && (
+                    {/* PWA Install Button - ALWAYS VISIBLE on login page */}
+                    {!pwaService.isStandalone() && (
                         <div className="w-full flex justify-center mt-1 z-10 animate-in fade-in duration-300">
                             <button
                                 onClick={handleInstallApp}
@@ -497,8 +497,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                             >
                                 <Smartphone size={13} className="animate-pulse" />
                                 <span>
-                                    {language === 'PT' ? 'Instalar Aplica├º├úo' :
-                                     language === 'ES' ? 'Instalar Aplicaci├│n' :
+                                    {language === 'PT' ? 'Instalar Aplicação' :
+                                     language === 'ES' ? 'Instalar Aplicación' :
                                      language === 'FR' ? 'Installer l\'App' :
                                      'Install Application'}
                                 </span>
