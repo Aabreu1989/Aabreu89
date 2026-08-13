@@ -1,4 +1,4 @@
-﻿import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import { isRateLimited, getClientIp } from '../lib/rate-limiter.js';
 import fetch from 'node-fetch';
 
@@ -104,35 +104,36 @@ export default async function handler(req, res) {
     });
 
     if (linkError || !linkData?.properties?.action_link) {
-        throw new Error(`Erro ao gerar link: ${linkError?.message || 'Link vazio'}`);
+        console.error("❌ [MIRA REG] Falha no generateLink:", linkError?.message || 'Action link vazio');
+        return res.status(500).json({ error: `Falha na geração do link de ativação: ${linkError?.message || 'Link inválido'}` });
     }
 
     const confirmLink = linkData.properties.action_link;
-    console.log(`­ƒôí [MIRA REG] Novo utilizador criado via Link Generator: ${linkData.user.id}`);
+    console.log(`📡 [MIRA REG] Novo utilizador criado via Link Generator: ${linkData.user?.id || 'OK'}`);
 
     // 3. Dispatch Email via Resend
-    console.log(`­ƒôí [MIRA RESEND] Despachando e-mail para: ${cleanEmail} (${language})`);
+    console.log(`📡 [MIRA RESEND] Despachando e-mail para: ${cleanEmail} (${language})`);
     const brandColor = '#FF8C00';
     const brandName = 'MIRA Imigrante';
 
     const subjects = {
-        PT: `MIRA Imigrante - Confirma├º├úo de Registo`,
+        PT: `MIRA Imigrante - Confirmação de Registo`,
         EN: `MIRA Imigrante - Registration Confirmation`,
-        ES: `MIRA Imigrante - Confirmaci├│n de Registro`,
+        ES: `MIRA Imigrante - Confirmación de Registro`,
         FR: `MIRA Imigrante - Confirmation d'inscription`
     };
 
     const greetings = {
         PT: 'Bem-vindo ao MIRA Imigrante!',
         EN: 'Welcome to MIRA Imigrante!',
-        ES: '┬íBienvenido a MIRA Imigrante!',
+        ES: '¡Bienvenido a MIRA Imigrante!',
         FR: 'Bienvenue sur MIRA Imigrante !'
     };
 
     const messages = {
-        PT: 'Para concluir o seu registo e ativar a conta, por favor clique no bot├úo abaixo para confirmar o seu e-mail.',
+        PT: 'Para concluir o seu registo e ativar a conta, por favor clique no botão abaixo para confirmar o seu e-mail.',
         EN: 'To complete your registration and activate your account, please click the button below to confirm your email.',
-        ES: 'Para concluir su registro y activar su cuenta, por favor haga clic en el bot├│n de abajo para confirmar su correo.',
+        ES: 'Para concluir su registro y activar su cuenta, por favor haga clic en el botón de abajo para confirmar su correo.',
         FR: 'Pour finaliser votre inscription et activer votre compte, veuillez cliquer sur le bouton ci-dessous pour confirmer votre e-mail.'
     };
 
@@ -153,14 +154,15 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
             from: 'MIRA Imigrante <no-reply@miraimigrante.pt>', 
+            reply_to: 'no-reply@miraimigrante.pt',
             to: cleanEmail,
             subject: subjects[lang],
-            text: `${greetings[lang]}\n\n${messages[lang]}\n\nLink de confirma├º├úo: ${confirmLink}\n\nMIRA Imigrante - Integra├º├úo ÔÇó Apoio ÔÇó Soberania`,
+            text: `${greetings[lang]}\n\n${messages[lang]}\n\nLink de confirmação: ${confirmLink}\n\nMIRA Imigrante - Integração • Apoio • Soberania`,
             html: `
                 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #ffffff; border-radius: 24px; border: 1px solid #f1f5f9; text-align: center; color: #0F172A;">
                     <div style="margin-bottom: 30px;">
                         <h1 style="color: #FF8C00; font-size: 28px; font-weight: 800; margin: 0; text-transform: uppercase;">${brandName}</h1>
-                        <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px;">Integra├º├úo ÔÇó Apoio ÔÇó Soberania</p>
+                        <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px;">Integração • Apoio • Soberania</p>
                     </div>
                     
                     <div style="background-color: #f8fafc; padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 1px solid #f1f5f9;">
@@ -174,24 +176,25 @@ export default async function handler(req, res) {
                     <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 30px 0;">
                     
                     <p style="font-size: 12px; color: #94a3b8; font-weight: 500;">
-                        ┬® 2026 ${brandName}. Todos os direitos reservados.
+                        © 2026 ${brandName}. Todos os direitos reservados.
                     </p>
                 </div>
             `
         })
     });
 
-
     if (!resendResponse.ok) {
-        const errData = await resendResponse.json();
-        throw new Error(`Resend API Error: ${JSON.stringify(errData)}`);
+        const errData = await resendResponse.json().catch(() => ({}));
+        const resendMsg = errData.message || errData.error || 'Falha no envio de e-mail pelo Resend';
+        console.error(`❌ [MIRA RESEND] Erro: ${resendMsg}`);
+        return res.status(500).json({ error: `Erro no serviço de e-mail (Resend): ${resendMsg}` });
     }
 
-    console.log(`Ô£à [MIRA] E-mail enviado com sucesso para ${cleanEmail}`);
+    console.log(`✅ [MIRA] E-mail enviado com sucesso para ${cleanEmail}`);
     return res.status(200).json({ success: true, message: 'Confirme o seu e-mail.' });
 
   } catch (error) {
-    console.error('ÔØî [MIRA REG] Falha Cr├¡tica:', error.message);
+    console.error('❌ [MIRA REG] Falha Crítica:', error.message);
     return res.status(500).json({ error: error.message });
   }
 }

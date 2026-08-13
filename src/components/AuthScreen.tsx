@@ -152,19 +152,17 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
             if (isForgotPassword) {
                 const targetEmail = email.trim().toLowerCase();
-                try {
-                    console.log("📩 [MIRA] Enviando e-mail de recuperação via /api/recover...");
-                    const res = await fetch('/api/recover', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: targetEmail, language })
-                    });
-                    const data = await res.json().catch(() => ({}));
-                    if (!res.ok) throw new Error(data.error || 'Erro ao enviar e-mail de recuperação.');
-                    console.log("✅ [MIRA] E-mail de recuperação enviado com sucesso.");
-                } catch (err: any) {
-                    console.error("🚨 [MIRA] Falha no envio de recuperação:", err.message);
+                console.log("📩 [MIRA] Enviando e-mail de recuperação via /api/recover...");
+                const res = await fetch('/api/recover', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: targetEmail, language })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error(data.error || 'Não foi possível enviar o e-mail de recuperação.');
                 }
+                console.log("✅ [MIRA] E-mail de recuperação enviado com sucesso.");
                 showToast(t('auth_forgot_pw_email_sent', language), 'success');
                 setIsForgotPassword(false);
                 setShowAuthMethod(true);

@@ -1,4 +1,4 @@
-﻿import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { User } from '../types';
 import { t } from '../utils/translations';
 
@@ -212,50 +212,23 @@ export const authService = {
      * ­ƒøí´©Å SOVEREIGN REGISTRATION (RESEND API GATEWAY)
      */
     async signUp(email: string, password: string, name: string = '', language: string = 'PT') {
-        try {
-            console.log("­ƒôí [MIRA] Tentando Registo Soberano via API Gateway...");
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email.trim(), password, name, language })
-            });
-            
-            const data = await response.json().catch(() => ({}));
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), password, name, language })
+        });
+        
+        const data = await response.json().catch(() => ({}));
 
-            if (response.ok) {
-                return { 
-                    success: true, 
-                    message: data.message || t('auth_signup_success', language),
-                    isConfirmed: false // Resend will handle the confirmation link
-                };
-            }
-            
-            console.warn("ÔÜá´©Å [MIRA] API de Registo falhou, tentando Fallback Nativo:", data.error);
-        } catch (err: any) {
-            console.warn("ÔÜá´©Å [MIRA] API Gateway indispon├¡vel, tentando Fallback Nativo...");
+        if (!response.ok) {
+            throw new Error(data.error || 'Falha no registo de conta.');
         }
 
-        // ­ƒøí´©Å FALLBACK: Registo direto via Supabase Auth
-        try {
-            const { data, error } = await supabase.auth.signUp({
-                email: email.trim(),
-                password,
-                options: {
-                    data: { name, language, role: 'member' },
-                    emailRedirectTo: `${window.location.origin}/auth/callback`
-                }
-            });
-
-            if (error) throw error;
-            return { 
-                success: true, 
-                message: t('auth_confirm_email', language),
-                isConfirmed: false 
-            };
-        } catch (err: any) {
-            console.error("­ƒÜ¿ [MIRA] Falha Cr├¡tica no Registo:", err.message);
-            throw err;
-        }
+        return { 
+            success: true, 
+            message: data.message || t('auth_signup_success', language),
+            isConfirmed: false
+        };
     },
 
     async deleteAccount(): Promise<boolean> {
