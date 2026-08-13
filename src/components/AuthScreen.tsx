@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase, getAuthRedirectUrl } from '../lib/supabase';
 import { User } from '../types';
 import { 
@@ -53,11 +53,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     }, []);
 
     const handleInstallApp = async () => {
-        if (pwaService.isIOS()) {
+        if (pwaService.isInstallable()) {
+            const outcome = await pwaService.triggerInstall();
+            if (outcome === 'accepted') {
+                setIsInstallable(false);
+            }
+        } else if (pwaService.isIOS()) {
             setShowSafariGuide(true);
-            return;
+        } else {
+            showToast("Para instalar o atalho no telem├│vel, aceda ao menu do seu navegador e selecione 'Adicionar ao ecr├ú principal'.", "info");
         }
-        await pwaService.triggerInstall();
     };
 
     // V26.92: Sync local state if isRecoveryMode is detected via URL delay
@@ -113,7 +118,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 const { error: updateError } = await supabase.auth.updateUser({ password });
                 
                 if (updateError) {
-                    console.warn("🔑 [MIRA AUTH] Direct updateUser failed, attempting API fallback...", updateError.message);
+                    console.warn("­ƒöæ [MIRA AUTH] Direct updateUser failed, attempting API fallback...", updateError.message);
                     if (session) {
                         try {
                             const response = await fetch('/api/update-password', {
@@ -146,35 +151,54 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             }
 
             if (isForgotPassword) {
+                const resendApiKey = (import.meta.env.VITE_RESEND_API_KEY || '').trim();
                 const targetEmail = email.trim().toLowerCase();
-                if (!targetEmail) {
-                    throw new Error(t('auth_error_email_required', language) || 'Por favor, introduza o seu e-mail.');
-                }
-
-                const recoveryLink = `${window.location.origin}/auth/callback?type=recovery`;
+                const recoveryLink = `${window.location.origin}/?type=recovery`;
 
                 try {
-                    console.log("📡 [MIRA RESEND] Solicitando recuperação via API Gateway /api/recover...");
-                    const apiRes = await fetch('/api/recover', {
+                    console.log("­ƒôí [MIRA RESEND] Enviando e-mail de recupera├º├úo via Resend API...");
+                    
+                    const resendRes = await fetch('https://api.resend.com/emails', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: targetEmail, language })
+                        headers: {
+                            'Authorization': `Bearer ${resendApiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            from: 'MIRA Imigrante <no-reply@miraimigrante.pt>',
+                            to: targetEmail,
+                            subject: 'MIRA Imigrante - Recupera├º├úo de Acesso',
+                            html: `
+                                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 20px; border: 1px solid #f1f5f9; color: #0F172A; text-align: center;">
+                                    <h1 style="color: #FF8C00; font-size: 24px; font-weight: 800; margin-bottom: 10px;">MIRA IMIGRANTE</h1>
+                                    <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Recupera├º├úo de Palavra-Passe</p>
+                                    <p style="color: #334155; font-size: 15px; line-height: 1.6; margin-bottom: 30px;">
+                                        Recebemos um pedido para redefinir a tua palavra-passe. Clica no bot├úo abaixo para definir uma nova senha:
+                                    </p>
+                                    <a href="${recoveryLink}" style="display: inline-block; background-color: #FF8C00; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 14px; text-transform: uppercase;">Definir Nova Senha</a>
+                                    <p style="color: #94a3b8; font-size: 12px; margin-top: 30px;">Se n├úo fizeste este pedido, podes ignorar esta mensagem.</p>
+                                </div>
+                            `
+                        })
                     });
 
-                    if (!apiRes.ok) {
-                        const apiData = await apiRes.json().catch(() => ({}));
-                        console.warn("⚠️ [MIRA RECOVER] API Gateway aviso:", apiData.error);
-                    }
-                    
-                    // Backup Supabase Auth Reset
-                    await supabase.auth.resetPasswordForEmail(targetEmail, { redirectTo: recoveryLink }).catch(() => {});
+                    // Trigger Supabase Auth recovery in background as backup
+                    supabase.auth.resetPasswordForEmail(targetEmail, { redirectTo: recoveryLink }).catch(() => {});
 
-                    showToast(t('auth_forgot_pw_email_sent', language), 'success');
+                    if (resendRes.ok) {
+                        console.log("Ô£à [MIRA RESEND] E-mail de recupera├º├úo enviado com sucesso via Resend.");
+                        showToast(t('auth_forgot_pw_email_sent', language), 'success');
+                    } else {
+                        const errText = await resendRes.text();
+                        console.warn("ÔÜá´©Å [MIRA RESEND] Resend API Warning:", errText);
+                        showToast(t('auth_forgot_pw_email_sent', language), 'success');
+                    }
+
                     setIsForgotPassword(false);
                     setShowAuthMethod(true);
                     return;
                 } catch (resendErr: any) {
-                    console.error("🚨 [MIRA RECOVER] Falha no envio:", resendErr);
+                    console.error("­ƒÜ¿ [MIRA RESEND] Falha no envio via Resend:", resendErr);
                     showToast(t('auth_forgot_pw_email_sent', language), 'success');
                     setIsForgotPassword(false);
                     setShowAuthMethod(true);
@@ -193,7 +217,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 if (data?.session?.user) {
                     sessionUser = data.session.user;
                 } else if (isCEO) {
-                    console.log("👑 [MIRA AUTH] Entrada Admin Fundadora para:", targetEmail);
+                    console.log("­ƒææ [MIRA AUTH] Entrada Admin Fundadora para:", targetEmail);
                     // Provisioning admin profile if initial password attempt fails
                     const { data: signUpData } = await supabase.auth.signUp({
                         email: targetEmail,
@@ -234,7 +258,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 // V2026.SUPREMO: Unified Registration Protocol
                 try {
                     const result = await authService.signUp(email, password, '', language);
-                    showToast(result.message || t('auth_confirm_email', language), 'success');
+                    showToast(result.message, 'success');
                     setIsLogin(true);
                 } catch (err: any) {
                     setErrorMsg(err.message);
@@ -248,7 +272,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     .replace(/phone/gi, '')
                     .replace(/telefone/gi, '')
                     .replace(/daily quota/gi, 'limite de tentativas')
-                    .replace(/quota diária/gi, 'limite de tentativas')
+                    .replace(/quota di├íria/gi, 'limite de tentativas')
                     .replace(/ ou  /g, ' ')
                     .trim();
             setErrorMsg(cleanMsg);
@@ -261,7 +285,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     const handlePullRefresh = () => {
         setIsRefreshing(true);
         setErrorMsg('');
-        // Simular um "reload" limpando estados sensíveis
+        // Simular um "reload" limpando estados sens├¡veis
         setTimeout(() => {
             setIsRefreshing(false);
             showToast(t('status_online', language), 'success');
@@ -296,7 +320,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             onTouchMove={handleTouchMove}
         >
 
-            {/* Background — Azul Marinho Imperial MIRA (V2026.PREMIUM) */}
+            {/* Background ÔÇö Azul Marinho Imperial MIRA (V2026.PREMIUM) */}
             <div className="absolute inset-0 bg-[#020420] pointer-events-none" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,_rgba(255,140,0,0.05),_transparent_70%)] pointer-events-none" />
             
@@ -335,7 +359,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
                 {/* Login Card */}
                 <div className="w-full p-4 md:p-6 rounded-[1.5rem] border-t-2 border-l border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.9)] animate-in zoom-in-95 duration-500 relative overflow-hidden flex flex-col gap-3.5" style={{background: 'rgba(10,15,30,0.85)', backdropFilter: 'blur(40px)', borderColor: 'rgba(197, 160, 89, 0.2)'}}>
-                    {/* Glowing Colorful Bar following the curve — MIRA 4-COLOR GRADIENT */}
+                    {/* Glowing Colorful Bar following the curve ÔÇö MIRA 4-COLOR GRADIENT */}
                     <div className="absolute top-0 left-0 right-0 h-[3px] z-20" style={{background: 'linear-gradient(90deg, #FF8C00 0%, #4F8EF7 33%, #22C55E 66%, #EAB308 100%)', boxShadow: '0 4px 15px rgba(255,140,0,0.3), 0 2px 8px rgba(79,142,247,0.2)'}} />
 
                     {/* 4 MIRA Orbs inside card top */}
@@ -463,22 +487,24 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 {/* Sub-Card Actions (PWA install option, Disclaimer, Footer) closely grouped below */}
                 <div className="w-full flex flex-col items-center gap-2.5 px-2 text-center mt-0.5 shrink-0">
                     
-                    {/* 📲 PWA Install Button — PERMANENT ON LOGIN SCREEN */}
-                    <div className="w-full flex justify-center mt-1 z-10 animate-in fade-in duration-300">
-                        <button
-                            onClick={handleInstallApp}
-                            className="w-[200px] py-2 px-3 text-white font-extrabold uppercase text-[9px] tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all border border-white/10"
-                            style={{ background: 'linear-gradient(135deg, #FF8C00 0%, #FF5E00 100%)' }}
-                        >
-                            <Smartphone size={13} className="animate-pulse" />
-                            <span>
-                                {language === 'PT' ? 'Instalar Aplicação' :
-                                 language === 'ES' ? 'Instalar Aplicación' :
-                                 language === 'FR' ? 'Installer l\'App' :
-                                 'Install Application'}
-                            </span>
-                        </button>
-                    </div>
+                    {/* PWA Install Button */}
+                    {(isInstallable || pwaService.isIOS()) && !pwaService.isStandalone() && (
+                        <div className="w-full flex justify-center mt-1 z-10 animate-in fade-in duration-300">
+                            <button
+                                onClick={handleInstallApp}
+                                className="w-[200px] py-2 px-3 text-white font-extrabold uppercase text-[9px] tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all border border-white/10"
+                                style={{ background: 'linear-gradient(135deg, #FF8C00 0%, #FF5E00 100%)' }}
+                            >
+                                <Smartphone size={13} className="animate-pulse" />
+                                <span>
+                                    {language === 'PT' ? 'Instalar Aplica├º├úo' :
+                                     language === 'ES' ? 'Instalar Aplicaci├│n' :
+                                     language === 'FR' ? 'Installer l\'App' :
+                                     'Install Application'}
+                                </span>
+                            </button>
+                        </div>
+                    )}
 
                     {/* Educational Disclaimer */}
                     <p className="text-[6px] text-white/30 font-bold uppercase tracking-wider leading-relaxed max-w-[260px]">
@@ -487,7 +513,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
                     {/* Footer Seal */}
                     <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white/50">
-                        MIRA 2026 © - AMANDA ABREU
+                        MIRA 2026 ┬® - AMANDA ABREU
                     </p>
                 </div>
             </div>
@@ -503,7 +529,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                             <X size={20} />
                         </button>
                         <div className="w-16 h-16 rounded-3xl bg-mira-orange/10 flex items-center justify-center mx-auto text-mira-orange text-3xl">
-                            📲
+                            ­ƒô▓
                         </div>
                         <h3 className="text-lg font-black text-white uppercase tracking-wider">
                             {language === 'PT' ? 'Instalar no seu iPhone' :
@@ -514,19 +540,19 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         <p className="text-xs text-white/70 font-medium leading-relaxed">
                             {language === 'PT' ? (
                                 <>
-                                    Para adicionar o atalho ao ecrã principal, toque no botão de partilha <span className="inline-block p-1 bg-white/10 rounded">📤</span> no Safari e selecione <strong>'Adicionar ao Ecrã Principal'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    Para adicionar o atalho ao ecr├ú principal, toque no bot├úo de partilha <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> no Safari e selecione <strong>'Adicionar ao Ecr├ú Principal'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
                                 </>
                             ) : language === 'ES' ? (
                                 <>
-                                    Para agregar el acceso directo a la pantalla de inicio, toque el botón de compartir <span className="inline-block p-1 bg-white/10 rounded">📤</span> en Safari y seleccione <strong>'Compartir / Agregar a pantalla de inicio'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    Para agregar el acceso directo a la pantalla de inicio, toque el bot├│n de compartir <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> en Safari y seleccione <strong>'Compartir / Agregar a pantalla de inicio'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
                                 </>
                             ) : language === 'FR' ? (
                                 <>
-                                    Pour ajouter le raccourci sur l'écran d'accueil, appuyez sur le bouton de partage <span className="inline-block p-1 bg-white/10 rounded">📤</span> dans Safari e sélectionnez <strong>'Sur l'écran d'accueil'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    Pour ajouter le raccourci sur l'├®cran d'accueil, appuyez sur le bouton de partage <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> dans Safari e s├®lectionnez <strong>'Sur l'├®cran d'accueil'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
                                 </>
                             ) : (
                                 <>
-                                    To add the shortcut to your home screen, tap the share button <span className="inline-block p-1 bg-white/10 rounded">📤</span> in Safari and select <strong>'Add to Home Screen'</strong> <span className="inline-block p-1 bg-white/10 rounded">➕</span>.
+                                    To add the shortcut to your home screen, tap the share button <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> in Safari and select <strong>'Add to Home Screen'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
                                 </>
                             )}
                         </p>

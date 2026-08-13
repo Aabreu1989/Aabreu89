@@ -1,9 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 import { isRateLimited, getClientIp } from '../lib/rate-limiter.js';
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
-  console.log('📡 [MIRA REG] Iniciando registro para:', req.body.email);
+  console.log('­ƒôí [MIRA REG] Iniciando registro para:', req.body.email);
   // CORS Configuration
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   const cleanEmail = email?.toLowerCase().trim();
 
   if (!cleanEmail || !password) {
-    return res.status(400).json({ error: 'Email e palavra-passe são obrigatórios.' });
+    return res.status(400).json({ error: 'Email e palavra-passe s├úo obrigat├│rios.' });
   }
 
   const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -30,8 +30,8 @@ export default async function handler(req, res) {
   const resendKey = process.env.RESEND_API_KEY?.trim();
 
   if (!supabaseUrl || !supabaseServiceRole || !resendKey) {
-    console.error("❌ [MIRA REG] Erro de Ambiente: URL/Key/Resend em falta.");
-    return res.status(500).json({ error: 'Erro de configuração do servidor.' });
+    console.error("ÔØî [MIRA REG] Erro de Ambiente: URL/Key/Resend em falta.");
+    return res.status(500).json({ error: 'Erro de configura├º├úo do servidor.' });
   }
 
   // Admin client for user creation and link generation
@@ -40,9 +40,9 @@ export default async function handler(req, res) {
   });
 
   try {
-    console.log(`📡 [MIRA REG] Iniciando registo forçado para: ${cleanEmail}`);
+    console.log(`­ƒôí [MIRA REG] Iniciando registo for├ºado para: ${cleanEmail}`);
 
-    // 🛡️ [V2026.SUPREMO] BLACKLIST CHECK (Handled gracefully if table is missing)
+    // ­ƒøí´©Å [V2026.SUPREMO] BLACKLIST CHECK (Handled gracefully if table is missing)
     try {
         const { data: isBanned } = await supabaseAdmin
             .from('denied_emails')
@@ -51,114 +51,89 @@ export default async function handler(req, res) {
             .maybeSingle();
 
         if (isBanned) {
-            console.warn(`🛑 [MIRA REG] Tentativa de registo bloqueada (Blacklist): ${cleanEmail}`);
+            console.warn(`­ƒøæ [MIRA REG] Tentativa de registo bloqueada (Blacklist): ${cleanEmail}`);
             return res.status(403).json({ 
                 error: language === 'PT' ? 'Este e-mail foi permanentemente restringido.' : 'This email has been permanently restricted.' 
             });
         }
     } catch (dbErr) {
-        console.warn(`🛡️ [MIRA REG] Skipping blacklist check: ${dbErr.message}`);
+        console.warn(`­ƒøí´©Å [MIRA REG] Skipping blacklist check: ${dbErr.message}`);
     }
 
-    // 2. Generate Secure Confirmation Link via Admin API or Client Auth API
-    const redirectUrl = req.headers.origin || process.env.VITE_FRONTEND_URL || 'https://miraimigrante.pt';
-    console.log(`📡 [MIRA REG] Gerando link seguro de ativação para: ${cleanEmail}`);
-    
-    let confirmLink = null;
-    let userId = null;
-
+    // 1. Check if user already exists
+    let targetUser = null;
     try {
-        const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-            type: 'signup',
-            email: cleanEmail,
-            password: password,
-            data: { 
-                name: name || cleanEmail.split('@')[0], 
-                language: language || 'PT',
-                role: 'member'
-            },
-            options: { redirectTo: `${redirectUrl}/auth/callback` }
-        });
+        const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+        if (listError) throw listError;
+        targetUser = users?.find(u => u.email?.toLowerCase() === cleanEmail);
+    } catch (authErr) {
+        console.error("ÔØî [MIRA REG] Supabase Admin error:", authErr.message);
+        throw authErr;
+    }
 
-        if (linkData?.properties?.action_link) {
-            confirmLink = linkData.properties.action_link;
-            userId = linkData.user.id;
-            console.log(`✅ [MIRA REG] Link seguro gerado via Admin API para utilizador: ${userId}`);
-        } else {
-            throw linkError || new Error('Admin link generation unavailable');
-        }
-    } catch (linkErr) {
-        console.warn("⚠️ [MIRA REG] Admin API indisponível/restringida, utilizando Client Auth SignUp para ativação segura:", linkErr.message);
+    if (targetUser) {
+        // [SOVEREIGN FIX] Se o utilizador existe mas N├âO tem perfil e n├úo confirmou o e-mail, purgamos para re-registo
+        const { data: profile } = await supabaseAdmin.from('profiles').select('id').eq('id', targetUser.id).maybeSingle();
         
-        const { data: clientData, error: clientErr } = await supabaseAdmin.auth.signUp({
-            email: cleanEmail,
-            password: password,
-            options: {
-                data: {
-                    name: name || cleanEmail.split('@')[0],
-                    language: language || 'PT',
-                    role: 'member'
-                },
-                emailRedirectTo: `${redirectUrl}/auth/callback`
-            }
-        });
-
-        if (clientData?.user) {
-            userId = clientData.user.id;
-            confirmLink = `${redirectUrl}/auth/callback`;
-            console.log(`✅ [MIRA REG] Registo criado via Client Auth: ${userId}`);
-        } else if (clientErr) {
-            // Se o Supabase deu rate limit no SMTP padrão dele, ignoramos porque o Resend vai enviar o e-mail!
-            if (clientErr.message?.includes('rate limit') || clientErr.message?.includes('quota')) {
-                console.log(`⚠️ [MIRA REG] Supabase SMTP Rate Limit detetado. Delegando envio exclusivamente ao Resend API...`);
-                confirmLink = `${redirectUrl}/auth/callback`;
-            } else {
-                console.error("❌ [MIRA REG] Erro ao criar registo de confirmação:", clientErr.message);
-                throw new Error(clientErr.message || 'Não foi possível enviar o e-mail de confirmação.');
-            }
+        if (!profile && !targetUser.email_confirmed_at) {
+            console.log(`­ƒôí [MIRA REG] Zombie detectado (${cleanEmail}). Executando purga para permitir re-registo...`);
+            await supabaseAdmin.auth.admin.deleteUser(targetUser.id);
+            targetUser = null; // Far├í com que o c├│digo abaixo crie um novo user
+        } else if (targetUser.email_confirmed_at) {
+            return res.status(400).json({ error: language === 'PT' ? 'Este e-mail j├í est├í ativo. Por favor, fa├ºa login.' : 'This email is already active. Please login.' });
+        } else {
+            // Existe, mas est├í por confirmar e n├úo ├® zombie (por precau├º├úo)
+            console.log(`­ƒôí [MIRA REG] Utilizador existente n├úo confirmado: ${cleanEmail}. Purgando para reenviar link limpo...`);
+            await supabaseAdmin.auth.admin.deleteUser(targetUser.id);
+            targetUser = null;
         }
     }
 
-    // 3. Create initial Profile record in public.profiles
-    try {
-        const profileData = {
-            id: userId,
-            name: name || cleanEmail.split('@')[0],
-            email: cleanEmail,
-            role: 'member',
-            trust_level: 'Observador',
-            is_verified: false,
-            updated_at: new Date().toISOString()
-        };
-        await supabaseAdmin.from('profiles').upsert([profileData]);
-    } catch (profileErr) {
-        console.warn("⚠️ [MIRA REG] Aviso ao registar perfil inicial:", profileErr.message);
+    // 2. Generate Activation Link AND Create User in one step
+    const redirectUrl = req.headers.origin || process.env.VITE_FRONTEND_URL || 'https://miraimigrante.pt';
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+        type: 'signup',
+        email: cleanEmail,
+        password: password,
+        data: { 
+            name: name || 'Imigrante', 
+            language: language || 'PT',
+            role: 'member'
+        },
+        options: { redirectTo: `${redirectUrl}/auth/callback` }
+    });
+
+    if (linkError || !linkData?.properties?.action_link) {
+        throw new Error(`Erro ao gerar link: ${linkError?.message || 'Link vazio'}`);
     }
 
-    // 4. Dispatch Secure Confirmation Email strictly via Resend
-    console.log(`📡 [MIRA RESEND] Enviando e-mail de ativação via Resend para: ${cleanEmail}`);
+    const confirmLink = linkData.properties.action_link;
+    console.log(`­ƒôí [MIRA REG] Novo utilizador criado via Link Generator: ${linkData.user.id}`);
+
+    // 3. Dispatch Email via Resend
+    console.log(`­ƒôí [MIRA RESEND] Despachando e-mail para: ${cleanEmail} (${language})`);
+    const brandColor = '#FF8C00';
     const brandName = 'MIRA Imigrante';
-    const lang = ['PT', 'EN', 'ES', 'FR'].includes(language) ? language : 'PT';
 
     const subjects = {
-        PT: `MIRA Imigrante - Confirmação de Registo`,
+        PT: `MIRA Imigrante - Confirma├º├úo de Registo`,
         EN: `MIRA Imigrante - Registration Confirmation`,
-        ES: `MIRA Imigrante - Confirmación de Registro`,
+        ES: `MIRA Imigrante - Confirmaci├│n de Registro`,
         FR: `MIRA Imigrante - Confirmation d'inscription`
     };
 
     const greetings = {
-        PT: `Olá ${name || 'amigo'}! Bem-vindo ao MIRA Imigrante.`,
-        EN: `Hello ${name || 'there'}! Welcome to MIRA Imigrante.`,
-        ES: `¡Hola ${name || ''}! Bienvenido a MIRA Imigrante.`,
-        FR: `Bonjour ${name || ''} ! Bienvenue sur MIRA Imigrante.`
+        PT: 'Bem-vindo ao MIRA Imigrante!',
+        EN: 'Welcome to MIRA Imigrante!',
+        ES: '┬íBienvenido a MIRA Imigrante!',
+        FR: 'Bienvenue sur MIRA Imigrante !'
     };
 
     const messages = {
-        PT: 'Para concluir o seu registo com total segurança e ativar a sua conta, por favor clique no botão abaixo para confirmar o seu e-mail.',
-        EN: 'To complete your registration securely and activate your account, please click the button below to confirm your email.',
-        ES: 'Para completar su registro con total seguridad y activar su cuenta, por favor haga clic en el botón de abajo para confirmar su correo.',
-        FR: 'Pour finaliser votre inscription en toute sécurité et activer votre compte, veuillez cliquer sur le bouton ci-dessous pour confirmer votre e-mail.'
+        PT: 'Para concluir o seu registo e ativar a conta, por favor clique no bot├úo abaixo para confirmar o seu e-mail.',
+        EN: 'To complete your registration and activate your account, please click the button below to confirm your email.',
+        ES: 'Para concluir su registro y activar su cuenta, por favor haga clic en el bot├│n de abajo para confirmar su correo.',
+        FR: 'Pour finaliser votre inscription et activer votre compte, veuillez cliquer sur le bouton ci-dessous pour confirmer votre e-mail.'
     };
 
     const btnTexts = {
@@ -168,8 +143,7 @@ export default async function handler(req, res) {
         FR: 'Confirmer l\'e-mail'
     };
 
-    // Official Verified Domain Sender (Resend Verified: miraimigrante.pt)
-    const senderEmail = process.env.RESEND_FROM_EMAIL || 'no-reply@miraimigrante.pt';
+    const lang = ['PT', 'EN', 'ES', 'FR'].includes(language) ? language : 'PT';
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -178,54 +152,46 @@ export default async function handler(req, res) {
             'Authorization': `Bearer ${resendKey}`
         },
         body: JSON.stringify({
-            from: `MIRA Imigrante <${senderEmail}>`,
+            from: 'MIRA Imigrante <no-reply@miraimigrante.pt>', 
             to: cleanEmail,
-            reply_to: 'mira.app@hotmail.com',
             subject: subjects[lang],
-            text: `${greetings[lang]}\n\n${messages[lang]}\n\nLink de confirmação seguro: ${confirmLink}\n\nMIRA Imigrante - Integração • Apoio • Soberania`,
+            text: `${greetings[lang]}\n\n${messages[lang]}\n\nLink de confirma├º├úo: ${confirmLink}\n\nMIRA Imigrante - Integra├º├úo ÔÇó Apoio ÔÇó Soberania`,
             html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 35px; background-color: #ffffff; border-radius: 24px; border: 1px solid #f1f5f9; color: #0F172A; text-align: center;">
-                    <div style="margin-bottom: 25px;">
-                        <h1 style="color: #FF8C00; font-size: 28px; font-weight: 900; margin: 0; text-transform: uppercase; tracking: -0.02em;">${brandName}</h1>
-                        <p style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 6px;">Integração • Apoio • Soberania</p>
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #ffffff; border-radius: 24px; border: 1px solid #f1f5f9; text-align: center; color: #0F172A;">
+                    <div style="margin-bottom: 30px;">
+                        <h1 style="color: #FF8C00; font-size: 28px; font-weight: 800; margin: 0; text-transform: uppercase;">${brandName}</h1>
+                        <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px;">Integra├º├úo ÔÇó Apoio ÔÇó Soberania</p>
                     </div>
                     
-                    <div style="background-color: #f8fafc; padding: 30px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #e2e8f0;">
-                        <h2 style="color: #0F172A; font-size: 18px; font-weight: 800; margin-top: 0; margin-bottom: 14px;">${greetings[lang]}</h2>
-                        <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
+                    <div style="background-color: #f8fafc; padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 1px solid #f1f5f9;">
+                        <h2 style="color: #0F172A; font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">${greetings[lang]}</h2>
+                        <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
                             ${messages[lang]}
                         </p>
-                        <a href="${confirmLink}" style="display: inline-block; background-color: #FF8C00; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 100px; font-weight: 900; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; shadow: 0 4px 12px rgba(255,140,0,0.3);">${btnTexts[lang]}</a>
+                        <a href="${confirmLink}" style="display: inline-block; background-color: #FF8C00; color: #ffffff !important; padding: 18px 40px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">${btnTexts[lang]}</a>
                     </div>
                     
-                    <p style="font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                        Se não solicitou este registo, pode ignorar esta mensagem com segurança.<br>
-                        © 2026 ${brandName}. Todos os direitos reservados.
+                    <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 30px 0;">
+                    
+                    <p style="font-size: 12px; color: #94a3b8; font-weight: 500;">
+                        ┬® 2026 ${brandName}. Todos os direitos reservados.
                     </p>
                 </div>
             `
         })
     });
 
-    const resendResult = await resendResponse.json();
 
     if (!resendResponse.ok) {
-        console.error("❌ [MIRA RESEND] Erro ao enviar e-mail via Resend:", resendResult);
-        if (resendResult?.message?.includes('testing emails')) {
-            throw new Error(`Resend em modo de teste: Para enviar e-mails de confirmação a utilizadores externos (${cleanEmail}), é necessário verificar o domínio em resend.com/domains.`);
-        }
-        throw new Error(`Erro no envio de e-mail (Resend): ${resendResult?.message || 'Falha no serviço de e-mail'}`);
+        const errData = await resendResponse.json();
+        throw new Error(`Resend API Error: ${JSON.stringify(errData)}`);
     }
 
-    console.log(`✅ [MIRA REG] E-mail de confirmação com link enviado com sucesso via Resend para: ${cleanEmail}`);
-    return res.status(200).json({ 
-        success: true, 
-        isConfirmed: false,
-        message: language === 'PT' ? 'Foi enviado um e-mail de confirmação com o link seguro. Por favor, aceda à sua caixa de entrada para ativar a conta.' : 'A confirmation email with the secure link has been sent. Please check your inbox to activate your account.' 
-    });
+    console.log(`Ô£à [MIRA] E-mail enviado com sucesso para ${cleanEmail}`);
+    return res.status(200).json({ success: true, message: 'Confirme o seu e-mail.' });
 
   } catch (error) {
-    console.error('❌ [MIRA REG] Falha de Segurança:', error.message);
+    console.error('ÔØî [MIRA REG] Falha Cr├¡tica:', error.message);
     return res.status(500).json({ error: error.message });
   }
 }
