@@ -32,9 +32,15 @@ async function verifyAdmin(req) {
   const { data: { user }, error } = await supabaseAnon.auth.getUser(token);
   if (error || !user) return null;
 
-  const isAdmin = user.email?.toLowerCase().trim() === ADMIN_EMAIL;
+  const isEmailAdmin = user.email?.toLowerCase().trim() === ADMIN_EMAIL;
+  if (isEmailAdmin) return { user, supabaseAdmin };
 
-  return isAdmin ? { user, supabaseAdmin } : null;
+  const { data: profile } = await supabaseAdmin.from('profiles').select('role').eq('id', user.id).maybeSingle();
+  if (profile?.role === 'admin' || profile?.role === 'ceo') {
+    return { user, supabaseAdmin };
+  }
+
+  return null;
 }
 
 // ─── HANDLER PRINCIPAL ────────────────────────────────────────────────────────
@@ -132,6 +138,7 @@ export default async function handler(req, res) {
       const realAccesses = appAccessesRes.count || 0;
 
       const HISTORICAL_BASE_ACCESSES = 50000;
+      const HISTORICAL_BASE_APP_ACCESSES = 3508;
       const HISTORICAL_BASE_DOCS = 3451;
       const HISTORICAL_BASE_AI = 18642;
       const HISTORICAL_BASE_SIMS = 4872;
@@ -139,6 +146,7 @@ export default async function handler(req, res) {
       const HISTORICAL_BASE_PWA_MOBILE = 1428;
       const HISTORICAL_BASE_PWA_DESKTOP = 412;
 
+      const finalAppAccesses = HISTORICAL_BASE_APP_ACCESSES + (appAccessesRes.count || 0);
       const finalInteractions = HISTORICAL_BASE_ACCESSES + (allActivityLogsRes.count || 0);
       const finalDocCount = HISTORICAL_BASE_DOCS + Math.max(userDocsRes.count || 0, docActivityRes.count || 0);
       const finalAiQueries = HISTORICAL_BASE_AI + (aiQueriesRes.count || 0);
@@ -167,7 +175,7 @@ export default async function handler(req, res) {
         fakeVotes: fakeVotesRes.count || 0,
         verifiedPosts: trueVotesRes.count || 0,
         fakePosts: fakeVotesRes.count || 0,
-        appAccesses: realAccesses,
+        appAccesses: finalAppAccesses,
         totalInteractions: finalInteractions,
         aiQueries: finalAiQueries,
         articleViews: articleViewsRes.count || 0,
