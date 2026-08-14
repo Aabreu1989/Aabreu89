@@ -46,6 +46,7 @@ SET
     likes = (SELECT count(*) FROM public.post_votes WHERE post_id = p.id AND vote_type = 'like');
 
 -- [4] ATUALIZAÇÃO DO RPC DO FEED PARA RETORNAR OS CONTADORES
+DROP FUNCTION IF EXISTS public.get_sovereign_community_feed_v24 CASCADE;
 CREATE OR REPLACE FUNCTION public.get_sovereign_community_feed_v24(p_limit INT, p_offset INT)
 RETURNS TABLE (
     id UUID,
@@ -130,6 +131,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- [5] REPARAÇÃO DO ADMIN HUB STATS
 -- Garantir que a tabela existe e tem uma linha inicial
+DROP VIEW IF EXISTS public.admin_dashboard_stats CASCADE;
 CREATE TABLE IF NOT EXISTS public.admin_dashboard_stats (
     id INT PRIMARY KEY DEFAULT 1,
     verified_courses INT DEFAULT 0,
@@ -145,6 +147,6 @@ CREATE TABLE IF NOT EXISTS public.admin_dashboard_stats (
 
 INSERT INTO public.admin_dashboard_stats (id, last_updated)
 VALUES (1, NOW())
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
-COMMIT;
+-- END

@@ -7,6 +7,15 @@ DROP FUNCTION IF EXISTS public.match_knowledge_supreme(vector(768), float, int);
 
 -- [1. MANIFESTO V2026.SUPREMO INGESTION]
 -- Check and insert the official manifesto into saber_ia
+CREATE TABLE IF NOT EXISTS public.saber_ia (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    topic TEXT UNIQUE,
+    content TEXT,
+    category TEXT,
+    embedding vector(768),
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
 INSERT INTO public.saber_ia (topic, content, category, embedding)
 SELECT 
     'MANIFESTO MIRA V2026.SUPREMO',

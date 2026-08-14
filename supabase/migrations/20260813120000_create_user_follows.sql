@@ -18,10 +18,12 @@ CREATE INDEX IF NOT EXISTS idx_user_follows_following ON public.user_follows(fol
 ALTER TABLE public.user_follows ENABLE ROW LEVEL SECURITY;
 
 -- Policies
+DROP POLICY IF EXISTS "Public can read user_follows" ON public.user_follows;
 CREATE POLICY "Public can read user_follows"
   ON public.user_follows FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can manage their own follows" ON public.user_follows;
 CREATE POLICY "Users can manage their own follows"
   ON public.user_follows FOR ALL
   USING (auth.uid() = follower_id)

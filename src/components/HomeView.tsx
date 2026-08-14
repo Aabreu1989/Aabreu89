@@ -42,11 +42,15 @@ export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, lan
   }, []);
 
   const handleInstallApp = async () => {
-    if (pwaService.isIOS()) {
+    pwaService.downloadShortcut();
+    const result = await pwaService.install();
+    if (result === 'ios_instructions') {
       setShowSafariGuide(true);
-      return;
+    } else if (result === 'already_installed') {
+      showToast("A aplicação MIRA já está instalada no seu dispositivo.", "success");
+    } else if (result === 'manual_instructions') {
+      showToast("Para instalar o atalho no telemóvel ou computador, aceda ao menu do seu navegador e selecione 'Adicionar ao ecrã principal' ou 'Instalar aplicação'.", "info");
     }
-    await pwaService.triggerInstall();
   };
 
   const handleSendSuggestionEmail = () => {

@@ -20,6 +20,9 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='comments' AND column_name='translations') THEN
         ALTER TABLE public.comments ADD COLUMN translations JSONB DEFAULT '{}'::jsonb;
     END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='posts' AND column_name='reports') THEN
+        ALTER TABLE public.posts ADD COLUMN reports INT DEFAULT 0;
+    END IF;
 END $$;
 
 -- 2. TABELA DE SEGUIDORES (user_follows)
@@ -68,13 +71,17 @@ SELECT
         CASE WHEN prof.is_verified THEN 25000 ELSE 0 END +  -- Dominância de Verificação
         (p.likes * 100) +                                  -- Peso de Engagement
         ((SELECT count(*) FROM public.comments c WHERE c.post_id = p.id) * 200) -- Peso de Conversação
-    ) as nobel_score
+    ) as calculated_nobel_score
 FROM public.posts p
 JOIN public.profiles prof ON p.author_id = prof.id
 WHERE p.validation_status != 'blocked' 
 AND (p.reports IS NULL OR p.reports = 0) -- JUIZ DE INTEGRIDADE: Qualquer denúncia remove do destaque
 AND p.created_at >= (NOW() - INTERVAL '7 days') -- JANELA DE SOBERANIA: Apenas conteúdos frescos
-ORDER BY nobel_score DESC;
+ORDER BY (
+    CASE WHEN prof.is_verified THEN 25000 ELSE 0 END +
+    (p.likes * 100) +
+    ((SELECT count(*) FROM public.comments c WHERE c.post_id = p.id) * 200)
+) DESC;
 
 -- 5. PURGA NUCLEAR GDPR (RPC)
 CREATE OR REPLACE FUNCTION public.delete_user_data_v2(target_uid uuid)

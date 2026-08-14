@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { User } from '../types';
 import { t } from '../utils/translations';
+import { ADMIN_EMAIL } from '../utils/adminUtils';
 
 /**
  * ­ƒææ MIRA AUTH SERVICE V2026.SUPREME (DIAMOND MASTER)
@@ -8,8 +9,7 @@ import { t } from '../utils/translations';
  */
 export const authService = {
     async fetchProfileWithRetry(userId: string, email: string, name?: string, retries = 3, delay = 500): Promise<any> {
-        const ceoEmails = ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'];
-        const isCEO = ceoEmails.includes(email?.toLowerCase()?.trim());
+        const isCEO = (email || '').toLowerCase().trim() === ADMIN_EMAIL;
 
         for (let i = 0; i < retries; i++) {
             try {
@@ -124,18 +124,17 @@ export const authService = {
     },
 
     mapProfileToUser(profile: any, sessionUser: any): User {
-        const ceoEmails = ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'];
         const userEmail = (sessionUser?.email || profile.email || '').toLowerCase().trim();
-        const isCEO = ceoEmails.includes(userEmail);
+        const isCEO = userEmail === ADMIN_EMAIL;
 
         const savedAvatar = typeof localStorage !== 'undefined' && profile.id ? localStorage.getItem(`mira_avatar_${profile.id}`) : null;
         return {
             id: profile.id,
             email: sessionUser?.email || profile.email || '',
-            name: profile.name || sessionUser?.user_metadata?.name || sessionUser?.user_metadata?.full_name || (isCEO ? 'Amanda Abreu (Admin MIRA)' : 'Usu├írio Novo'),
+            name: profile.name || sessionUser?.user_metadata?.name || sessionUser?.user_metadata?.full_name || (isCEO ? 'Amanda Abreu (Admin MIRA)' : 'Usuário Novo'),
             avatar: profile.avatar_url || profile.avatar || savedAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}`,
             bio: profile.bio || (isCEO ? 'Fundadora & Administradora MIRA Imigrante' : ''),
-            nationality: profile.nationality || 'N├úo especificada',
+            nationality: profile.nationality || 'Não especificada',
             ageRange: profile.age_range || profile.ageRange || '',
             location: profile.location || '',
             mainChallenge: profile.main_challenge || profile.mainChallenge || '',
@@ -166,15 +165,8 @@ export const authService = {
 
     async createFallbackProfile(userId: string, email: string, name?: string): Promise<any> {
         try {
-            const { data: adminEntry } = await supabase
-                .from('admin_users')
-                .select('email')
-                .eq('email', email.toLowerCase().trim())
-                .maybeSingle();
-
-            const CEO_EMAILS = ['mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br', 'amandasabreu89@gmail.com'];
-            const isAdmin = !!adminEntry || CEO_EMAILS.includes(email.toLowerCase().trim());
-            const defaultName = name || (isAdmin ? 'Amanda Abreu (Admin MIRA)' : 'Usu├írio Comunidade');
+            const isAdmin = email.toLowerCase().trim() === ADMIN_EMAIL;
+            const defaultName = name || (isAdmin ? 'Amanda Abreu (Admin MIRA)' : 'Usuário Comunidade');
 
             const profileInsert = {
                 id: userId,

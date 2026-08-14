@@ -59,20 +59,17 @@ CREATE TABLE IF NOT EXISTS public.community_interactions (
 
 -- 4. INJEÇÃO DOS 9 SELOS REAIS (REGRAS AMANDA ABREU)
 DELETE FROM public.badges;
-INSERT INTO public.badges (name, description, icon_emoji, rarity_level) VALUES 
-('Pioneiro MIRA', 'Concedido aos primeiros utilizadores que acreditaram no projeto.', '🏹', 'épico'),
-('Conta Verificada', 'Identidade validada pessoalmente pela equipa MIRA.', '✅', 'lendário'),
-('Curador da Comunidade', 'Valida ativamente informações úteis. 20+ validações.', '💡', 'raro'),
-('Mestre dos Documentos', 'Especialista em processos oficiais. 30+ ajudas.', '📂', 'épico'),
-('Utilizador Exemplar', '60 dias de atividade sem denúncias.', '💎', 'raro'),
-('Sentinela', 'Guardião da integridade. Reportou 10+ fraudes.', '🛡️', 'épico'),
-('Especialista em Leis', 'Conhecimento profundo da Lei de Estrangeiros. 50+ consultas.', '⚖️', 'raro'),
-('Mentor de Emprego', 'Apoio na procura de emprego. 10+ comentários úteis.', '💼', 'incomum'),
-('Coração da Comunidade', 'Reconhecimento de empatia e apoio emocional consistente.', '❤️', 'épico')
-ON CONFLICT (name) DO UPDATE SET 
-    icon_emoji = EXCLUDED.icon_emoji, 
-    description = EXCLUDED.description, 
-    rarity_level = EXCLUDED.rarity_level;
+INSERT INTO public.badges (id, name, description, icon_emoji, rarity_level) VALUES 
+('pioneiro', 'Pioneiro MIRA', 'Concedido aos primeiros utilizadores que acreditaram no projeto.', '🏹', 3),
+('verificado', 'Conta Verificada', 'Identidade validada pessoalmente pela equipa MIRA.', '✅', 4),
+('curador', 'Curador da Comunidade', 'Valida ativamente informações úteis. 20+ validações.', '💡', 2),
+('mestre_docs', 'Mestre dos Documentos', 'Especialista em processos oficiais. 30+ ajudas.', '📂', 3),
+('exemplar', 'Utilizador Exemplar', '60 dias de atividade sem denúncias.', '💎', 2),
+('sentinela', 'Sentinela', 'Guardião da integridade. Reportou 10+ fraudes.', '🛡️', 3),
+('especialista_leis', 'Especialista em Leis', 'Conhecimento profundo da Lei de Estrangeiros. 50+ consultas.', '⚖️', 2),
+('mentor_emprego', 'Mentor de Emprego', 'Apoio na procura de emprego. 10+ comentários úteis.', '💼', 1),
+('coracao', 'Coração da Comunidade', 'Reconhecimento de empatia e apoio emocional consistente.', '❤️', 3)
+ON CONFLICT DO NOTHING;
 
 -- 5. MOTOR DE GAMIFICAÇÃO AUTOMÁTICA
 CREATE OR REPLACE FUNCTION public.process_gamification_v2000()
@@ -109,4 +106,4 @@ CREATE TRIGGER trg_gamification_v2000
 AFTER INSERT ON public.community_interactions
 FOR EACH ROW EXECUTE FUNCTION public.process_gamification_v2000();
 
-COMMIT;
+-- END

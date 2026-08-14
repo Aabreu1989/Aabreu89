@@ -8,7 +8,7 @@
 
 -- [1] Tabela Soberana de Seguidores (Substitui user_follows pirata)
 CREATE TABLE IF NOT EXISTS public.follows (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     follower_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     following_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -21,7 +21,7 @@ CREATE INDEX IF NOT EXISTS idx_follows_following ON public.follows(following_id)
 
 -- [2] Tabela de Medalhas Atómicas (O fim do JSON nos Perfis)
 CREATE TABLE IF NOT EXISTS public.user_badges (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     badge_id TEXT NOT NULL,
     awarded_at TIMESTAMPTZ DEFAULT NOW(),
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS public.user_badges (
 
 -- [3] Log de Reputação (Trilha de Auditoria Soberana)
 CREATE TABLE IF NOT EXISTS public.reputation_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     amount INT NOT NULL,
     reason TEXT,
@@ -69,4 +69,4 @@ GRANT EXECUTE ON FUNCTION public.increment_reputation(UUID, INT) TO authenticate
 -- Garante que quando o utilizador morre, os follows e badges morrem com ele.
 -- (Já coberto pelos REFERENCES ... ON DELETE CASCADE)
 
-RAISE NOTICE 'Soberania Social V165.1 Implementada com Sucesso no Disco.';
+DO $$ BEGIN RAISE NOTICE 'Soberania Social V165.1 Implementada com Sucesso no Disco.'; END $$;

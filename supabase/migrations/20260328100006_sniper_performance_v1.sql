@@ -8,6 +8,7 @@
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- 2. INDEXAÇÃO SNIPER (Sub-100ms)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS name TEXT;
 -- Trigram indexes for instant search by email/name
 CREATE INDEX IF NOT EXISTS idx_profiles_email_trgm ON public.profiles USING gin (email gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_profiles_name_trgm ON public.profiles USING gin (name gin_trgm_ops);
@@ -16,6 +17,16 @@ CREATE INDEX IF NOT EXISTS idx_profiles_name_trgm ON public.profiles USING gin (
 CREATE INDEX IF NOT EXISTS idx_reports_created_at ON public.reports (created_at DESC);
 
 -- 3. VIEW UNIFICADA: GLOBAL KNOWLEDGE SEARCH
+ALTER TABLE public.saber_ia ADD COLUMN IF NOT EXISTS url TEXT;
+ALTER TABLE public.knowledge_base ADD COLUMN IF NOT EXISTS url TEXT;
+CREATE TABLE IF NOT EXISTS public.newsroom_articles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT,
+    content TEXT,
+    category TEXT,
+    slug TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
 -- Unions saber_ia, knowledge_base and newsroom_articles for FTS
 CREATE OR REPLACE VIEW public.global_knowledge_search AS
 SELECT 

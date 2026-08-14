@@ -179,7 +179,53 @@ export const communityService = {
         }));
       }
 
-      return (postsData || []).map((row: any) => communityService.mapRowToPost(row));
+      // 🛡️ RECONCILIAÇÃO DE VOTOS E ESTADO DE UTILIZADOR (userVote: 'like' | 'true' | 'fake')
+      let userVotes: Record<string, 'like' | 'true' | 'fake'> = {};
+      let userSavedPosts = new Set<string>();
+
+      const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id;
+
+      if (activeUserId && postsData && postsData.length > 0) {
+        const postIds = postsData.map((p: any) => p.id);
+
+        const [{ data: voteRows, error: voteError }, { data: savedRows }] = await Promise.all([
+          supabase
+            .from('post_votes')
+            .select('post_id, vote_type')
+            .eq('user_id', activeUserId)
+            .in('post_id', postIds),
+          supabase
+            .from('saved_posts')
+            .select('post_id')
+            .eq('user_id', activeUserId)
+            .in('post_id', postIds)
+        ]);
+
+        if (!voteError && voteRows) {
+          for (const vote of voteRows) {
+            if (vote.vote_type === 'like' || vote.vote_type === 'true' || vote.vote_type === 'fake') {
+              userVotes[vote.post_id] = vote.vote_type;
+            }
+          }
+        }
+
+        if (savedRows) {
+          savedRows.forEach((s: any) => userSavedPosts.add(s.post_id));
+        }
+      }
+
+      return (postsData || []).map((row: any) => {
+        const vote = userVotes[row.id] ?? null;
+        const isSaved = userSavedPosts.has(row.id);
+        const isLiked = vote === 'like';
+
+        return communityService.mapRowToPost({
+          ...row,
+          user_vote: vote,
+          is_liked_by_user: isLiked,
+          is_saved_by_user: isSaved
+        });
+      });
     } catch (err: any) {
       console.error("🚨 [MIRA Erro ao buscar feed do Supabase]:", err?.message || err);
       return [];
@@ -211,13 +257,31 @@ export const communityService = {
         : { data: [] };
       const commentProfileMap = new Map((commentProfiles || []).map((pr: any) => [pr.id, pr]));
 
+      const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id;
+      let userVoteVal: 'like' | 'true' | 'fake' | null = null;
+      let isSavedVal = false;
+
+      if (activeUserId) {
+        const [{ data: voteRow }, { data: saveRow }] = await Promise.all([
+          supabase.from('post_votes').select('vote_type').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle(),
+          supabase.from('saved_posts').select('post_id').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle()
+        ]);
+        if (voteRow && (voteRow.vote_type === 'like' || voteRow.vote_type === 'true' || voteRow.vote_type === 'fake')) {
+          userVoteVal = voteRow.vote_type;
+        }
+        if (saveRow) isSavedVal = true;
+      }
+
       const fullPostData = {
         ...rawPost,
         profiles: authorProfile || null,
         comments: (commentsData || []).map((c: any) => ({
           ...c,
           profiles: commentProfileMap.get(c.author_id) || null
-        }))
+        })),
+        user_vote: userVoteVal,
+        is_liked_by_user: userVoteVal === 'like',
+        is_saved_by_user: isSavedVal
       };
 
       return communityService.mapRowToPost(fullPostData);
@@ -244,7 +308,7 @@ export const communityService = {
       content: row.content || '',
       category: row.category || 'Geral',
       isVerified: row.is_verified || false,
-      backgroundImage: row.background_image || '',
+      backgroundImage: row.media_url || row.background_image || '',
       validationStatus: row.validation_status || 'validated',
       timestamp: row.created_at || new Date().toISOString(),
       likes: row.likes || row.likes_count || 0,
@@ -300,7 +364,8 @@ export const communityService = {
       content: postData.content,
       category: postData.category || 'Geral',
       authorName: postData.authorName,
-      authorAvatar: postData.authorAvatar
+      authorAvatar: postData.authorAvatar,
+      mediaUrl: postData.backgroundImage || (postData as any).mediaUrl || null
     }, postData.authorId);
 
     if (!serverData.post) {

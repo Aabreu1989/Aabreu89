@@ -1,8 +1,6 @@
 -- 👑 MIRA GAMIFICAÇÃO V2026.SUPREMA
 -- OBJETIVO: Garantir que a tabela de selos está populada e funcional.
 
-BEGIN;
-
 -- 1. Garantir que as tabelas base existem (Resiliência)
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS badges JSONB DEFAULT '[]'::jsonb;
 
@@ -16,6 +14,9 @@ CREATE TABLE IF NOT EXISTS public.badges (
     rarity_level INTEGER DEFAULT 1,
     created_at TIMESTAMPTZ DEFAULT now()
 );
+
+ALTER TABLE public.badges ADD COLUMN IF NOT EXISTS icon TEXT;
+ALTER TABLE public.badges ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'social';
 
 CREATE TABLE IF NOT EXISTS public.user_badges (
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -76,9 +77,11 @@ CREATE TRIGGER tr_sync_user_badges
 AFTER INSERT OR UPDATE OR DELETE ON public.user_badges
 FOR EACH ROW EXECUTE FUNCTION public.sync_user_badges_to_profile();
 
+ALTER TABLE public.user_badges ADD COLUMN IF NOT EXISTS awarded_at TIMESTAMPTZ DEFAULT now();
+
 -- Inserir medalha de Pioneiro para os utilizadores existentes (Opcional, mas recomendado para o lançamento)
 INSERT INTO public.user_badges (user_id, badge_id)
 SELECT id, 'pioneiro' FROM public.profiles
 ON CONFLICT DO NOTHING;
 
-COMMIT;
+-- END

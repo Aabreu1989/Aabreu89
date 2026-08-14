@@ -43,63 +43,61 @@ export const gamificationService = {
     /**
      * Adiciona pontos de reputação ao utilizador de forma persistente com trava de idempotência.
      */
-    async earnPoints(userId: string, amount: number, reason: string, entityId?: string): Promise<number | null> {
-        if (!userId || amount <= 0) return null;
+    async earnPoints(userId: string, actionKeyOrAmount: string | number, reason?: string, entityId?: string): Promise<number | null> {
+        if (!userId) return null;
 
-        // 🛡️ TRAVA DE IDEMPOTÊNCIA: Evitar duplicação de XP no mesmo segundo ou no mesmo entityId
+        const actionKey = typeof actionKeyOrAmount === 'string' ? actionKeyOrAmount : (reason || 'publish_post');
+        const reasonText = reason || `Ação: ${actionKey}`;
+
+        // 🛡️ TRAVA DE IDEMPOTÊNCIA E ANTI-FARMING: Evitar duplicação de XP
         try {
-            const idempotencyKey = entityId ? `xp_${userId}_${entityId}` : `xp_${userId}_${reason}_${Math.floor(Date.now() / 5000)}`;
+            const idempotencyKey = entityId ? `xp_${userId}_${actionKey}_${entityId}` : `xp_${userId}_${actionKey}_${Math.floor(Date.now() / 10000)}`;
             const lastAwarded = sessionStorage.getItem(idempotencyKey);
             if (lastAwarded) {
-                console.log(`🛡️ [MIRA Gamification] XP duplicado bloqueado pela trava de idempotência (${idempotencyKey})`);
+                console.log(`🛡️ [MIRA Gamification] XP duplicado bloqueado pela trava de anti-farming (${idempotencyKey})`);
                 return null;
             }
             sessionStorage.setItem(idempotencyKey, new Date().toISOString());
         } catch (e) {}
 
         try {
-            // 1. Tentar atualizar via RPC para garantir atomicidade
-            const { data, error } = await supabase.rpc('increment_reputation', {
-                target_user_id: userId,
-                amount: amount
-            });
+            // Verificar token de sessão
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData?.session?.access_token;
 
-            // 2. Registrar no Log Soberano (Audit Trail)
-            await supabase.from('reputation_logs').insert([{ 
-                user_id: userId, 
-                amount: amount, 
-                reason: reason 
-            }]);
-
-            // 3. Registrar no Log de Atividades (Audit Trail Geral)
-            await supabase.from('activity_logs').insert([{
-                user_id: userId,
-                action_type: 'reputation_gained',
-                details: { amount, reason, entity_id: entityId },
-                created_at: new Date().toISOString()
-            }]);
-
-            if (error) {
-                console.warn('MIRA: Erro RPC ao ganhar pontos, tentando update direto:', error);
-                
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('reputation')
-                    .eq('id', userId)
-                    .single();
-                
-                const newRep = (profile?.reputation || 0) + amount;
-                
-                await supabase
-                    .from('profiles')
-                    .update({ reputation: newRep })
-                    .eq('id', userId);
-                
-                return newRep;
+            if (!token) {
+                console.warn('MIRA: Sessão não encontrada ao atribuir pontos.');
+                return null;
             }
 
-            analytics.track('points_earned', userId, reason, { amount });
-            return data;
+            // Invocar Gateway soberano de comunidade (/api/community)
+            const response = await fetch('/api/community', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    action: 'earn_points',
+                    actionKey: actionKey,
+                    reason: reasonText,
+                    entityId: entityId || null
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                console.error('🚨 [MIRA Gamification] Erro ao atribuir pontos no Gateway:', errData.error || response.statusText);
+                return null;
+            }
+
+            const data = await response.json();
+            if (data.success && typeof data.reputation === 'number') {
+                analytics.track('points_earned', userId, reasonText, { pointsEarned: data.pointsEarned });
+                return data.reputation;
+            }
+
+            return null;
         } catch (err) {
             console.error('MIRA Gamification Error:', err);
             return null;

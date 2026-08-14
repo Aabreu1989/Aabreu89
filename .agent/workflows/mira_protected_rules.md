@@ -31,6 +31,13 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
 - **Validação de Token:** NUNCA enviar e-mails de recuperação/confirmação sem `action_link` real gerado pelo Supabase Admin.
 - **Ficheiros Núcleo Protegidos:** `src/services/authService.ts`, `api/register.js`, `api/recover.js`, `src/components/AuthScreen.tsx`. NUNCA alterar a arquitetura soberana.
 
+## Instalação PWA & Atalho (REGRA PERMANENTE HOMOLOGADA 2026-08-13):
+- **Arquitetura Centralizada:** Toda a lógica de instalação PWA pertence estritamente a `src/utils/pwa.ts`.
+- **Zero Lógica nos Componentes:** `AuthScreen.tsx`, `HomeView.tsx` e `App.tsx` apenas chamam `await pwaService.install()`. É proibido colocar condicionais de browser ou `beforeinstallprompt` nos componentes.
+- **Persistência de Estado:** O `deferredPrompt` reside obrigatoriamente em `window.__MIRA_PWA_STATE__` para sobreviver ao HMR/Vite.
+- **Preservação de Contexto do Clique:** O descarregamento síncrono do atalho `.url` (`pwaService.downloadShortcut()`) deve ocorrer no topo da função `onClick` para evitar bloqueios de descarregamento do navegador.
+- **Ficheiros Núcleo Protegidos PWA:** `src/utils/pwa.ts`, `src/components/AuthScreen.tsx`, `src/components/HomeView.tsx`, `src/App.tsx`.
+
 ## Vagas de Emprego (REGRA PERMANENTE):
 - **SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS DE ATÉ 60 DIAS (MÁXIMO 60 DIAS DE IDADE)**
 - Vagas com mais de 60 dias da data de publicação NUNCA devem ser apresentadas aos utilizadores e DEVEM SER PURGADAS AUTOMATICAMENTE do código, queries e rotinas de sync em `JobBoard.tsx` e `api/sync-jobs.js`.

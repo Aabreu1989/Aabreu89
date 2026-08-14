@@ -1,6 +1,19 @@
 -- 🛡️ MIRA SOBERANIA: Injeção de Serviços Públicos Core
 -- Inserir os principais balcões e portais oficiais de Portugal
 
+CREATE TABLE IF NOT EXISTS public.map_alerts (
+    id TEXT PRIMARY KEY,
+    title TEXT,
+    category TEXT,
+    lat FLOAT,
+    lng FLOAT,
+    address TEXT,
+    city TEXT,
+    website TEXT,
+    description TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
 INSERT INTO public.map_alerts (id, title, category, lat, lng, address, city, website, description)
 VALUES 
 ('p-serv-irn-nacional', 'IRN – Instituto dos Registos e do Notariado (Portal Oficial)', 'Residência & Vistos', 38.7223, -9.1393, 'Rua de São Bento, 148, 1200-821 Lisboa', 'Lisboa / Nacional', 'https://irn.justica.gov.pt/', 'Portal oficial para documentos, nacionalidade e registos civis.'),

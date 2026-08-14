@@ -18,14 +18,7 @@ const SUPABASE_URL  = process.env.VITE_SUPABASE_URL  || process.env.SUPABASE_URL
 const SERVICE_ROLE  = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
 const ANON_KEY      = process.env.VITE_SUPABASE_ANON_KEY   || process.env.SUPABASE_ANON_KEY;
 
-const ADMIN_EMAILS = [
-  'amandasabreu89@gmail.com',
-  'amandasabreu@gmail.com',
-  'no-reply@miraimigrante.pt',
-  'atendimentomira@gmail.com',
-  'suportemira@gmail.com',
-  'mira.atendimento@gmail.com',
-];
+const ADMIN_EMAIL = 'amandasabreu89@gmail.com';
 
 // ─── HELPER: Verificar Admin ──────────────────────────────────────────────────
 async function verifyAdmin(req) {
@@ -39,9 +32,7 @@ async function verifyAdmin(req) {
   const { data: { user }, error } = await supabaseAnon.auth.getUser(token);
   if (error || !user) return null;
 
-  const isAdminByEmail = ADMIN_EMAILS.includes(user.email?.toLowerCase());
-  const { data: profile } = await supabaseAdmin.from('profiles').select('role').eq('id', user.id).maybeSingle();
-  const isAdmin = isAdminByEmail || profile?.role === 'admin';
+  const isAdmin = user.email?.toLowerCase().trim() === ADMIN_EMAIL;
 
   return isAdmin ? { user, supabaseAdmin } : null;
 }

@@ -554,5 +554,30 @@ HOMOLOGAÇÃO
 
 ---
 
+## 📌 19. ARQUITETURA SOBERANA DE INSTALAÇÃO PWA E AS 7 BLINDAGENS PERMANENTES DOS 3 PONTOS DE DISPARO
+
+> ⚠️ **REGRA PERMANENTE E INEGOCIÁVEL (HOMOLOGADA EM 2026-08-13):**
+> A ARQUITETURA DE INSTALAÇÃO PWA ESTÁ CENTRALIZADA E PROTEGIDA EM `src/utils/pwa.ts`. É ESTRITAMENTE PROIBIDO VOLTAR A ESPALHAR LÓGICA DE INSTALAÇÃO, CONDICIONAIS SEPARADAS OU REGRAS DE BROWSER DENTRO DOS COMPONENTES DA UI (`AuthScreen.tsx`, `HomeView.tsx`, `App.tsx`).
+
+### 1. OS 3 PONTOS DE ENTRADA UNIFICADOS:
+- **Login (`AuthScreen.tsx`):** Chama unicamente `await pwaService.install()`.
+- **Home (`HomeView.tsx`):** Chama unicamente `await pwaService.install()`.
+- **Modal Diário (`App.tsx`):** Abre 1x por dia no arranque da app e chama `await pwaService.install()`.
+
+### 🛡️ AS 7 BLINDAGENS PERMANENTES DE PWA:
+1. **Persistência de Estado em Window:** O objeto `BeforeInstallPromptEvent` é preservado obrigatoriamente no estado global `window.__MIRA_PWA_STATE__` para sobreviver a recriações do módulo pelo Vite/HMR.
+2. **Contrato de Decisão Soberana no `pwaService.install()`:**
+   - Se Standalone ➔ Devolve `already_installed`.
+   - Se `deferredPrompt` disponível ➔ Executa `deferredPrompt.prompt()` e devolve `prompt_accepted` ou `prompt_dismissed`.
+   - Se iOS ➔ Devolve `ios_instructions` (ativa o Safari Guide).
+   - Se Browser manual/fallback ➔ Devolve `manual_instructions`.
+3. **Preservação de Contexto de Gesto do Utilizador (User Activation Frame):** O descarregamento síncrono do atalho `.url` (`pwaService.downloadShortcut()`) deve ocorrer SEMPRE na pilha de eventos do clique do utilizador antes de qualquer instrução `await` que possa revogar a autorização do navegador.
+4. **Decisão Diária Centralizada:** A decisão de exibir o pop-up diário pertence exclusivamente a `pwaService.shouldShowDailyModal()` (baseado na data de hoje e em `localStorage`). O `App.tsx` apenas consulta e obedece a este método.
+5. **Download de Atalho `.url` Separado:** O ficheiro `MIRA IMIGRANTE.url` é um recurso auxiliar gerado exclusivamente por `pwaService.downloadShortcut()`. É proibido tratar a descarga de um `.url` como equivalente a instalar uma PWA nativa.
+6. **Zero Lógica PWA nos Componentes:** NENHUM componente da interface pode inspecionar diretamente `isIOS()`, `isInstallable()` ou capturar o evento `beforeinstallprompt`. Toda a inteligência reside em `src/utils/pwa.ts`.
+7. **Salvaguarda de Ficheiros Núcleo PWA:** Os 4 ficheiros (`src/utils/pwa.ts`, `src/components/AuthScreen.tsx`, `src/components/HomeView.tsx`, `src/App.tsx`) constituem a arquitetura oficial de PWA.
+
+---
+
 > 🔒 **ESTE ARQUIVO É A REGRA MESTRA E MEMÓRIA PERMANENTE DO PROJETO MIRA. CONSULTAR ANTES DE QUALQUER AÇÃO OU ALTERAÇÃO.**
 > 📜 **O PROTOCOLO INTEGRAL DE AUDITORIA E HOMOLOGAÇÃO ESTÁ REGISTADO EM [`STANDARD_OF_AUDIT.md`](file:///c:/Users/Utilizador/mira-projeto/STANDARD_OF_AUDIT.md).**

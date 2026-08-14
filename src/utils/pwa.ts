@@ -4,123 +4,436 @@ export interface PWAState {
   isIOS: boolean;
 }
 
-let deferredPrompt: any = null;
+export type PWAInstallResult =
+  | 'already_installed'
+  | 'prompt_accepted'
+  | 'prompt_dismissed'
+  | 'ios_instructions'
+  | 'manual_instructions';
 
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+};
+
+type MiraPwaWindowState = {
+  deferredPrompt: BeforeInstallPromptEvent | null;
+  listenerAttached: boolean;
+};
+
+const WINDOW_STATE_KEY = '__MIRA_PWA_STATE__';
+
+const getWindowState = (): MiraPwaWindowState | null => {
+  if (typeof window === 'undefined') return null;
+
+  const existing = (window as Window & {
+    [WINDOW_STATE_KEY]?: MiraPwaWindowState;
+  })[WINDOW_STATE_KEY];
+
+  if (existing) {
+    return existing;
+  }
+
+  const state: MiraPwaWindowState = {
+    deferredPrompt: null,
+    listenerAttached: false,
+  };
+
+  (window as Window & {
+    [WINDOW_STATE_KEY]?: MiraPwaWindowState;
+  })[WINDOW_STATE_KEY] = state;
+
+  return state;
+};
+
+/**
+ * Inicializa o listener do beforeinstallprompt.
+ *
+ * O estado é guardado em window para sobreviver a recriações
+ * do módulo pelo Vite/HMR e impedir que diferentes instâncias
+ * do módulo percam o deferredPrompt.
+ */
+const initializePwaListener = (): void => {
+  if (typeof window === 'undefined') return;
+
+  const state = getWindowState();
+
+  if (!state || state.listenerAttached) {
+    return;
+  }
+
+  state.listenerAttached = true;
+
+  window.addEventListener('beforeinstallprompt', (event: Event) => {
+    const installEvent = event as BeforeInstallPromptEvent;
+
+    event.preventDefault();
+
+    state.deferredPrompt = installEvent;
+
     window.dispatchEvent(new CustomEvent('mira-pwa-installable'));
+
+    console.info('[MIRA PWA] beforeinstallprompt capturado.');
   });
 
   window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    window.dispatchEvent(new CustomEvent('mira-pwa-installed'));
+    state.deferredPrompt = null;
+
     try {
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const platform = isMobile ? 'mobile' : 'desktop';
-      let userId = 'anonymous';
-      const savedUser = localStorage.getItem('mira_user');
-      if (savedUser) {
-        userId = JSON.parse(savedUser).id;
-      }
-      import('../services/analyticsService').then(({ analytics }) => {
-        analytics.track('pwa_install', userId, 'pwa', { platform, source: 'appinstalled_event' });
-      });
-    } catch (e) {
-      console.error('Failed to track PWA appinstalled event', e);
+      localStorage.setItem('mira_pwa_installed', 'true');
+    } catch {
+      // localStorage indisponível
     }
+
+    window.dispatchEvent(new CustomEvent('mira-pwa-installed'));
+
+    try {
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+
+      const platform = isMobile ? 'mobile' : 'desktop';
+
+      let userId = 'anonymous';
+
+      const savedUser = localStorage.getItem('mira_user');
+
+      if (savedUser) {
+        try {
+          userId = JSON.parse(savedUser).id;
+        } catch {
+          // Mantém anonymous se o objeto estiver inválido
+        }
+      }
+
+      import('../services/analyticsService')
+        .then(({ analytics }) => {
+          analytics.track('pwa_install', userId, 'pwa', {
+            platform,
+            source: 'appinstalled_event',
+          });
+        })
+        .catch(() => {
+          // Analytics não pode impedir a instalação
+        });
+    } catch (error) {
+      console.error(
+        '[MIRA PWA] Falha ao registar evento appinstalled:',
+        error
+      );
+    }
+
+    console.info('[MIRA PWA] Aplicação instalada.');
   });
-}
+};
+
+/**
+ * Inicialização imediata.
+ */
+initializePwaListener();
 
 export const pwaService = {
-  getDeferredPrompt: () => deferredPrompt,
-  
-  isInstallable: () => {
-    return !!deferredPrompt;
+  /**
+   * Devolve o deferredPrompt atualmente capturado.
+   */
+  getDeferredPrompt: (): BeforeInstallPromptEvent | null => {
+    const state = getWindowState();
+
+    return state?.deferredPrompt ?? null;
   },
 
-  isStandalone: () => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
+  /**
+   * Indica se o Chrome/Edge/etc. disponibilizou o prompt nativo.
+   */
+  isInstallable: (): boolean => {
+    const state = getWindowState();
+
+    return !!state?.deferredPrompt;
   },
 
-  isIOS: () => {
-    if (typeof window === 'undefined') return false;
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  /**
+   * Verifica se a aplicação já está em modo standalone.
+   */
+  isStandalone: (): boolean => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true
+    );
   },
 
-  isSafari: () => {
-    if (typeof window === 'undefined') return false;
+  /**
+   * Deteta iOS.
+   */
+  isIOS: (): boolean => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return (
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+      !(window as Window & { MSStream?: unknown }).MSStream
+    );
+  },
+
+  /**
+   * Deteta Safari.
+   */
+  isSafari: (): boolean => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
     return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   },
 
   /**
-   * 📲 INSTANT SHORTCUT DOWNLOADER (MIRA IMIGRANTE)
-   * Downloads a direct Internet Shortcut file (.url & .html WebApp launcher) with logo to the user's phone or computer.
+   * Decide se o modal diário deve ser mostrado.
+   *
+   * Toda a regra fica centralizada aqui.
    */
-  downloadShortcutFile: () => {
-    if (typeof window === 'undefined') return;
+  shouldShowDailyModal: (): boolean => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    if (pwaService.isStandalone()) {
+      return false;
+    }
+
+    const todayStr = new Date().toDateString();
+
+    const lastInstallModalDate = localStorage.getItem(
+      'mira_pwa_install_modal_shown_date'
+    );
+
+    const isAppInstalled =
+      localStorage.getItem('mira_pwa_installed') === 'true';
+
+    if (isAppInstalled || lastInstallModalDate === todayStr) {
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
+   * Marca o modal diário como mostrado.
+   */
+  markDailyModalShown: (): void => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const todayStr = new Date().toDateString();
+
+    localStorage.setItem(
+      'mira_pwa_install_modal_shown_date',
+      todayStr
+    );
+  },
+
+  /**
+   * Download explícito do atalho .url para desktop.
+   *
+   * IMPORTANTE:
+   * Esta função NÃO faz parte do processo normal de instalação PWA.
+   */
+  downloadShortcut: (): void => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     try {
       const appUrl = window.location.origin;
       const iconUrl = `${appUrl}/logo-mira.png`;
-      
-      // 1. Internet Shortcut (.url) for Desktop/Mobile File System
-      const urlContent = `[InternetShortcut]\r\nURL=${appUrl}\r\nIconIndex=0\r\nIconFile=${iconUrl}\r\nTitle=MIRA IMIGRANTE\r\n`;
-      const blobUrl = new Blob([urlContent], { type: 'application/x-mswinurl;charset=utf-8' });
-      const linkUrl = document.createElement('a');
-      linkUrl.href = URL.createObjectURL(blobUrl);
-      linkUrl.download = 'MIRA IMIGRANTE.url';
-      document.body.appendChild(linkUrl);
-      linkUrl.click();
-      document.body.removeChild(linkUrl);
-      URL.revokeObjectURL(linkUrl.href);
-    } catch (e) {
-      console.error('Failed to download MIRA IMIGRANTE shortcut file', e);
+
+      const urlContent =
+        `[InternetShortcut]\r\n` +
+        `URL=${appUrl}\r\n` +
+        `IconIndex=0\r\n` +
+        `IconFile=${iconUrl}\r\n` +
+        `Title=MIRA IMIGRANTE\r\n`;
+
+      const blob = new Blob([urlContent], {
+        type: 'application/x-mswinurl;charset=utf-8',
+      });
+
+      const objectUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+
+      link.href = objectUrl;
+      link.download = 'MIRA IMIGRANTE.url';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(objectUrl);
+
+      console.info('[MIRA PWA] Atalho .url descarregado.');
+    } catch (error) {
+      console.error(
+        '[MIRA PWA] Falha ao descarregar o atalho:',
+        error
+      );
     }
   },
 
   /**
-   * 📲 DIRECT PWA INSTALLER & DOWNLOADER TRIGGER
-   * Triggers native install prompt if available, AND downloads the MIRA IMIGRANTE shortcut file immediately to the user's device.
+   * PONTO ÚNICO E SOBERANO DE INSTALAÇÃO.
+   *
+   * Fluxo:
+   *
+   * 1. Já instalado
+   * 2. Prompt nativo disponível
+   * 3. iOS
+   * 4. Instruções manuais
    */
-  triggerInstall: async (): Promise<'accepted' | 'dismissed' | 'ios-safari' | 'downloaded'> => {
-    if (typeof window === 'undefined') return 'dismissed';
+  install: async (): Promise<PWAInstallResult> => {
+    if (typeof window === 'undefined') {
+      return 'manual_instructions';
+    }
 
-    // ALWAYS trigger the direct shortcut file download ("MIRA IMIGRANTE.url")
-    pwaService.downloadShortcutFile();
+    if (pwaService.isStandalone()) {
+      console.info('[MIRA PWA] Já está instalada.');
 
-    // 1. If native beforeinstallprompt is ready, trigger it directly!
+      return 'already_installed';
+    }
+
+    const state = getWindowState();
+    const deferredPrompt = state?.deferredPrompt ?? null;
+
+    console.info('[MIRA PWA] Pedido de instalação:', {
+      hasDeferredPrompt: !!deferredPrompt,
+      isStandalone: pwaService.isStandalone(),
+      isIOS: pwaService.isIOS(),
+    });
+
+    /**
+     * PRIORIDADE 1:
+     * Prompt nativo do Chrome/Edge/etc.
+     */
     if (deferredPrompt) {
       try {
-        deferredPrompt.prompt();
+        await deferredPrompt.prompt();
+
         const { outcome } = await deferredPrompt.userChoice;
+
         if (outcome === 'accepted') {
-          deferredPrompt = null;
+          state!.deferredPrompt = null;
+
           try {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            localStorage.setItem('mira_pwa_installed', 'true');
+          } catch {
+            // localStorage indisponível
+          }
+
+          try {
+            const isMobile =
+              /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                navigator.userAgent
+              );
+
             const platform = isMobile ? 'mobile' : 'desktop';
+
             let userId = 'anonymous';
+
             const savedUser = localStorage.getItem('mira_user');
+
             if (savedUser) {
-              userId = JSON.parse(savedUser).id;
+              try {
+                userId = JSON.parse(savedUser).id;
+              } catch {
+                // Mantém anonymous
+              }
             }
-            import('../services/analyticsService').then(({ analytics }) => {
-              analytics.track('pwa_install', userId, 'pwa', { platform, source: 'button_prompt' });
-            });
-          } catch (e) {}
-          return 'accepted';
+
+            import('../services/analyticsService')
+              .then(({ analytics }) => {
+                analytics.track('pwa_install', userId, 'pwa', {
+                  platform,
+                  source: 'button_prompt',
+                });
+              })
+              .catch(() => {
+                // Analytics não pode impedir a instalação
+              });
+          } catch {
+            // Analytics não pode impedir a instalação
+          }
+
+          console.info('[MIRA PWA] Prompt aceite.');
+
+          return 'prompt_accepted';
         }
-      } catch (e) {
-        console.warn('PWA Prompt execution failed:', e);
+
+        console.info('[MIRA PWA] Prompt recusado.');
+
+        return 'prompt_dismissed';
+      } catch (error) {
+        console.warn(
+          '[MIRA PWA] Falha na execução do prompt nativo:',
+          error
+        );
+
+        /**
+         * O prompt pode tornar-se inválido depois de uma tentativa.
+         * Limpamos apenas o estado atual.
+         */
+        state!.deferredPrompt = null;
       }
     }
 
-    // 2. If iOS Safari, return 'ios-safari' to open visual guide
+    /**
+     * PRIORIDADE 2:
+     * iOS/Safari não disponibiliza beforeinstallprompt.
+     */
     if (pwaService.isIOS()) {
+      console.info('[MIRA PWA] iOS: apresentar instruções.');
+
+      return 'ios_instructions';
+    }
+
+    /**
+     * PRIORIDADE 3:
+     * Browser sem prompt nativo disponível.
+     */
+    console.info(
+      '[MIRA PWA] Nenhum prompt nativo disponível. Instruções manuais.'
+    );
+
+    return 'manual_instructions';
+  },
+
+  /**
+   * Wrapper de compatibilidade para código legado.
+   */
+  triggerInstall: async (): Promise<
+    'accepted' | 'dismissed' | 'ios-safari' | 'downloaded'
+  > => {
+    const result = await pwaService.install();
+
+    if (result === 'prompt_accepted') {
+      return 'accepted';
+    }
+
+    if (result === 'ios_instructions') {
       return 'ios-safari';
     }
 
+    if (result === 'prompt_dismissed') {
+      return 'dismissed';
+    }
+
     return 'downloaded';
-  }
+  },
 };

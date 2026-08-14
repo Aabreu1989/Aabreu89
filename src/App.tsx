@@ -116,7 +116,7 @@ const AppContent: React.FC = () => {
         if (typeof window !== 'undefined' && window.location.pathname === '/baixar') {
             return true;
         }
-        return false;
+        return pwaService.shouldShowDailyModal();
     });
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -135,23 +135,12 @@ const AppContent: React.FC = () => {
     }, []);
 
     const triggerPwaInstallModalIfNeeded = useCallback(() => {
-        // 🛡️ CRITICAL RULE: If user already has the app (standalone mode), NEVER show install modal!
-        if (pwaService.isStandalone()) {
+        if (pwaService.shouldShowDailyModal()) {
+            pwaService.markDailyModalShown();
+            setShowPostLoginInstallModal(true);
+        } else {
             setShowPostLoginInstallModal(false);
-            return;
         }
-
-        const todayStr = new Date().toDateString();
-        const lastInstallModalDate = localStorage.getItem('mira_pwa_install_modal_shown_date');
-        const isAppInstalled = localStorage.getItem('mira_pwa_installed') === 'true';
-
-        if (isAppInstalled || lastInstallModalDate === todayStr) {
-            setShowPostLoginInstallModal(false);
-            return;
-        }
-
-        localStorage.setItem('mira_pwa_install_modal_shown_date', todayStr);
-        setShowPostLoginInstallModal(true);
     }, []);
 
     useEffect(() => {
@@ -1405,11 +1394,10 @@ const AppContent: React.FC = () => {
 
 
     const handleTriggerPwaInstall = async () => {
-        if (pwaService.isIOS()) {
+        const result = await pwaService.install();
+        if (result === 'ios_instructions') {
             setShowSafariGuide(true);
-            return;
         }
-        await pwaService.triggerInstall();
     };
 
     return (
@@ -1430,7 +1418,7 @@ const AppContent: React.FC = () => {
                     <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 max-w-sm w-full space-y-6 text-center shadow-2xl relative text-slate-900">
                         <button
                             onClick={() => {
-                                localStorage.setItem('mira_pwa_install_modal_shown_date', new Date().toDateString());
+                                pwaService.markDailyModalShown();
                                 setShowPostLoginInstallModal(false);
                             }}
                             className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition-colors p-1"
@@ -1469,7 +1457,8 @@ const AppContent: React.FC = () => {
                         <div className="flex flex-col gap-3">
                             <button
                                 onClick={async () => {
-                                    localStorage.setItem('mira_pwa_install_modal_shown_date', new Date().toDateString());
+                                    pwaService.downloadShortcut();
+                                    pwaService.markDailyModalShown();
                                     setShowPostLoginInstallModal(false);
                                     try {
                                         let localCount = parseInt(localStorage.getItem('mira_realtime_pwa_downloads') || '0', 10);
@@ -1477,10 +1466,9 @@ const AppContent: React.FC = () => {
                                         analytics.track('pwa_install', user?.id || 'guest', 'pwa', { platform: isMobile ? 'mobile' : 'desktop' });
                                     } catch (e) {}
 
-                                    if (pwaService.isIOS()) {
+                                    const result = await pwaService.install();
+                                    if (result === 'ios_instructions') {
                                         setShowSafariGuide(true);
-                                    } else {
-                                        await pwaService.triggerInstall();
                                     }
                                 }}
                                 className="w-full py-4 bg-mira-orange text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-orange-500/25"

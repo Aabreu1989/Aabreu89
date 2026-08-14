@@ -24,6 +24,9 @@ WHERE name ILIKE '%AIMA%'
 
 -- 4. Unified Accent-Insensitive Search RPC
 -- This RPC handles trigram + unaccent for sub-100ms ultra-precision.
+DROP FUNCTION IF EXISTS public.search_profiles_unaccent(text, int, int);
+DROP FUNCTION IF EXISTS public.search_profiles_unaccent(text);
+DROP FUNCTION IF EXISTS public.search_profiles_unaccent();
 CREATE OR REPLACE FUNCTION search_profiles_unaccent(
     search_term text, 
     page_size int DEFAULT 20, 
@@ -65,5 +68,9 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 5. Indexing for Unaccent Search (Optional but recommended for scale)
-CREATE INDEX IF NOT EXISTS idx_profiles_name_unaccent ON public.profiles USING GIN (unaccent(name) gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS idx_profiles_email_unaccent ON public.profiles USING GIN (unaccent(email) gin_trgm_ops);
+CREATE OR REPLACE FUNCTION public.f_unaccent(text) RETURNS text AS $$
+  SELECT public.unaccent($1)
+$$ LANGUAGE sql IMMUTABLE PARALLEL SAFE;
+
+CREATE INDEX IF NOT EXISTS idx_profiles_name_unaccent ON public.profiles USING GIN (public.f_unaccent(name) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_profiles_email_unaccent ON public.profiles USING GIN (public.f_unaccent(email) gin_trgm_ops);

@@ -18,6 +18,7 @@ import { t } from '../utils/translations';
 import { communityService } from '../services/communityService';
 import { getCategoryKey, normalizeCategory } from '../utils/categoryUtils';
 import { syncService } from '../services/syncService';
+import { isUserAdmin } from '../utils/adminUtils';
 import { analytics } from '../services/analyticsService';
 import { useToast } from './Toast';
 import { PostCard } from './PostCard';
@@ -315,9 +316,7 @@ const handleDeletePost = async (postId: string) => {
     return;
   }
 
-  const userIsAdmin =
-    user?.role === 'admin' ||
-    user?.email?.toLowerCase() === 'amandasabreu89@gmail.com';
+  const userIsAdmin = isUserAdmin(user);
 
   const canDelete =
     userIsAdmin ||
@@ -565,9 +564,8 @@ const handleDeletePost = async (postId: string) => {
       }));
 
       showToast(isTrue ? t('toast_fact_true', language) : t('toast_fact_false', language), "success");
-      if (action === 'added') onEarnPoints && onEarnPoints(2);
 
-      // Persistência: Enfileirar via SyncService
+      // Persistência Soberana: Enfileirar via SyncService (Gamificação gerida 100% pelo Servidor Gateway)
       await syncService.enqueue('vote', { postId, userId: user.id, voteType });
       analytics.track('post_fact_vote', user.id, 'comunidade', { postId, voteType, action });
     } catch (e) {
@@ -937,7 +935,7 @@ const handleDeletePost = async (postId: string) => {
                 setMasterPosts(prev => prev.map(p => p.id === post.id ? { ...p, translations: { ...p.translations, [language.toUpperCase()]: translated } } : p));
               }}
               onOpenProfile={(postData) => onViewProfile && onViewProfile(postData.authorId, postData.authorName, postData.authorAvatar)}
-              isAdmin={user.role === 'admin' || ['amandasabreu89@gmail.com'].includes(user.email?.toLowerCase() || '')}
+              isAdmin={isUserAdmin(user)}
               onComment={handleOpenComment}
               onDeleteComment={handleDeleteComment}
               onToggleSave={() => onToggleSavePost(post.id)}
@@ -1094,7 +1092,7 @@ const handleDeletePost = async (postId: string) => {
                         </div>
 
                         {/* Ações de Admin no Stories */}
-                        {['amandasabreu89@gmail.com'].includes(user?.email?.toLowerCase() || '') && (
+                        {isUserAdmin(user) && (
                           <div className="flex justify-center gap-4 pointer-events-auto">
                              <button 
                                onClick={async () => {

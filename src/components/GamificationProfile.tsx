@@ -734,9 +734,8 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                                                 mapped.followersCount = realFollowers;
                                                 mapped.followingCount = realFollowing;
 
-                                                // Garantir que o email não entra no estado se não houver permissão
                                                 const isOwner = currentUser?.id === user?.id;
-                                                const isAdmin = currentUser?.role === 'admin' || ['amandasabreu89@gmail.com'].includes(currentUser?.email?.toLowerCase() || '');
+                                                const isAdmin = isUserAdmin(currentUser);
                                                 if (!isAdmin && !isOwner) mapped.email = undefined;
                                                 setProfileUser(mapped);
                                                 setLocalFollowersCount(realFollowers);

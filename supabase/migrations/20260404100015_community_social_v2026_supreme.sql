@@ -52,6 +52,7 @@ FOR EACH ROW EXECUTE FUNCTION public.tr_sync_follows_atomic_v24();
 
 -- [3] MOTOR DE FEED SOBERANO (v24.1)
 -- Esta é a função que o frontend chama: get_sovereign_community_feed_v24
+DROP FUNCTION IF EXISTS public.get_sovereign_community_feed_v24 CASCADE;
 CREATE OR REPLACE FUNCTION public.get_sovereign_community_feed_v24(p_limit INT, p_offset INT)
 RETURNS TABLE (
     id UUID,
@@ -161,4 +162,4 @@ SET
   followers_count = (SELECT count(*) FROM public.follows WHERE following_id = p.id),
   following_count = (SELECT count(*) FROM public.follows WHERE follower_id = p.id);
 
-RAISE NOTICE 'Soberania Restaurada: Feed v24.1 Ativo e Sincronizado.';
+DO $$ BEGIN RAISE NOTICE 'Soberania Restaurada: Feed v24.1 Ativo e Sincronizado.'; END $$;

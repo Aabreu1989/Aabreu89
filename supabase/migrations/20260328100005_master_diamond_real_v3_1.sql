@@ -14,6 +14,7 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS unaccent;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- [2] CATEGORIAS FIXAS (O CÉREBRO ORGANIZADO)
 DO $$ 
@@ -28,7 +29,7 @@ END $$;
 
 -- [3] TABELAS DE SUPORTE (EXPERT & HARDENING)
 CREATE TABLE IF NOT EXISTS public.expert_columns (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     author_id UUID REFERENCES public.profiles(id),
     author_name TEXT,
     title TEXT,
@@ -40,6 +41,16 @@ CREATE TABLE IF NOT EXISTS public.expert_columns (
 );
 
 -- Injeção de colunas soberanas nas tabelas core
+CREATE TABLE IF NOT EXISTS public.knowledge_base (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    topic TEXT,
+    content TEXT,
+    category TEXT,
+    embedding vector(768),
+    metadata JSONB,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
 ALTER TABLE public.knowledge_base ADD COLUMN IF NOT EXISTS embedding vector(768);
 ALTER TABLE public.knowledge_base ADD COLUMN IF NOT EXISTS category knowledge_category DEFAULT 'vistos_aima';
 ALTER TABLE public.knowledge_base ADD COLUMN IF NOT EXISTS source_type TEXT DEFAULT 'oficial';
@@ -50,6 +61,14 @@ ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS embedding vector(768);
 ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS reports_count INT DEFAULT 0;
 
 -- Categorização de Denúncias
+CREATE TABLE IF NOT EXISTS public.reports (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    reporter_id UUID,
+    target_id UUID,
+    category TEXT DEFAULT 'other',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
 ALTER TABLE public.reports ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'other';
 
 -- [4] INDEXAÇÃO HNSW (ULTRA-PERFORMANCE RAG)

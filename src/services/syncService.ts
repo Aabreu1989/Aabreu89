@@ -157,9 +157,6 @@ class SyncService {
                             case 'vote':
                                 {
                                     await communityService.voteOrLike(item.payload.postId, item.payload.userId, item.payload.voteType);
-                                    // V2026.ELITE: Fact Voting (+2 points) remains client-side as it lacks a dedicated trigger for now
-                                    const { gamificationService } = await import('./gamificationService');
-                                    await gamificationService.earnPoints(item.payload.userId, 2, 'Sync: Voto de Facto');
                                 }
                                 break;
                             case 'comment':

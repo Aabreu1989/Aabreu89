@@ -43,6 +43,7 @@ ALTER TABLE public.admin_dashboard_stats ADD COLUMN IF NOT EXISTS total_useful I
 ALTER TABLE public.admin_dashboard_stats ADD COLUMN IF NOT EXISTS total_fake INT DEFAULT 0;
 
 -- 6. Recriar View de Estatísticas para tempo real
+DROP TABLE IF EXISTS public.admin_dashboard_stats CASCADE;
 DROP VIEW IF EXISTS public.admin_dashboard_stats CASCADE;
 CREATE OR REPLACE VIEW public.admin_dashboard_stats AS
 SELECT 
@@ -58,4 +59,4 @@ SELECT
 
 GRANT SELECT ON public.admin_dashboard_stats TO anon, authenticated, service_role;
 
-COMMIT;
+-- END

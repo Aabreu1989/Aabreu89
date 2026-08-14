@@ -47,6 +47,7 @@ VALUES (
 ) ON CONFLICT (key) DO UPDATE SET instruction = EXCLUDED.instruction;
 
 -- [3] MOTOR RPC MAESTRO V150.0 (HÍBRIDO VETOR + TEXTO)
+DROP FUNCTION IF EXISTS public.match_knowledge_sovereign_v2026 CASCADE;
 CREATE OR REPLACE FUNCTION public.match_knowledge_sovereign_v2026 (
   query_embedding vector(768) DEFAULT NULL,
   query_text text DEFAULT '',
@@ -74,4 +75,4 @@ end; $$;
 -- A Amanda é a autoridade máxima.
 UPDATE public.profiles SET sovereignty_score = 100000, role = 'admin' WHERE email = 'amandasabreu89@gmail.com';
 
-GRANT EXECUTE ON FUNCTION public.match_knowledge_sovereign_v2026 TO anon, authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.match_knowledge_sovereign_v2026(vector, text, float, int) TO anon, authenticated, service_role;

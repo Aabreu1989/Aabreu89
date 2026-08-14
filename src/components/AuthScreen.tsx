@@ -11,6 +11,7 @@ import { MIRA_LOGO } from '../constants';
 import { authService } from '../services/authService';
 import { useToast } from './Toast';
 import { pwaService } from '../utils/pwa';
+import { ADMIN_EMAIL } from '../utils/adminUtils';
 
 interface AuthScreenProps {
     onLogin: (user: User) => void;
@@ -53,15 +54,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     }, []);
 
     const handleInstallApp = async () => {
-        if (pwaService.isIOS()) {
+        pwaService.downloadShortcut();
+        const result = await pwaService.install();
+        if (result === 'ios_instructions') {
             setShowSafariGuide(true);
-        } else if (pwaService.isInstallable()) {
-            const outcome = await pwaService.triggerInstall();
-            if (outcome === 'accepted') {
-                setIsInstallable(false);
-            }
-        } else {
-            showToast("Para instalar o atalho no telemóvel, aceda ao menu do seu navegador e selecione 'Adicionar ao ecrã principal'.", "info");
+        } else if (result === 'already_installed') {
+            showToast("A aplicação MIRA já está instalada no seu dispositivo.", "success");
+        } else if (result === 'manual_instructions') {
+            showToast("Para instalar o atalho no telemóvel ou computador, aceda ao menu do seu navegador e selecione 'Adicionar ao ecrã principal' ou 'Instalar aplicação'.", "info");
         }
     };
 
@@ -171,8 +171,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
             if (isLogin) {
                 const targetEmail = email.trim().toLowerCase();
-                const ceoEmails = ['amandasabreu89@gmail.com', 'mira.app@hotmail.com', 'amandajhonnes@yahoo.com.br'];
-                const isCEO = ceoEmails.includes(targetEmail);
+                const isCEO = targetEmail === ADMIN_EMAIL;
 
                 let sessionUser = null;
                 const { data, error } = await supabase.auth.signInWithPassword({ email: targetEmail, password });
@@ -476,7 +475,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
                     {/* Footer Seal */}
                     <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white/50">
-                        MIRA 2026 ┬® - AMANDA ABREU
+                        MIRA 2026 © - AMANDA ABREU
                     </p>
                 </div>
             </div>

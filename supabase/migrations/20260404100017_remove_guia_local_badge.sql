@@ -61,8 +61,8 @@ DELETE FROM public.user_badges WHERE badge_id = 'guia_local';
 
 -- 3. Force sync profiles (colapsing existing arrays)
 UPDATE public.profiles p
-SET badges = ARRAY(
+SET badges = to_jsonb(ARRAY(
     SELECT badge_id 
     FROM public.user_badges ub 
     WHERE ub.user_id = p.id
-);
+));

@@ -77,20 +77,17 @@ CREATE TABLE IF NOT EXISTS public.community_interactions (
 
 DELETE FROM public.badges;
 
-INSERT INTO public.badges (name, description, icon_emoji, rarity_level) VALUES 
-('Pioneiro MIRA', 'Utilizadores da primeira vaga.', '🏹', 'épico'),
-('Conta Verificada', 'Identidade validada pela equipa MIRA.', '✅', 'lendário'),
-('Curador da Comunidade', 'Validou 20+ informações úteis.', '💡', 'raro'),
-('Mestre dos Documentos', 'Especialista em documentação. 30+ ajudas.', '📂', 'épico'),
-('Utilizador Exemplar', 'Conduta impecável na tribo.', '💎', 'raro'),
-('Sentinela', 'Guardião contra fraudes. 10+ denúncias.', '🛡️', 'épico'),
-('Especialista em Leis', 'Conhecimento jurídico. 50+ consultas.', '⚖️', 'raro'),
-('Mentor de Emprego', 'Apoio em vagas. 10+ ajudas úteis.', '💼', 'incomum'),
-('Coração da Comunidade', 'Apoio emocional e empatia consistente.', '❤️', 'épico')
-ON CONFLICT (name) DO UPDATE SET 
-    icon_emoji = EXCLUDED.icon_emoji, 
-    description = EXCLUDED.description, 
-    rarity_level = EXCLUDED.rarity_level;
+INSERT INTO public.badges (id, name, description, icon_emoji, rarity_level) VALUES 
+('pioneiro', 'Pioneiro MIRA', 'Utilizadores da primeira vaga.', '🏹', 3),
+('verificado', 'Conta Verificada', 'Identidade validada pela equipa MIRA.', '✅', 4),
+('curador', 'Curador da Comunidade', 'Validou 20+ informações úteis.', '💡', 2),
+('mestre_docs', 'Mestre dos Documentos', 'Especialista em documentação. 30+ ajudas.', '📂', 3),
+('exemplar', 'Utilizador Exemplar', 'Conduta impecável na tribo.', '💎', 2),
+('sentinela', 'Sentinela', 'Guardião contra fraudes. 10+ denúncias.', '🛡️', 3),
+('especialista_leis', 'Especialista em Leis', 'Conhecimento jurídico. 50+ consultas.', '⚖️', 2),
+('mentor_emprego', 'Mentor de Emprego', 'Apoio em vagas. 10+ ajudas úteis.', '💼', 1),
+('coracao', 'Coração da Comunidade', 'Apoio emocional e empatia consistente.', '❤️', 3)
+ON CONFLICT DO NOTHING;
 
 -- ==========================================
 -- 4. MOTOR DE GAMIFICAÇÃO (Gatilhos e Funções)
@@ -155,4 +152,4 @@ BEGIN
 END;
 $$;
 
-COMMIT;
+-- END

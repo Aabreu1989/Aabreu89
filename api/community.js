@@ -21,11 +21,13 @@ export default async function handler(req, res) {
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
 
     let authenticatedUserId = null;
+    let authenticatedUserEmail = null;
 
     if (token) {
       const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);
       if (!userError && userData?.user) {
         authenticatedUserId = userData.user.id;
+        authenticatedUserEmail = (userData.user.email || '').toLowerCase().trim();
       }
     }
 
@@ -55,7 +57,7 @@ export default async function handler(req, res) {
 
     // 1. CREATE POST
     if (action === 'create_post') {
-      const { title, content, category } = req.body || {};
+      const { title, content, category, mediaUrl } = req.body || {};
       if (!content || !content.trim()) {
         return res.status(400).json({ error: 'Conteúdo do post é obrigatório.' });
       }
@@ -85,6 +87,8 @@ export default async function handler(req, res) {
           title: title || 'Nova Partilha',
           content: content.trim(),
           category: category || 'Geral',
+          media_url: mediaUrl || null,
+          media_type: mediaUrl ? 'image' : null,
           validation_status: 'validated',
           created_at: new Date().toISOString()
         })
@@ -109,10 +113,7 @@ export default async function handler(req, res) {
       if (!postId) return res.status(400).json({ error: 'postId é obrigatório.' });
 
       // Check ownership or admin status
-      const { data: postCheck } = await supabaseAdmin.from('posts').select('author_id').eq('id', postId).maybeSingle();
-      const { data: profileCheck } = await supabaseAdmin.from('profiles').select('role, email').eq('id', authenticatedUserId).maybeSingle();
-      
-      const isAdmin = profileCheck?.role === 'admin' || ['amandasabreu89@gmail.com', 'mira.app@hotmail.com'].includes(profileCheck?.email?.toLowerCase() || '');
+      const isAdmin = (authenticatedUserEmail || profileCheck?.email || '').toLowerCase().trim() === 'amandasabreu89@gmail.com';
       if (postCheck && postCheck.author_id !== authenticatedUserId && !isAdmin) {
         return res.status(403).json({ error: 'Apenas o autor ou admin podem eliminar este post.' });
       }
@@ -140,13 +141,15 @@ export default async function handler(req, res) {
         .eq('user_id', authenticatedUserId)
         .maybeSingle();
 
+      let voteActionResult = 'added';
+
       if (existingVote) {
         if (existingVote.vote_type === normalizedVoteType) {
           await supabaseAdmin.from('post_votes').delete().eq('id', existingVote.id);
-          return res.status(200).json({ success: true, action: 'removed' });
+          return res.status(200).json({ success: true, action: 'removed', pointsEarned: 0 });
         } else {
           await supabaseAdmin.from('post_votes').update({ vote_type: normalizedVoteType }).eq('id', existingVote.id);
-          return res.status(200).json({ success: true, action: 'switched' });
+          voteActionResult = 'switched';
         }
       } else {
         await supabaseAdmin.from('post_votes').insert({
@@ -154,8 +157,42 @@ export default async function handler(req, res) {
           user_id: authenticatedUserId,
           vote_type: normalizedVoteType
         });
-        return res.status(200).json({ success: true, action: 'added' });
+        voteActionResult = 'added';
       }
+
+      // 🛡️ GAMIFICAÇÃO SOBERANA, ATÓMICA E IDEMPOTENTE (ETAPA 3F-B.3)
+      let pointsEarned = 0;
+      let newReputation = null;
+
+      if (normalizedVoteType === 'true' || normalizedVoteType === 'fake') {
+        const actionKey = normalizedVoteType === 'true' ? 'vote_true' : 'vote_fake';
+
+        // Invocação transacional atómica via RPC executada como service_role
+        const { data: gResult, error: gError } = await supabaseAdmin.rpc('grant_idempotent_vote_reputation', {
+          target_user_id: authenticatedUserId,
+          p_action_key: actionKey,
+          p_entity_id: postId
+        });
+
+        if (!gError && gResult) {
+          if (gResult.earned === true) {
+            pointsEarned = gResult.amount || 3;
+            newReputation = gResult.reputation;
+          } else {
+            pointsEarned = 0;
+            newReputation = gResult.reputation || null;
+          }
+        } else if (gError) {
+          console.warn('⚠️ [MIRA API Community] Aviso ao invocar RPC de gamificação:', gError.message);
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        action: voteActionResult,
+        pointsEarned,
+        reputation: newReputation
+      });
     }
 
     // 4. TOGGLE SAVE POST (SAVED_POSTS)
@@ -277,6 +314,74 @@ export default async function handler(req, res) {
         }
         return res.status(200).json({ success: true, action: 'followed' });
       }
+    }
+
+    // 9. EARN POINTS (GAMIFICATION ENGINE SOBERANO)
+    if (action === 'earn_points') {
+      const { actionKey, reason, entityId } = req.body || {};
+      if (!actionKey) {
+        return res.status(400).json({ error: 'actionKey é obrigatório.' });
+      }
+
+      const DEFAULT_RULES = {
+        publish_post: 10,
+        add_comment: 5,
+        like_given: 1,
+        like_received: 2,
+        vote_true: 3,
+        vote_fake: 3,
+        follow_user: 2,
+        report_content: 1,
+        curate_guide: 15
+      };
+
+      let amount = DEFAULT_RULES[actionKey];
+
+      try {
+        const { data: ruleData } = await supabaseAdmin
+          .from('gamification_rules')
+          .select('points')
+          .eq('action_key', actionKey)
+          .maybeSingle();
+
+        if (ruleData && typeof ruleData.points === 'number') {
+          amount = ruleData.points;
+        }
+      } catch (e) {
+        // Tabela gamification_rules ainda em migração
+      }
+
+      if (typeof amount !== 'number') {
+        return res.status(400).json({ error: 'Ação de gamificação inválida ou não reconhecida.' });
+      }
+
+      // Executar RPC atómica via cliente SERVICE_ROLE
+      const { data: newRep, error: rpcErr } = await supabaseAdmin.rpc('increment_reputation', {
+        target_user_id: authenticatedUserId,
+        amount: amount
+      });
+
+      if (rpcErr) {
+        console.error('🚨 [MIRA API Community] Erro ao incrementar reputação:', rpcErr.message);
+        return res.status(500).json({ error: 'Falha ao processar pontos de reputação.' });
+      }
+
+      // Registar nos audit logs
+      const reasonText = reason || `Ação: ${actionKey}`;
+      await supabaseAdmin.from('reputation_logs').insert([{
+        user_id: authenticatedUserId,
+        amount: amount,
+        reason: reasonText
+      }]);
+
+      await supabaseAdmin.from('activity_logs').insert([{
+        user_id: authenticatedUserId,
+        action: 'reputation_gained',
+        metadata: { amount, reason: reasonText, entity_id: entityId || null },
+        created_at: new Date().toISOString()
+      }]);
+
+      return res.status(200).json({ success: true, reputation: newRep, pointsEarned: amount });
     }
 
     return res.status(400).json({ error: 'Ação não suportada pelo gateway de comunidade.' });
