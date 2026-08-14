@@ -503,6 +503,26 @@ export const adminService: AdminService = {
     async fetchSyncStatusForPeriod(periodHours: number) {
         // Returns activity-based counts within the specified period window (24h, 7D=168h, 30D=720h)
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            if (token) {
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const apiUrl = isLocal 
+                    ? `http://localhost:3001/api/admin?action=sync-status-period&periodHours=${periodHours}`
+                    : `/api/admin?action=sync-status-period&periodHours=${periodHours}`;
+                const res = await fetch(apiUrl, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const periodData = await res.json();
+                    return periodData;
+                }
+            }
+        } catch (e) {
+            console.warn("⚠️ [MIRA ADMIN] Gateway sync-status-period warning, trying fallback:", e);
+        }
+
+        try {
             const since = new Date(Date.now() - periodHours * 60 * 60 * 1000).toISOString();
             const safeQuery = async (queryFn: () => PromiseLike<any>, defaultVal = 0) => {
                 try {
@@ -540,12 +560,25 @@ export const adminService: AdminService = {
 
     async fetchSyncStatus() {
         // 👑 SOBERANIA: Dashboard de Integridade V2026.GOLD (REAL-TIME BY AMANDA)
-
-        // Utilizamos a RPC 'get_admin_metrics_v2026' para performance máxima e dados consolidados.
         try {
-            // 📊 MIRA: Retenção via activity_logs (coluna last_seen_at não existe em profiles)
-            // A função mira_get_returning_users conta utilizadores com eventos em datas
-            // diferentes ao dia do seu registo
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            if (token) {
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const apiUrl = isLocal ? `http://localhost:3001/api/admin?action=sync-status` : '/api/admin?action=sync-status';
+                const res = await fetch(apiUrl, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const serverData = await res.json();
+                    return serverData;
+                }
+            }
+        } catch (e) {
+            console.warn("⚠️ [MIRA ADMIN] Gateway sync-status warning, trying fallback:", e);
+        }
+
+        try {
             let returningUsersCount = 0;
             try {
                 const { data: retentionData } = await supabase.rpc('mira_get_returning_users');

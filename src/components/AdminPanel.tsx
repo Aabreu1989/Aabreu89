@@ -305,6 +305,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         }
     }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod]);
 
+    useEffect(() => {
+        if (activeTab === 'dashboard') {
+            adminService.fetchSyncStatusForPeriod(dashboardPeriod).then(p => {
+                if (p) setPeriodCounts(p);
+            });
+        }
+    }, [dashboardPeriod, activeTab]);
+
     const handleAction = async (action: () => Promise<void>, actionId?: string, optimisticUpdate?: () => void) => {
         if (processing) return;
         if (actionId) setProcessing(actionId);
