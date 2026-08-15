@@ -36,7 +36,7 @@ class AnalyticsService {
           id: d.id,
           userId: d.user_id,
           action: d.action,
-          category: d.category,
+          category: d.metadata?.category,
           timestamp: d.created_at,
           metadata: d.metadata
         }));
@@ -166,3 +166,4 @@ class AnalyticsService {
 
 export const analytics = new AnalyticsService();
 export const analyticsService = analytics;
+

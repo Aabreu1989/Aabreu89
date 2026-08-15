@@ -241,32 +241,42 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
             (async () => {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
-                    if (session?.user) {
-                        const userId = session.user.id;
-                        const fileExt = pdfResult.filename.split('.').pop() || 'pdf';
-                        const fileId = Math.random().toString(36).substring(2, 10);
-                        const filePath = `${userId}/doc_${fileId}.${fileExt}`;
+                    const currentUserId = session?.user?.id;
+                    if (currentUserId) {
+                        let storageUrl: string | null = null;
+                        try {
+                            const fileExt = pdfResult.filename.split('.').pop() || 'pdf';
+                            const fileId = Math.random().toString(36).substring(2, 10);
+                            const filePath = `${currentUserId}/doc_${fileId}.${fileExt}`;
 
-                        const { data: uploadData, error: uploadError } = await supabase.storage
-                            .from('documents')
-                            .upload(filePath, pdfResult.blob, {
-                                contentType: 'application/pdf',
-                                upsert: false
-                            });
-
-                        if (!uploadError) {
-                            const { data: { publicUrl: storageUrl } } = supabase.storage
+                            const { error: uploadError } = await supabase.storage
                                 .from('documents')
-                                .getPublicUrl(filePath);
+                                .upload(filePath, pdfResult.blob, {
+                                    contentType: 'application/pdf',
+                                    upsert: false
+                                });
 
-                            await supabase.from('user_documents').insert([{
-                                user_id: userId,
+                            if (!uploadError) {
+                                const { data: { publicUrl } } = supabase.storage
+                                    .from('documents')
+                                    .getPublicUrl(filePath);
+                                storageUrl = publicUrl;
+                            }
+                        } catch (storageErr) {
+                            // Storage não bloqueia a persistência da base de dados
+                        }
+
+                        // Persistir metadados diretamente na tabela relacional user_documents
+                        await supabase.from('user_documents').insert([{
+                            user_id: currentUserId,
+                            document_type: selectedTemplate.id || selectedTemplate.title,
+                            file_path: storageUrl,
+                            metadata: {
                                 title: t(selectedTemplate.title, language),
                                 form_data: formData,
-                                file_url: storageUrl,
                                 is_draft: false
-                            }]);
-                        }
+                            }
+                        }]);
                     }
                 } catch (syncErr) {
                     console.warn("MIRA: Document sync failed (Non-blocking):", syncErr);

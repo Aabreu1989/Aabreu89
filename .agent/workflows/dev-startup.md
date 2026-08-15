@@ -11,10 +11,9 @@ npm run dev
 ```
 
 Este único comando faz tudo:
-1. Liberta as portas 3000 e 3001 se estiverem ocupadas
-2. Arranca o API Server (porta 3001) com auto-restart
-3. Arranca o Vite (porta 3000) com auto-restart
-4. Se qualquer servidor cair, reinicia automaticamente
+1. Arranca o servidor Vite no porto **3333** com o middleware de API integrado
+2. As rotas `/api/*` são servidas diretamente pelo Vite (sem servidor separado)
+3. Auto-restart em caso de crash
 
 ---
 
@@ -37,19 +36,19 @@ npm run dev
 
 | Comando | O que faz |
 |---------|-----------|
-| `npm run dev` | **Launcher completo** (usar sempre este) |
+| `npm run dev` | **Único comando necessário** (Frontend + API no porto 3333) |
 | `npm run dev:vite` | Só o frontend Vite |
-| `npm run dev:api` | Só o API server |
-| `npm run dev:all` | Ambos com `concurrently` (sem auto-restart) |
 
 ---
 
 ## Diagnóstico
 
-- **Porto 3333** → Frontend Vite (React App)
-- **Porto 3001** → API Server (Express — funções `/api/*`)
+- **Porto 3333** → Frontend Vite + APIs `/api/*` (tudo integrado)
 - **Subdomínio Supabase** → Edge Functions (cloud, sempre disponível)
 
+> ⚠️ **REGRA PERMANENTE:** O MIRA usa EXCLUSIVAMENTE o porto `3333` em desenvolvimento local.
+> Não existe porto 3000 nem 3001. Todas as chamadas de API usam URLs relativas (`/api/...`).
+
 Se o browser mostrar a app mas a IA não responde → problema na Edge Function (cloud), não no localhost.
-Se a app não carrega de todo → problema no Vite (Porto 3000).
-Se login/registo falha → problema no API Server (Porto 3001).
+Se a app não carrega de todo → problema no Vite (Porto 3333).
+Se login/registo falha → verificar variáveis de ambiente no `.env`.

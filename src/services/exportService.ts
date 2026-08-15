@@ -49,6 +49,7 @@ export interface AuditPlatformData {
   simulations: number;
   downloads: number;
   appAccesses: number;
+  totalInteractions?: number;
   pwaMobileDownloads: number;
   pwaComputerDownloads: number;
   processosAjudados: number;
@@ -318,7 +319,7 @@ export async function generateAdminHubPDF(data: AuditPlatformData): Promise<void
   y = addKpiSection(doc, [
     { label: 'Simulações', value: data.simulations.toLocaleString('pt-PT'), note: 'Financeiras' },
     { label: 'Docs Gerados', value: data.downloads.toLocaleString('pt-PT'), note: 'Minutas & Guias' },
-    { label: 'Navegações & Interações Totais', value: data.appAccesses.toLocaleString('pt-PT'), note: 'Total acumulado (Páginas + Cliques + Ações)' },
+    { label: 'Navegações & Interações', value: (data.totalInteractions ?? data.appAccesses).toLocaleString('pt-PT'), note: 'Páginas Vistas + Ações' },
     { label: 'PWA Instalados', value: (data.pwaMobileDownloads + data.pwaComputerDownloads).toLocaleString('pt-PT'), note: 'Mobile + Desktop' },
   ], y);
 
@@ -342,7 +343,8 @@ export async function generateAdminHubPDF(data: AuditPlatformData): Promise<void
       ['Horas Burocráticas Poupadas', `${data.horasPoupadas.toLocaleString('pt-PT')}h`, 'Fórmula Ponderada (Docs/Sims/IA)', 'Calculado DB'],
       ['Simulações Financeiras', data.simulations.toLocaleString('pt-PT'), 'public.activity_logs (simulation)', '100% Realtime'],
       ['Minutas & Guias Gerados', data.downloads.toLocaleString('pt-PT'), 'public.user_documents', '100% Realtime'],
-      ['Total de Acessos à Aplicação', data.appAccesses.toLocaleString('pt-PT'), 'public.activity_logs (session)', '100% Realtime'],
+      ['Acessos App (Entradas)', data.appAccesses.toLocaleString('pt-PT'), 'public.activity_logs (app_access)', '100% Realtime'],
+      ['Navegações & Interações Totais', (data.totalInteractions ?? data.appAccesses).toLocaleString('pt-PT'), 'public.activity_logs (canonical_actions)', '100% Realtime'],
       ['Instalações PWA Mobile', data.pwaMobileDownloads.toLocaleString('pt-PT'), 'public.activity_logs (pwa_mobile)', '100% Realtime'],
       ['Instalações PWA Desktop', data.pwaComputerDownloads.toLocaleString('pt-PT'), 'public.activity_logs (pwa_desktop)', '100% Realtime'],
       ['Processos Assistidos Total', data.processosAjudados.toLocaleString('pt-PT'), 'Docs Gerados + Simulações', '100% Realtime'],
@@ -632,7 +634,8 @@ export async function generateAuditExcel(
     ['Horas Burocráticas Poupadas', data.horasPoupadas, 'Fórmula Ponderada (Docs/Sims/IA)', 'Calculado DB'],
     ['Simulações Financeiras Realizadas', data.simulations, 'public.activity_logs (simulation)', '100% Realtime'],
     ['Minutas & Documentos Gerados', data.downloads, 'public.user_documents', '100% Realtime'],
-    ['Total de Acessos à Aplicação', data.appAccesses, 'public.activity_logs (session)', '100% Realtime'],
+    ['Acessos App (Entradas)', data.appAccesses, 'public.activity_logs (app_access)', '100% Realtime'],
+    ['Navegações & Interações Totais', data.totalInteractions ?? data.appAccesses, 'public.activity_logs (canonical_actions)', '100% Realtime'],
     ['Instalações PWA Mobile', data.pwaMobileDownloads, 'public.activity_logs (pwa_mobile)', '100% Realtime'],
     ['Instalações PWA Desktop', data.pwaComputerDownloads, 'public.activity_logs (pwa_desktop)', '100% Realtime'],
     ['Processos Assistidos Total', data.processosAjudados, 'Docs Gerados + Simulações', '100% Realtime'],

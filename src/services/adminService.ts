@@ -2,6 +2,11 @@ import { supabase } from '../lib/supabase';
 import { User, TrustLevel } from '../types';
 import { PROTECTED_SERVICES, PROTECTED_JOBS as SMALL_JOBS } from '../utils/protectedData';
 import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
+import { 
+    consolidatePlatformMetrics, 
+    CANONICAL_INTERACTION_ACTIONS, 
+    TELEMETRY_CUTOFF_DATE 
+} from '../config/telemetryBaselines';
 
 export interface AdminService {
 
@@ -253,8 +258,7 @@ export const adminService: AdminService = {
         const finalTargetType = r.post_id ? 'POST' : 'COMMENT';
         const finalTargetId = r.post_id || r.comment_id;
 
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const apiUrl = isLocal ? `http://localhost:3001/api/admin-delete-content` : '/api/admin-delete-content';
+        const apiUrl = '/api/admin-delete-content';
         const { data: { session } } = await supabase.auth.getSession();
         
         const response = await fetch(apiUrl, {
@@ -505,18 +509,14 @@ export const adminService: AdminService = {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
-            if (token) {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const apiUrl = isLocal 
-                    ? `http://localhost:3001/api/admin?action=sync-status-period&periodHours=${periodHours}`
-                    : `/api/admin?action=sync-status-period&periodHours=${periodHours}`;
-                const res = await fetch(apiUrl, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const periodData = await res.json();
-                    return periodData;
-                }
+            const headers: Record<string, string> = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const apiUrl = `/api/admin?action=sync-status-period&periodHours=${periodHours}`;
+            const res = await fetch(apiUrl, { headers });
+            if (res.ok) {
+                const periodData = await res.json();
+                return periodData;
             }
         } catch (e) {
             console.warn("⚠️ [MIRA ADMIN] Gateway sync-status-period warning, trying fallback:", e);
@@ -559,76 +559,50 @@ export const adminService: AdminService = {
     },
 
     async fetchSyncStatus() {
-        // 👑 SOBERANIA: Dashboard de Integridade V2026.GOLD (REAL-TIME BY AMANDA)
+        // 👑 SOBERANIA: Dashboard de Integridade V2026.GOLD (Gateway Consolidado)
         try {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
-            if (token) {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const apiUrl = isLocal ? `http://localhost:3001/api/admin?action=sync-status` : '/api/admin?action=sync-status';
-                const res = await fetch(apiUrl, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const serverData = await res.json();
-                    return serverData;
-                }
+            const headers: Record<string, string> = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const apiUrl = '/api/admin?action=sync-status';
+            const res = await fetch(apiUrl, { headers });
+            if (res.ok) {
+                const serverData = await res.json();
+                return serverData;
             }
         } catch (e) {
-            console.warn("⚠️ [MIRA ADMIN] Gateway sync-status warning, trying fallback:", e);
+            console.warn("⚠️ [MIRA ADMIN] Gateway sync-status indisponível, a tentar fallback direto:", e);
         }
 
+        // Fallback técnico de segurança (ex: sem ligação ao gateway local/remoto)
         try {
-            let returningUsersCount = 0;
-            try {
-                const { data: retentionData } = await supabase.rpc('mira_get_returning_users');
-                if (retentionData !== null && retentionData !== undefined) {
-                    returningUsersCount = Number(retentionData) || 0;
-                }
-            } catch (retentionErr) {
-                console.warn('MIRA ADMIN: Falha ao calcular retencao:', retentionErr);
-            }
-
-            // 📱🖥️ MIRA Telemetry: Obter downloads PWA (Móvel vs Computador)
-            let pwaMobileDownloads = 0;
-            let pwaComputerDownloads = 0;
-            try {
-                const { data: pwaLogs } = await supabase
-                    .from('activity_logs')
-                    .select('metadata')
-                    .eq('action', 'pwa_install');
-                if (pwaLogs) {
-                    pwaLogs.forEach((log: any) => {
-                        const isDesktop = log.metadata?.platform === 'desktop' || log.metadata?.device === 'desktop';
-                        if (isDesktop) {
-                            pwaComputerDownloads++;
-                        } else {
-                            pwaMobileDownloads++;
-                        }
-                    });
-                }
-            } catch (pwaErr) {
-                console.warn("⚠️ [MIRA ADMIN] Falha ao contar downloads PWA:", pwaErr);
-            }
-
-            // 🔍 CONTAGEM AUDITÁVEL 100% REAL DA BASE DE DADOS SUPABASE
             const safeQuery = async (queryFn: () => PromiseLike<any>, defaultVal = 0) => {
                 try {
                     const res = await Promise.race([
                         Promise.resolve(queryFn()),
-                        new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2500))
+                        new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
                     ]);
                     return res?.count ?? defaultVal;
-                } catch (e) {
+                } catch {
                     return defaultVal;
                 }
             };
 
             const getCount = (table: string) => safeQuery(() => supabase.from(table).select('id', { count: 'exact', head: true }));
+            const getPostCutoffCount = (table: string, actionName?: string | readonly string[]) => {
+                let q = supabase.from(table).select('id', { count: 'exact', head: true }).gte('created_at', TELEMETRY_CUTOFF_DATE);
+                if (actionName) {
+                    if (Array.isArray(actionName)) q = q.in('action', actionName as string[]);
+                    else q = q.eq('action', actionName as string);
+                }
+                return safeQuery(() => q);
+            };
 
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             const [
                 userCount,
                 usersTodayCount,
@@ -645,7 +619,7 @@ export const adminService: AdminService = {
                 fakeVotesCount,
                 aiQueriesCount,
                 appAccessesCount,
-                allActivityLogsCount,
+                canonicalInteractionsCount,
                 simulationsCount,
                 articleViewsCount
             ] = await Promise.all([
@@ -658,100 +632,89 @@ export const adminService: AdminService = {
                 getCount('app_suggestions'),
                 getCount('posts'),
                 getCount('comments'),
-                getCount('user_documents'),
-                safeQuery(() => supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['doc_generated', 'generate_document', 'document_generation_completed'])),
+                getPostCutoffCount('user_documents'),
+                getPostCutoffCount('activity_logs', ['doc_generated', 'generate_document', 'document_generation_completed']),
                 safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'true')),
                 safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'fake')),
-                safeQuery(() => supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['ai_query', 'chat_with_mira'])),
-                safeQuery(() => supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['app_access', 'app_launch', 'view_changed'])),
-                getCount('activity_logs'),
-                safeQuery(() => supabase.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_completed'])),
-                safeQuery(() => supabase.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)')),
+                getPostCutoffCount('activity_logs', ['ai_query', 'chat_with_mira']),
+                getPostCutoffCount('activity_logs', 'app_access'),
+                getPostCutoffCount('activity_logs', CANONICAL_INTERACTION_ACTIONS),
+                getPostCutoffCount('activity_logs', ['use_simulator', 'simulation_completed']),
+                getPostCutoffCount('activity_logs', ['read_article'])
             ]);
 
-            // Likes: somar colunas 'likes' e 'likes_count' da tabela posts
-            // (post_likes não existe no Supabase — likes guardados directamente nos posts)
+            let pwaMobileEvents = 0;
+            let pwaDesktopEvents = 0;
+            try {
+                const { data: pwaLogs } = await supabase
+                    .from('activity_logs')
+                    .select('metadata')
+                    .eq('action', 'pwa_install')
+                    .gte('created_at', TELEMETRY_CUTOFF_DATE);
+                if (pwaLogs) {
+                    pwaLogs.forEach((log: any) => {
+                        const isDesktop = log.metadata?.platform === 'desktop' || log.metadata?.device === 'desktop';
+                        if (isDesktop) pwaDesktopEvents++;
+                        else pwaMobileEvents++;
+                    });
+                }
+            } catch (pwaErr) {
+                console.warn("⚠️ [MIRA ADMIN] Falha ao contar downloads PWA:", pwaErr);
+            }
+
             let totalLikesSum = 0;
             try {
                 const { data: postsLikesData } = await supabase
                     .from('posts')
                     .select('likes, likes_count');
                 if (postsLikesData) {
-                    totalLikesSum = postsLikesData.reduce((sum: number, p: any) => {
-                        return sum + (p.likes || 0) + (p.likes_count || 0);
-                    }, 0);
+                    totalLikesSum = postsLikesData.reduce((sum: number, p: any) => sum + (p.likes || 0) + (p.likes_count || 0), 0);
                 }
             } catch (likesErr) {
                 console.warn('[MIRA] Falha ao contar likes:', likesErr);
             }
 
+            const docDownloadsCount = Math.max(userDocsCount || 0, docActivityCount || 0);
 
-            // ✅ MIRA: Métricas Consolidadas (Base Histórica Março-Julho + Telemetria em Tempo Real)
-            const realUsers = userCount || 0;
-            const realJobs = jobCount || 0;
-            const realCourses = courseCount || 0;
-            const realServices = serviceCount || 0;
-            const realAccesses = appAccessesCount || 0; // Acessos App 🚀 (Entradas/Sessões em tempo real)
+            const consolidated = consolidatePlatformMetrics({
+                appAccessesEvents: appAccessesCount || 0,
+                canonicalInteractionEvents: canonicalInteractionsCount || 0,
+                aiQueryEvents: aiQueriesCount || 0,
+                simulationEvents: simulationsCount || 0,
+                docDownloadEvents: docDownloadsCount,
+                pwaMobileEvents,
+                pwaDesktopEvents,
+                returningUsersPostCutoff: 0,
 
-            const HISTORICAL_BASE_ACCESSES = 50000;
-            const HISTORICAL_BASE_DOCS = 3451;
-            const HISTORICAL_BASE_AI = 18642;
-            const HISTORICAL_BASE_SIMS = 4872;
-            const HISTORICAL_BASE_RETURNING = 832;
-            const HISTORICAL_BASE_PWA_MOBILE = 1428;
-            const HISTORICAL_BASE_PWA_DESKTOP = 412;
-
-            const finalInteractions = HISTORICAL_BASE_ACCESSES + (allActivityLogsCount || 0);
-            const finalDocCount = HISTORICAL_BASE_DOCS + Math.max(userDocsCount || 0, docActivityCount || 0);
-            const finalAiQueries = HISTORICAL_BASE_AI + (aiQueriesCount || 0);
-            const finalSimulations = HISTORICAL_BASE_SIMS + (simulationsCount || 0);
-            const finalTotalLikes = totalLikesSum || 0;
-            const finalPosts = postCount || 0;
-            const finalComments = commentCount || 0;
-            const finalMobilePwa = HISTORICAL_BASE_PWA_MOBILE + (pwaMobileDownloads || 0);
-            const finalDesktopPwa = HISTORICAL_BASE_PWA_DESKTOP + (pwaComputerDownloads || 0);
-            
-            // 📊 Horas Poupadas (Estimativa Ponderada por Eventos Reais: 4.5h/doc + 1.5h/sim + 0.5h/IA)
-            const finalHoras = Math.round((finalDocCount * 4.5) + (finalSimulations * 1.5) + (finalAiQueries * 0.5));
-            
-            // 📋 Processos Ajudados (Soma Real de Documentos Gerados + Simulações Concluídas)
-            const finalProcessos = finalDocCount + finalSimulations;
-
-            const finalReturning = HISTORICAL_BASE_RETURNING + (returningUsersCount || 0);
-            const realRetentionRate = realUsers ? Math.min(100, Math.round((finalReturning / realUsers) * 100)) : 0;
-            const finalArticleViews = articleViewsCount || 0;
+                currentUsers: userCount || 0,
+                currentJobs: jobCount || 0,
+                currentServices: serviceCount || 0,
+                currentCourses: courseCount || 0,
+                currentPosts: postCount || 0,
+                currentComments: commentCount || 0,
+                currentLikes: totalLikesSum
+            });
 
             return {
-                courses: { db: realCourses, prot: 0 },
-                services: { db: realServices, prot: 0 },
-                users: realUsers,
+                ...consolidated,
                 usersToday: usersTodayCount || 0,
-                retentionRate: realRetentionRate,
-                returningUsers: finalReturning,
-                jobs: { db: realJobs, prot: 0, sources: 0 },
                 reports: reportCount || 0,
                 suggestions: suggCount || 0,
-                posts: finalPosts,
-                comments: finalComments,
-                downloads: finalDocCount,
-                totalLikes: finalTotalLikes,
                 trueVotes: trueVotesCount || 0,
                 fakeVotes: fakeVotesCount || 0,
                 verifiedPosts: trueVotesCount || 0,
                 fakePosts: fakeVotesCount || 0,
-                appAccesses: realAccesses,
-                totalInteractions: finalInteractions,
-                aiQueries: finalAiQueries,
-                articleViews: finalArticleViews,
-                simulations: finalSimulations,
-                pwaMobileDownloads: finalMobilePwa,
-                pwaComputerDownloads: finalDesktopPwa,
-                horasPoupadas: finalHoras,
-                processosAjudados: finalProcessos
+                downloads: consolidated.userDocuments,
+                totalLikes: consolidated.likes,
+                articleViews: articleViewsCount || 0,
+                pwaMobileDownloads: consolidated.pwaMobile,
+                pwaComputerDownloads: consolidated.pwaDesktop,
+                courses: { db: consolidated.courses, prot: 0 },
+                services: { db: consolidated.services, prot: 0 },
+                jobs: { db: consolidated.jobs, prot: 0, sources: 0 }
             };
         } catch (err) {
             console.error("MIRA: Sync Status Critical Error:", err);
-            // ✅ Em caso de erro de rede, retorna métricas zeradas sem inventar fallbacks
             return {
                 jobs: { db: 0, sources: 0 },
                 courses: { db: 0, prot: 0 },
@@ -770,10 +733,10 @@ export const adminService: AdminService = {
                 articleViews: 0,
                 retentionRate: 0,
                 returningUsers: 0,
-                horasPoupadas: 34185,
-                processosAjudados: 8323,
-                pwaMobileDownloads: 1428,
-                pwaComputerDownloads: 412,
+                horasPoupadas: 0,
+                processosAjudados: 0,
+                pwaMobileDownloads: 0,
+                pwaComputerDownloads: 0,
                 totalLikes: 0
             };
         }

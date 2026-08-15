@@ -17,8 +17,15 @@ function apiServerlessMiddleware() {
         try {
           dotenv.config();
 
-          const urlPath = req.url.split('?')[0]; // e.g. /api/register
-          const modulePath = `.${urlPath}.js`; // e.g. ./api/register.js
+          const urlParsed = new URL(req.url, 'http://localhost');
+          const urlPath = urlParsed.pathname; // e.g. /api/admin
+          const modulePath = `.${urlPath}.js`; // e.g. ./api/admin.js
+
+          // Populate req.query from URL search params (mirrors Vercel behaviour)
+          const queryObj: Record<string, string> = {};
+          urlParsed.searchParams.forEach((value, key) => { queryObj[key] = value; });
+          req.query = queryObj;
+
           
           let body = {};
           if (['POST', 'PUT', 'PATCH'].includes(req.method)) {

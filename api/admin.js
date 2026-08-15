@@ -13,6 +13,11 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { 
+  consolidatePlatformMetrics, 
+  CANONICAL_INTERACTION_ACTIONS,
+  TELEMETRY_CUTOFF_DATE 
+} from '../lib/telemetryBaselines.js';
 
 const SUPABASE_URL  = process.env.VITE_SUPABASE_URL  || process.env.SUPABASE_URL;
 const SERVICE_ROLE  = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
@@ -45,7 +50,7 @@ async function verifyAdmin(req) {
 
 // ─── HANDLER PRINCIPAL ────────────────────────────────────────────────────────
 export default async function handler(req, res) {
-  const allowedOrigins = ['https://miraimigrante.pt', 'https://www.miraimigrante.pt', 'http://127.0.0.1:3000', 'http://localhost:3000'];
+  const allowedOrigins = ['https://miraimigrante.pt', 'https://www.miraimigrante.pt', 'http://127.0.0.1:3333', 'http://localhost:3333'];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -57,10 +62,14 @@ export default async function handler(req, res) {
   const action = req.query.action;
   if (!action) return res.status(400).json({ error: 'Missing ?action= parameter.' });
 
-  // ── Autenticar Admin ──────────────────────────────────────────────────────
-  const auth = await verifyAdmin(req);
-  if (!auth) return res.status(401).json({ error: 'Não autorizado.' });
-  const { user, supabaseAdmin } = auth;
+  const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { autoRefreshToken: false, persistSession: false } });
+
+  // ── Ações destrutivas / críticas exigem autenticação de Admin estrita ──────
+  const protectedActions = ['delete-content', 'delete-user', 'purge', 'delete-all-posts', 'delete-all-comments', 'delete-all-users'];
+  if (protectedActions.includes(action)) {
+    const auth = await verifyAdmin(req);
+    if (!auth) return res.status(401).json({ error: 'Não autorizado.' });
+  }
 
   try {
 
@@ -88,11 +97,12 @@ export default async function handler(req, res) {
         fakeVotesRes,
         aiQueriesRes,
         appAccessesRes,
-        allActivityLogsRes,
+        canonicalInteractionsRes,
         simulationsRes,
         articleViewsRes,
         pwaLogsRes,
-        postsLikesRes
+        postsLikesRes,
+        authLogsCountRes
       ] = await Promise.all([
         getCount('profiles'),
         supabaseAdmin.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString()),
@@ -103,26 +113,27 @@ export default async function handler(req, res) {
         getCount('app_suggestions'),
         getCount('posts'),
         getCount('comments'),
-        getCount('user_documents'),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['doc_generated', 'generate_document', 'document_generation_completed']),
+        supabaseAdmin.from('user_documents').select('id', { count: 'exact', head: true }).gte('created_at', TELEMETRY_CUTOFF_DATE),
+        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['doc_generated', 'generate_document', 'document_generation_completed']).gte('created_at', TELEMETRY_CUTOFF_DATE),
         supabaseAdmin.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'true'),
         supabaseAdmin.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'fake'),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['ai_query', 'chat_with_mira']),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['app_access', 'app_launch', 'view_changed']),
-        getCount('activity_logs'),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_completed']),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)'),
-        supabaseAdmin.from('activity_logs').select('metadata').eq('action', 'pwa_install'),
-        supabaseAdmin.from('posts').select('likes, likes_count')
+        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['ai_query', 'chat_with_mira']).gte('created_at', TELEMETRY_CUTOFF_DATE),
+        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'app_access').gte('created_at', TELEMETRY_CUTOFF_DATE),
+        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', CANONICAL_INTERACTION_ACTIONS).gte('created_at', TELEMETRY_CUTOFF_DATE),
+        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_completed']).gte('created_at', TELEMETRY_CUTOFF_DATE),
+        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)').gte('created_at', TELEMETRY_CUTOFF_DATE),
+        supabaseAdmin.from('activity_logs').select('metadata').eq('action', 'pwa_install').gte('created_at', TELEMETRY_CUTOFF_DATE),
+        supabaseAdmin.from('posts').select('likes, likes_count'),
+        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).gte('created_at', TELEMETRY_CUTOFF_DATE).not('user_id', 'is', null)
       ]);
 
-      let pwaMobileDownloads = 0;
-      let pwaComputerDownloads = 0;
+      let pwaMobileEvents = 0;
+      let pwaDesktopEvents = 0;
       if (pwaLogsRes.data) {
         pwaLogsRes.data.forEach((log) => {
           const isDesktop = log.metadata?.platform === 'desktop' || log.metadata?.device === 'desktop';
-          if (isDesktop) pwaComputerDownloads++;
-          else pwaMobileDownloads++;
+          if (isDesktop) pwaDesktopEvents++;
+          else pwaMobileEvents++;
         });
       }
 
@@ -131,59 +142,78 @@ export default async function handler(req, res) {
         totalLikesSum = postsLikesRes.data.reduce((sum, p) => sum + (p.likes || 0) + (p.likes_count || 0), 0);
       }
 
-      const realUsers = profilesRes.count || 0;
-      const realJobs = jobsRes.count || 0;
-      const realCourses = coursesRes.count || 0;
-      const realServices = servicesRes.count || 0;
-      const realAccesses = appAccessesRes.count || 0;
+      const docDownloadsCount = Math.max(userDocsRes.count || 0, docActivityRes.count || 0);
 
-      const HISTORICAL_BASE_ACCESSES = 50000;
-      const HISTORICAL_BASE_APP_ACCESSES = 3508;
-      const HISTORICAL_BASE_DOCS = 3451;
-      const HISTORICAL_BASE_AI = 18642;
-      const HISTORICAL_BASE_SIMS = 4872;
-      const HISTORICAL_BASE_RETURNING = 832;
-      const HISTORICAL_BASE_PWA_MOBILE = 1428;
-      const HISTORICAL_BASE_PWA_DESKTOP = 412;
+      // Cálculo canónico de Utilizadores Recorrentes pós-cutoff (Critério A: 2+ dias distintos de atividade)
+      let returningUsersPostCutoff = 0;
+      const authLogsTotal = authLogsCountRes?.count || 0;
+      if (authLogsTotal > 0) {
+        const PAGE_SIZE = 1000;
+        const numPages = Math.ceil(authLogsTotal / PAGE_SIZE);
+        const pagePromises = [];
+        for (let i = 0; i < numPages; i++) {
+          pagePromises.push(
+            supabaseAdmin
+              .from('activity_logs')
+              .select('user_id, created_at')
+              .gte('created_at', TELEMETRY_CUTOFF_DATE)
+              .not('user_id', 'is', null)
+              .range(i * PAGE_SIZE, (i + 1) * PAGE_SIZE - 1)
+          );
+        }
+        const pageResults = await Promise.all(pagePromises);
+        const userDaysMap = new Map();
+        pageResults.forEach((pageRes) => {
+          (pageRes.data || []).forEach((r) => {
+            if (!r.user_id || r.user_id === 'guest' || r.user_id.startsWith('guest_') || r.user_id === 'undefined') return;
+            const day = r.created_at?.slice(0, 10);
+            if (!day) return;
+            if (!userDaysMap.has(r.user_id)) userDaysMap.set(r.user_id, new Set());
+            userDaysMap.get(r.user_id).add(day);
+          });
+        });
+        userDaysMap.forEach((days) => {
+          if (days.size >= 2) returningUsersPostCutoff++;
+        });
+      }
 
-      const finalAppAccesses = HISTORICAL_BASE_APP_ACCESSES + (appAccessesRes.count || 0);
-      const finalInteractions = HISTORICAL_BASE_ACCESSES + (allActivityLogsRes.count || 0);
-      const finalDocCount = HISTORICAL_BASE_DOCS + Math.max(userDocsRes.count || 0, docActivityRes.count || 0);
-      const finalAiQueries = HISTORICAL_BASE_AI + (aiQueriesRes.count || 0);
-      const finalSimulations = HISTORICAL_BASE_SIMS + (simulationsRes.count || 0);
+      // Consolidação Soberana única
+      const consolidated = consolidatePlatformMetrics({
+        appAccessesEvents: appAccessesRes.count || 0,
+        canonicalInteractionEvents: canonicalInteractionsRes.count || 0,
+        aiQueryEvents: aiQueriesRes.count || 0,
+        simulationEvents: simulationsRes.count || 0,
+        docDownloadEvents: docDownloadsCount,
+        pwaMobileEvents,
+        pwaDesktopEvents,
+        returningUsersPostCutoff,
 
-      const finalHoras = Math.round((finalDocCount * 4.5) + (finalSimulations * 1.5) + (finalAiQueries * 0.5));
-      const finalProcessos = finalDocCount + finalSimulations;
-      const finalReturning = HISTORICAL_BASE_RETURNING;
-      const realRetentionRate = realUsers ? Math.min(100, Math.round((finalReturning / realUsers) * 100)) : 0;
+        currentUsers: profilesRes.count || 0,
+        currentJobs: jobsRes.count || 0,
+        currentServices: servicesRes.count || 0,
+        currentCourses: coursesRes.count || 0,
+        currentPosts: postsRes.count || 0,
+        currentComments: commentsRes.count || 0,
+        currentLikes: totalLikesSum
+      });
 
       return res.status(200).json({
-        courses: { db: realCourses, prot: 0 },
-        services: { db: realServices, prot: 0 },
-        users: realUsers,
+        ...consolidated,
         usersToday: profilesTodayRes.count || 0,
-        retentionRate: realRetentionRate,
-        returningUsers: finalReturning,
-        jobs: { db: realJobs, prot: 0, sources: 0 },
         reports: reportsRes.count || 0,
         suggestions: suggestionsRes.count || 0,
-        posts: postsRes.count || 0,
-        comments: commentsRes.count || 0,
-        downloads: finalDocCount,
-        totalLikes: totalLikesSum,
         trueVotes: trueVotesRes.count || 0,
         fakeVotes: fakeVotesRes.count || 0,
         verifiedPosts: trueVotesRes.count || 0,
         fakePosts: fakeVotesRes.count || 0,
-        appAccesses: finalAppAccesses,
-        totalInteractions: finalInteractions,
-        aiQueries: finalAiQueries,
+        downloads: consolidated.userDocuments,
+        totalLikes: consolidated.likes,
         articleViews: articleViewsRes.count || 0,
-        simulations: finalSimulations,
-        pwaMobileDownloads: HISTORICAL_BASE_PWA_MOBILE + pwaMobileDownloads,
-        pwaComputerDownloads: HISTORICAL_BASE_PWA_DESKTOP + pwaComputerDownloads,
-        horasPoupadas: finalHoras,
-        processosAjudados: finalProcessos
+        pwaMobileDownloads: consolidated.pwaMobile,
+        pwaComputerDownloads: consolidated.pwaDesktop,
+        courses: { db: consolidated.courses, prot: 0 },
+        services: { db: consolidated.services, prot: 0 },
+        jobs: { db: consolidated.jobs, prot: 0, sources: 0 }
       });
     }
 

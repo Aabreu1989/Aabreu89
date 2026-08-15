@@ -285,8 +285,6 @@ const AppContent: React.FC = () => {
     useEffect(() => {
         if (user) {
             localStorage.setItem('mira_user', JSON.stringify(user));
-            // MIRA V2026.PRO: Track activity on state change
-            analytics.track('app_launch', user.id, 'Authentication');
         } else {
             localStorage.removeItem('mira_user');
         }
@@ -297,17 +295,38 @@ const AppContent: React.FC = () => {
         triggerConsentModalIfNeeded();
     }, [triggerConsentModalIfNeeded]);
 
-    // ⚡ Real-Time Automatic App Access Telemetry
+    // ⚡ Real-Time Automatic App Access Telemetry (Dispara exatamente 1x por abertura/refresh da app)
     useEffect(() => {
-        const activeUserId = user?.id || 'guest_' + Math.random().toString(36).substr(2, 6);
+        const getGuestId = () => {
+            const key = 'mira_guest_id';
+            let guestId = localStorage.getItem(key);
+            if (!guestId) {
+                guestId = 'guest_' + Math.random().toString(36).substring(2, 10);
+                localStorage.setItem(key, guestId);
+            }
+            return guestId;
+        };
+        const activeUserId = user?.id || getGuestId();
         analytics.track('app_access', activeUserId, 'AppLaunch');
     }, []);
 
-    // Track View Changes for Access Stats
+    // Track View Changes for Access Stats (Dispara APENAS em mudanças voluntárias de ecrã após o arranque)
+    const isInitialViewMount = React.useRef(true);
+    const prevViewRef = React.useRef(currentView);
+
     useEffect(() => {
-        const activeUserId = user?.id || 'guest';
-        analytics.track('view_changed', activeUserId, 'Navigation', { view: currentView });
-    }, [currentView, user?.id]);
+        if (isInitialViewMount.current) {
+            isInitialViewMount.current = false;
+            prevViewRef.current = currentView;
+            return;
+        }
+
+        if (prevViewRef.current !== currentView) {
+            prevViewRef.current = currentView;
+            const activeUserId = user?.id || localStorage.getItem('mira_guest_id') || 'guest';
+            analytics.track('view_changed', activeUserId, 'Navigation', { view: currentView });
+        }
+    }, [currentView]);
 
     useEffect(() => { 
         initPageSDKs();
@@ -1549,6 +1568,7 @@ const AppContent: React.FC = () => {
                     <AuthScreen 
                         onLogin={(u) => { 
                             setUser(u); 
+                            analytics.track('app_launch', u.id, 'Authentication');
                             handleViewChange(ViewType.HOME); 
                             triggerConsentModalIfNeeded();
                             triggerPwaInstallModalIfNeeded();

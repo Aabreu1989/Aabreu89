@@ -282,7 +282,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               { label: 'Processos', value: (counts?.processosAjudados ?? 0).toLocaleString(), sub: 'Triagem legal', color: 'text-emerald-400', icon: CheckCircle2 },
               { label: 'Horas Poupadas', value: (counts?.horasPoupadas ?? 0).toLocaleString(), sub: 'Burocracia eliminada', color: 'text-indigo-400', icon: Clock },
               { label: 'Taxa Retenção', value: `${counts?.retentionRate ?? 0}%`, sub: `${(counts?.returningUsers ?? 0).toLocaleString()} regressaram`, color: 'text-blue-400', icon: TrendingUp },
-              { label: 'Consultas IA', value: (Math.max(18642, auditData?.totalQueries ?? 0, platformCounts?.aiQueries ?? 0)).toLocaleString(), sub: 'Auditadas', color: 'text-purple-400', icon: BarChart3 },
+              { label: 'Consultas IA', value: (platformCounts?.aiQueries ?? auditData?.totalQueries ?? 0).toLocaleString(), sub: 'Auditadas', color: 'text-purple-400', icon: BarChart3 },
               { label: 'PWA Installs', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString(), sub: 'Mobile + Desktop', color: 'text-rose-400', icon: Activity },
             ].map(({ label, value, sub, color, icon: Icon }) => (
               <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1 print-card">
@@ -701,17 +701,17 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               <div className="p-6 bg-white/5 border border-emerald-500/20 rounded-[2rem] space-y-3">
                 <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Justificação de Impacto Social Auditada</h4>
                 <p className="text-sm text-slate-200 leading-relaxed font-medium">
-                  A plataforma MIRA Imigrante registou no seu sistema de dados auditáveis um impacto social direto em mais de {(counts?.users ?? 0).toLocaleString()} utilizadores registados em Portugal. A triagem automática de IA e assistentes digitais pouparam mais de {(counts?.horasPoupadas ?? Math.floor((counts?.users || 0) * 4.5)).toLocaleString()} horas de atrito burocrático aos cidadãos migrantes, com uma taxa de retenção recorrente de {counts?.retentionRate ?? 0}%.
+                  A plataforma MIRA Imigrante registou no seu sistema de dados auditáveis um impacto social direto em mais de {(counts?.users ?? 0).toLocaleString()} utilizadores registados em Portugal. A triagem automática de IA e assistentes digitais pouparam mais de {(counts?.horasPoupadas ?? 0).toLocaleString()} horas de atrito burocrático aos cidadãos migrantes, com uma taxa de retenção recorrente de {counts?.retentionRate ?? 0}%.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {[
                   { label: 'Utilizadores Registados na Plataforma', value: `+${(counts?.users ?? 0).toLocaleString()}` },
-                  { label: 'Horas Burocráticas Poupadas (INE 2024)', value: `${(counts?.horasPoupadas ?? Math.floor((counts?.users || 0) * 4.5)).toLocaleString()}h` },
-                  { label: 'Processos Legais Assistidos', value: (counts?.processosAjudados ?? (counts?.users || 0)).toLocaleString() },
+                  { label: 'Horas Burocráticas Poupadas (INE 2024)', value: `${(counts?.horasPoupadas ?? 0).toLocaleString()}h` },
+                  { label: 'Processos Legais Assistidos', value: (counts?.processosAjudados ?? 0).toLocaleString() },
                   { label: 'Taxa de Retenção Recorrente', value: `${counts?.retentionRate ?? 0}%` },
-                  { label: 'Consultas IA Auditadas e Mapeadas', value: (Math.max(18642, auditData?.totalQueries ?? 0, platformCounts?.aiQueries ?? 0)).toLocaleString() },
+                  { label: 'Consultas IA Auditadas e Mapeadas', value: (platformCounts?.aiQueries ?? auditData?.totalQueries ?? 0).toLocaleString() },
                   { label: 'Instalações da Aplicação PWA', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString() },
                 ].map(({ label, value }) => (
                   <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex justify-between items-center print-card">
