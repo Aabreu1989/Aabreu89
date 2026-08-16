@@ -6,7 +6,7 @@ import {
   Brain, Loader2, Shield, Globe
 } from 'lucide-react';
 
-import { generateAssistantResponseV45, generateSpeech } from '../services/geminiService';
+import { generateAssistantResponseV45, generateSpeech, SafeProfileContext } from '../services/geminiService';
 import { audioService } from '../services/audioService';
 import { Message, ViewType, User as UserType, UNIFIED_CATEGORIES, UnifiedCategory } from '../types';
 import { supabase } from '../lib/supabase';
@@ -16,13 +16,62 @@ import { persistence } from '../utils/persistence';
 import { MIRA_PHOTO_URL } from '../constants';
 import { normalizeCategory } from '../utils/categoryUtils';
 import { analytics } from '../services/analyticsService';
+import { getCompletedStations } from '../utils/journeyTracker';
 import ChatInput from './ChatInput';
+import { SuggestionModal } from './SuggestionModal';
 
 interface AssistantViewProps {
   language: string;
   onViewChange: (view: ViewType, params?: any) => void;
   user: UserType;
 }
+
+export const buildSafeProfileContext = (user?: UserType, language: string = 'PT'): SafeProfileContext => {
+  const safeContext: SafeProfileContext = {};
+
+  // 1. Idioma
+  safeContext.language = (language || 'PT').toUpperCase();
+
+  // 2. Primeiro nome (nunca email ou id)
+  if (user?.name && typeof user.name === 'string') {
+    const firstName = user.name.trim().split(' ')[0];
+    if (firstName && firstName.length <= 30 && !firstName.includes('@')) {
+      safeContext.firstName = firstName;
+    }
+  }
+
+  // 3. Distrito / Região declarada
+  if (user?.location && typeof user.location === 'string') {
+    const loc = user.location.trim();
+    if (loc.length > 0 && loc.length <= 50) {
+      safeContext.district = loc;
+    }
+  }
+
+  // 4. Grupo de Nacionalidade / Origem
+  if (user?.nationality && typeof user.nationality === 'string') {
+    const nat = user.nationality.trim();
+    if (nat.length > 0 && nat.length <= 50) {
+      safeContext.nationalityGroup = nat;
+    }
+  }
+
+  // 5. Desafio ou Objetivo Ativo
+  if (user?.mainChallenge && typeof user.mainChallenge === 'string') {
+    const goal = user.mainChallenge.trim();
+    if (goal.length > 0 && goal.length <= 80) {
+      safeContext.activeGoal = goal;
+    }
+  }
+
+  // 6. Estações Concluídas da Linha de Metro (Fonte de Verdade Persistida)
+  const completed = getCompletedStations(user);
+  if (completed && completed.length > 0) {
+    safeContext.completedStations = completed;
+  }
+
+  return safeContext;
+};
 
 const sanitizeTTS = (text: string) => {
   return text
@@ -33,14 +82,95 @@ const sanitizeTTS = (text: string) => {
     .trim();
 };
 
-const getSuggestions = (lang: string) => {
+const getSuggestions = (lang: string, user?: UserType) => {
+  const normLang = (lang || 'PT').toUpperCase();
+  const completed = getCompletedStations(user);
+  const hasNif = completed.includes('nif');
+  const hasNiss = completed.includes('niss');
+  const hasSns = completed.includes('sns');
+
+  if (normLang === 'PT') {
+    if (hasNif && hasNiss && hasSns) {
+      return ["Ver 5.000+ Vagas de Emprego", "Calcular Salário Líquido", "Agendamento AIMA 2026", "Ver Linha de Metro"];
+    }
+    if (hasNif && hasNiss) {
+      return ["Inscrição no Centro de Saúde (SNS)", "Calcular Salário Líquido", "Ver Vagas de Emprego", "Ver Linha de Metro"];
+    }
+    if (hasNif) {
+      return ["Como pedir o NISS na Segurança Social?", "Inscrição no Centro de Saúde (SNS)", "Calcular Salário Líquido", "Ver Linha de Metro"];
+    }
+    return ["Como tirar o NIF?", "Regularização por Estudos (Art. 91.º)", "Agendamento AIMA 2026", "Linha de Metro da Integração"];
+  }
+
   const suggestions: Record<string, string[]> = {
-    PT: ["COMO TIRAR O NIF?", "Regularização por Estudos (Art. 91.º)", "AGENDAMENTO AIMA 2026", "Pedido de Cidadania"],
-    EN: ["HOW TO GET THE NIF?", "AIMA Appointment 2026", "NISS Registration", "Citizenship Request"],
-    FR: ["COMMENT OBTENIR LE NIF ?", "Rendez-vous AIMA 2026", "Inscription NISS", "Demande de Citoyenneté"],
-    ES: ["¿CÓMO OBTENER EL NIF?", "Cita AIMA 2026", "Registro NISS", "Solicitud de Ciudadanía"]
+    EN: hasNif ? ["Register with SNS (Healthcare)", "Calculate Net Salary", "AIMA Appointment 2026", "View Metro Line"] : ["HOW TO GET THE NIF?", "AIMA Appointment 2026", "NISS Registration", "Citizenship Request"],
+    FR: hasNif ? ["Inscription au SNS (Santé)", "Calculer le Salaire Net", "Rendez-vous AIMA 2026", "Voir la Ligne de Métro"] : ["COMMENT OBTENIR LE NIF ?", "Rendez-vous AIMA 2026", "Inscription NISS", "Demande de Citoyenneté"],
+    ES: hasNif ? ["Inscripción en Centro de Salud (SNS)", "Calcular Salario Neto", "Cita AIMA 2026", "Ver Línea de Metro"] : ["¿CÓMO OBTENER EL NIF?", "Cita AIMA 2026", "Registro NISS", "Solicitud de Ciudadanía"]
   };
-  return suggestions[lang] || suggestions['PT'];
+  return suggestions[normLang] || suggestions['PT'];
+};
+
+const getContextualSuggestions = (messages: any[], lang: string, user?: UserType): string[] => {
+  const normLang = (lang || 'PT').toUpperCase();
+  if (!messages || messages.length <= 1) {
+    return getSuggestions(normLang, user);
+  }
+
+  // Analisa as mensagens recentes para sugerir próximos passos contextuais na jornada
+  const recentText = messages.slice(-3).map(m => m.text || '').join(' ').toLowerCase();
+
+  if (normLang === 'PT') {
+    if (recentText.includes('nif') && (recentText.includes('já tenho') || recentText.includes('ja tenho') || recentText.includes('obter') || recentText.includes('tirar'))) {
+      return ["Como pedir o NISS na Segurança Social?", "Inscrição no Centro de Saúde (SNS)", "Calcular Salário Líquido", "Ver Linha de Metro da Integração"];
+    }
+    if (recentText.includes('niss') || recentText.includes('trabalh') || recentText.includes('emprego') || recentText.includes('contrato')) {
+      return ["Calcular Salário Líquido", "Simular Recibos Verdes", "Ver 5.000+ Vagas de Emprego", "Cursos e Formação IEFP"];
+    }
+    if (recentText.includes('salário') || recentText.includes('salario') || recentText.includes('bruto') || recentText.includes('líquido') || recentText.includes('recibos')) {
+      return ["Calcular Salário Líquido", "Simular Recibos Verdes", "Comparar Custo de Vida", "Simular IRS 2026"];
+    }
+    if (recentText.includes('habit') || recentText.includes('arrend') || recentText.includes('casa') || recentText.includes('renda') || recentText.includes('senhorio')) {
+      return ["Simular Proteção à Habitação", "Comparar Custo de Vida nos Distritos", "Minuta Declaração de Acolhimento", "Ver Centros CNAIM / CLAIM"];
+    }
+    if (recentText.includes('aima') || recentText.includes('resid') || recentText.includes('visto') || recentText.includes('reagrupamento') || recentText.includes('cplp')) {
+      return ["Requisitos AIMA & Salário Mínimo", "Reagrupamento Familiar", "Gerar Minuta AIMA em PDF", "Centros Oficiais CNAIM / CLAIM"];
+    }
+    if (recentText.includes('sns') || recentText.includes('saude') || recentText.includes('saúde') || recentText.includes('médico')) {
+      return ["Como obter Número de Utente", "Documentos para Centro de Saúde", "Centros CNAIM / CLAIM", "Ver Linha de Metro"];
+    }
+  } else if (normLang === 'EN') {
+    if (recentText.includes('nif')) {
+      return ["How to request NISS?", "Register with SNS (Healthcare)", "Calculate Net Salary", "View Metro Integration Line"];
+    }
+    if (recentText.includes('job') || recentText.includes('work') || recentText.includes('salary') || recentText.includes('niss')) {
+      return ["Calculate Net Salary", "Freelancer Simulator (Recibos Verdes)", "Browse Job Offers", "Compare Cost of Living"];
+    }
+    if (recentText.includes('aima') || recentText.includes('residence') || recentText.includes('visa')) {
+      return ["AIMA Income Requirements", "Family Reunification Rules", "Generate AIMA PDF Template", "CNAIM/CLAIM Support Centers"];
+    }
+  } else if (normLang === 'ES') {
+    if (recentText.includes('nif')) {
+      return ["¿Cómo solicitar el NISS?", "Inscripción en Centro de Salud (SNS)", "Calcular Salario Neto", "Ver Línea de Metro"];
+    }
+    if (recentText.includes('trabaj') || recentText.includes('empleo') || recentText.includes('salario')) {
+      return ["Calcular Salario Neto", "Simular Recibos Verdes (Autónomo)", "Ver Ofertas de Empleo", "Comparar Coste de Vida"];
+    }
+    if (recentText.includes('aima') || recentText.includes('residencia') || recentText.includes('visado')) {
+      return ["Requisitos AIMA y Salario Mínimo", "Reagrupación Familiar", "Generar Minuta AIMA en PDF", "Centros Oficiales CNAIM/CLAIM"];
+    }
+  } else if (normLang === 'FR') {
+    if (recentText.includes('nif')) {
+      return ["Comment obtenir le NISS ?", "Inscription au SNS (Santé)", "Calculer le Salaire Net", "Voir la Ligne de Métro"];
+    }
+    if (recentText.includes('travail') || recentText.includes('emploi') || recentText.includes('salaire')) {
+      return ["Calculer le Salaire Net", "Simulateur Recibos Verdes", "Offres d'Emploi", "Comparer le Coût de la Vie"];
+    }
+    if (recentText.includes('aima') || recentText.includes('residence') || recentText.includes('visa')) {
+      return ["Exigences de Revenus AIMA", "Regroupement Familial", "Générer Modèle PDF AIMA", "Centres CNAIM / CLAIM"];
+    }
+  }
+
+  return getSuggestions(normLang);
 };
 
 const getUIText = (lang: string, name: string) => {
@@ -71,7 +201,7 @@ const getUIText = (lang: string, name: string) => {
   } else if (lang === 'ES') {
       welcome = `¡Hola ${name}! 👋 Soy MIRA, tu guía en Portugal. Pregúntame lo que necesites sobre NIF, residencia, AIMA, salud o cualquier duda de la vida en Portugal.`;
       typing = 'MIRA está escribiendo...';
-      clearConfirm = '¿Deseas eliminar permanentemente el historial de mensajes?';
+      clearConfirm = '¿Deseas eliminar permanentemente el historial de mensagens?';
       clearSuccess = 'Historial eliminado con éxito.';
       clearError = 'Error al eliminar el historial.';
       chatError = 'Error de conexión con MIRA.';
@@ -104,7 +234,7 @@ const MiraChatHeader = ({
                         <img src={MIRA_PHOTO_URL || '/mira-robot.png'} alt="MIRA" className="w-full h-full object-cover" />
                     </div>
                     <div>
-                        <h1 className="mira-module-title !text-slate-800">ASSISTENTE MIRA IA</h1>
+                        <h1 className="mira-module-title !text-slate-800">MIRA CHAT</h1>
                         <div className="flex items-center gap-1.5 mt-1 px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-100 w-fit">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                             <span className="text-[7px] font-black text-emerald-600 uppercase tracking-widest">ONLINE</span>
@@ -208,21 +338,46 @@ const MiraChatMessage = React.memo(({
           {/* 🔗 MODULE NAVIGATION BUTTONS & EXTERNAL LINKS (V26.GOLD) */}
           {(msg.text.includes('[view:') || msg.text.includes('[BUTTON|')) && (
              <div className="mt-4 flex flex-col gap-3">
-                {/* Native Module Links [view:VIEW_TYPE:LABEL] or [view:VIEW_TYPE:SUB_TAB:LABEL] */}
-                {Array.from(msg.text.matchAll(/\[view:([A-Z_]+)(?::([a-z0-9_]+))?:(.+?)\]/g)).map((match: any, i) => {
+                {/* Native Module Links [view:VIEW_TYPE:LABEL] or [view:VIEW_TYPE:SUB_TAB:LABEL] or [view:VIEW_TYPE:SUB_TAB?query:LABEL] */}
+                {Array.from(msg.text.matchAll(/\[view:([A-Z_]+)(?::([^:\]]+))?:(.+?)\]/g)).map((match: any, i) => {
                   const rawTarget = match[1];
-                  const subTab = match[2];
+                  const subTabRaw = match[2] || '';
                   const label = match[3] || match[2] || rawTarget;
+
+                  let subTab = subTabRaw;
+                  const extraParams: Record<string, any> = {};
+
+                  if (subTabRaw.includes('?')) {
+                    const [tabPart, queryPart] = subTabRaw.split('?');
+                    subTab = tabPart;
+                    try {
+                      const searchParams = new URLSearchParams(queryPart);
+                      searchParams.forEach((val, key) => {
+                        extraParams[key] = val;
+                      });
+                    } catch (e) {}
+                  }
+
+                  // 🎯 Deteção contextual automática de valores no texto para preenchimento de simuladores
+                  if (rawTarget === 'SIMULATORS' && !extraParams.bruto) {
+                    const salaryFound = msg.text.match(/(\d{3,5}(?:[.,]\d{2})?)\s*€?/);
+                    if (salaryFound && salaryFound[1]) {
+                      const parsedNum = salaryFound[1].replace('.', '').replace(',', '.');
+                      if (!isNaN(Number(parsedNum))) {
+                        extraParams.bruto = parsedNum;
+                      }
+                    }
+                  }
 
                   const handleClick = () => {
                     if (rawTarget === 'SIMULATORS' && label?.toLowerCase().includes('irs')) {
-                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs' });
+                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs', ...extraParams });
                     } else if (rawTarget === 'IRS' || subTab === 'irs') {
-                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs' });
+                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs', ...extraParams });
                     } else if (subTab) {
-                      onViewChange(rawTarget as ViewType, { tab: subTab });
+                      onViewChange(rawTarget as ViewType, { tab: subTab, ...extraParams });
                     } else {
-                      onViewChange(rawTarget as ViewType);
+                      onViewChange(rawTarget as ViewType, extraParams);
                     }
                   };
 
@@ -258,7 +413,7 @@ const MiraChatMessage = React.memo(({
             </span>
             {!isUser && (
               <div className="flex items-center gap-3">
-                 <button 
+                <button 
                   onClick={(e) => { e.stopPropagation(); onAudioAction(msg); }} 
                   title="Ouvir Resposta"
                   className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md group/audio ${isPlaying === msg.id ? 'bg-white text-blue-600 animate-pulse' : 'bg-blue-600 text-white hover:bg-blue-700 border border-blue-500'}`}
@@ -284,6 +439,7 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
   const [isTyping, setIsTyping] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -294,9 +450,9 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
   const lang = (language || 'PT').toUpperCase();
   const userName = user?.name?.split(' ')[0] || 'Membro';
   const T = getUIText(lang, userName);
-  const SUGGESTIONS = getSuggestions(lang);
+  const dynamicSuggestions = getContextualSuggestions(messages, lang, user);
 
-  useEffect(() => {
+useEffect(() => {
     const loadHistory = async () => {
       try {
         const history = await persistence.get('mira_chat_history');
@@ -326,16 +482,16 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
 
   useEffect(() => {
     if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isTyping]);
 
   const handleAudioAction = async (msg: any) => {
     if (isPlaying === msg.id) { 
-        audioService.stop(); 
-        window.speechSynthesis.cancel();
-        setIsPlaying(null); 
-        return; 
+      audioService.stop(); 
+      window.speechSynthesis.cancel();
+      setIsPlaying(null); 
+      return; 
     }
     
     audioService.stop();
@@ -347,24 +503,36 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
       const audioBase64 = await generateSpeech(ttsText, language.toUpperCase());
       
       if (audioBase64) {
-          audioService.playBase64(audioBase64, undefined, () => setIsPlaying(null));
+        audioService.playBase64(audioBase64, undefined, () => setIsPlaying(null));
       } else { 
-          // 🎙️ [MIRA GOLD FALLBACK]: Voz Nativa do Browser
-          console.log("🎙️ [MIRA]: Usando síntese nativa de voz...");
-          const utterance = new SpeechSynthesisUtterance(ttsText);
-          utterance.lang = language === 'PT' ? 'pt-PT' : 
-                          language === 'EN' ? 'en-GB' : 
-                          language === 'FR' ? 'fr-FR' : 'es-ES';
-          utterance.rate = 1.0;
-          utterance.pitch = 1.0;
-          utterance.onend = () => setIsPlaying(null);
-          utterance.onerror = () => setIsPlaying(null);
-          window.speechSynthesis.speak(utterance);
+        // 🎙️ [MIRA GOLD FALLBACK]: Voz Nativa do Browser
+        console.log("🎙️ [MIRA]: Usando síntese nativa de voz...");
+        const utterance = new SpeechSynthesisUtterance(ttsText);
+        utterance.lang = language === 'PT' ? 'pt-PT' : 
+                        language === 'EN' ? 'en-GB' : 
+                        language === 'FR' ? 'fr-FR' : 'es-ES';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.onend = () => setIsPlaying(null);
+        utterance.onerror = () => setIsPlaying(null);
+        window.speechSynthesis.speak(utterance);
       }
     } catch (e) { 
-        console.error("Audio Fallback Error:", e);
-        setIsPlaying(null); 
+      console.error("Audio Fallback Error:", e);
+      setIsPlaying(null); 
     }
+  };
+
+  const handleFeedback = (msgId: string, rating: 'helpful' | 'not_helpful') => {
+    try {
+      analytics.track('ai_feedback', user?.id || 'guest', 'chat_message', {
+        msgId,
+        rating,
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem(`mira_feedback_${msgId}`, rating);
+      showToast(rating === 'helpful' ? 'Obrigado pelo feedback positivo! 👍' : 'Obrigado pelo teu feedback. Vamos continuar a melhorar! 🤝', 'success');
+    } catch (e) {}
   };
 
   const handleClearChat = React.useCallback(async () => {
@@ -378,8 +546,6 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
       
       try {
         setMessages([welcomeMsg]);
-        
-        // Comprehensive cleanup
         await persistence.delete('mira_chat_history');
         localStorage.removeItem('mira_chat_history');
         localStorage.removeItem('chat_history');
@@ -388,9 +554,8 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
         setIsPlaying(null);
         showToast(T.clearSuccess, "success");
         
-        // Soft refresh for UI sync
         setTimeout(() => {
-           window.scrollTo(0,0);
+          window.scrollTo(0,0);
         }, 100);
       } catch (err) {
         console.error("Error clearing chat:", err);
@@ -417,6 +582,7 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
     setIsTyping(true);
     
     try {
+      const profileContext = buildSafeProfileContext(user, language);
       const response = await generateAssistantResponseV45(
         text, 
         messages.map(m => ({ 
@@ -424,7 +590,8 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
           text: m.text 
         })), 
         language.toUpperCase(),
-        "chat"
+        "chat",
+        profileContext
       );
       
       const assistantMsg = { 
@@ -467,7 +634,7 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
 
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-2 z-10">
         {messages.map(m => (
-          <MiraChatMessage key={m.id} msg={m} language={language} isPlaying={isPlaying} onAudioAction={handleAudioAction} onFeedback={id => {}} onViewChange={onViewChange} />
+          <MiraChatMessage key={m.id} msg={m} language={language} isPlaying={isPlaying} onAudioAction={handleAudioAction} onFeedback={handleFeedback} onViewChange={onViewChange} />
         ))}
         {isTyping && (
             <div className="flex justify-start animate-in fade-in duration-300">
@@ -489,10 +656,10 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
             {T.disclaimer}
         </div>
 
-        {/* 💡 SUGGESTIONS (Sovereign Choice Grid) */}
+        {/* 💡 SUGESTÕES DINÂMICAS E CONTEXTUAIS DA JORNADA */}
         <div className="flex flex-col gap-2 mb-6 max-w-2xl mx-auto px-2">
             <div className="grid grid-cols-2 gap-2">
-                {SUGGESTIONS.map((s, idx) => (
+                {dynamicSuggestions.map((s, idx) => (
                     <button 
                       key={idx}
                       onClick={() => handleSend(s)}
@@ -514,6 +681,14 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
         </div>
       </div>
       
+      {/* 💡 MODAL DE SUGESTÃO E VOZ DA COMUNIDADE */}
+      <SuggestionModal 
+        isOpen={isSuggestionModalOpen} 
+        onClose={() => setIsSuggestionModalOpen(false)} 
+        language={language}
+        userEmail={user?.email}
+      />
+
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

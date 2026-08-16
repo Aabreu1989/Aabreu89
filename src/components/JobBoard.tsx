@@ -81,7 +81,8 @@ interface JobBoardProps {
   isAdmin?: boolean;
   user?: any;
   onViewChange?: (view: ViewType, params?: any) => void;
-  initialTab?: 'jobs' | 'trends';
+  initialTab?: 'jobs' | 'trends' | string;
+  initialQuickFilter?: string;
 }
 
 const TOPIC_DETAILS: Record<string, { emoji: string; color: string; bg: string; text: string; ring: string }> = {
@@ -98,15 +99,18 @@ const TOPIC_DETAILS: Record<string, { emoji: string; color: string; bg: string; 
   "Artes, Design & Multimédia": { emoji: "🎨", color: "#e11d48", bg: "bg-rose-50/80 hover:bg-rose-100/90", text: "text-rose-600 border-rose-200", ring: "focus:ring-rose-500/20" },
   "Apoio Social & Terceiro Setor": { emoji: "🤝", color: "#0891b2", bg: "bg-cyan-50/80 hover:bg-cyan-100/90", text: "text-cyan-600 border-cyan-200", ring: "focus:ring-cyan-500/20" },
   "Energia & Sustentabilidade": { emoji: "⚡", color: "#ca8a04", bg: "bg-yellow-50/80 hover:bg-yellow-100/90", text: "text-yellow-700 border-yellow-200", ring: "focus:ring-yellow-500/20" },
+  "Educação, Ensino & Formação": { emoji: "📚", color: "#0284c7", bg: "bg-sky-50/80 hover:bg-sky-100/90", text: "text-sky-600 border-sky-200", ring: "focus:ring-sky-500/20" },
+  "Automóvel, Mecânica & Reparação": { emoji: "🔧", color: "#4b5563", bg: "bg-gray-50/80 hover:bg-gray-100/90", text: "text-gray-600 border-gray-200", ring: "focus:ring-gray-500/20" },
   "Trabalho Remoto & Freelancing": { emoji: "🏡", color: "#0d9488", bg: "bg-teal-50/80 hover:bg-teal-100/90", text: "text-teal-600 border-teal-200", ring: "focus:ring-teal-500/20" },
-  "Outros": { emoji: "🌐", color: "#64748b", bg: "bg-slate-50/80 hover:bg-slate-100/90", text: "text-slate-500 border-slate-200", ring: "focus:ring-slate-500/20" }
+  "Trabalho & Carreira": { emoji: "💼", color: "#64748b", bg: "bg-slate-50/80 hover:bg-slate-100/90", text: "text-slate-600 border-slate-200", ring: "focus:ring-slate-500/20" },
+  "Outros": { emoji: "💼", color: "#64748b", bg: "bg-slate-50/80 hover:bg-slate-100/90", text: "text-slate-600 border-slate-200", ring: "focus:ring-slate-500/20" }
 };
 
 const JOB_TRENDS = (lang: string) => [
   { 
     id: 1, 
     name: t('jobs_trend_turismo', lang), 
-    description: t('jobs_trend_turismo_desc', lang),
+    description: t('jobs_trend_turismo_desc', lang), 
     demandLevel: t('jobs_demand_vhigh', lang), 
     averageSalary: '850 - 1.200', 
     growth: '+15%' 
@@ -151,9 +155,9 @@ const LOCATIONS = (lang: string) => [
 
 
 
-const MAX_JOB_AGE_DAYS = 60;
+const MAX_JOB_AGE_DAYS = 90;
 
-function isWithin60Days(dateStr?: string): boolean {
+function isWithin90Days(dateStr?: string): boolean {
   if (!dateStr) return true;
   try {
     const postDate = new Date(dateStr);
@@ -165,23 +169,22 @@ function isWithin60Days(dateStr?: string): boolean {
   }
 }
 
-export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onViewChange, initialTab }) => {
-  const [activeTab, setActiveTab] = useState<'jobs' | 'trends'>(initialTab || 'jobs');
+export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onViewChange, initialTab, initialQuickFilter }) => {
+  const [activeTab, setActiveTab] = useState<'jobs' | 'trends'>(initialTab === 'trends' ? 'trends' : 'jobs');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState(t('jobs_all_districts', language));
   const [selectedWorkTopic, setSelectedWorkTopic] = useState('Todos');
   const [selectedSource, setSelectedSource] = useState(t('jobs_all_sources', language));
   const [selectedDateRange, setSelectedDateRange] = useState('all');
-  const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(null);
-  const [isVisaGuideOpen, setIsVisaGuideOpen] = useState(false);
-  // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms) - Strictly <= 60 days
+  const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(initialQuickFilter || (initialTab === 'pcd' ? 'pcd' : null));
+  // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms) - Strictly <= 90 days
   const initialJobs = React.useMemo(() => {
     const nowMs = Date.now();
     return ((PROTECTED_JOBS as any[]) || [])
       .filter(pj => {
         const url = pj.source_url || pj.sourceUrl;
         const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
-        return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin60Days(dateStr);
+        return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin90Days(dateStr);
       })
       .map((pj, idx) => {
         // Distribute protected job timestamps dynamically across recent active hours (0h - 48h)
@@ -444,23 +447,32 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           setJobsGrowth(computedGrowth);
       }
 
-      // ⚡ OTIMIZAÇÃO CRÍTICA MIRA: Selecionar apenas colunas usadas na lista para reduzir tráfego de dados (Filtrar estritamente <= 60 dias)
-      const sixtyDaysAgoISO = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
-      const { data, error } = await supabase
-        .from('job_posts')
-        .select('id, title, location, source_name, source_url, created_at, category, work_topic')
-        .gte('created_at', sixtyDaysAgoISO)
-        .order('created_at', { ascending: false })
-        .limit(5000);
+      // ⚡ OTIMIZAÇÃO CRÍTICA MIRA: Carregamento Paginado Paralelo para ultrapassar o limite padrão de 1000 rows do PostgREST
+      const ninetyDaysAgoISO = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+      const PAGE_SIZE = 1000;
+      const pageIndexes = [0, 1, 2, 3, 4]; // Suporta até 5.000 vagas completas
+      
+      const pageQueries = pageIndexes.map(pIdx => 
+        supabase
+          .from('job_posts')
+          .select('id, title, location, source_name, source_url, created_at, category, work_topic')
+          .gte('created_at', ninetyDaysAgoISO)
+          .order('created_at', { ascending: false })
+          .range(pIdx * PAGE_SIZE, (pIdx + 1) * PAGE_SIZE - 1)
+      );
 
-      if (error) throw error;
+      const pageResponses = await Promise.all(pageQueries);
+      const data: any[] = [];
+      pageResponses.forEach(res => {
+        if (res.data) data.push(...res.data);
+      });
 
       let formattedJobs: JobPost[] = [];
       if (data && data.length > 0) {
         formattedJobs = data
           .filter(dbJob => {
             const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at || (dbJob as any).date_posted;
-            return dbJob.source_url && dbJob.source_url !== '#' && dbJob.title && dbJob.title.length > 3 && !isSpamOrBlog(dbJob.title, dbJob.source_url) && isWithin60Days(rawTime);
+            return dbJob.source_url && dbJob.source_url !== '#' && dbJob.title && dbJob.title.length > 3 && !isSpamOrBlog(dbJob.title, dbJob.source_url) && isWithin90Days(rawTime);
           })
           .map(dbJob => {
             const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at || (dbJob as any).date_posted;
@@ -508,7 +520,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         .filter(pj => {
           const url = pj.source_url || pj.sourceUrl;
           const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
-          return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin60Days(dateStr);
+          return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin90Days(dateStr);
         })
         .forEach((pj, idx) => {
           if (!existingIds.has(pj.id)) {
@@ -538,7 +550,11 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       const totalCalculated = Math.max(totalCount || 0, finalJobs.length, 5280);
       setTotalPlatformJobs(totalCalculated);
       setJobs(finalJobs);
-      jobAlertService.processJobMatching(finalJobs, user?.id);
+      
+      // 🚀 Desacoplamento não-bloqueante: processar matching de alertas em microtask/background
+      setTimeout(() => {
+        jobAlertService.processJobMatching(finalJobs, user?.id);
+      }, 50);
       
       // Guardar estrutura completa em cache local com timestamp TTL
       const cacheObj = {
@@ -673,6 +689,17 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           matchesQuickFilter = locNorm.includes('remoto') || locNorm.includes('remote') || titleLower.includes('remote') || titleLower.includes('remoto') || job.workTopic === 'Trabalho Remoto & Freelancing' || tagsLower.some(t => t.includes('remote') || t.includes('remoto'));
         } else if (q === 'entry') {
           matchesQuickFilter = titleLower.includes('junior') || titleLower.includes('trainee') || titleLower.includes('estagio') || titleLower.includes('entry') || titleLower.includes('no experience') || titleLower.includes('sem experiencia') || tagsLower.some(t => t.includes('junior') || t.includes('estagio'));
+        } else if (q === 'pcd') {
+          matchesQuickFilter = titleLower.includes('pcd') || 
+                               titleLower.includes('deficiencia') || 
+                               titleLower.includes('deficiência') || 
+                               titleLower.includes('incapacidade') || 
+                               titleLower.includes('inclus') || 
+                               titleLower.includes('adaptad') || 
+                               titleLower.includes('disability') || 
+                               titleLower.includes('accessible') || 
+                               titleLower.includes('handicap') || 
+                               tagsLower.some(t => t.includes('pcd') || t.includes('inclus') || t.includes('disability'));
         }
       }
 
@@ -814,7 +841,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         {activeTab === 'jobs' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             {/* 📊 SOBERANIA MIRA: Metrics Dashboard (Market & Platform Analytics) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-2.5 rounded-[2rem] border border-slate-100/50 shadow-inner">
+            <div className="grid grid-cols-2 gap-3 bg-slate-50 p-2.5 rounded-[2rem] border border-slate-100/50 shadow-inner">
               {/* Metric 1: Total Active Jobs */}
               <div className="bg-white p-4 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-sky-500" />
@@ -828,58 +855,53 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><TrendingUp size={10} className="text-emerald-500" /> {t('jobs_avg_salary_title', language)}</span>
                 <span className="text-xl font-black font-mono text-slate-800 tracking-tighter mt-1">{overallAvgSalary}€</span>
               </div>
+            </div>
 
-              {/* Metric 3: Verified Portals */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-amber-500" />
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><CheckCircle2 size={10} className="text-amber-500" /> {t('jobs_official_sources', language)}</span>
-                <span className="text-xl font-black font-mono text-slate-800 tracking-tighter mt-1">66+</span>
-              </div>
-
-              {/* Metric 4: Trending Sector */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-rose-500" />
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Activity size={10} className="text-rose-500" /> {t('jobs_trend_title', language)}</span>
-                <span className="text-[11px] font-black text-slate-700 mt-2 uppercase tracking-wide truncate">{t('jobs_tech_health', language)}</span>
+            {/* Search Bar - TOUCH ISOLATED & INTUITIVE */}
+            <div className="relative z-10 block w-full touch-manipulation">
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-20">
+                  <Search className="text-slate-400 group-focus-within:text-mira-orange transition-colors duration-300" size={20} />
+                </div>
+                <input
+                  type="text"
+                  placeholder={t('jobs_search_placeholder', language)}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-14 pr-12 py-3.5 sm:py-4 bg-white border border-slate-200 hover:border-slate-300 rounded-[1.5rem] text-sm font-bold text-slate-800 focus:bg-white focus:border-mira-orange focus:ring-4 focus:ring-mira-orange/10 outline-none transition-all shadow-sm placeholder-slate-400 touch-manipulation select-text cursor-text relative z-10"
+                />
+                {searchQuery && (
+                  <button 
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSearchQuery('');
+                    }}
+                    aria-label="Limpar pesquisa"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-300 hover:text-slate-600 transition-colors z-20 p-2 touch-manipulation cursor-pointer"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Search Bar - INTUITIVE */}
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                <Search className="text-slate-400 group-focus-within:text-mira-orange transition-colors duration-300" size={20} />
-              </div>
-              <input
-                type="text"
-                placeholder={t('jobs_search_placeholder', language)}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-14 pr-5 py-4 bg-white border border-slate-200 hover:border-slate-300 rounded-[1.5rem] text-sm font-bold text-slate-800 focus:bg-white focus:border-mira-orange focus:ring-4 focus:ring-mira-orange/10 outline-none transition-all shadow-sm placeholder-slate-400"
-              />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-0 pr-5 flex items-center text-slate-300 hover:text-slate-500 transition-colors"
-                >
-                  <X size={18} />
-                </button>
-              )}
-            </div>
-
-            {/* Quick Filters for Foreigners & Expats - Fully Visible Grid (No horizontal scrolling) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full">
+            {/* Quick Filters for Foreigners & Expats - 5 Quick Filter Pills in Single Unified Group */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-2.5 w-full relative z-0">
               {[
                 { id: 'english', label: t('jobs_quick_english', language), color: 'border-blue-200 text-blue-600 bg-blue-50/70 hover:bg-blue-100' },
                 { id: 'visa', label: t('jobs_quick_visa', language), color: 'border-amber-200 text-amber-700 bg-amber-50/70 hover:bg-amber-100' },
                 { id: 'remote', label: t('jobs_quick_remote', language), color: 'border-teal-200 text-teal-600 bg-teal-50/70 hover:bg-teal-100' },
                 { id: 'entry', label: t('jobs_quick_entry', language), color: 'border-purple-200 text-purple-600 bg-purple-50/70 hover:bg-purple-100' },
+                { id: 'pcd', label: t('jobs_quick_pcd', language) || '♿ Vagas PCD', color: 'border-emerald-200 text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100' },
               ].map(pill => {
                 const isActive = selectedQuickFilter === pill.id;
                 return (
                   <button
                     key={pill.id}
+                    type="button"
                     onClick={() => setSelectedQuickFilter(isActive ? null : pill.id)}
-                    className={`w-full py-3 px-3 border rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 text-center flex items-center justify-center gap-1.5 active:scale-95 shadow-sm ${
+                    className={`w-full py-3 px-2 sm:px-3 border rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 text-center flex items-center justify-center gap-1.5 active:scale-95 shadow-sm touch-manipulation cursor-pointer ${
                       isActive
                         ? 'bg-slate-900 border-slate-900 text-white shadow-md shadow-slate-900/20 ring-2 ring-slate-900/30'
                         : pill.color
@@ -891,18 +913,18 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               })}
             </div>
 
-            {/* Expat Job Seeker Visa & Relocation Guide (Inspired by jobsinportugal.pt) */}
+            {/* Expat Job Seeker Visa & Relocation Guide - Direct Navigation to Legalization Module */}
             <div className="bg-white border border-slate-200/80 rounded-[2rem] p-5 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-3.5">
+                <div className="flex items-start gap-3.5 min-w-0">
                   <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
                     <Globe size={18} />
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 min-w-0">
                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                       {t('jobs_insight_title', language)}
                     </h4>
-                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-snug">
+                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-snug truncate">
                       {t('jobs_visa_guide_title', language)}
                     </h3>
                     <p className="text-[10px] text-slate-400 font-bold leading-normal">
@@ -911,54 +933,41 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                   </div>
                 </div>
                 <button
-                  onClick={() => setIsVisaGuideOpen(!isVisaGuideOpen)}
-                  className="w-full sm:w-auto px-4 py-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-[9px] font-black uppercase tracking-wider text-slate-600 border border-slate-100 transition-all active:scale-95 shrink-0 text-center"
+                  type="button"
+                  onClick={() => {
+                    if (onViewChange) {
+                      onViewChange(ViewType.DOCUMENTS, { tab: 'regularize' });
+                    }
+                  }}
+                  className="w-full sm:w-auto px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 shrink-0 text-center flex items-center justify-center gap-2 shadow-sm shadow-slate-900/10 cursor-pointer touch-manipulation"
                 >
-                  {isVisaGuideOpen ? (language.toLowerCase() === 'pt' ? 'Fechar' : language.toLowerCase() === 'es' ? 'Cerrar' : language.toLowerCase() === 'fr' ? 'Fermer' : 'Close') : t('jobs_visa_guide_btn_read', language)}
+                  <Sparkles size={13} className="text-amber-400" />
+                  {t('jobs_visa_guide_btn_read', language)}
+                  <ChevronRight size={13} />
                 </button>
               </div>
-
-              {isVisaGuideOpen && (
-                <div className="pt-4 border-t border-slate-100 space-y-4 animate-in slide-in-from-top-2 duration-300">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Financial Requirements */}
-                    <div className="bg-amber-50/50 border border-amber-100 rounded-2xl p-4 space-y-1.5">
-                      <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-1.5 font-mono">
-                        {t('jobs_visa_guide_financial_title', language)}
-                      </h4>
-                      <p className="text-[10.5px] text-slate-600 font-semibold leading-relaxed">
-                        {t('jobs_visa_guide_financial_desc', language)}
-                      </p>
-                    </div>
-
-                    {/* Visa Requirements Checklist */}
-                    <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 space-y-1.5">
-                      <h4 className="text-[10px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-1.5 font-mono">
-                        {t('jobs_visa_guide_steps_title', language)}
-                      </h4>
-                      <p className="text-[10.5px] text-slate-600 font-semibold leading-relaxed whitespace-pre-line">
-                        {t('jobs_visa_guide_steps_desc', language)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end pt-2">
-                    <button
-                      onClick={() => {
-                        if (onViewChange) {
-                          onViewChange(ViewType.DOCUMENTS, { tab: 'visa_job_search' });
-                        }
-                      }}
-                      className="px-6 py-3 bg-[#0A0A0A] hover:bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2 shadow-md shadow-slate-900/10"
-                    >
-                      <Sparkles size={12} className="text-amber-400 animate-pulse" />
-                      {t('jobs_visa_guide_btn_start', language)}
-                      <ChevronRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
+
+            {/* PCD & Inclusive Employment Rights Banner (Visible when PCD quick filter is active) */}
+            {selectedQuickFilter === 'pcd' && (
+              <div className="bg-emerald-50/70 border border-emerald-200/90 rounded-[2rem] p-5 shadow-sm space-y-2 animate-in slide-in-from-top-2 duration-300">
+                <h4 className="text-[11px] font-black text-emerald-800 uppercase tracking-widest flex items-center gap-2 font-mono">
+                  ♿ {language === 'EN' ? 'Disability & Inclusive Employment Rights (Portugal)' :
+                      language === 'ES' ? 'Derechos y Empleo Inclusivo PCD (Portugal)' :
+                      language === 'FR' ? 'Droits et Emploi Inclusif Handicap (Portugal)' :
+                      'Direitos & Apoio ao Emprego Inclusivo PCD (Portugal)'}
+                </h4>
+                <p className="text-[11px] text-slate-700 font-semibold leading-relaxed whitespace-pre-line">
+                  {language === 'EN'
+                    ? '• Employment Quotas (Law 4/2019): Companies with 75+ workers must reserve 1% to 2% of jobs for people with disability (degree ≥ 60%).\n• Multipurpose Medical Certificate (AMIM): Official proof of disability issued by Health Centers/ULS Medical Boards.\n• IEFP Support: Professional rehabilitation, workplace adaptation subsidies, and assistive technology.\n• Social Security (PSI): Social Benefit for Inclusion available for individuals with verified disability.'
+                    : language === 'ES'
+                    ? '• Cuotas de Empleo (Ley 4/2019): Empresas de más de 75 empleados deben reservar del 1% al 2% de puestos para personas con discapacidad (grado ≥ 60%).\n• Certificado Médico Multiusos (AMIM): Acreditación oficial emitida por Juntas Médicas de Centros de Salud.\n• Apoyos del IEFP: Adaptación del puesto de trabajo y subsidios de rehabilitación profesional.\n• Seguridad Social (PSI): Prestación Social para la Inclusión para situaciones de vulnerabilidad.'
+                    : language === 'FR'
+                    ? '• Quotas d\'emploi (Loi 4/2019) : Les entreprises de plus de 75 salariés doivent réserver 1% à 2% des postes aux personnes handicapées (≥ 60%).\n• Certificat Médical Multiusage (AMIM) : Délivré par les commissions médicales des centres de santé.\n• Aides de l\'IEFP : Adaptation du poste de travail et réhabilitation professionnelle.\n• Sécurité Sociale (PSI) : Prestation Sociale pour l\'Inclusion pour les personnes en situation de vulnérabilité.'
+                    : '• Quotas Legais (Lei n.º 4/2019): Empresas com 75+ trabalhadores devem admitir 1% a 2% de trabalhadores com deficiência (grau ≥ 60%).\n• Atestado Médico de Incapacidade Multiuso (AMIM): Documento oficial emitido pelas Juntas Médicas dos Centros de Saúde/ULS.\n• Apoios do IEFP: Financiamento de adaptação do posto de trabalho, teletrabalho e bolsas de reabilitação profissional.\n• Segurança Social (PSI): Prestação Social para a Inclusão para apoio financeiro a cidadãos com incapacidade.'}
+                </p>
+              </div>
+            )}
 
             {/* Advanced Filters Grid ( responsive 2-column grid with Area and Location dropdowns ) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white p-4 rounded-[2rem] border border-slate-100 shadow-sm">
@@ -979,7 +988,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                       const count = topicCounts[topic] || 0;
                       return (
                         <option key={topic} value={topic}>
-                          {details.emoji} {t(getWorkTopicKey(topic), language)} ({count})
+                          {details?.emoji || "💼"} {t(getWorkTopicKey(topic), language)} ({count})
                         </option>
                       );
                     })}
@@ -1009,7 +1018,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         )}
 
       <div className="px-6 space-y-6 pb-10 mt-4">
-        {loading ? (
+        {loading && jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-6 animate-pulse">
             <div className="w-20 h-20 bg-slate-50 rounded-[2.5rem] flex items-center justify-center text-slate-200">
               <Briefcase size={40} />
@@ -1019,11 +1028,11 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               <p className="text-xs font-bold text-slate-400">{t('jobs_loading_desc', language)}</p>
             </div>
           </div>
-        ) : error ? (
+        ) : error && jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <div className="p-4 bg-red-50 text-red-500 rounded-3xl"><AlertCircle size={32} /></div>
             <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{error}</p>
-            <button onClick={() => fetchJobs()} className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest">{t('jobs_btn_try_again', language)}</button>
+            <button onClick={() => fetchJobs(true)} className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest">{t('jobs_btn_try_again', language)}</button>
           </div>
         ) : activeTab === 'jobs' ? (
           filteredJobs.length > 0 ? (

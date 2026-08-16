@@ -288,9 +288,10 @@ BADGE ENGINE
 
 ---
 
-## 📌 6. REGRA PERMANENTE DE PURGA DE VAGAS (> 60 DIAS DE IDADE)
-- **MÁXIMO DE 60 DIAS DE IDADE:** SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS PUBLICADAS HÁ NO MÁXIMO 60 DIAS.
-- Purga automática diária no PostgreSQL (`DELETE FROM job_posts WHERE created_at < NOW() - 60 DAYS`) e filtragem na UI (`isWithin60Days()`) e rotinas de sync em `JobBoard.tsx` e `api/sync-jobs.js`.
+## 📌 6. REGRA PERMANENTE DE PURGA DE VAGAS (> 90 DIAS DE IDADE) & BLINDAGEM DE FONTES
+- **MÁXIMO DE 90 DIAS DE IDADE:** SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS PUBLICADAS HÁ NO MÁXIMO 90 DIAS.
+- Purga automática diária no PostgreSQL (`DELETE FROM job_posts WHERE created_at < NOW() - 90 DAYS`) e filtragem na UI (`isWithin90Days()`) e rotinas de sync em `JobBoard.tsx` e `api/sync-jobs.js`.
+- **BLINDAGEM TOTAL DAS FONTES (`src/utils/jobSourcesDatabase.ts`):** O catálogo de fontes de emprego contém a lista oficial fornecida pela proprietária com 116 diretórios/empresas e é ESTRITAMENTE PROTEGIDO. É terminantemente proibido apagar, alterar ou desfigurar a lista de fontes.
 
 ---
 
@@ -576,6 +577,35 @@ HOMOLOGAÇÃO
 5. **Download de Atalho `.url` Separado:** O ficheiro `MIRA IMIGRANTE.url` é um recurso auxiliar gerado exclusivamente por `pwaService.downloadShortcut()`. É proibido tratar a descarga de um `.url` como equivalente a instalar uma PWA nativa.
 6. **Zero Lógica PWA nos Componentes:** NENHUM componente da interface pode inspecionar diretamente `isIOS()`, `isInstallable()` ou capturar o evento `beforeinstallprompt`. Toda a inteligência reside em `src/utils/pwa.ts`.
 7. **Salvaguarda de Ficheiros Núcleo PWA:** Os 4 ficheiros (`src/utils/pwa.ts`, `src/components/AuthScreen.tsx`, `src/components/HomeView.tsx`, `src/App.tsx`) constituem a arquitetura oficial de PWA.
+
+---
+
+## 📌 20. REGRA PERMANENTE E INVIOLÁVEL: SERVIÇOS PROTEGIDOS DE APOIO A PCD E AJUDA HUMANITÁRIA
+
+> ⚠️ **BLINDAGEM SOBERANA PERPÉTUA (HOMOLOGADA EM 2026-08-16):**
+> AS 14 ASSOCIAÇÕES NACIONAIS DE APOIO A PESSOAS COM DEFICIÊNCIA (PCD) RECONHECIDAS OFICIALMENTE PELO INR (INSTITUTO NACIONAL PARA A REABILITAÇÃO) SÃO PARTE INTEGRANTE E INEGOCIÁVEL DOS DADOS PROTEGIDOS DO MIRA (`PROTECTED_SERVICES` EM `src/utils/protectedData.ts` E `MASSIVE_SERVICES_DATABASE` EM `src/utils/massiveServicesDatabase.ts`), SOB A CATEGORIA **"Ajuda Humanitária"**.
+> **É ESTRITAMENTE PROIBIDO APAGAR, TRUNCAR, OCULTAR OU RETIRAR QUALQUER UM DESTES REGISTOS DA APLICAÇÃO OU DA BASE DE DADOS SUPABASE.**
+
+### 🏛️ As 14 Organizações Protegidas de PCD (Soberania MIRA):
+1. **APD — Associação Portuguesa de Deficientes** (`Largo do Rato, 1B, 1250-185 Lisboa` | `https://www.apd.org.pt`)
+2. **ACAPO — Associação de Cegos e Amblíopes de Portugal** (`Av. D. Carlos I, nº 126 – 9º, 1200-651 Lisboa` | `https://www.acapo.pt`)
+3. **FENACERCI — Federação Nacional das Cooperativas de Solidariedade Social** (`Rua Augusto Macedo, nº 2 A, 1600-794 Lisboa` | `https://www.fenacerci.pt`)
+4. **FPAS — Federação Portuguesa das Associações de Surdos** (`Praceta Miguel Cláudio, nº 3 B, 2700-585 Amadora` | `https://fpasurdos.pt`)
+5. **FAPPC — Federação das Associações Portuguesas de Paralisia Cerebral** (`Av. Rainha D. Amélia, 1600-676 Lisboa` | `https://www.fappc.pt`)
+6. **FPDA — Federação Portuguesa de Autismo** (`Rua José Luís Garcia Rodrigues, Bairro do Alto da Ajuda, 1300-565 Lisboa` | `https://www.fpda.pt`)
+7. **FPDD — Federação Portuguesa de Desporto para Pessoas com Deficiência** (`Rua Presidente Samora Machel, Lt. 7 – Lj. Direita R/ch, 2620-061 Olival Basto` | `https://www.fpdd.org`)
+8. **FEDRA — Federação de Doenças Raras de Portugal** (`Rotunda Nuno Rodrigues dos Santos, nº 1 B – 8º B – Sala Azul, 2685-223 Portela LRS` | `https://www.fedra.pt`)
+9. **ASBIHP — Associação Spina Bifida e Hidrocefalia de Portugal** (`Rua Botelho Vasconcelos, Lote 567, Letra D, Zona J Chelas, 1900-637 Lisboa` | `https://www.asbihp.pt`)
+10. **SPEM — Sociedade Portuguesa de Esclerose Múltipla** (`Rua Zófimo Pedroso, nº 66, 1950-291 Lisboa` | `https://www.spem.pt`)
+11. **FORMEM — Federação Portuguesa da Formação Profissional e Emprego** (`Rua Coronel Veiga Simão – Edf. CTVC, 3.º Piso, 3025-307 Coimbra` | `https://www.formem.org.pt`)
+12. **CNOD — Confederação Nacional de Organizações de Pessoas com Deficiência** (`Av. João Paulo II, Lote 528 – 1º A, 1950-430 Lisboa` | `https://cnod.pt`)
+13. **Associação Salvador** (`Av. Fontes Pereira de Melo, 14, 9º, 1050-121 Lisboa` | `https://www.associacaosalvador.com`)
+14. **CVI — Centro de Vida Independente** (`Avenida João Paulo II, Lote 526, R/C, Loja A, 1950-159 Lisboa` | `https://www.vidaindependente.org`)
+
+### 🛡️ Regras de Preservação:
+- Cada registo contém estritamente os campos: **Nome da Associação**, **Endereço Completo** e **Site**.
+- Estão mapeados com categoria `Ajuda Humanitária` e sincronizados no Supabase com contagem permanente na plataforma.
+- Nenhum agente ou rotina automatizada tem autorização para remover ou desindexar estes nós.
 
 ---
 

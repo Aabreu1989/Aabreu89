@@ -14,8 +14,9 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
 4. **NUNCA remover itens de arrays** (cursos, avatares, serviços, documentos) — apenas ADICIONAR
 5. **SEMPRE verificar** se o ficheiro que vai editar tem conteúdo protegido antes de reescrever
 
-## Ficheiros que NUNCA devem ser reescritos na totalidade:
+## Ficheiros que NUNCA devem ser reescritos na totalidade ou ter dados apagados:
 - `constants.tsx` — contém PREDEFINED_AVATARS
+- `utils/jobSourcesDatabase.ts` — contém TODAS AS FONTES DE EMPREGO PROTEGIDAS
 - `utils/iefpCoursesDatabase.ts` — contém todos os cursos
 - `components/LearningHub.tsx` — contém IEFP_SYNCED_COURSES
 - `components/LocalServicesMap.tsx` — contém lógica de serviços
@@ -38,9 +39,9 @@ description: Regras obrigatórias antes de qualquer edição no projeto MIRA
 - **Preservação de Contexto do Clique:** O descarregamento síncrono do atalho `.url` (`pwaService.downloadShortcut()`) deve ocorrer no topo da função `onClick` para evitar bloqueios de descarregamento do navegador.
 - **Ficheiros Núcleo Protegidos PWA:** `src/utils/pwa.ts`, `src/components/AuthScreen.tsx`, `src/components/HomeView.tsx`, `src/App.tsx`.
 
-## Vagas de Emprego (REGRA PERMANENTE):
-- **SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS DE ATÉ 60 DIAS (MÁXIMO 60 DIAS DE IDADE)**
-- Vagas com mais de 60 dias da data de publicação NUNCA devem ser apresentadas aos utilizadores e DEVEM SER PURGADAS AUTOMATICAMENTE do código, queries e rotinas de sync em `JobBoard.tsx` e `api/sync-jobs.js`.
+## Vagas de Emprego (REGRA PERMANENTE 90 DIAS):
+- **SÓ É PERMITIDO EXIBIR E ARMAZENAR VAGAS DE ATÉ 90 DIAS (MÁXIMO 90 DIAS DE IDADE)**
+- Vagas com mais de 90 dias da data de publicação NUNCA devem ser apresentadas aos utilizadores e DEVEM SER PURGADAS AUTOMATICAMENTE do código, queries e rotinas de sync em `JobBoard.tsx` e `api/sync-jobs.js`.
 
 ## Indicadores & Métricas de Auditoria (REGRA PERMANENTE):
 - **LER O FICHEIRO `DOCUMENTO_MESTRE_INDICADORES_AUDITORIA.md`** na raiz antes de alterar qualquer serviço de métricas.

@@ -1507,6 +1507,193 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         ratings: []
     },
 
+    // ============================================================
+    // ♿ ORGANIZAÇÕES NACIONAIS DE APOIO A PCD (AJUDA HUMANITÁRIA)
+    // Registo oficial INR (Instituto Nacional para a Reabilitação)
+    // DADOS PROTEGIDOS MIRA — INVIOLÁVEIS E PERMANENTES
+    // ============================================================
+    {
+        id: '1263c23e-b716-4100-afa3-20382906f9e4',
+        title: "APD — Associação Portuguesa de Deficientes",
+        category: "Ajuda Humanitária",
+        lat: 38.7203,
+        lng: -9.1541,
+        distance: '...',
+        address: "Largo do Rato, 1B, 1250-185 Lisboa",
+        city: "Lisboa",
+        website: "https://www.apd.org.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '8b191c13-7d84-484b-a25e-04f85e4ae1bb',
+        title: "ACAPO — Associação de Cegos e Amblíopes de Portugal",
+        category: "Ajuda Humanitária",
+        lat: 38.7088,
+        lng: -9.1534,
+        distance: '...',
+        address: "Av. D. Carlos I, nº 126 – 9º, 1200-651 Lisboa",
+        city: "Lisboa",
+        website: "https://www.acapo.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: 'e7323863-718d-4e96-a83d-0ea2da484643',
+        title: "FENACERCI — Federação Nacional das Cooperativas de Solidariedade Social",
+        category: "Ajuda Humanitária",
+        lat: 38.7566,
+        lng: -9.1622,
+        distance: '...',
+        address: "Rua Augusto Macedo, nº 2 A, 1600-794 Lisboa",
+        city: "Lisboa",
+        website: "https://www.fenacerci.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: 'f33e7d58-7cae-4f51-a90a-a0fdb9b8971f',
+        title: "FPAS — Federação Portuguesa das Associações de Surdos",
+        category: "Ajuda Humanitária",
+        lat: 38.7592,
+        lng: -9.2241,
+        distance: '...',
+        address: "Praceta Miguel Cláudio, nº 3 B, 2700-585 Amadora",
+        city: "Amadora",
+        website: "https://fpasurdos.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '64a93864-4c40-42ae-ad8a-a4309c6f2a87',
+        title: "FAPPC — Federação das Associações Portuguesas de Paralisia Cerebral",
+        category: "Ajuda Humanitária",
+        lat: 38.7610,
+        lng: -9.1610,
+        distance: '...',
+        address: "Av. Rainha D. Amélia, 1600-676 Lisboa",
+        city: "Lisboa",
+        website: "https://www.fappc.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '12b1d3ef-cf03-4f96-b08e-5bcfd30eb088',
+        title: "FPDA — Federação Portuguesa de Autismo",
+        category: "Ajuda Humanitária",
+        lat: 38.7090,
+        lng: -9.1980,
+        distance: '...',
+        address: "Rua José Luís Garcia Rodrigues, Bairro do Alto da Ajuda, 1300-565 Lisboa",
+        city: "Lisboa",
+        website: "https://www.fpda.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: 'ce0cfec9-234b-4c55-b0fc-fb0a3a782255',
+        title: "FPDD — Federação Portuguesa de Desporto para Pessoas com Deficiência",
+        category: "Ajuda Humanitária",
+        lat: 38.7890,
+        lng: -9.1680,
+        distance: '...',
+        address: "Rua Presidente Samora Machel, Lt. 7 – Lj. Direita R/ch, 2620-061 Olival Basto",
+        city: "Odivelas",
+        website: "https://www.fpdd.org",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '5bcebfba-c8b1-4be5-94ca-ea4b348e3cf5',
+        title: "FEDRA — Federação de Doenças Raras de Portugal",
+        category: "Ajuda Humanitária",
+        lat: 38.7810,
+        lng: -9.1120,
+        distance: '...',
+        address: "Rotunda Nuno Rodrigues dos Santos, nº 1 B – 8º B – Sala Azul, 2685-223 Portela LRS",
+        city: "Loures",
+        website: "https://www.fedra.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '9142f9e6-ee39-444b-bce9-bfbcfeae1c2f',
+        title: "ASBIHP — Associação Spina Bifida e Hidrocefalia de Portugal",
+        category: "Ajuda Humanitária",
+        lat: 38.7450,
+        lng: -9.1150,
+        distance: '...',
+        address: "Rua Botelho Vasconcelos, Lote 567, Letra D, Zona J Chelas, 1900-637 Lisboa",
+        city: "Lisboa",
+        website: "https://www.asbihp.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '72491b98-bc1c-4395-8fc0-4d3752e50529',
+        title: "SPEM — Sociedade Portuguesa de Esclerose Múltipla",
+        category: "Ajuda Humanitária",
+        lat: 38.7440,
+        lng: -9.1020,
+        distance: '...',
+        address: "Rua Zófimo Pedroso, nº 66, 1950-291 Lisboa",
+        city: "Lisboa",
+        website: "https://www.spem.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '185038c1-4dfd-4e4f-b6e8-232537b819f7',
+        title: "FORMEM — Federação Portuguesa da Formação Profissional e Emprego de Pessoas com Deficiência e Incapacidade",
+        category: "Ajuda Humanitária",
+        lat: 40.2250,
+        lng: -8.4310,
+        distance: '...',
+        address: "Rua Coronel Veiga Simão – Edf. CTVC, 3.º Piso, 3025-307 Coimbra",
+        city: "Coimbra",
+        website: "https://www.formem.org.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '1cbb66e3-f667-4a67-b501-ad26f5fa5018',
+        title: "CNOD — Confederação Nacional de Organizações de Pessoas com Deficiência",
+        category: "Ajuda Humanitária",
+        lat: 38.7490,
+        lng: -9.1010,
+        distance: '...',
+        address: "Av. João Paulo II, Lote 528 – 1º A, 1950-430 Lisboa",
+        city: "Lisboa",
+        website: "https://cnod.pt",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '7fc0c754-5c9c-473d-82d2-43093557fbcf',
+        title: "Associação Salvador",
+        category: "Ajuda Humanitária",
+        lat: 38.7300,
+        lng: -9.1480,
+        distance: '...',
+        address: "Av. Fontes Pereira de Melo, 14, 9º, 1050-121 Lisboa",
+        city: "Lisboa",
+        website: "https://www.associacaosalvador.com",
+        avgRating: 0.0,
+        ratings: []
+    },
+    {
+        id: '41ebefd7-d703-4a11-8e50-9aebe24921b7',
+        title: "CVI — Centro de Vida Independente",
+        category: "Ajuda Humanitária",
+        lat: 38.7485,
+        lng: -9.1005,
+        distance: '...',
+        address: "Avenida João Paulo II, Lote 526, R/C, Loja A, 1950-159 Lisboa",
+        city: "Lisboa",
+        website: "https://www.vidaindependente.org",
+        avgRating: 0.0,
+        ratings: []
+    }
 ];
 
 export { PROTECTED_JOBS } from './massiveJobsDatabase';

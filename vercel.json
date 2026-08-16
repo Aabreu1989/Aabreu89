@@ -21,8 +21,18 @@
       "destination": "/api/admin.js"
     },
     {
+      "source": "/api/sync-jobs",
+      "destination": "/api/sync-jobs.js"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/sync-jobs",
+      "schedule": "0 */4 * * *"
     }
   ]
 }

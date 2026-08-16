@@ -482,25 +482,34 @@ export const adminService: AdminService = {
         const { MASSIVE_SERVICES_DATABASE } = await import('../utils/massiveServicesDatabase');
         const allServices = [...PROTECTED_SERVICES, ...MASSIVE_SERVICES_DATABASE];
         
-        console.log(`🚀 MIRA Sniper: Sincronizando ${allServices.length} serviços (Protegidos + Massivos).`);
+        const serviceMap = new Map();
+        allServices.forEach(s => {
+            if (s.id && !serviceMap.has(s.id)) serviceMap.set(s.id, s);
+        });
+        const uniqueServices = Array.from(serviceMap.values());
+
+        console.log(`🚀 MIRA Sniper: Sincronizando ${uniqueServices.length} serviços (Protegidos + Massivos).`);
         
-        const services = allServices.map(s => ({ 
+        const services = uniqueServices.map(s => ({ 
             id: s.id, 
-            name: s.title, 
+            name: s.title || (s as any).name, 
             description: s.description || '',
-            category: s.category || 'Geral',
+            category: s.category || 'Ajuda Humanitária',
             address: (s.address || '').replace(/APOIO IMIGRANTE/gi, '').trim(),
-            city: s.city || '',
             website: s.website || '',
-            latitude: s.lat || s.latitude || null,
-            longitude: s.lng || s.longitude || null,
+            phone: (s as any).phone || null,
+            lat: s.lat || null,
+            lng: s.lng || null,
             created_at: new Date().toISOString() 
         }));
         
-        const { error } = await supabase.from('services').upsert(services, { onConflict: 'id' });
-        if (error) {
-            console.error("❌ [MIRA SYNC] Erro ao sincronizar serviços:", error);
-            throw error;
+        for (let i = 0; i < services.length; i += 50) {
+            const chunk = services.slice(i, i + 50);
+            const { error } = await supabase.from('services').upsert(chunk, { onConflict: 'id' });
+            if (error) {
+                console.error("❌ [MIRA SYNC] Erro ao sincronizar serviços:", error);
+                throw error;
+            }
         }
     },
 

@@ -7,10 +7,16 @@ import {
 } from 'lucide-react';
 import { ViewType } from '../types';
 import { analytics } from '../services/analyticsService';
+import { NORMATIVE_2026 } from '../config/normativeRules2026';
+import { TaxCalculationService } from '../services/taxCalculationService';
+import { SocialSecurityCalculationService } from '../services/socialSecurityCalculationService';
+import { LegalDeadlineService, PROCEDIMENTOS_CATALOGO, ProcedimentoTipo } from '../services/legalDeadlineService';
 
 interface SimulatorsViewProps {
   language: string;
-  onViewChange: (view: ViewType) => void;
+  onViewChange: (view: ViewType, params?: any) => void;
+  initialTab?: string;
+  initialParams?: Record<string, any>;
 }
 
 // ─── TRANSLATIONS DICTIONARY ────────────────────────────────────────────────
@@ -33,8 +39,8 @@ const translations: Record<string, Record<string, string>> = {
     gross_salary: 'Salário Bruto Mensal',
     invoice_monthly: 'Faturação Mensal Ilíquida (Bruta)',
     activity_type: 'Tipo de Atividade',
-    service_provision: 'Prestação de Serviços (70% Base SS / 25% IRS)',
-    product_sales: 'Venda de Produtos / Restauração (20% Base SS / 11,5% IRS)',
+    service_provision: 'Prestação de Serviços (70% Base SS / 23% IRS Art. 151.º)',
+    product_sales: 'Venda de Produtos / Restauração (20% Base SS / Sem Retenção IRS)',
     scientific_activity: 'Atividades Científicas/Artísticas (70% Base SS / 16.5% IRS)',
     irs_withholding: 'Retenção na Fonte de IRS',
     irs_normal: 'Retenção Normal de IRS (Art. 101.º CIRS)',
@@ -145,8 +151,8 @@ const translations: Record<string, Record<string, string>> = {
     gross_salary: 'Monthly Gross Salary',
     invoice_monthly: 'Monthly Gross Invoice Amount',
     activity_type: 'Activity Type',
-    service_provision: 'Services Provision (70% SS Base / 25% Tax)',
-    product_sales: 'Product Sales / Dining (20% SS Base / 11.5% Tax)',
+    service_provision: 'Services Provision (70% SS Base / 23% Tax Art. 151)',
+    product_sales: 'Product Sales / Dining (20% SS Base / Exempt Tax)',
     scientific_activity: 'Scientific/Artistic Activities (70% SS Base / 16.5% Tax)',
     irs_withholding: 'Income Tax Withholding (IRS)',
     irs_normal: 'Standard IRS Withholding (Art. 101 CIRS)',
@@ -257,8 +263,8 @@ const translations: Record<string, Record<string, string>> = {
     gross_salary: 'Salario Bruto Mensual',
     invoice_monthly: 'Facturación Mensual Bruta',
     activity_type: 'Tipo de Actividad',
-    service_provision: 'Prestación de Servicios (70% Base SS / 25% Retención IRS)',
-    product_sales: 'Venta de Productos / Hostelería (20% Base SS / 11,5% Retención IRS)',
+    service_provision: 'Prestación de Servicios (70% Base SS / 23% Retención IRS Art. 151)',
+    product_sales: 'Venta de Productos / Hostelería (20% Base SS / Exento Retención IRS)',
     scientific_activity: 'Actividades Científicas/Artísticas (70% Base SS / 16,5% Retención IRS)',
     irs_withholding: 'Retención a la Fuente (IRS)',
     irs_normal: 'Retención Normal IRS (Art. 101 CIRS)',
@@ -496,12 +502,56 @@ const DISTRICT_COST_DATA: Record<string, CostProfile> = {
   Portalegre: { rentRoom: 175, rentT1: 350, rentT2: 470, transportPass: 20, foodBase: 160, utilitiesBase: 70, tier: 'Low' }
 };
 
-export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onViewChange }) => {
+export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onViewChange, initialTab, initialParams }) => {
   const [activeTab, setActiveTab] = useState<'salary_outrem' | 'salary_recibos' | 'cost' | 'housing_protection' | 'aima_health' | 'small_business'>('salary_outrem');
   const [salaryRegime, setSalaryRegime] = useState<'outrem' | 'recibos'>('outrem');
 
   const lang = ['PT', 'EN', 'ES', 'FR'].includes(language) ? language : 'PT';
   const tLocal = (key: string) => translations[lang]?.[key] || key;
+
+  useEffect(() => {
+    const tabKey = initialTab || initialParams?.tab;
+    if (tabKey) {
+      if (tabKey === 'salario' || tabKey === 'salary' || tabKey === 'salary_outrem') {
+        setActiveTab('salary_outrem');
+        setSalaryRegime('outrem');
+      } else if (tabKey === 'recibos' || tabKey === 'salary_recibos') {
+        setActiveTab('salary_recibos');
+        setSalaryRegime('recibos');
+      } else if (tabKey === 'custo_vida' || tabKey === 'cost') {
+        setActiveTab('cost');
+      } else if (tabKey === 'habitacao' || tabKey === 'housing' || tabKey === 'housing_protection') {
+        setActiveTab('housing_protection');
+      } else if (tabKey === 'aima_ss' || tabKey === 'aima' || tabKey === 'aima_health') {
+        setActiveTab('aima_health');
+      } else if (tabKey === 'empreendedor' || tabKey === 'business' || tabKey === 'small_business') {
+        setActiveTab('small_business');
+      }
+    }
+
+    if (initialParams) {
+      const bruto = initialParams.bruto || initialParams.salary || initialParams.gross;
+      if (bruto && !isNaN(Number(bruto))) {
+        setGrossSalary(Number(bruto));
+      }
+      const fatura = initialParams.faturacao || initialParams.invoice;
+      if (fatura && !isNaN(Number(fatura))) {
+        setMonthlyInvoice(Number(fatura));
+      }
+      const renda = initialParams.renda || initialParams.rent;
+      if (renda && !isNaN(Number(renda))) {
+        setHpMonthlyRent(Number(renda));
+      }
+      const rendimento = initialParams.rendimento || initialParams.income;
+      if (rendimento && !isNaN(Number(rendimento))) {
+        setHpNetIncome(Number(rendimento));
+      }
+      const dist = initialParams.distrito || initialParams.district;
+      if (dist && DISTRICT_COST_DATA[dist]) {
+        setDistrict1(dist);
+      }
+    }
+  }, [initialTab, initialParams]);
 
   useEffect(() => {
     let userId = 'guest';
@@ -584,147 +634,78 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
   // ─── CONTA DE OUTREM CALCULATION LOGIC ────────────────────────────────────
   const calculateSalaryOutrem = () => {
-    const ssRate = 0.11;
-    const ssDeduction = grossSalary * ssRate;
-
-    let irsDeduction = 0;
-    let baseIrsRate = 0;
-
-    if (grossSalary > 870) {
-      if (familyStatus === 'married_1') {
-        let marginalRate = 0.09;
-        let parcelaAbater = 78.30;
-        let depDeduction = 34.29;
-
-        if (grossSalary > 3200) { marginalRate = 0.34; parcelaAbater = 528.55; }
-        else if (grossSalary > 2200) { marginalRate = 0.30; parcelaAbater = 400.55; }
-        else if (grossSalary > 1600) { marginalRate = 0.25; parcelaAbater = 290.55; }
-        else if (grossSalary > 1300) { marginalRate = 0.19; parcelaAbater = 194.55; }
-        else if (grossSalary > 1050) { marginalRate = 0.145; parcelaAbater = 136.05; }
-        
-        irsDeduction = (grossSalary * marginalRate) - parcelaAbater - (dependents * depDeduction);
-        baseIrsRate = marginalRate;
-      } else {
-        let marginalRate = 0.13;
-        let parcelaAbater = 113.10;
-        let depDeduction = 21.43;
-
-        if (grossSalary > 11000) { marginalRate = 0.45; parcelaAbater = 1084.00; }
-        else if (grossSalary > 5500) { marginalRate = 0.42; parcelaAbater = 754.00; }
-        else if (grossSalary > 3500) { marginalRate = 0.355; parcelaAbater = 466.50; }
-        else if (grossSalary > 2500) { marginalRate = 0.32; parcelaAbater = 379.00; }
-        else if (grossSalary > 1800) { marginalRate = 0.25; parcelaAbater = 253.00; }
-        else if (grossSalary > 1400) { marginalRate = 0.22; parcelaAbater = 211.00; }
-        else if (grossSalary > 1150) { marginalRate = 0.165; parcelaAbater = 147.75; }
-        else if (grossSalary > 990) { marginalRate = 0.165; parcelaAbater = 147.75; }
-        
-        irsDeduction = (grossSalary * marginalRate) - parcelaAbater - (dependents * depDeduction);
-        baseIrsRate = marginalRate;
-      }
-    }
-
-    if (fiscalRegion === 'azores') {
-      irsDeduction = irsDeduction * 0.7;
-    } else if (fiscalRegion === 'madeira') {
-      irsDeduction = irsDeduction * 0.8;
-    }
-
-    if (isIrsJovem && irsJovemYear >= 1 && irsJovemYear <= 10) {
-      let exemptionPct = 0.25;
-      if (irsJovemYear === 1) exemptionPct = 1.0;
-      else if (irsJovemYear === 2) exemptionPct = 0.75;
-      else if (irsJovemYear <= 4) exemptionPct = 0.50;
-
-      irsDeduction = irsDeduction * (1 - exemptionPct);
-    }
-
-    irsDeduction = Math.max(0, irsDeduction);
-
-    const capExempt = mealType === 'card' ? 9.60 : 6.00;
-    const totalMealAllowance = mealAllowance * workDays;
-    
-    let mealExempt = 0;
-    let mealTaxed = 0;
-
-    if (mealAllowance <= capExempt) {
-      mealExempt = totalMealAllowance;
-    } else {
-      mealExempt = capExempt * workDays;
-      mealTaxed = (mealAllowance - capExempt) * workDays;
-    }
-
-    const mealSsDeduction = mealTaxed * ssRate;
-    const mealIrsDeduction = mealTaxed * (grossSalary > 0 ? (irsDeduction / grossSalary) : 0);
-
-    const totalDeductions = ssDeduction + irsDeduction + mealSsDeduction + mealIrsDeduction;
-    const netSalary = (grossSalary + totalMealAllowance) - totalDeductions;
-    const effectiveRate = grossSalary > 0 ? ((irsDeduction + ssDeduction) / grossSalary) * 100 : 0;
+    const res = TaxCalculationService.calculateSalaryOutrem({
+      grossSalary,
+      familyStatus: familyStatus as 'single' | 'married_1' | 'married_2',
+      dependents,
+      fiscalRegion: fiscalRegion as 'continent' | 'madeira' | 'azores',
+      mealAllowanceDaily: mealAllowance,
+      mealType: mealType as 'cash' | 'card',
+      workDays,
+      isIrsJovem,
+      irsJovemYear,
+    });
 
     return {
-      netSalary: Math.round(netSalary * 100) / 100,
-      ssDeduction: Math.round((ssDeduction + mealSsDeduction) * 100) / 100,
-      irsDeduction: Math.round((irsDeduction + mealIrsDeduction) * 100) / 100,
-      mealExempt: Math.round(mealExempt * 100) / 100,
-      mealTaxed: Math.round(mealTaxed * 100) / 100,
-      totalMeal: Math.round(totalMealAllowance * 100) / 100,
-      totalDeductions: Math.round(totalDeductions * 100) / 100,
-      effectiveRate: Math.round(effectiveRate * 10) / 10,
-      marginalRate: Math.round(baseIrsRate * 100)
+      netSalary: res.netSalary,
+      ssDeduction: res.socialSecurityDeduction,
+      irsDeduction: res.irsWithholdingDeduction,
+      mealExempt: res.mealAllowanceExempt,
+      mealTaxed: res.mealAllowanceTaxed,
+      totalMeal: res.mealAllowanceTotal,
+      totalDeductions: res.totalTaxLoad,
+      effectiveRate: res.totalTaxLoadEffectiveRate,
+      marginalRate: res.irsWithholdingMarginalRate,
     };
   };
 
   // ─── RECIBOS VERDES CALCULATION LOGIC ────────────────────────────────────
   const calculateSalaryRecibos = () => {
-    const ssIncidenceRate = activityType === 'products' ? 0.20 : 0.70;
-    const rawSsBase = monthlyInvoice * ssIncidenceRate;
-    
-    const adjustedSsBase = rawSsBase * (1 + ssVariation);
-    let ssTaxRate = ssRegimeMode === 'eni' ? 0.252 : 0.214;
-    
-    let ssContribution = 0;
-    if (ssRegimeMode !== 'exempt_year1') {
-      ssContribution = adjustedSsBase * ssTaxRate;
-      if (monthlyInvoice > 0) {
-        ssContribution = Math.max(20.0, ssContribution);
-      }
+    // 1. Segurança Social Normativa
+    const ssRes = SocialSecurityCalculationService.calculateIndependentSocialSecurity({
+      monthlyInvoice,
+      activityType: activityType === 'products' ? 'products_sales' : 'services',
+      regimeType: ssRegimeMode === 'eni' ? 'eni' : 'general',
+      baseVariationPct: ssVariation * 100,
+      dataInicioAtividade: ssRegimeMode === 'exempt_year1' ? '2026-06-01' : '2024-01-01',
+    });
+
+    // 2. Retenção na Fonte de Categoria B
+    let catBActivity: 'art_151' | 'other_services' | 'intellectual_property' | 'products_sales' = 'art_151';
+    if (activityType === 'products') catBActivity = 'products_sales';
+    else if (activityType === 'scientific') catBActivity = 'intellectual_property';
+
+    const irsRes = TaxCalculationService.calculateCategoryBWithholding({
+      monthlyInvoice,
+      activityType: catBActivity,
+      hasExemption101b: irsWithholdingMode === 'exempt_101b',
+    });
+
+    let irsDeduction = irsRes.irsWithholdingAmount;
+    if (rvFiscalRegion === 'azores') irsDeduction *= 0.7;
+    else if (rvFiscalRegion === 'madeira') irsDeduction *= 0.8;
+
+    if (rvIsIrsJovem && rvIrsJovemYear >= 1 && rvIrsJovemYear <= 10) {
+      const exemptionPct = NORMATIVE_2026.IRS_JOVEM.ISENCOES_POR_ANO[rvIrsJovemYear] || 0.25;
+      irsDeduction = irsDeduction * (1 - exemptionPct);
     }
+    irsDeduction = Math.max(0, Math.round(irsDeduction * 100) / 100);
 
-    let irsRate = 0.25;
-    if (activityType === 'products') irsRate = 0.115;
-    else if (activityType === 'scientific') irsRate = 0.165;
-
-    let irsDeduction = 0;
-    if (irsWithholdingMode === 'normal') {
-      irsDeduction = monthlyInvoice * irsRate;
-      
-      if (rvFiscalRegion === 'azores') irsDeduction *= 0.7;
-      else if (rvFiscalRegion === 'madeira') irsDeduction *= 0.8;
-
-      if (rvIsIrsJovem && rvIrsJovemYear >= 1 && rvIrsJovemYear <= 10) {
-        let exemptionPct = 0.25;
-        if (rvIrsJovemYear === 1) exemptionPct = 1.0;
-        else if (rvIrsJovemYear === 2) exemptionPct = 0.75;
-        else if (rvIrsJovemYear <= 4) exemptionPct = 0.50;
-        
-        irsDeduction = irsDeduction * (1 - exemptionPct);
-      }
-    }
-
-    irsDeduction = Math.max(0, irsDeduction);
+    const ssContribution = ssRes.monthlyContribution;
     const totalDeductions = ssContribution + irsDeduction;
     const netIncome = monthlyInvoice - totalDeductions;
     const effectiveRate = monthlyInvoice > 0 ? (totalDeductions / monthlyInvoice) * 100 : 0;
 
     return {
       netSalary: Math.round(netIncome * 100) / 100,
-      ssDeduction: Math.round(ssContribution * 100) / 100,
-      irsDeduction: Math.round(irsDeduction * 100) / 100,
+      ssDeduction: ssContribution,
+      irsDeduction,
       mealExempt: 0,
       mealTaxed: 0,
       totalMeal: 0,
       totalDeductions: Math.round(totalDeductions * 100) / 100,
       effectiveRate: Math.round(effectiveRate * 10) / 10,
-      marginalRate: Math.round(irsRate * 100)
+      marginalRate: irsRes.irsWithholdingRate,
     };
   };
 
@@ -788,9 +769,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
     const setupCapital = Math.round((rent * 3) + (totalExp * 3));
     const emergencyFund = Math.round(totalExp * 3);
 
-    // Requisito Legal AIMA 2026 (Subsistência): 870€ titular + 261€ por dependente (30%)
-    const baseSubsistence = 870;
-    const extraDependents = Math.max(0, householdSize - 1) * 261;
+    // Requisito Legal AIMA 2026 (Subsistência): RMMG 920€ titular + 276€ por dependente (30%)
+    const baseSubsistence = NORMATIVE_2026.RMMG_2026;
+    const extraDependents = Math.max(0, householdSize - 1) * Math.round(NORMATIVE_2026.RMMG_2026 * 0.30);
     const totalAimaRequirement = Math.round(baseSubsistence + extraDependents);
     const meetsAimaReq = net >= totalAimaRequirement;
 
@@ -1887,7 +1868,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                   <div className="px-3 py-2.5 bg-[#FF8C00]/10 border border-[#FF8C00]/20 rounded-xl text-[#FF8C00] flex items-center gap-2">
                     <span className="text-base shrink-0">💶</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">RMMG 2026: 870€ / mês</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">RMMG 2026: 920€ / mês</span>
                   </div>
                 </div>
               </div>
@@ -1988,8 +1969,8 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
               {/* Results Panel */}
               {(() => {
-                const baseReq = 870;
-                const depReq = aimaDependents * 261;
+                const baseReq = NORMATIVE_2026.RMMG_2026;
+                const depReq = aimaDependents * Math.round(NORMATIVE_2026.RMMG_2026 * 0.30);
                 const totalReq = baseReq + depReq;
                 const meetsReq = aimaNetIncome >= totalReq;
                 const diff = aimaNetIncome - totalReq;
@@ -2075,7 +2056,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                               Verificação de Subsistência Legal AIMA
                             </h4>
                             <p className="text-[8px] text-slate-400 font-medium mt-0.5">
-                              Portaria 1563/2007 &middot; Art. 52.º Lei 23/2007 &middot; RMMG 2026 (870€)
+                              Portaria 1563/2007 &middot; Art. 52.º Lei 23/2007 &middot; RMMG 2026 (920€)
                             </p>
                           </div>
                         </div>
@@ -2095,7 +2076,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
                           <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">Limiar Mínimo AIMA</span>
                           <span className="text-xl font-black text-amber-300">{totalReq.toLocaleString('pt')}€</span>
-                          <span className="text-[8px] text-slate-400 block">870€ + {aimaDependents}×261€</span>
+                          <span className="text-[8px] text-slate-400 block">920€ + {aimaDependents}×276€</span>
                         </div>
                         <div className={`p-4 border rounded-2xl ${
                           meetsReq ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'
@@ -2109,7 +2090,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       </div>
 
                       <p className="text-[9px] text-slate-300 font-medium leading-relaxed pt-1">
-                        📋 <strong className="text-white">Base Legal AIMA:</strong> Segundo a Portaria n.º 1563/2007 de 11 de Dezembro, os meios de subsistência exigidos para concessão e renovação de Autorização de Residência são calculados com base no Retribuição Mínima Mensal Garantida (RMMG 2026 = 870€): <strong className="text-amber-300">100% RMMG (870€) para o primeiro adulto</strong> + <strong className="text-amber-300">30% RMMG (261€) por cada dependente adicional</strong> (cônjuge sem rendimentos, filhos menores ou ascendentes a cargo).
+                        📋 <strong className="text-white">Base Legal AIMA:</strong> Segundo a Portaria n.º 1563/2007 de 11 de Dezembro, os meios de subsistência exigidos para concessão e renovação de Autorização de Residência são calculados com base no Retribuição Mínima Mensal Garantida (RMMG 2026 = 920€): <strong className="text-amber-300">100% RMMG (920€) para o primeiro adulto</strong> + <strong className="text-amber-300">30% RMMG (276€) por cada dependente adicional</strong> (cônjuge sem rendimentos, filhos menores ou ascendentes a cargo).
                       </p>
                     </div>
 

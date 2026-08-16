@@ -27,8 +27,8 @@ export const SABER_IA_TAXONOMY = [
     },
     { 
         key: 'trabalho_seg_social', 
-        label: '💼 Trabalho & Seg. Social', 
-        description: 'Direitos laborais e proteção social (Segurança Social).',
+        label: '💼 Trabalho, PCD & Seg. Social', 
+        description: 'Direitos laborais, quotas PCD (Lei 4/2019), adaptação de postos, IEFP e proteção social (Segurança Social / PSI).',
         weight: 5000 
     },
     { 
@@ -45,8 +45,8 @@ export const SABER_IA_TAXONOMY = [
     },
     { 
         key: 'acolhimento_e_apoio', 
-        label: '🤝 Apoio Social & Especialistas', 
-        description: 'Assistência humanitária e pareceres técnicos de especialistas.',
+        label: '🤝 Inclusão PCD & Apoio Humanitário', 
+        description: 'Apoio humanitário, Atestado Médico Multiuso (AMIM), acessibilidade, INR, CNAIM/CLAIM e assistência social.',
         weight: 5000 
     }
 ];

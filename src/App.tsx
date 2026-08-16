@@ -1280,8 +1280,8 @@ const AppContent: React.FC = () => {
                 isLoading={isRefreshing}
                 onViewProfile={(id, name, avatar) => handleViewChange(ViewType.PROFILE, { profileUser: { id, name, avatar } as User })} />;
             case ViewType.ASSISTANT: return <AssistantView language={language} onViewChange={handleViewChange} user={user} />;
-            case ViewType.SIMULATORS: return <SimulatorsView language={language} onViewChange={handleViewChange} />;
-            case ViewType.JOBS: return <JobBoard language={language} isAdmin={user.role === 'admin'} user={user} onViewChange={handleViewChange} initialTab={viewParams?.tab} />;
+            case ViewType.SIMULATORS: return <SimulatorsView language={language} onViewChange={handleViewChange} initialTab={viewParams?.tab} initialParams={viewParams} />;
+            case ViewType.JOBS: return <JobBoard language={language} isAdmin={user.role === 'admin'} user={user} onViewChange={handleViewChange} initialTab={viewParams?.tab} initialQuickFilter={viewParams?.quickFilter || (viewParams?.tab === 'pcd' ? 'pcd' : undefined)} />;
             case ViewType.MAP: return <LocalServicesList language={language} user={user} targetServiceId={viewParams?.id || targetServiceId} onClearTargetService={() => { setTargetServiceId(null); setViewParams(null); }} />;
             case ViewType.LEARNING: return <LearningView courses={courses} language={language} initialArticleId={viewParams?.articleId} onNavigateToChat={() => handleViewChange(ViewType.ASSISTANT)} onEarnPoints={(pts) => handleEarnPoints(pts, 'Aprendizagem')} onNavigateToContact={() => {}} />;
             case ViewType.DOCUMENTS: 

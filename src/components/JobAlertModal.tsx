@@ -116,6 +116,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
   const [frequency, setFrequency] = useState<'instant' | 'daily' | 'weekly'>('instant');
   const [existingAlerts, setExistingAlerts] = useState<JobAlert[]>([]);
   const [successToast, setSuccessToast] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const langKey = (language || 'PT').toUpperCase();
   const i18n = MODAL_I18N[langKey] || MODAL_I18N['PT'];
@@ -135,17 +136,24 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
 
   const handleCreateAlert = async (e: React.FormEvent) => {
     e.preventDefault();
-    await jobAlertService.saveAlert({
-      workTopic,
-      location,
-      keywords,
-      frequency
-    }, user?.id);
-    setSuccessToast(true);
-    setTimeout(() => setSuccessToast(false), 3000);
-    setKeywords('');
-    await loadAlerts();
-    if (onAlertsChanged) onAlertsChanged();
+    setIsSubmitting(true);
+    try {
+      await jobAlertService.saveAlert({
+        workTopic,
+        location,
+        keywords,
+        frequency
+      }, user?.id);
+      setSuccessToast(true);
+      setTimeout(() => setSuccessToast(false), 3500);
+      setKeywords('');
+      await loadAlerts();
+      if (onAlertsChanged) onAlertsChanged();
+    } catch (err) {
+      console.error('MIRA: Erro ao salvar alerta:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleToggle = async (alertId: string, currentStatus: boolean) => {

@@ -3,7 +3,19 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 import { createClient } from '@supabase/supabase-js';
 import { analytics } from './analyticsService';
+import {
+  cacheGet,
+  cacheSet,
+  detectIntentType,
+  buildContextHash,
+  GREETING_PATTERNS,
+  getSessionCoveredTopics,
+  normalizeForCache,
+} from '../utils/sessionCache';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Versão da KB dinâmica — actualizada quando consultamos ai_knowledge
+let _currentKbVersion = '0';
 
 // 🛡️ [MIRA V3.1M] LOCAL KNOWLEDGE BASE - Funciona SEM API (Custo €0)const MIRA_LOCAL_KB: Record<string, string> = {
   'nif': 'O NIF (Número de Identificação Fiscal) é o teu número de contribuinte em Portugal. Pedes nas Finanças (Portal das Finanças ou presencialmente), gratuitamente, com o passaporte. É obrigatório para trabalhar, abrir conta bancária e assinar contratos.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta NIF em PDF]',
@@ -46,17 +58,23 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   'custo de vida': '📊 COMPARADOR DE CUSTO DE VIDA INTER-DISTRITAL:\n\nCompara o custo de vida por distrito em Portugal com dados atualizados do INE:\n- Rendas médias de quartos, T1 e T2 por distrito.\n- Gastos médios de alimentação, transportes e utilidades (água, luz, gás).\n- Comparador de taxa de esforço e poupança estimada entre dois distritos.\n\n[view:SIMULATORS:Abrir Comparador de Custo de Vida]',
   'renda': '📊 COMPARADOR DE CUSTO DE VIDA INTER-DISTRITAL:\n\nCompara o custo de vida e rendas médias de quartos e apartamentos (T1, T2) por distrito em Portugal com estatísticas oficiais INE.\n[view:SIMULATORS:Abrir Comparador de Custo de Vida]',
   'calculadora': 'No MIRA encontras 3 Calculadoras Interativas:\n1. Calculadora de Salário Líquido (Contrato de Trabalho Cat. A)\n2. Calculadora de Recibos Verdes / Trabalhadores Independentes (ENI)\n3. Comparador Inter-Distrital de Custo de Vida & Rendas INE\n\n[view:SIMULATORS:Abrir Calculadoras MIRA]',
+  'pcd': '♿ EMPREGO INCLUSIVO, DIREITOS & QUOTAS PCD EM PORTUGAL (Lei n.º 4/2019):\n1. QUOTAS DE EMPREGO: Empresas com 75+ trabalhadores são obrigadas por lei a admitir de 1% a 2% de pessoas com deficiência (grau de incapacidade ≥ 60%).\n2. ATESTADO MULTIUSO (AMIM): Atestado Médico de Incapacidade Multiuso emitido por Junta Médica de Saúde Pública no Centro de Saúde/ULS. Garante benefícios fiscais (isenção de IRS, IVA, IUC) e acesso às quotas.\n3. APOIOS DO IEFP: Subvenções para adaptação do posto de trabalho, eliminação de barreiras arquitetónicas e programas de reabilitação profissional.\n4. SEGURANÇA SOCIAL (PSI): Prestação Social para a Inclusão para apoio financeiro a cidadãos com deficiência.\n5. APOIO HUMANITÁRIO: Instituto Nacional para a Reabilitação (INR: inr.pt), centros CNAIM/CLAIM e apoio social de emergência.\n[view:JOBS:pcd:Ver Vagas Inclusivas PCD]',
+  'deficiencia': '♿ EMPREGO INCLUSIVO, DIREITOS & APOIO A PESSOAS COM DEFICIÊNCIA (PCD):\nEm Portugal, imigrantes com residência legal têm pleno direito a concorrer a vagas inclusivas e ao sistema de quotas (Lei 4/2019 para incapacidade ≥ 60%). O IEFP disponibiliza apoios à adaptação do posto de trabalho e a Segurança Social concede a Prestação Social para a Inclusão (PSI).\n[view:JOBS:pcd:Ver Vagas Inclusivas PCD]',
+  'deficiência': '♿ EMPREGO INCLUSIVO, DIREITOS & APOIO A PESSOAS COM DEFICIÊNCIA (PCD):\nEm Portugal, imigrantes com residência legal têm pleno direito a concorrer a vagas inclusivas e ao sistema de quotas (Lei 4/2019 para incapacidade ≥ 60%). O IEFP disponibiliza apoios à adaptação do posto de trabalho e a Segurança Social concede a Prestação Social para a Inclusão (PSI).\n[view:JOBS:pcd:Ver Vagas Inclusivas PCD]',
+  'incapacidade': '♿ ATESTADO MÉDICO DE INCAPACIDADE MULTIUSO (AMIM) & DIREITOS:\nO AMIM avalia o grau de incapacidade. Grau ≥ 60% confere acesso a quotas de emprego (Lei 4/2019), benefícios fiscais de IRS/IUC, Prestação Social para a Inclusão (PSI) e prioridade no atendimento. O pedido é feito no Centro de Saúde da tua área.\n[view:JOBS:pcd:Ver Vagas Inclusivas PCD]',
+  'psi': '🏛️ PRESTAÇÃO SOCIAL PARA A INCLUSÃO (PSI) — SEGURANÇA SOCIAL:\nDestinada a cidadãos com grau de incapacidade comprovado ≥ 60% (ou ≥ 80% para certas condições). O pedido é submetido na Segurança Social Direta ou presencialmente com o Atestado Multiuso (AMIM).\n[view:LOCAL_SERVICES:Ver Balcões Segurança Social]',
+  'atestado multiuso': '🏥 ATESTADO MÉDICO DE INCAPACIDADE MULTIUSO (AMIM):\nDocumento oficial emitido por Junta Médica de Saúde Pública que certifica o grau global de incapacidade. Exigido para comprovar estatuto de PCD perante Finanças, Segurança Social, IEFP e empregadores.\n[view:LOCAL_SERVICES:Ver Centros de Saúde SNS]',
   'minutas': 'No MIRA podes gerar minutas e modelos oficiais de documentos em PDF para NIF, NISS, AIMA e contratos de arrendamento.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas em PDF]',
   'documentos': 'Na secção de Documentos podes descarregar e gerar minutas oficiais em PDF (pedidos NIF, NISS, Agendamento AIMA, declarações de alojamento e contratos).\n[view:DOCUMENT_ASSISTANT:Gerar Minutas em PDF]',
   'metro': 'A Linha de Metro da Integração no teu Perfil guia-te pelos 6 passos essenciais: 1. Chegada, 2. NIF, 3. NISS, 4. SNS/Saúde, 5. Emprego e 6. Residência AIMA.\n[view:DASHBOARD:Ver Linha de Metro]',
   'asilo': 'Para pedir proteção internacional (asilo) em Portugal: diriges-te a qualquer posto de fronteira, esquadra da PSP ou GNR e declaras intenção de pedir asilo. O CPR (Conselho Português para os Refugiados: refugiados.pt) oferece apoio jurídico gratuito. O processo é gerido pela AIMA.\n[view:LOCAL_SERVICES:Ver Apoio Legal]',
-  'reagrupamento': '👨‍👩‍👧 REAGRUPAMENTO FAMILIAR DENTRO DO TERRITÓRIO (Art. 98.º a 108.º Lei 23/2007):\nTitulares de Autorização de Residência válida em Portugal podem solicitar Reagrupamento Familiar para cônjuge/parceiro de facto, filhos menores e ascendentes a cargo.\n- Pode ser solicitado em território nacional na AIMA se os familiares tiverem entrada legal em Portugal.\n- Requisitos: Meios de subsistência suficientes (870€ titular + 435€ cônjuge + 261€ por filho menor - Portaria 1563/2007) + Alojamento adequado (contrato de arrendamento registado no Portal das Finanças) + Extrato da Segurança Social regularizado sem dívidas.\n[view:SIMULATORS:Abrir Simulador de Requisitos AIMA]',
+  'reagrupamento': '👨‍👩‍👧 REAGRUPAMENTO FAMILIAR DENTRO DO TERRITÓRIO (Art. 98.º a 108.º Lei 23/2007):\nTitulares de Autorização de Residência válida em Portugal podem solicitar Reagrupamento Familiar para cônjuge/parceiro de facto, filhos menores e ascendentes a cargo.\n- Pode ser solicitado em território nacional na AIMA se os familiares tiverem entrada legal em Portugal.\n- Requisitos: Meios de subsistência suficientes (920€ titular + 460€ cônjuge + 276€ por filho menor - Portaria 1563/2007) + Alojamento adequado (contrato de arrendamento registado no Portal das Finanças) + Extrato da Segurança Social regularizado sem dívidas.\n[view:SIMULATORS:Abrir Simulador de Requisitos AIMA]',
   'estudante': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal que tenham entrado legalmente no país podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA em território nacional.\n- Requisitos: Matrícula ativa em estabelecimento reconhecido + Propinas pagas + Meios de subsistência (bolsa de estudo, poupanças bancárias ou termo de encarregado) + Alojamento + Seguro de Saúde ou inscrição no SNS.\n- DIREITO AO TRABALHO (Art. 97.º da Lei 23/2007): O estudante residente tem direito legal de trabalhar a contrato ou recibos verdes em Portugal (basta notificar a AIMA e inscrever-se na Segurança Social - NISS).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
   'estudantes': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal com entrada legal podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA e TÊM DIREITO LEGAL AO TRABALHO a contrato ou recibos verdes (Art. 97.º).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
   'visto de estudante': '🎓 RESIDÊNCIA E VISTO DE ESTUDANTE (Art. 91.º Lei 23/2007):\nPermite estudar no Ensino Superior em Portugal. Se já estás em Portugal com entrada legal e matriculado, podes solicitar a Autorização de Residência de Estudante diretamente na AIMA. Tens direito legal a trabalhar (Art. 97.º).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
   'segurança social': 'A Segurança Social Portuguesa garante acesso a subsídio de desemplego, abono de família, baixa médica e reforma. Registas-te com NIF e contrato de trabalho. Portal: seg-social.pt.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta NISS]',
   'banco': 'Para abrir conta bancária em Portugal precisas de: passaporte, NIF e comprovativo de morada. Bancos como a Caixa Geral de Depósitos, BPI e Millennium BCP aceitam imigrantes. Alguns permitem abertura online.\n[view:SIMULATORS:Guia de Abertura de Conta]',
-  'contrato': 'O contrato de trabalho em Portugal pode ser a prazo (máximo 2 anos, renovável) ou sem termo (permanente). O salário mínimo em 2026 é de 870€/mês. O empregador deve inscrevê-lo na Segurança Social.\n[view:JOBS:Ver Vagas de Emprego]',
+  'contrato': 'O contrato de trabalho em Portugal pode ser a prazo (máximo 2 anos, renovável) ou sem termo (permanente). O salário mínimo em 2026 é de 920€/mês. O empregador deve inscrevê-lo na Segurança Social.\n[view:JOBS:Ver Vagas de Emprego]',
   'documento': 'Os principais documentos para imigrantes em Portugal são: Passaporte, Título de Residência (AR), NIF, NISS e Utente do SNS. Guarda sempre cópias digitalizadas em PDF.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas PDF]',
   'renovar': 'A renovação do título de residência deve ser pedida na AIMA entre 90 a 30 dias antes do vencimento. Podes fazê-lo pelo portal aima.gov.pt. Tens direito a um comprovativo imediato que mantém a validade legal enquanto aguardas.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
   'cidadania': 'Para obter a Cidadania Portuguesa (Nacionalidade), os caminhos mais comuns (Lei Orgânica n.º 1/2026, em vigor desde 19 Maio 2026) são: 1. Tempo de residência legal (7 anos para cidadãos da CPLP/Brasileiros, 10 anos para outras nacionalidades. O tempo de espera não conta, só a partir da emissão do cartão); 2. Casamento/União de facto com cidadão português (3 anos); 3. Descendência (filhos ou netos de portugueses). O pedido faz-se no IRN (não na AIMA).\n[view:DOCUMENT_ASSISTANT:Ver Minutas de Nacionalidade]',
@@ -80,18 +98,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   'boa noite': 'Boa noite! Sou a MIRA, assistente de apoio ao imigrante em Portugal. Posso ajudar-te com qualquer funcionalidade da app ou dúvida de imigração. Como te posso ajudar?\n[view:DASHBOARD:Explorar Módulos do MIRA]',
   'importante': 'Para quem chega a Portugal, a jornada essencial de integração segue esta ordem de importância:\n1. NIF\n2. Alojamento\n3. NISS\n4. Conta Bancária\n5. Transporte\n6. Utente SNS\n7. Regularização AIMA.\n[view:DASHBOARD:Ver Linha de Metro da Integração]',
   'portugal': 'Para te integrares com sucesso em Portugal, é fundamental obteres os documentos essenciais de cidadão: NIF, Alojamento/Morada, NISS, Conta Bancária, Utente SNS e a Regularização na AIMA.\n[view:DASHBOARD:Ver Linha de Metro]',
-  'simulador': '🧮 6 SIMULADORES ECONÓMICOS MIRA (2026):\n1. Salário Líquido (Conta de Outrem - IRS 2026, SS 11%, IRS Jovem)\n2. Recibos Verdes (Trabalhador Independente - SS 21,4%, Incidência 70%/20%, Isenção 15k€)\n3. Custo de Vida (Comparador dos 20 Distritos de Portugal)\n4. Proteção à Habitação (Taxa de Esforço 35% e Capital de Entrada)\n5. Requisitos AIMA & Risco SS (Limiar 870€ RMMG + 261€/dep & Alerta Risco SS 20€/mês)\n6. Pequeno Empreendedor (IRC PME 12.5%, TSU MOE 33,05%, Margem e Break-Even)\n\n[view:SIMULATORS:Abrir Simuladores MIRA]',
-  'simuladores': '🧮 6 SIMULADORES ECONÓMICOS MIRA (2026):\n1. Salário Líquido (Conta de Outrem - IRS 2026, SS 11%, IRS Jovem)\n2. Recibos Verdes (Trabalhador Independente - SS 21,4%, Incidência 70%/20%, Isenção 15k€)\n3. Custo de Vida (Comparador dos 20 Distritos de Portugal)\n4. Proteção à Habitação (Taxa de Esforço 35% e Capital de Entrada)\n5. Requisitos AIMA & Risco SS (Limiar 870€ RMMG + 261€/dep & Alerta Risco SS 20€/mês)\n6. Pequeno Empreendedor (IRC PME 12.5%, TSU MOE 33,05%, Margem e Break-Even)\n\n[view:SIMULATORS:Abrir Simuladores MIRA]',
+  'simulador': '🧮 6 SIMULADORES ECONÓMICOS MIRA (2026):\n1. Salário Líquido (Conta de Outrem - IRS 2026, SS 11%, IRS Jovem)\n2. Recibos Verdes (Trabalhador Independente - SS 21,4%, Incidência 70%/20%, Isenção 15k€)\n3. Custo de Vida (Comparador dos 20 Distritos de Portugal)\n4. Proteção à Habitação (Taxa de Esforço 35% e Capital de Entrada)\n5. Requisitos AIMA & Risco SS (Limiar 920€ RMMG + 276€/dep & Alerta Risco SS 20€/mês)\n6. Pequeno Empreendedor (IRC PME 12.5%, TSU MOE 33,05%, Margem e Break-Even)\n\n[view:SIMULATORS:Abrir Simuladores MIRA]',
+  'simuladores': '🧮 6 SIMULADORES ECONÓMICOS MIRA (2026):\n1. Salário Líquido (Conta de Outrem - IRS 2026, SS 11%, IRS Jovem)\n2. Recibos Verdes (Trabalhador Independente - SS 21,4%, Incidência 70%/20%, Isenção 15k€)\n3. Custo de Vida (Comparador dos 20 Distritos de Portugal)\n4. Proteção à Habitação (Taxa de Esforço 35% e Capital de Entrada)\n5. Requisitos AIMA & Risco SS (Limiar 920€ RMMG + 276€/dep & Alerta Risco SS 20€/mês)\n6. Pequeno Empreendedor (IRC PME 12.5%, TSU MOE 33,05%, Margem e Break-Even)\n\n[view:SIMULATORS:Abrir Simuladores MIRA]',
   'pequeno empreendedor': '🏢 SIMULADOR PEQUENO EMPREENDEDOR & MICROEMPRESA:\nSimula a faturação, despesas operacionais, tributação reduzida PME em IRC (12,5% até 50.000€ lucro tributável - Art. 87.º CIRC), TSU do Sócio-Gerente (33,05% MOE) ou ENI (IRS Simplificado), margem de lucro e Ponto de Equilíbrio (Break-Even).\n\n[view:SIMULATORS:Abrir Simulador Pequeno Empreendedor]',
   'empreendedor': '🏢 SIMULADOR PEQUENO EMPREENDEDOR & MICROEMPRESA:\nSimula a faturação, despesas operacionais, tributação reduzida PME em IRC (12,5% até 50.000€ lucro tributável - Art. 87.º CIRC), TSU do Sócio-Gerente (33,05% MOE) ou ENI (IRS Simplificado), margem de lucro e Ponto de Equilíbrio (Break-Even).\n\n[view:SIMULATORS:Abrir Simulador Pequeno Empreendedor]',
-  'microempresa': '🏢 SIMULADOR PEQUENO EMPREENDEDOR & MICROEMPRESA:\nSimula a faturação, despesas operacionais, tributação reduzida PME em IRC (12,5% até 50.000€ lucro tributável - Art. 87.º CIRC), TSU do Sócio-Gerente (33,05% MOE) ou ENI (IRS Simplificado), margem de lucro e Ponto de Equilíbrio (Break-Even).\n\n[view:SIMULATORS:Abrir Simulador Pequeno Empreendedor]',
   'habitação': '🏠 SIMULADOR DE PROTEÇÃO À HABITAÇÃO:\nCalcula a tua Taxa de Esforço com a renda (recomendação Banco de Portugal de máx. 35%), o Capital Inicial de Entrada necessário (2 cauções + 1 renda adiantada - Art. 1076.º C. Civil) e o Fundo de Emergência familiar (3 meses).\n\n[view:SIMULATORS:Abrir Simulador de Habitação]',
   'habitacao': '🏠 SIMULADOR DE PROTEÇÃO À HABITAÇÃO:\nCalcula a tua Taxa de Esforço com a renda (recomendação Banco de Portugal de máx. 35%), o Capital Inicial de Entrada necessário (2 cauções + 1 renda adiantada - Art. 1076.º C. Civil) e o Fundo de Emergência familiar (3 meses).\n\n[view:SIMULATORS:Abrir Simulador de Habitação]',
   'default': 'Sou a MIRA, assistente de apoio ao imigrante em Portugal. Tenho conhecimento total de todas as funcionalidades do aplicativo MIRA: 6 Simuladores Económicos (Salário, Recibos Verdes, Custo de Vida, Habitação, AIMA/SS, Empreendedor), 5.326 vagas de emprego, 156 cursos de formação, 238 serviços locais de apoio, gerador de minutas PDF, calculadoras de IRS e todas as regras da AIMA, NIF e NISS. Qual é a tua dúvida específica?\n[view:DASHBOARD:Ver Módulos do MIRA]'
 };
 
 const MIRA_LOCAL_KB_EN: Record<string, string> = {
-  'nif': 'The NIF (Tax Identification Number) is your taxpayer number in Portugal. You request it at the Tax Office (Portal das Finanças or in person), free of charge, with your passport. It is mandatory to work, open a bank account, and sign contracts.',
   'niss': 'The NISS (Social Security Identification Number) is obtained through the Social Security Direct portal or in person. You need an employment contract or declaration of activity. It is required for contributions and benefits.',
   'visto': 'The rules changed in 2024-2026: The Expression of Interest (Art. 88/89) was ABOLISHED. Now it is mandatory to obtain a Residence Visa (D1, D2, D7, D8, CPLP) or a Job Search Visa at the Portuguese Consulate in your country of origin before traveling.',
   'visa': 'The rules changed in 2024-2026: The Expression of Interest (Art. 88/89) was ABOLISHED. Now it is mandatory to obtain a Residence Visa (D1, D2, D7, D8, CPLP) or a Job Search Visa at the Portuguese Consulate in your country of origin before traveling.',
@@ -111,8 +127,8 @@ const MIRA_LOCAL_KB_EN: Record<string, string> = {
   'segurança social': 'Portuguese Social Security guarantees access to unemployment benefit, family allowance, sick leave, and pension. You register with NIF and employment contract. Portal: seg-social.pt.',
   'bank': 'To open a bank account in Portugal you need: passport, NIF, and proof of address. Banks like Caixa Geral de Depósitos, BPI, and Millennium BCP accept immigrants. Some allow online opening.',
   'banco': 'To open a bank account in Portugal you need: passport, NIF, and proof of address. Banks like Caixa Geral de Depósitos, BPI, and Millennium BCP accept immigrants. Some allow online opening.',
-  'contract': 'The employment contract in Portugal can be temporary (maximum 2 years, renewable) or permanent. The minimum wage in 2026 is €870/month. The employer must register you with Social Security.',
-  'contrato': 'The employment contract in Portugal can be temporary (maximum 2 years, renewable) or permanent. The minimum wage in 2026 is €870/month. The employer must register you with Social Security.',
+  'contract': 'The employment contract in Portugal can be temporary (maximum 2 years, renewable) or permanent. The minimum wage in 2026 is €920/month. The employer must register you with Social Security.',
+  'contrato': 'The employment contract in Portugal can be temporary (maximum 2 years, renewable) or permanent. The minimum wage in 2026 is €920/month. The employer must register you with Social Security.',
   'document': 'The main documents for immigrants in Portugal are: Passport, Residence Permit (AR), NIF, NISS, and SNS Health User Number. Always keep scanned copies in PDF.',
   'documento': 'The main documents for immigrants in Portugal are: Passport, Residence Permit (AR), NIF, NISS, and SNS Health User Number. Always keep scanned copies in PDF.',
   'renew': 'The renewal of the residence permit must be requested at AIMA between 90 and 30 days before expiration. You can do it through the aima.gov.pt portal. You are entitled to immediate proof that maintains legal validity while waiting.',
@@ -135,18 +151,18 @@ const MIRA_LOCAL_KB_ES: Record<string, string> = {
   'sns': 'Para acceder al SNS (Servicio Nacional de Salud), debes registrarte en el Centro de Salud de tu zona con tu pasaporte y comprobante de domicilio. Tienes derecho a médico de cabecera y urgencias.',
   'salud': 'Para acceder al SNS (Servicio Nacional de Salud), debes registrarte en el Centro de Salud de tu zona con tu pasaporte y comprobante de domicilio. Tienes derecho a médico de cabecera y urgencias.',
   'empleo': 'Para buscar trabajo en Portugal: regístrate en el IEFP (iefp.pt), utiliza net-empregos.pt, infojobs.pt o LinkedIn. Con contrato de trabajo, el empleador te inscribe en la Seguridad Social.',
-  'trabajo': 'Para buscar trabajo en Portugal: regístrate en el IEFP (iefp.pt), utiliza net-empregos.pt, infojobs.pt o LinkedIn. Con contrato de trabajo, el empleador te inscribe en la Seguridad Social.',
+  'trabajo': 'Para buscar trabajo en Portugal: regístrate en el IEFP (iefp.pt), utiliza net-empregos.pt, infojobs.pt o LinkedIn. Con contrato de trabalho, el empleador te inscribe en la Seguridad Social.',
   'asilo': 'Para solicitar protección internacional (asilo) en Portugal: acude a cualquier puesto fronterizo, comisaría de la PSP o puesto de la GNR y declara tu intención. El CPR (Consejo Portugués para los Refugiados: refugiados.pt) ofrece apoyo jurídico gratuito. El trámite lo gestiona AIMA.',
   'reagrupamento': 'El Reagrupamiento Familiar permite que los residentes legales traigan a su cónyuge, hijos menores y padres. Necesitas: permiso de residencia válido, medios de subsistencia suficientes, alojamiento adecuado y pruebas de vínculo familiar. La solicitud se presenta en AIMA.',
   'reagrupación': 'El Reagrupamiento Familiar permite que los residentes legales traigan a su cónyuge, hijos menores y padres. Necesitas: permiso de residencia válido, medios de subsistencia suficientes, alojamiento adecuado y pruebas de vínculo familiar. La solicitud se presenta en AIMA.',
   'seguridad social': 'La Seguridad Social portuguesa garantiza acceso a subsidio por desempleo, asignación familiar, baja médica y jubilación. Te registras con NIF y contrato de trabajo. Portal: seg-social.pt.',
   'banco': 'Para abrir una cuenta bancaria en Portugal necesitas: pasaporte, NIF y comprobante de domicilio. Bancos como Caixa Geral de Depósitos, BPI y Millennium BCP aceptan inmigrantes. Algunos permiten la apertura en línea.',
-  'contrato': 'El contrato de trabajo en Portugal puede ser temporal (máximo 2 años, renovable) o indefinido. El salario mínimo en 2026 es de 870€/mes. El empleador debe registrarte en la Seguridad Social.',
+  'contrato': 'El contrato de trabajo en Portugal puede ser temporal (máximo 2 años, renovable) o indefinido. El salario mínimo en 2026 es de 920€/mes. El empleador debe registrarte en la Seguridad Social.',
   'documento': 'Los principales documentos para inmigrantes en Portugal son: Pasaporte, Permiso de Residencia (AR), NIF, NISS y Número de Utente del SNS. Guarda siempre copias escaneadas en PDF.',
   'renovar': 'La renovación del permiso de residencia debe solicitarse en AIMA entre 90 y 30 días antes de su vencimiento. Puedes hacerlo a través del portal aima.gov.pt. Tienes derecho a un comprobante inmediato que mantiene la validez legal mientras esperas.',
   'ciudadanía': 'Para obtener la Ciudadanía Portuguesa (Nacionalidad), las vías más comunes (según la Nueva Ley de Mayo de 2026) son: 1. Tiempo de residencia legal (7 años para ciudadanos de la CPLP/brasileños, 10 años para otras nacionalidades. El tiempo de espera no cuenta, solo después de la emisión de la tarjeta); 2. Matrimonio/Unión de hecho con ciudadano portugués (3 años); 3. Descendencia (hijos o nietos de portugueses). La solicitud se realiza en el Registro Civil (IRN), no en AIMA.',
   'mira': 'Soy MIRA — Asistente Inteligente de Derechos del Migrante. Fui creada para apoyar a los inmigrantes en Portugal con información práctica y gratuita sobre documentación, empleo, salud e integración. No reemplazamos el asesoramiento jurídico profesional.',
-  'hola': '¡Hola! Soy MIRA, tu asistente para cuestiones de inmigración e integración en Portugal. ¿Cómo te puedo ayudar hoy?',
+  'hola': '¡Hola! Soy MIRA, tu asistente para cuestiones de inmigración e integración en Portugal. ¿Cómo te posso ayudar hoy?',
   'default': 'Soy MIRA, tu asistente para inmigración e integración en Portugal. Puedo ayudarte con NIF, NISS, AIMA, visados, SNS, empleo, asilo y más. ¿Cuál es tu duda específica?'
 };
 
@@ -154,15 +170,10 @@ const MIRA_LOCAL_KB_FR: Record<string, string> = {
   'nif': 'Le NIF (Numéro d\'Identification Fiscale) est votre numéro de contribuable au Portugal. Vous pouvez le demander gratuitement aux Finances (Portal das Finanças ou en personne) sur présentation de votre passeport. Il est obligatoire pour travailler, ouvrir un compte bancaire et signer des contrats.',
   'niss': 'Le NISS (Numéro d\'Identification de la Sécurité Sociale) s\'obtient via le portail Segurança Social Direta ou en personne. Vous devez présenter un contrat de travail ou une déclaration d\'activité. Il est nécessaire pour cotiser et bénéficier des aides.',
   'visto': 'Les règles ont changé en 2024-2026 : la Manifestation d\'Intérêt (Art. 88/89) a été ABOLIE. Il est désormais obligatoire d\'obtenir un Visa de Résidence (D1, D2, D7, D8, CPLP) ou un Visa de Recherche d\'Emploi au consulat du Portugal dans votre pays d\'origine avant de voyager.',
-  'visa': 'Les règles ont changé en 2024-2026 : la Manifestation d\'Intérêt (Art. 88/89) a été ABOLIE. Il est désormais obligatoire d\'obtenir un Visa de Résidence (D1, D2, D7, D8, CPLP) ou un Visa de Recherche d\'Emploi au consulat du Portugal dans votre pays d\'origine avant de voyager.',
-  'residencia': 'Pour obtenir la résidence légale : 1. Obtenez un visa au consulat de votre pays d\'origine. 2. Voyagez au Portugal. 3. Prenez rendez-vous à l\'AIMA pour convertir votre visa en Titre de Résidence. Se régulariser en entrant comme simple touriste n\'est plus permis par la loi.',
-  'residence': 'Pour obtenir la résidence légale : 1. Obtenez un visa au consulat de votre pays d\'origine. 2. Voyagez au Portugal. 3. Prenez rendez-vous à l\'AIMA pour convertir votre visa en Titre de Résidence. Se régulariser en entrant comme simple touriste n\'est plus permis par la loi.',
+  'residencia': 'Pour obtenir la résidence légale : 1. Obtenez un visa au consulat de votre pays d\'origine. 2. Voyagez au Portugal. 3. Prenez rendez-vous à l\'AIMA pour convertir votre visa en Titre de Séjour. Se régulariser en entrant comme simple touriste n\'est plus permis par la loi.',
+  'residence': 'Pour obtenir la résidence légale : 1. Obtenez un visa au consulat de votre pays d\'origine. 2. Voyagez au Portugal. 3. Prenez rendez-vous à l\'AIMA pour convertir votre visa en Titre de Séjour. Se régulariser en entrant comme simple touriste n\'est plus permis par la loi.',
   'aima': 'L\'AIMA (Agence pour l\'Intégration, les Migrations et l\'Asile) gère toutes les procédures d\'immigration. Après les réformes de 2026, l\'accent est mis sur l\'entrée légale avec visa préalable. Vous devez suivre votre dossier sur le portail officiel aima.gov.pt.',
-  'sns': 'Pour accéder au SNS (Service National de Santé), inscrivez-vous au Centre de Santé de votre quartier avec votre passeport et un justificatif de domicile. Vous aurez droit à un médecin de famille et aux urgences.',
-  'sante': 'Pour accéder au SNS (Service National de Santé), inscrivez-vous au Centre de Santé de votre quartier avec votre passeport et un justificatif de domicile. Vous aurez droit à un médecin de famille et aux urgences.',
-  'santé': 'Pour accéder au SNS (Service National de Santé), inscrivez-vous au Centre de Santé de votre quartier avec votre passeport et un justificatif de domicile. Vous aurez droit à un médecin de famille et aux urgences.',
   'emploi': 'Pour chercher un emploi au Portugal : inscrivez-vous à l\'IEFP (iefp.pt), utilisez net-empregos.pt, infojobs.pt ou LinkedIn. Avec un contrat, l\'employeur vous inscrit à la Sécurité Sociale.',
-  'travail': 'Pour chercher un emploi au Portugal : inscrivez-vous à l\'IEFP (iefp.pt), utilisez net-empregos.pt, infojobs.pt ou LinkedIn. Avec un contrat, l\'employeur vous inscrit à la Sécurité Sociale.',
   'asilo': 'Pour demander l\'asile au Portugal : présentez-vous à n\'importe quel poste frontière ou commissariat (PSP/GNR) et déclarez votre intention. Le CPR (Conseil Portugais pour les Réfugiés : refugiados.pt) offre une aide juridique gratuite. L\'AIMA gère le dossier.',
   'asile': 'Pour demander l\'asile au Portugal : présentez-vous à n\'importe quel poste frontière ou commissariat (PSP/GNR) et déclarez votre intention. Le CPR (Conseil Portugais pour les Réfugiés : refugiados.pt) offre une aide juridique gratuite. L\'AIMA gère le dossier.',
   'reagrupamento': 'Le Regroupement Familial permet aux résidents légaux de faire venir leur conjoint, enfants mineurs et parents. Requis : titre de séjour valide, ressources suffisantes, logement adéquat et preuves des liens familiaux. La demande se fait à l\'AIMA.',
@@ -171,8 +182,8 @@ const MIRA_LOCAL_KB_FR: Record<string, string> = {
   'sécurité sociale': 'La Sécurité Sociale portugaise garantit l\'accès aux allocations chômage, familiales, maladie et retraite. Inscription avec NIF et contrat de travail. Portail : seg-social.pt.',
   'banco': 'Pour ouvrir un compte bancaire au Portugal, vous devez fournir : passeport, NIF et justificatif de domicile. Des banques comme Caixa Geral de Depósitos, BPI et Millennium BCP acceptent les immigrés. Certaines permettent l\'ouverture en ligne.',
   'banque': 'Pour ouvrir un compte bancaire au Portugal, vous devez fournir : passeport, NIF et justificatif de domicile. Des banques comme Caixa Geral de Depósitos, BPI et Millennium BCP acceptent les immigrés. Certaines permettent l\'ouverture en ligne.',
-  'contract': 'Le contrat de travail au Portugal peut être à durée déterminée (maximum 2 ans, renouvelable) ou indéterminée. Le salaire minimum en 2026 est de 870€/mois. L\'employeur doit vous inscrire à la Sécurité Sociale.',
-  'contrat': 'Le contrat de travail au Portugal peut être à durée déterminée (maximum 2 ans, renouvelable) ou indéterminée. Le salaire minimum en 2026 est de 870€/mois. L\'employeur doit vous inscrire à la Sécurité Sociale.',
+  'contract': 'Le contrat de travail au Portugal peut être à durée déterminée (maximum 2 ans, renouvelable) ou indéterminée. Le salaire minimum en 2026 est de 920€/mois. L\'employeur doit vous inscrire à la Sécurité Sociale.',
+  'contrat': 'Le contrat de travail au Portugal peut être à durée déterminée (maximum 2 ans, renouvelable) ou indéterminée. Le salaire minimum en 2026 est de 920€/mois. L\'employeur doit vous inscrire à la Sécurité Sociale.',
   'document': 'Les principaux documents pour les immigrés au Portugal sont : Passeport, Titre de Séjour (AR), NIF, NISS et Numéro d\'Utente du SNS. Conservez toujours des copies PDF numérisées.',
   'renew': 'Le renouvellement du titre de séjour doit être demandé à l\'AIMA entre 90 et 30 days avant son expiration sur aima.gov.pt. Vous recevez un justificatif immédiat qui maintient la validité légale pendant l\'attente.',
   'renouveler': 'Le renouvellement du titre de séjour doit être demandé à l\'AIMA entre 90 et 30 jours avant son expiration sur aima.gov.pt. Vous recevez un justificatif immédiat qui maintient la validité légale pendant l\'attente.',
@@ -181,6 +192,79 @@ const MIRA_LOCAL_KB_FR: Record<string, string> = {
   'bonjour': 'Bonjour ! Je suis MIRA, votre assistante pour les questions d\'immigration et d\'intégration au Portugal. Comment puis-je vous aider aujourd\'hui ?',
   'salut': 'Salut ! Je suis MIRA, votre assistante pour les questions d\'immigration et d\'intégration au Portugal. Comment puis-je vous aider aujourd\'hui ?',
   'default': 'Je suis MIRA, votre assistante pour l\'immigration et l\'intégration au Portugal. Je peux vous aider pour le NIF, le NISS, l\'AIMA, les visas, le SNS, l\'emploi, l\'asile et plus. Quelle est votre question ?'
+};
+
+/**
+ * PIPE-3 FIX (Fase E): consulta Supabase ai_knowledge como fonte primária.
+ * Fallback para MIRA_LOCAL_KB se Supabase falhar ou sem resultado.
+ * Recuperação SELECTIVA: máx. 3 nós relevantes, ≤ 500 chars.
+ */
+export const getVerifiedKbKnowledge = async (prompt: string, language: string = 'PT'): Promise<string | null> => {
+  const p = prompt.toLowerCase();
+  const lang = (language || 'PT').toUpperCase();
+
+  // Extrair keywords principais do prompt (1-3 termos)
+  const stopWords = new Set(['como', 'para', 'que', 'qual', 'quais', 'onde', 'quando', 'what', 'how', 'where', 'when', 'the', 'a', 'e', 'o', 'de', 'em']);
+  const keywords = p
+    .replace(/[^a-zà-ú\s]/gi, '')
+    .split(/\s+/)
+    .filter(w => w.length > 3 && !stopWords.has(w))
+    .slice(0, 3);
+
+  // --- FONTE PRIMÁRIA: Supabase ai_knowledge (SABER IA dinâmico) ---
+  if (keywords.length > 0 && SUPABASE_URL) {
+    try {
+      const timeoutPromise = new Promise<null>((_, reject) =>
+        setTimeout(() => reject(new Error('kb_timeout')), 2000)
+      );
+
+      const queryPromise = (async () => {
+        const orFilters = keywords
+          .map(kw => `topic.ilike.%${kw}%,information.ilike.%${kw}%`)
+          .join(',');
+
+        const { data, error } = await supabase
+          .from('ai_knowledge')
+          .select('topic, information, updated_at')
+          .or(orFilters)
+          .limit(3);
+
+        if (error || !data || data.length === 0) return null;
+
+        // Actualizar versão da KB para invalidação de cache
+        const latestTs = data
+          .map(r => r.updated_at || '')
+          .sort()
+          .reverse()[0] || String(Date.now());
+        if (latestTs > _currentKbVersion) _currentKbVersion = latestTs;
+
+        // Concatenar resultados (máx ≈ 500 chars)
+        const combined = data
+          .map(r => `[${r.topic}] ${r.information}`)
+          .join('\n---\n')
+          .substring(0, 500);
+
+        return combined;
+      })();
+
+      const result = await Promise.race([queryPromise, timeoutPromise]);
+      if (result) return result;
+
+    } catch (e) {
+      // Timeout ou erro → fallback imediato para KB local (não bloqueia o agente)
+      console.warn('⚠️ [MIRA KB] Supabase ai_knowledge indisponível, a usar fallback local.');
+    }
+  }
+
+  // --- FALLBACK: MIRA_LOCAL_KB estática ---
+  const kb = lang === 'EN' ? MIRA_LOCAL_KB_EN :
+             lang === 'ES' ? MIRA_LOCAL_KB_ES :
+             lang === 'FR' ? MIRA_LOCAL_KB_FR : MIRA_LOCAL_KB;
+
+  for (const [key, response] of Object.entries(kb)) {
+    if (key !== 'default' && p.includes(key)) return response;
+  }
+  return null;
 };
 
 const getMiraLocalResponse = (prompt: string, language: string = 'PT'): string | null => {
@@ -224,6 +308,42 @@ const normalizePromptKey = (str: string) => {
     .replace(/[^a-z0-9]/g, "");
 };
 
+/**
+ * Compacta o histórico para máx. 8 turnos selectivos:
+ * - Sempre inclui os últimos 4 turnos
+ * - Dos restantes, inclui apenas turnos com factos-chave não redundantes
+ */
+const compactHistory = (history: any[]): any[] => {
+  if (!history || history.length <= 8) return history;
+
+  const recent = history.slice(-4);           // últimos 4 sempre incluídos
+  const older = history.slice(0, -4);         // turnos mais antigos
+
+  // Palavras-chave que indicam factos relevantes para o contexto actual
+  const factKeywords = [
+    'enfermeira', 'enfermeiro', 'médico', 'médica', 'engenheiro', 'professor',
+    'filho', 'filhos', 'filha', 'família', 'cônjuge', 'marido', 'esposa',
+    'brasileiro', 'brasileira', 'ucraniano', 'ucraniana', 'cabo-verdiano',
+    'lisboa', 'porto', 'braga', 'coimbra', 'faro', 'aveiro',
+    'nif', 'niss', 'sns', 'aima', 'visto', 'autorização', 'residência',
+    'nurse', 'doctor', 'engineer', 'family', 'children',
+  ];
+
+  // Recolher tópicos já cobertos nos turnos recentes (para evitar redundância)
+  const recentContent = recent.map(h => (h.content || '')).join(' ').toLowerCase();
+
+  const relevantOlder = older.filter(h => {
+    const content = (h.content || '').toLowerCase();
+    const hasKeyFact = factKeywords.some(kw => content.includes(kw));
+    if (!hasKeyFact) return false;
+    // Excluir se o facto já está coberto nos turnos recentes
+    const mainWord = factKeywords.find(kw => content.includes(kw)) || '';
+    return mainWord && !recentContent.includes(mainWord);
+  }).slice(-4); // máx. 4 turnos antigos relevantes
+
+  return [...relevantOlder, ...recent];
+};
+
 const safeBtoa = (str: string) => {
   try {
     return btoa(unescape(encodeURIComponent(str)));
@@ -232,122 +352,164 @@ const safeBtoa = (str: string) => {
   }
 };
 
-export const generateAssistantResponseV45 = async (prompt: string, history: any[] = [], language: string = 'PT', action: string = 'chat') => {
+export interface SafeProfileContext {
+  language?: string;
+  firstName?: string;
+  district?: string;
+  nationalityGroup?: string;
+  completedStations?: string[];
+  activeGoal?: string;
+}
+
+const getGreetingResponse = (prompt: string, language: string = 'PT'): string | null => {
+  const p = prompt.toLowerCase();
+  const lang = (language || 'PT').toUpperCase();
+  const kb = lang === 'EN' ? MIRA_LOCAL_KB_EN :
+             lang === 'ES' ? MIRA_LOCAL_KB_ES :
+             lang === 'FR' ? MIRA_LOCAL_KB_FR : MIRA_LOCAL_KB;
+  for (const [key, response] of Object.entries(kb)) {
+    if (key !== 'default' && p.includes(key)) return response;
+  }
+  return kb['olá'] || kb['hello'] || kb['bonjour'] || kb['hola'] || null;
+};
+
+export const generateAssistantResponseV45 = async (
+  prompt: string, 
+  history: any[] = [], 
+  language: string = 'PT', 
+  action: string = 'chat',
+  profileContext?: SafeProfileContext
+) => {
   try {
     if (!prompt || !prompt.trim()) return { text: "", success: true };
 
     const lang = (language || 'PT').toUpperCase();
-    const normalizedKey = normalizePromptKey(prompt);
-    const cacheKey = `mira_chat_cache_persistent_${normalizedKey}_${lang}`;
+    const p = prompt.trim();
+    const pLower = p.toLowerCase();
 
-    // ⚡ Real-Time Telemetry Tracking for AI Queries in Admin Hub
-    try { analytics.track('ai_query', 'system', 'chat', { promptLength: prompt.length }); } catch (e) {}
+    // ⚡ Telemetria
+    try { analytics.track('ai_query', 'system', 'chat', { promptLength: p.length }); } catch (e) {}
 
-    // 🛡️ 1. CHECK PERSISTENT LOCAL STORAGE CACHE (CUSTO €0 - ZERO TOKENS)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🟢 E20 — SHORTCIRCUIT: SAUDAÇÕES → SEM GEMINI
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     if (action === 'chat') {
-      try {
-        const persistentCached = localStorage.getItem(cacheKey) || sessionStorage.getItem(cacheKey);
-        if (persistentCached) {
-          console.log('🧠 [MIRA CACHE PERSISTENTE] Resposta para pergunta idêntica recuperada (Custo €0, 0 Tokens)');
-          return { text: persistentCached, success: true, version: 'V2026_PERSISTENT_CACHE', hydration: 1, perf: '0ms' };
+      const isGreeting = GREETING_PATTERNS.some(g =>
+        pLower === g || pLower.startsWith(g + ' ') || pLower.startsWith(g + '!')
+      );
+      if (isGreeting) {
+        const localResp = getGreetingResponse(p, language);
+        if (localResp) {
+          console.log('⚡ [MIRA CACHE] Saudação resolvida sem Gemini (E20).');
+          return { text: localResp, success: true, version: 'SHORTCIRCUIT_GREETING', hydration: 0, perf: '0ms' };
         }
-      } catch (e) {
-        console.warn('LocalStorage error reading chat cache:', e);
       }
     }
 
-    // 🛡️ 2. CHECK LOCAL KNOWLEDGE BASE DIRECTIVES (CUSTO €0 - ZERO TOKENS)
-    const localMatch = getMiraLocalResponse(prompt, language);
-    const defaultResponse = (lang === 'EN' ? MIRA_LOCAL_KB_EN['default'] :
-                             lang === 'ES' ? MIRA_LOCAL_KB_ES['default'] :
-                             lang === 'FR' ? MIRA_LOCAL_KB_FR['default'] : MIRA_LOCAL_KB['default']) || '';
-    
-    if (localMatch && localMatch !== defaultResponse) {
-      if (action === 'chat') {
-        try { localStorage.setItem(cacheKey, localMatch); sessionStorage.setItem(cacheKey, localMatch); } catch (e) {}
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🧠 PIPE-3: SABER IA (ai_knowledge) → kbContext selectivo
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const verifiedKb = action === 'chat' ? await getVerifiedKbKnowledge(p, language) : null;
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🔵 E15/E16/E21 — SESSION CACHE: reutilizar se válido
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (action === 'chat') {
+      const ctxHash = buildContextHash(
+        profileContext?.completedStations || [],
+        profileContext?.district || '',
+        lang
+      );
+      const cached = cacheGet(p, ctxHash, _currentKbVersion);
+      if (cached) {
+        console.log(`⚡ [MIRA CACHE] Cache hit (${cached.intentType}) — sem chamada Gemini (E15).`);
+        return { text: cached.response, success: true, version: 'SESSION_CACHE_HIT', hydration: 0, perf: '0ms' };
       }
-      return { text: localMatch, success: true, version: 'V2026_LOCAL_KB', hydration: 1, perf: '0ms' };
     }
 
-    console.log(`🧠 [MIRA] Ordem enviada para a Nuvem...`);
-
-    // Organização de mensagens para manter o contexto (V2026.GOLD)
-    const sanitizedHistory = (history || [])
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🗜️ E22 — HISTÓRICO COMPACTO (máx. 8 turnos selectivos)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const rawHistory = (history || [])
       .filter(h => (h.content || h.text || h.message))
-      .slice(-10) 
       .map(h => ({
         role: (h.role === 'assistant' || h.role === 'model') ? 'model' : 'user',
-        content: (h.content || h.text || h.message || "").trim()
+        content: (h.content || h.text || h.message || '').trim()
       }));
 
+    const sanitizedHistory = compactHistory(rawHistory); // máx. 8 turnos
+    console.log(`🧠 [MIRA AGENT] Histórico compacto: ${sanitizedHistory.length}/${rawHistory.length} turnos. SABER IA: ${verifiedKb ? verifiedKb.length + ' chars' : 'sem resultado'}`);
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🤖 GEMINI — apenas quando necessário
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
     const response = await fetch(`${apiUrl}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        prompt: prompt.trim(), 
+        prompt: p, 
         history: sanitizedHistory,
         action, 
         language,
-        userId: 'amanda_user'
+        kbContext: verifiedKb || undefined,
+        profileContext: profileContext || undefined
       })
     });
- 
+
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
     const data = await response.json();
- 
-    // Retorno de Sucesso com a frase aprovada caso o motor venha vazio (ou erro de IA silencioso)
+
     const textFallback = language === 'EN' ? "We are working on some improvements to the chat to offer you a better experience. We will be right back!" :
                          language === 'ES' ? "Estamos trabajando en algunas mejoras en el chat para ofrecerte una mejor experiencia. ¡Volvemos pronto!" :
                          language === 'FR' ? "Nous travaillons sur quelques améliorations du chat pour vous offrir une meilleure expérience. Nous revenons très vite !" :
                          "Estamos a trabalhar em algumas melhorias no chat para te oferecer uma melhor experiência. Voltamos já!";
-    
+
     const text = data?.text || textFallback;
- 
-    // 🛡️ [SOVEREIGN V2026] GUARDA NO CACHE PERSISTENTE LOCALSTORAGE PARA NÃO GASTAR MAIS TOKENS
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 💾 Guardar na session cache (E15/E16/E21)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     if (action === 'chat' && data?.text) {
-      try {
-        localStorage.setItem(cacheKey, data.text);
-        sessionStorage.setItem(cacheKey, data.text);
-      } catch (e) {}
+      const intentType = detectIntentType(p);
+      const ctxHash = buildContextHash(
+        profileContext?.completedStations || [],
+        profileContext?.district || '',
+        lang
+      );
+      // Extrair tópicos cobertos (keywords do prompt) para E16/E21
+      const coveredTopics = p.toLowerCase().split(/\s+/).filter(w => w.length > 3).slice(0, 5);
+      const sourceTopics = verifiedKb ? [verifiedKb.substring(0, 30)] : [];
+
+      cacheSet(p, text, ctxHash, _currentKbVersion, intentType, coveredTopics, sourceTopics);
     }
- 
+
     return { 
       text, 
       success: true, 
-      version: data?.v || 'V2026_GOLD', 
+      version: data?.model || 'V2026_AGENTIC_AI', 
       hydration: data?.h || 0,
       perf: data?.p || '0ms'
     };
- 
+
   } catch (err: any) {
-    console.error("🚨 MIRA SERVICE ERROR:", err.message);
- 
-    // 🛡️ [V3.1M] LOCAL KB FALLBACK - Usar apenas se a chamada à API falhar
+    console.error('🚨 MIRA SERVICE ERROR:', err.message);
+
+    // 🛡️ LOCAL KB FALLBACK — apenas quando a API falha (Fase D preservada)
     if (action === 'chat') {
       const localAnswer = getMiraLocalResponse(prompt, language);
       if (localAnswer) {
         console.log('🧠 [MIRA LOCAL KB] Fallback para a base de conhecimento local (servidor offline/erro)');
-        return { 
-          text: localAnswer, 
-          success: true, 
-          version: 'V3.1M_LOCAL_FALLBACK', 
-          hydration: 1, 
-          perf: '0ms' 
-        };
+        return { text: localAnswer, success: true, version: 'V3.1M_LOCAL_FALLBACK', hydration: 1, perf: '0ms' };
       }
     }
- 
+
     const textFallback = language === 'EN' ? "We are working on some improvements to the chat to offer you a better experience. We will be right back!" :
                          language === 'ES' ? "Estamos trabajando en algunas mejoras en el chat para ofrecerte una mejor experiencia. ¡Volvemos pronto!" :
                          language === 'FR' ? "Nous travaillons sur quelques améliorations du chat pour vous offrir une meilleure expérience. Nous revenons très vite !" :
                          "Estamos a trabalhar em algumas melhorias no chat para te oferecer uma melhor experiência. Voltamos já!";
- 
-    // Retorno de Erro Amigável (Evita ecrã branco e mantém a dignidade da plataforma)
-    return { 
-      text: textFallback, 
-      success: false 
-    };
+
+    return { text: textFallback, success: false };
   }
 };
 
