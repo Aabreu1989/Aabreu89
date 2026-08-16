@@ -53,6 +53,58 @@ export const RESTRICTED_PORTAL_SOURCES_COUNT = 20;
 
 // ─── PARSERS SERVER-SIDE EM CASCATA ──────────────────────────────────────────
 
+const PT_DISTRICTS_REGEX = [
+  { name: 'Lisboa', patterns: [/\blisboa\b/i, /\blisbon\b/i, /\bcais do sodr/i, /\bsintra\b/i, /\bcascais\b/i, /\bloures\b/i, /\bamadora\b/i, /\boeiras\b/i, /\bmafra\b/i, /\bvila franca de xira\b/i, /\btorres vedras\b/i] },
+  { name: 'Porto', patterns: [/\bporto\b/i, /\boporto\b/i, /\bgaia\b/i, /\bmatosinhos\b/i, /\bmaia\b/i, /\bgondomar\b/i, /\bvalongo\b/i, /\bpovoa de varzim\b/i, /\bvila do conde\b/i] },
+  { name: 'Braga', patterns: [/\bbraga\b/i, /\bguimar[aã]es\b/i, /\bfamalicao\b/i, /\bfamalic[aã]o\b/i, /\bbarcelos\b/i, /\besposende\b/i] },
+  { name: 'Setúbal', patterns: [/\bset[uú]bal\b/i, /\balmada\b/i, /\bseixal\b/i, /\bbarreiro\b/i, /\bmoita\b/i, /\bmontijo\b/i, /\bpalmela\b/i, /\bsines\b/i, /\bsesimbra\b/i] },
+  { name: 'Faro', patterns: [/\bfaro\b/i, /\balgarve\b/i, /\bportim[aã]o\b/i, /\bloul[eé]\b/i, /\balbufeira\b/i, /\btavira\b/i, /\blagos\b/i, /\bolh[aã]o\b/i] },
+  { name: 'Aveiro', patterns: [/\baveiro\b/i, /\b[aá]gueda\b/i, /\bovar\b/i, /\bilhavo\b/i, /\bsanta maria da feira\b/i, /\bespinho\b/i] },
+  { name: 'Leiria', patterns: [/\bleiria\b/i, /\bcaldas da rainha\b/i, /\bmarinha grande\b/i, /\bpeniche\b/i, /\balcoba[cç]a\b/i, /\bpombal\b/i] },
+  { name: 'Coimbra', patterns: [/\bcoimbra\b/i, /\bfigueira da foz\b/i, /\bcantanhede\b/i, /\bcondeixa\b/i] },
+  { name: 'Santarém', patterns: [/\bsantar[eé]m\b/i, /\btomar\b/i, /\btorres novas\b/i, /\bentroncamento\b/i, /\babrantes\b/i] },
+  { name: 'Viseu', patterns: [/\bviseu\b/i, /\blamego\b/i, /\btondela\b/i, /\bmangualde\b/i] },
+  { name: 'Viana do Castelo', patterns: [/\bviana do castelo\b/i, /\bponte de lima\b/i, /\bvalen[cç]a\b/i] },
+  { name: 'Vila Real', patterns: [/\bvila real\b/i, /\bchaves\b/i, /\br[eé]gua\b/i] },
+  { name: 'Castelo Branco', patterns: [/\bcastelo branco\b/i, /\bcovilh[aã]\b/i, /\bfund[aã]o\b/i] },
+  { name: 'Évora', patterns: [/\b[eé]vora\b/i, /\bmontemor-o-novo\b/i, /\bestremoz\b/i] },
+  { name: 'Guarda', patterns: [/\bguarda\b/i, /\bseia\b/i] },
+  { name: 'Beja', patterns: [/\bbeja\b/i, /\bsines\b/i, /\bodemira\b/i] },
+  { name: 'Bragança', patterns: [/\bbragan[cç]a\b/i, /\bmirandela\b/i] },
+  { name: 'Portalegre', patterns: [/\bportalegre\b/i, /\belvas\b/i] },
+  { name: 'Madeira', patterns: [/\bfunchal\b/i, /\bmadeira\b/i] },
+  { name: 'Açores', patterns: [/\bponta delgada\b/i, /\ba[cç]ores\b/i, /\bazores\b/i] },
+  { name: 'Remoto', patterns: [/\bremoto\b/i, /\bremote\b/i, /\bteletrabalho\b/i, /\bwork from home\b/i, /\b100% remoto\b/i] }
+];
+
+function extractCity(title, rawLoc) {
+  const combined = `${rawLoc || ''} ${title || ''}`;
+  for (const d of PT_DISTRICTS_REGEX) {
+    if (d.patterns.some(p => p.test(combined))) return d.name;
+  }
+  return (rawLoc && rawLoc !== 'Portugal' && rawLoc.length > 2) ? rawLoc : 'Portugal';
+}
+
+function classifyTopic(title) {
+  const t = (title || '').toUpperCase();
+  if (t.includes('CUSTOMER') || t.includes('ADVISOR') || t.includes('CONTACT CENTER') || t.includes('CALL CENTER') || t.includes('ATENDIMENTO') || t.includes('SUPORTE AO CLIENTE') || t.includes('APOIO AO CLIENTE') || t.includes('HELPDESK') || t.includes('TELEPERFORMANCE') || t.includes('FOUNDEVER') || t.includes('BILINGUAL') || t.includes('BILINGUE') || t.includes('GERMAN SPEAKER') || t.includes('FRENCH SPEAKER') || t.includes('ITALIAN SPEAKER') || t.includes('DUTCH SPEAKER')) return 'Apoio ao Cliente';
+  if (t.includes('MARKETING') || t.includes('DESIGN') || t.includes('SOCIAL MEDIA') || t.includes('COPYWRITER') || t.includes('CONTENT') || t.includes('AUDIOVISUAL') || t.includes('VÍDEO') || t.includes('VIDEO') || t.includes('FOTOGRAF') || t.includes('UX') || t.includes('UI') || t.includes('COMUNICAÇÃO') || t.includes('COMUNICACAO')) return 'Design, Marketing e Media';
+  if (t.includes('TEAM LEADER') || t.includes('PROJECT MANAGER') || t.includes('PRODUCT MANAGER') || t.includes('GESTOR DE PROJETO') || t.includes('COORDENADOR') || t.includes('BUSINESS ANALYST') || t.includes('BUSINESS CONTROLLER') || t.includes('DIRETOR') || t.includes('DIRECTOR') || t.includes('AUDITOR')) return 'Gestão de Equipas e Negócios';
+  if (t.includes('CONSULTOR') || t.includes('CONSULTANT') || t.includes('TÉCNICO') || t.includes('TECNICO') || t.includes('MECATRÓNICO') || t.includes('MECATRONICO') || t.includes('MECÂNICO') || t.includes('MECANICO') || t.includes('PERITAGEM') || t.includes('CONTROLO DE QUALIDADE') || t.includes('ESPECIALISTA')) return 'Técnicos e Consultores';
+  if (t.includes('ENFERMEIR') || t.includes('MÉDIC') || t.includes('MEDIC') || t.includes('DENT') || t.includes('FARMAC') || t.includes('PSIC') || t.includes('FISIOTERAP') || t.includes('SAÚDE') || t.includes('SAUDE') || t.includes('GERIATRIA') || t.includes('CUIDADOR')) return 'Saúde & Cuidados Continuados';
+  if (t.includes('DEVELOPER') || t.includes('SOFTWARE') || t.includes('PROGRAMADOR') || t.includes('DATA ') || t.includes('FRONTEND') || t.includes('BACKEND') || t.includes('FULLSTACK') || t.includes('DEVOPS') || t.includes('CLOUD') || t.includes('TECH') || t.includes('TI ') || t.includes('IT ') || t.includes('INFORMÁTIC')) return 'Tecnologia, Dados & IA';
+  if (t.includes('CONSTRU') || t.includes('PEDREIRO') || t.includes('SERVENTE') || t.includes('PINTOR') || t.includes('CARPINTEIRO') || t.includes('TROLHA') || t.includes('CANALIZADOR') || t.includes('ELETRICISTA') || t.includes('OBRA')) return 'Construção Civil & Engenharia';
+  if (t.includes('HOTEL') || t.includes('TURISMO') || t.includes('RESTAURANTE') || t.includes('COZINHEIR') || t.includes('COZINHA') || t.includes('EMPREGADO DE MESA') || t.includes('BARMAN') || t.includes('BARISTA') || t.includes('PASTELAR') || t.includes('PADARIA') || t.includes('RECECIONISTA')) return 'Turismo, Hotelaria & Restauração';
+  if (t.includes('LOGÍSTIC') || t.includes('LOGISTIC') || t.includes('ARMAZÉM') || t.includes('ARMAZEM') || t.includes('MOTORISTA') || t.includes('CONDUTOR') || t.includes('DISTRIBUI') || t.includes('ESTAFETA') || t.includes('EMPILHADOR') || t.includes('ARMAZ')) return 'Logística, Transportes & Armazém';
+  if (t.includes('PRODUÇÃO') || t.includes('PRODUCAO') || t.includes('FÁBRICA') || t.includes('FABRICA') || t.includes('OPERADOR DE MÁQUINA') || t.includes('MANUFATURA') || t.includes('TORNEIRO') || t.includes('SOLDADOR') || t.includes('MANUTENÇÃO') || t.includes('PRODU')) return 'Indústria, Produção & Manufatura';
+  if (t.includes('COMERCIAL') || t.includes('VENDEDOR') || t.includes('VENDAS') || t.includes('CAIXA') || t.includes('REPOSITOR') || t.includes('SUPERMERCADO') || t.includes('LOJA') || t.includes('BALCÃO') || t.includes('STORE')) return 'Comércio, Vendas & Retalho';
+  if (t.includes('ADMINISTRATIV') || t.includes('SECRETÁRI') || t.includes('SECRETARI') || t.includes('CONTABIL') || t.includes('FINANCEIR') || t.includes('RECURSOS HUMANOS') || t.includes('HR ') || t.includes('RECRUT') || t.includes('GESTÃO') || t.includes('GESTAO')) return 'Administrativo, Gestão & RH';
+  if (t.includes('LIMPEZA') || t.includes('HIGIENE') || t.includes('VIGILANTE') || t.includes('SEGURANÇA PRIVADA') || t.includes('FACILITY') || t.includes('PORTEIRO')) return 'Limpeza, Segurança & Facility Management';
+  if (t.includes('AGRIC') || t.includes('CAMPO') || t.includes('QUINTA') || t.includes('JARDINEIR') || t.includes('COLHEITA') || t.includes('TRATORISTA') || t.includes('PECUÁRIA') || t.includes('PESCA')) return 'Agricultura, Pesca & Pecuária';
+  if (t.includes('REMOTO') || t.includes('REMOTE') || t.includes('FREELANCE') || t.includes('VIRTUAL ASSISTANT')) return 'Trabalho Remoto & Freelancing';
+  return 'Outros';
+}
+
 function cleanText(text) {
   if (!text) return '';
   return text
@@ -91,9 +143,9 @@ function parseRssXml(xml, sourceName) {
         title,
         source_url: link,
         source_name: sourceName,
-        location: 'Portugal',
+        location: extractCity(title, 'Portugal'),
         category: 'Trabalho & Carreira',
-        work_topic: 'Outros',
+        work_topic: classifyTopic(title),
         description: cleanText(rawDesc).substring(0, 300),
         is_active: true,
         created_at: rawPubDate && !isNaN(new Date(rawPubDate).getTime()) 

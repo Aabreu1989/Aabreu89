@@ -217,19 +217,37 @@ export const normalizeWorkTopic = (topic: string | undefined | null, titleFallba
             .replace(/├ú/g, 'ã')
             .replace(/├í/g, 'á')
             .replace(/├ó/g, 'ó')
-            .replace(/├é/g, 'é')
-            .replace(/Energias Renov├íveis/gi, 'Energia & Sustentabilidade')
-            .replace(/Energias Renováveis/gi, 'Energia & Sustentabilidade');
+            .replace(/├é/g, 'é');
     }
     const topicUpper = cleanTopic.toUpperCase();
 
     // 2. PRIORITY 1: High-specificity title keyword matching to override generic scraper topics
+    // Apoio ao Cliente / Call Center / Bilingue
+    if (titleUpper.includes("CUSTOMER") || titleUpper.includes("ADVISOR") || titleUpper.includes("CONTACT CENTER") || titleUpper.includes("CALL CENTER") || titleUpper.includes("ATENDIMENTO") || titleUpper.includes("SUPORTE AO CLIENTE") || titleUpper.includes("APOIO AO CLIENTE") || titleUpper.includes("HELPDESK") || titleUpper.includes("TELEPERFORMANCE") || titleUpper.includes("FOUNDEVER") || titleUpper.includes("BILINGUAL") || titleUpper.includes("BILINGUE") || titleUpper.includes("GERMAN SPEAKER") || titleUpper.includes("FRENCH SPEAKER") || titleUpper.includes("ITALIAN SPEAKER") || titleUpper.includes("DUTCH SPEAKER")) {
+        return "Apoio ao Cliente";
+    }
+
+    // Design, Marketing & Media
+    if (titleUpper.includes("MARKETING") || titleUpper.includes("DESIGN") || titleUpper.includes("SOCIAL MEDIA") || titleUpper.includes("COPYWRITER") || titleUpper.includes("CONTENT") || titleUpper.includes("AUDIOVISUAL") || titleUpper.includes("VÍDEO") || titleUpper.includes("VIDEO") || titleUpper.includes("FOTOGRAF") || titleUpper.includes("UX") || titleUpper.includes("UI") || titleUpper.includes("COMUNICAÇÃO") || titleUpper.includes("COMUNICACAO") || titleUpper.includes("BRAND")) {
+        return "Design, Marketing e Media";
+    }
+
+    // Gestão de Equipas & Negócios
+    if (titleUpper.includes("TEAM LEADER") || titleUpper.includes("PROJECT MANAGER") || titleUpper.includes("PRODUCT MANAGER") || titleUpper.includes("GESTOR DE PROJETO") || titleUpper.includes("COORDENADOR") || titleUpper.includes("BUSINESS ANALYST") || titleUpper.includes("BUSINESS CONTROLLER") || titleUpper.includes("DIRETOR") || titleUpper.includes("DIRECTOR") || titleUpper.includes("AUDITOR") || titleUpper.includes("SCRUM")) {
+        return "Gestão de Equipas e Negócios";
+    }
+
+    // Técnicos & Consultores
+    if (titleUpper.includes("CONSULTOR") || titleUpper.includes("CONSULTANT") || titleUpper.includes("TÉCNICO") || titleUpper.includes("TECNICO") || titleUpper.includes("MECATRÓNICO") || titleUpper.includes("MECATRONICO") || titleUpper.includes("MECÂNICO") || titleUpper.includes("MECANICO") || titleUpper.includes("PERITAGEM") || titleUpper.includes("CONTROLO DE QUALIDADE") || titleUpper.includes("ESPECIALISTA") || titleUpper.includes("SPECIALIST")) {
+        return "Técnicos e Consultores";
+    }
+
     // Medical / Health
-    if (titleUpper.includes("ENFERMEIR") || titleUpper.includes("MÉDIC") || titleUpper.includes("DENTÁRI") || titleUpper.includes("DENTISTA") || titleUpper.includes("FARMACÊUTIC") || titleUpper.includes("PSICÓLOG") || titleUpper.includes("AUXILIAR DE SAÚDE") || titleUpper.includes("CUIDADOR") || titleUpper.includes("AUXILIAR DE GERIATRIA") || titleUpper.includes("GERIATRIA")) {
+    if (titleUpper.includes("ENFERMEIR") || titleUpper.includes("MÉDIC") || titleUpper.includes("MEDIC") || titleUpper.includes("DENTÁRI") || titleUpper.includes("DENTISTA") || titleUpper.includes("FARMACÊUTIC") || titleUpper.includes("FARMAC") || titleUpper.includes("PSICÓLOG") || titleUpper.includes("PSICOL") || titleUpper.includes("FISIOTERAP") || titleUpper.includes("AUXILIAR DE SAÚDE") || titleUpper.includes("AUXILIAR DE SAUDE") || titleUpper.includes("CUIDADOR") || titleUpper.includes("AUXILIAR DE GERIATRIA") || titleUpper.includes("GERIATRIA")) {
         return "Saúde & Cuidados Continuados";
     }
     // Tech & IT
-    if (titleUpper.includes("SOFTWARE") || titleUpper.includes("DEVELOPER") || titleUpper.includes("PROGRAMADOR") || titleUpper.includes("DEV ") || titleUpper.includes("DADOS") || titleUpper.includes("DATA ENGINEER") || titleUpper.includes("DATA ANALYST") || titleUpper.includes("WEB DEVELOPER") || titleUpper.includes("SYSTEMS ENGINEER") || titleUpper.includes("SUPORTE TÉCNICO") || titleUpper.includes("TI ") || titleUpper.includes("TELECOM")) {
+    if (titleUpper.includes("SOFTWARE") || titleUpper.includes("DEVELOPER") || titleUpper.includes("PROGRAMADOR") || titleUpper.includes("DEV ") || titleUpper.includes("DADOS") || titleUpper.includes("DATA ENGINEER") || titleUpper.includes("DATA ANALYST") || titleUpper.includes("WEB DEVELOPER") || titleUpper.includes("SYSTEMS ENGINEER") || titleUpper.includes("SUPORTE TÉCNICO") || titleUpper.includes("SUPORTE TECNICO") || titleUpper.includes("TI ") || titleUpper.includes("TELECOM")) {
         return "Tecnologia, Dados & IA";
     }
     // Construction
@@ -240,25 +258,33 @@ export const normalizeWorkTopic = (topic: string | undefined | null, titleFallba
     if (titleUpper.includes("TURISMO") || titleUpper.includes("HOTEL") || titleUpper.includes("RESTAURANTE") || titleUpper.includes("COZINHA") || titleUpper.includes("COZINHEIR") || titleUpper.includes("COPA") || titleUpper.includes("EMPREGADO DE MESA") || titleUpper.includes("BARMAN") || titleUpper.includes("GARÇOM") || titleUpper.includes("CAFÉ") || titleUpper.includes("BARISTA") || titleUpper.includes("PASTELAR") || titleUpper.includes("PADARIA") || titleUpper.includes("PADEIRO")) {
         return "Turismo, Hotelaria & Restauração";
     }
-    // Logistics & Transport
-    if (titleUpper.includes("MOTORISTA") || titleUpper.includes("CONDUTOR") || titleUpper.includes("LOGÍSTICA") || titleUpper.includes("ARMAZÉM") || titleUpper.includes("EXPEDI") || titleUpper.includes("DISTRIBUIÇÃO") || titleUpper.includes("EMPILHADOR") || titleUpper.includes("ENTREGADOR") || titleUpper.includes("ESTAFETA") || titleUpper.includes("CHAUFFEUR")) {
+    // Logistics / Transport / Warehouse
+    if (titleUpper.includes("LOGÍSTICA") || titleUpper.includes("LOGISTICA") || titleUpper.includes("ARMAZÉM") || titleUpper.includes("ARMAZEM") || titleUpper.includes("MOTORISTA") || titleUpper.includes("CONDUTOR") || titleUpper.includes("DISTRIBUIÇÃO") || titleUpper.includes("DISTRIBUICAO") || titleUpper.includes("DISTRIBUIDOR") || titleUpper.includes("ESTAFETA") || titleUpper.includes("EMPILHADOR") || titleUpper.includes("PICKING") || titleUpper.includes("PACKING") || titleUpper.includes("ENTREGADOR") || titleUpper.includes("ARMAZ")) {
         return "Logística, Transportes & Armazém";
     }
-    // Clean & Services
-    if (titleUpper.includes("LIMPEZA") || titleUpper.includes("SEGURANÇA") || titleUpper.includes("VIGILANTE") || titleUpper.includes("PORTEIRO") || titleUpper.includes("DOMÉSTICA") || titleUpper.includes("CLEANING") || titleUpper.includes("EMPREGADA")) {
-        return "Limpeza, Segurança & Facility Management";
+    // Industry / Production / Manufacturing
+    if (titleUpper.includes("PRODUÇÃO") || titleUpper.includes("PRODUCAO") || titleUpper.includes("FÁBRICA") || titleUpper.includes("FABRICA") || titleUpper.includes("OPERADOR DE MÁQUINA") || titleUpper.includes("OPERADOR DE MAQUINA") || titleUpper.includes("MANUFATURA") || titleUpper.includes("TORNEIRO") || titleUpper.includes("SOLDADOR") || titleUpper.includes("MANUTENÇÃO") || titleUpper.includes("MANUTENCAO") || titleUpper.includes("OPERADOR DE PRODUÇÃO") || titleUpper.includes("OPERADOR DE PRODUCAO") || titleUpper.includes("PRODU")) {
+        return "Indústria, Produção & Manufatura";
     }
-    // Commerce / Retail
-    if (titleUpper.includes("LOJA") || titleUpper.includes("VENDEDOR") || titleUpper.includes("COMERCIAL") || titleUpper.includes("CAIXA") || titleUpper.includes("REPOSITOR") || titleUpper.includes("SUPERMERCADO") || titleUpper.includes("SALES") || titleUpper.includes("BALCÃO")) {
+    // Sales / Retail / Commercial
+    if (titleUpper.includes("COMERCIAL") || titleUpper.includes("VENDEDOR") || titleUpper.includes("VENDAS") || titleUpper.includes("CAIXA") || titleUpper.includes("REPOSITOR") || titleUpper.includes("SUPERMERCADO") || titleUpper.includes("LOJA") || titleUpper.includes("BALCÃO") || titleUpper.includes("BALCAO") || titleUpper.includes("STORE") || titleUpper.includes("RETALHO")) {
         return "Comércio, Vendas & Retalho";
     }
-    // Agriculture
-    if (titleUpper.includes("AGRICULT") || titleUpper.includes("CAMPO") || titleUpper.includes("TRATORISTA") || titleUpper.includes("VINDIMA") || titleUpper.includes("QUINTA") || titleUpper.includes("PECUÁRIA") || titleUpper.includes("JARDINEIRO")) {
+    // Administrative / HR / Management
+    if (titleUpper.includes("ADMINISTRATIV") || titleUpper.includes("SECRETÁRI") || titleUpper.includes("SECRETARI") || titleUpper.includes("CONTABIL") || titleUpper.includes("FINANCEIR") || titleUpper.includes("RECURSOS HUMANOS") || titleUpper.includes("HR ") || titleUpper.includes("RECRUT") || titleUpper.includes("GESTÃO") || titleUpper.includes("GESTAO") || titleUpper.includes("ASSISTENTE DE DIREÇÃO") || titleUpper.includes("OFFICE")) {
+        return "Administrativo, Gestão & RH";
+    }
+    // Cleaning / Security / Facilities
+    if (titleUpper.includes("LIMPEZA") || titleUpper.includes("EMPREGADA DE LIMPEZA") || titleUpper.includes("HIGIENE") || titleUpper.includes("VIGILANTE") || titleUpper.includes("SEGURANÇA PRIVADA") || titleUpper.includes("FACILITY") || titleUpper.includes("PORTEIRO")) {
+        return "Limpeza, Segurança & Facility Management";
+    }
+    // Agriculture / Farming / Fishing
+    if (titleUpper.includes("AGRIC") || titleUpper.includes("CAMPO") || titleUpper.includes("QUINTA") || titleUpper.includes("JARDINEIR") || titleUpper.includes("COLHEITA") || titleUpper.includes("TRACTORISTA") || titleUpper.includes("TRATORISTA") || titleUpper.includes("PECUÁRIA") || titleUpper.includes("PECUARIA") || titleUpper.includes("PESCA")) {
         return "Agricultura, Pesca & Pecuária";
     }
-    // Energy / Sust.
-    if (titleUpper.includes("ENERGIA") || titleUpper.includes("SUSTENTAB") || titleUpper.includes("SOLAR") || titleUpper.includes("EÓLICA") || titleUpper.includes("PAINEL SOLAR") || titleUpper.includes("AMBIENTAL")) {
-        return "Energia & Sustentabilidade";
+    // Remote
+    if (titleUpper.includes("REMOTO") || titleUpper.includes("REMOTE") || titleUpper.includes("FREELANCE") || titleUpper.includes("VIRTUAL ASSISTANT")) {
+        return "Trabalho Remoto & Freelancing";
     }
 
     // 3. PRIORITY 2: Map direct topic from scraper
@@ -317,6 +343,10 @@ export const getWorkTopicKey = (topic: string | undefined | null): string => {
         case "Logística, Transportes & Armazém": return "jobs_topic_logistics";
         case "Comércio, Vendas & Retalho": return "jobs_topic_sales";
         case "Administrativo, Gestão & RH": return "jobs_topic_admin";
+        case "Apoio ao Cliente": return "jobs_topic_support";
+        case "Técnicos e Consultores": return "jobs_topic_consultants";
+        case "Design, Marketing e Media": return "jobs_topic_design_media";
+        case "Gestão de Equipas e Negócios": return "jobs_topic_management";
         case "Limpeza, Segurança & Facility Management": return "jobs_topic_services";
         case "Agricultura, Pesca & Pecuária": return "jobs_topic_agriculture";
         case "Artes, Design & Multimédia": return "jobs_topic_arts";
