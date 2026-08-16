@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mira-cache-v2026-gold';
+const CACHE_NAME = 'mira-cache-v2026-v2';
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
