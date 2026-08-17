@@ -41,6 +41,9 @@ export const AUTOMATED_SOURCES = [
   { id: 'bep-publico',     name: 'BEP - Bolsa de Emprego Público', type: 'rss',  url: 'https://www.bep.gov.pt/pages/rss/rssOfertas.aspx' },
   { id: 'expresso-emprego',name: 'Expresso Emprego',               type: 'rss',  url: 'https://expressoemprego.pt/rss' },
   { id: 'it-jobs',         name: 'IT Jobs',                        type: 'html', url: 'https://www.itjobs.pt/emprego' },
+  { id: 'bebee-pt',        name: 'beBee Jobs Portugal',            type: 'html', url: 'https://bebee.com/pt/jobs' },
+  { id: 'michaelpage-pt',  name: 'Michael Page Portugal',          type: 'html', url: 'https://www.michaelpage.pt/jobs' },
+  { id: 'plataforma-ongd', name: 'Plataforma ONGD',                type: 'html', url: 'https://www.plataformaongd.pt/oportunidades-de-emprego-e-voluntariado' },
   { id: 'wwr-other',       name: 'We Work Remotely (Outros)',      type: 'rss',  url: 'https://weworkremotely.com/categories/all-other-remote-jobs.rss' }
 ];
 
@@ -101,6 +104,7 @@ function classifyTopic(title) {
   if (t.includes('ADMINISTRATIV') || t.includes('SECRETÁRI') || t.includes('SECRETARI') || t.includes('CONTABIL') || t.includes('FINANCEIR') || t.includes('RECURSOS HUMANOS') || t.includes('HR ') || t.includes('RECRUT') || t.includes('GESTÃO') || t.includes('GESTAO')) return 'Administrativo, Gestão & RH';
   if (t.includes('LIMPEZA') || t.includes('HIGIENE') || t.includes('VIGILANTE') || t.includes('SEGURANÇA PRIVADA') || t.includes('FACILITY') || t.includes('PORTEIRO')) return 'Limpeza, Segurança & Facility Management';
   if (t.includes('AGRIC') || t.includes('CAMPO') || t.includes('QUINTA') || t.includes('JARDINEIR') || t.includes('COLHEITA') || t.includes('TRATORISTA') || t.includes('PECUÁRIA') || t.includes('PESCA')) return 'Agricultura, Pesca & Pecuária';
+  if (t.includes('ONG') || t.includes('VOLUNTÁRI') || t.includes('VOLUNTARI') || t.includes('COOPERAÇÃO') || t.includes('COOPERACAO') || t.includes('AÇÃO SOCIAL') || t.includes('ACAO SOCIAL') || t.includes('HUMANITÁRI') || t.includes('HUMANITARI') || t.includes('DESENVOLVIMENTO')) return 'Apoio Social & Terceiro Setor';
   if (t.includes('REMOTO') || t.includes('REMOTE') || t.includes('FREELANCE') || t.includes('VIRTUAL ASSISTANT')) return 'Trabalho Remoto & Freelancing';
   return 'Outros';
 }
@@ -355,7 +359,7 @@ function evaluateMatch(job, alert) {
   }
 
   // 2. Location
-  if (alertLoc && alertLoc !== 'todos os distritos' && alertLoc !== 'todos' && !location.includes(alertLoc) && !title.includes(alertLoc) && !location.includes('remoto')) {
+  if (alertLoc && alertLoc !== 'todos os distritos' && alertLoc !== 'todos' && !location.includes(alertLoc) && !alertLoc.includes(location) && !location.includes('remoto') && !title.includes('remoto')) {
     return false;
   }
 
@@ -509,33 +513,63 @@ export default async function handler(req, res) {
 
       if (activeAlerts && activeAlerts.length > 0) {
         activeAlertsCount = activeAlerts.length;
-        const newNotifications = [];
+        const candidates = [];
 
+        // 1. Identificar candidatos a match
         for (const alert of activeAlerts) {
           if (!alert.user_id) continue;
           
           for (const job of insertedJobs) {
             if (evaluateMatch(job, alert)) {
-              newNotifications.push({
+              candidates.push({
+                alert_id: alert.id,
+                job_id: job.id,
                 user_id: alert.user_id,
-                type: 'jobs',
-                title: `💼 Nova Vaga Compatível: ${job.title}`,
-                message: `${job.source_name || 'MIRA'} • ${job.location || 'Portugal'}\nCorrespondência com o teu alerta de ${alert.work_topic || 'Emprego'}.`,
-                is_read: false,
-                link: `/jobs?jobId=${encodeURIComponent(job.id)}`,
-                created_at: new Date().toISOString()
+                jobTitle: job.title,
+                jobSource: job.source_name || 'MIRA',
+                jobLocation: job.location || 'Portugal',
+                jobSourceUrl: job.source_url || '',
+                alertTopic: alert.work_topic || 'Emprego'
               });
             }
           }
         }
 
-        // Inserir notificações geradas em lote
-        if (newNotifications.length > 0) {
-          const { data: notifData } = await supabase
-            .from('notifications')
-            .insert(newNotifications.slice(0, 100))
-            .select('id');
-          notificationsCount = notifData ? notifData.length : 0;
+        // 2. Inserção idempotente atómica em job_alert_deliveries com ON CONFLICT DO NOTHING
+        for (const cand of candidates) {
+          try {
+            const { data: delivery, error: delError } = await supabase
+              .from('job_alert_deliveries')
+              .insert({
+                alert_id: cand.alert_id,
+                job_id: cand.job_id
+              })
+              .select('id')
+              .single();
+
+            // Somente se a entrega for realmente NOVA, criar a notificação para o user_id
+            if (!delError && delivery) {
+              await supabase.from('notifications').insert({
+                user_id: cand.user_id,
+                type: 'jobs',
+                title: `💼 Nova Vaga Compatível: ${cand.jobTitle}`,
+                message: `${cand.jobSource} • ${cand.jobLocation}\nCorrespondência com o teu alerta de ${cand.alertTopic}.`,
+                is_read: false,
+                link: `/jobs?jobId=${encodeURIComponent(cand.job_id)}`,
+                metadata: {
+                  jobId: cand.job_id,
+                  sourceUrl: cand.jobSourceUrl || '',
+                  sourceName: cand.jobSource,
+                  location: cand.jobLocation,
+                  workTopic: cand.alertTopic
+                },
+                created_at: new Date().toISOString()
+              });
+              notificationsCount++;
+            }
+          } catch (delErr) {
+            // Conflito UNIQUE (alert_id, job_id) -> já entregue, ignorar com segurança
+          }
         }
       }
     } catch (alertErr) {

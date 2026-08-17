@@ -752,17 +752,13 @@ export const adminService: AdminService = {
     },
 
     async deletePost(postId: string) {
-        const { error } = await supabase.functions.invoke('mira-admin', {
-            body: { action: 'delete_content', type: 'POST', targetId: postId }
-        });
-        if (error) throw new Error('Falha ao eliminar post via canhão administrativo soberano.');
+        const { communityService } = await import('./communityService');
+        await communityService.deletePost(postId);
     },
 
     async deleteComment(commentId: string) {
-        const { error } = await supabase.functions.invoke('mira-admin', {
-            body: { action: 'delete_content', type: 'COMMENT', targetId: commentId }
-        });
-        if (error) throw new Error('Falha ao eliminar comentário via canhão administrativo soberano.');
+        const { communityService } = await import('./communityService');
+        await communityService.deleteComment(commentId);
     },
 
     async syncAllFromProtected() {

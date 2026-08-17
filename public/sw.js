@@ -37,8 +37,8 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    // 1. Skip Supabase API calls (let them be handled by the app's internal cache/pending logic)
-    if (event.request.url.includes('supabase.co')) {
+    // 1. Skip Supabase API calls & internal API gateways
+    if (event.request.url.includes('supabase.co') || event.request.url.includes('/api/')) {
         return;
     }
 

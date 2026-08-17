@@ -5,15 +5,23 @@ import './index.css';
 
 import { ErrorBoundary } from './components/ErrorBoundary';
 
-// 📲 Register Service Worker for Native PWA Installation
+// 📲 Register Service Worker for Native PWA Installation in Production only
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      console.log('✅ [MIRA PWA] Service Worker registado com sucesso:', reg.scope);
-    }).catch(err => {
-      console.warn('⚠️ [MIRA PWA] Falha no registo do Service Worker:', err);
+  if (import.meta.env.DEV) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (const reg of registrations) {
+        reg.unregister();
+      }
     });
-  });
+  } else {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('✅ [MIRA PWA] Service Worker registado com sucesso:', reg.scope);
+      }).catch(err => {
+        console.warn('⚠️ [MIRA PWA] Falha no registo do Service Worker:', err);
+      });
+    });
+  }
 }
 
 const rootElement = document.getElementById('root');

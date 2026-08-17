@@ -35,9 +35,19 @@ const KNOWLEDGE_BASE = [
     content: "1. Senha Online (pedir no ato). 2. Número de Identificação Fiscal. 3. Validação da Morada Fiscal: evita custos abusivos e garante a soberania fiscal."
   },
   {
-    keywords: ["reagrupamento", "família"],
-    topic: "Reagrupamento Familiar",
-    content: "Direito fundamental. Solicitado via portal AIMA. Requer prova de parentesco e condições de subsistência."
+    keywords: ["reagrupamento", "família", "familia", "artigo 98", "reagrupar"],
+    topic: "Reagrupamento Familiar (Art. 98.º a 108.º — 2026)",
+    content: "Direito garantido a residentes legais em Portugal para trazer cônjuge/união de facto, filhos menores e ascendentes a cargo. Requisitos obrigatórios: 1. Meios de subsistência comprovados (Portaria 1563/2007: 100% titular 920€ + 50% cônjuge 460€ + 30% filho 276€); 2. Alojamento condigno comprovado com Contrato de Arrendamento registado nas Finanças (AT) e recibos de renda; 3. Certidões civis de parentesco e registos criminais do país de origem apostilados por Haia e traduzidos. Pedido submetido via Portal Digital AIMA ou Visto D6 Consular."
+  },
+  {
+    keywords: ["via verde", "via verde empresas", "tech visa", "contratação célere", "contratacao célere"],
+    topic: "Via Verde para Empresas (Contratação Célere & Tech Visa)",
+    content: "Canal prioritário e célere criado para empresas sediadas em Portugal contratarem trabalhadores estrangeiros com tramitação desburocratizada. A empresa emite uma Promessa de Contrato ou Contrato e um Termo de Responsabilidade empresarial, acelerando o parecer da AIMA/IEFP e a emissão do Visto de Trabalho (D1/D3) no Consulado, com agendamento célere na AIMA para emissão do Título de Residência."
+  },
+  {
+    keywords: ["modalidades de visto", "tipos de visto", "visto consular", "vistos consulares", "visto d1", "visto d2", "visto d3", "visto d7"],
+    topic: "Modalidades de Visto Consular (Legislação 2026)",
+    content: "Com a extinção da Manifestação de Interesse, a entrada em Portugal exige visto prévio: 1. Visto D1: Trabalho Subordinado (com contrato/promessa e canal Via Verde); 2. Visto de Procura de Trabalho: 120+60 dias para procurar emprego; 3. Visto D2: Empreendedores e Startups; 4. Visto D3: Altamente Qualificados e Tech Visa; 5. Visto D8: Nómadas Digitais (4x RMMG = 3.680€/mês); 6. Visto D7: Reformados e Rendimentos Passivos; 7. Visto CPLP: Acordo de Mobilidade facilitado."
   },
   {
     keywords: ["cplp", "prorrogação", "validade", "junho"],

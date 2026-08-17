@@ -18,7 +18,7 @@ interface WizardProps {
     onBack?: () => void;
 }
 
-type SituationId = "legal" | "irregular" | "contract" | "student" | "family" | "asylum" | "voluntary_return" | "visa_consular" | "retirement";
+type SituationId = "legal" | "irregular" | "contract" | "student" | "family" | "via_verde" | "asylum" | "voluntary_return" | "visa_consular" | "retirement";
 type OriginId = "cplp" | "eu" | "other";
 type PurposeId = "art88" | "art89" | "art90a" | "art122" | "humanitarian" | "visa_d7" | "visa_d4" | "visa_job_search";
 
@@ -145,7 +145,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
     const handleAnswer = (key: string, value: string) => {
         setAnswers(prev => ({ ...prev, [key]: value }));
         audioService.playClick();
-        if (key === 'situation' && (value === 'asylum' || value === 'voluntary_return' || value === 'retirement')) {
+        if (key === 'situation' && (value === 'asylum' || value === 'voluntary_return' || value === 'retirement' || value === 'via_verde')) {
             setStep(4);
         } else {
             setStep(prev => prev + 1);
@@ -259,6 +259,20 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.steps = [t("wiz_job_search_step1", language), t("wiz_job_search_step2", language), t("wiz_job_search_step3", language)];
             result.docs = ["nif_req", "ss_niss"];
             result.needsConsularVisa = true;
+        } else if (sit === "via_verde") {
+            result.title = t("wiz_via_verde_title", language);
+            result.desc = t("wiz_via_verde_desc", language);
+            result.steps = [
+                t("wiz_via_verde_step1", language),
+                t("wiz_via_verde_step2", language),
+                t("wiz_via_verde_step3", language)
+            ];
+            result.docs = ["work_contract_template", "aima_dec_responsabilidade", "nif_req", "ss_niss"];
+            result.needsConsularVisa = true;
+            result.needsAIMAAppointment = true;
+            result.infoNote = language === 'pt' 
+                ? "Canal prioritário para contratação de trabalhadores estrangeiros por empresas com parecer célere AIMA/IEFP." 
+                : "Priority channel for hiring foreign workers with fast-track consular and AIMA processing.";
         } else if (purpose === "art122") {
             result.title = t("wiz_art122_title", language);
             result.desc = t("wiz_art122_desc", language);
@@ -268,7 +282,8 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.title = t("wiz_family_title", language);
             result.desc = t("wiz_family_desc", language);
             result.steps = [t("wiz_family_step1", language), t("wiz_family_step2", language), t("wiz_family_step3", language)];
-            result.docs = ["aima_dec_responsabilidade", "aima_dec_alojamento", "certidao_civil_req"];
+            result.docs = ["aima_dec_responsabilidade", "aima_dec_alojamento", "aima_dec_sustento", "certidao_civil_req", "nif_req"];
+            result.needsAIMAAppointment = true;
         } else if (purpose === "humanitarian" || sit === "asylum") {
             result.title = t("wiz_sit_asylum", language);
             result.desc = t("wiz_purp_humanitarian_desc", language);
@@ -415,13 +430,14 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                         <div className="space-y-3 animate-in slide-in-from-bottom-4 duration-500">
                             {[
                                 { id: 'visa_consular', label: t("wiz_sit_visa_consular", language), icon: <Globe size={18} className="text-sky-500" />, badge: t('badge_visa_consular', language) },
-                                { id: 'legal',     label: t("wiz_sit_legal", language),     icon: <UserCheck size={18} className="text-emerald-500" />, badge: t('badge_valid_visa', language) },
-                                { id: 'irregular', label: t("wiz_sit_irregular", language), icon: <UserX size={18} className="text-red-500" />,         badge: t('badge_no_visa', language) },
-                                { id: 'contract',  label: t("wiz_sit_contract", language),  icon: <Briefcase size={18} className="text-blue-500" />,    badge: t('badge_work_contract', language) },
-                                { id: 'student',   label: t("wiz_sit_student", language),   icon: <GraduationCap size={18} className="text-red-500 animate-pulse" />, badge: t('badge_study_research', language), isRevoked: true },
-                                { id: 'family',    label: t("wiz_sit_family", language),    icon: <Users size={18} className="text-red-500 animate-pulse" />,        badge: t('badge_reunification', language), isRevoked: true },
-                                { id: 'asylum',    label: t("wiz_sit_asylum", language),    icon: <ShieldCheck size={18} className="text-purple-500" />, badge: t('badge_asylum_refugee', language) },
-                                { id: 'retirement', label: t("wiz_sit_retirement", language), icon: <Landmark size={18} className="text-amber-500" />, badge: t('badge_retirement', language) },
+                                { id: 'via_verde',     label: t("wiz_sit_via_verde", language),     icon: <Zap size={18} className="text-amber-500" />,   badge: t('badge_via_verde', language) },
+                                { id: 'legal',         label: t("wiz_sit_legal", language),         icon: <UserCheck size={18} className="text-emerald-500" />, badge: t('badge_valid_visa', language) },
+                                { id: 'irregular',     label: t("wiz_sit_irregular", language),     icon: <UserX size={18} className="text-red-500" />,         badge: t('badge_no_visa', language) },
+                                { id: 'contract',      label: t("wiz_sit_contract", language),      icon: <Briefcase size={18} className="text-blue-500" />,    badge: t('badge_work_contract', language) },
+                                { id: 'student',       label: t("wiz_sit_student", language),       icon: <GraduationCap size={18} className="text-red-500 animate-pulse" />, badge: t('badge_study_research', language), isRevoked: true },
+                                { id: 'family',        label: t("wiz_sit_family", language),        icon: <Users size={18} className="text-indigo-500" />,        badge: t('badge_reunification', language) },
+                                { id: 'asylum',        label: t("wiz_sit_asylum", language),        icon: <ShieldCheck size={18} className="text-purple-500" />, badge: t('badge_asylum_refugee', language) },
+                                { id: 'retirement',    label: t("wiz_sit_retirement", language),    icon: <Landmark size={18} className="text-amber-500" />, badge: t('badge_retirement', language) },
                                 { id: 'voluntary_return', label: t("wiz_sit_voluntary_return", language), icon: <RotateCcw size={18} className="text-amber-500" />, badge: t('badge_voluntary_return', language) }
                             ].map((opt, idx) => (
                                 <ChoiceButton

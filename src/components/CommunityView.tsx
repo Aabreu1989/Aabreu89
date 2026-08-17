@@ -109,8 +109,36 @@ const CommunityViewComponent = ({
   useEffect(() => {
     if (user?.id) {
       followService.getFollowingSet(user.id).then(set => setFollowedUserIds(set));
+      
+      // 🛡️ REVALIDAÇÃO REAL DOS POSTS E CONTADORES GLOBAIS AO ENTRAR NO MIRA HUB
+      communityService.fetchPosts(user.id).then(fetched => {
+        if (fetched && fetched.length > 0) {
+          setMasterPosts(prev => {
+            const fetchedMap = new Map(fetched.map(p => [p.id, p]));
+            // Atualizar posts existentes com os contadores globais frescos do backend
+            const updated = prev.map(p => {
+              const remote = fetchedMap.get(p.id);
+              if (!remote) return p;
+              return {
+                ...p,
+                likes: remote.likes ?? 0,
+                usefulVotes: remote.usefulVotes ?? 0,
+                fakeVotes: remote.fakeVotes ?? 0,
+                comments: (remote.comments && remote.comments.length > 0) ? remote.comments : p.comments
+              };
+            });
+            // Adicionar novos posts remotos que ainda não constem localmente
+            fetched.forEach(f => {
+              if (!updated.some(u => u.id === f.id)) {
+                updated.push(f);
+              }
+            });
+            return updated;
+          });
+        }
+      }).catch(err => console.warn("MIRA: Revalidação de posts em background:", err));
     }
-  }, [user?.id]);
+  }, [user?.id, setMasterPosts]);
 
   // 🧬 1. MEMO DE POSTS COM REGRAS DE SOBERANIA
   const masterPostsWithLocal = useMemo(() => {
@@ -155,7 +183,7 @@ const CommunityViewComponent = ({
         .map(p => {
             const isLocalLiked = likedPosts.has(p.id);
             const isLocalSaved = savedPostsIds.has(p.id);
-            const localV = userVotes[p.id];
+            const localV = userVotes[p.id] !== undefined ? (userVotes[p.id] || undefined) : p.userVote;
             const isFollowingAuthor = followedUserIds.has(p.authorId);
             
             return {
@@ -164,9 +192,9 @@ const CommunityViewComponent = ({
                 userVote: localV,
                 isSaved: isLocalSaved,
                 isFollowing: isFollowingAuthor,
-                likes: isLocalLiked ? Math.max(1, p.likes || 0) : (p.likes || 0),
-                usefulVotes: localV === 'true' ? Math.max(1, p.usefulVotes || 0) : (p.usefulVotes || 0),
-                fakeVotes: localV === 'false' ? Math.max(1, p.fakeVotes || 0) : (p.fakeVotes || 0)
+                likes: p.likes ?? 0,
+                usefulVotes: p.usefulVotes ?? 0,
+                fakeVotes: p.fakeVotes ?? 0
             };
         })
         .sort((a, b) => {
@@ -434,58 +462,36 @@ const handleDeletePost = async (postId: string) => {
 
   // 🧬 4. INTERAÇÕES SOBERANAS (LIKE, VERDADEIRO, FALSO)
   const handleReportPost = async (postId: string, targetAuthorId?: string, content?: string) => {
-    const post = masterPostsWithLocal.find(p => p.id === postId);
-    const authorName = post?.authorName || 'Membro';
-    const postContent = content || post?.content || '';
-
-    // 🛡️ MIRA SOBERANIA: Contexto total para a administração
-    const reportBody = `DENÚNCIA DE POST MIRA\n\n` +
-                       `ID DO POST: ${postId}\n` +
-                       `AUTOR: ${authorName}\n` +
-                       `CONTEÚDO DO POST:\n------------------\n${postContent}\n------------------\n\n` +
-                       `Ação necessária: Revisão de conteúdo.`;
-                       
-    window.open(`mailto:mira.app@hotmail.com?subject=DENUNCIA POST ${postId}&body=${encodeURIComponent(reportBody)}`);
-    
     try {
-        await communityService.report({
-            postId,
-            reporterId: user.id,
-            targetAuthorId,
-            reason: 'Denúncia via App',
-            reportedContentText: postContent
-        });
-    } catch (e) {
-        console.warn("MIRA: Falha ao registar denúncia no banco.");
+      await communityService.report({
+        postId,
+        reporterId: user.id,
+        targetAuthorId,
+        reason: 'Denúncia de Publicação',
+        reportedContentText: content
+      });
+      showToast(t('toast_report_sent', language) || 'Denúncia enviada para a moderação MIRA.', 'success');
+    } catch (e: any) {
+      console.error("MIRA: Erro ao registar denúncia:", e);
+      showToast(e?.message || 'Falha ao enviar denúncia. Tenta novamente.', 'error');
     }
-    
-    showToast(t('toast_report_sent', language), 'success');
   };
 
   const handleReportComment = async (postId: string, commentId: string, targetAuthorId?: string, content?: string) => {
-    // 🛡️ MIRA SOBERANIA: Contexto total para a administração
-    const reportBody = `DENÚNCIA DE COMENTÁRIO MIRA\n\n` +
-                       `ID DO POST: ${postId}\n` +
-                       `ID DO COMENTÁRIO: ${commentId}\n` +
-                       `CONTEÚDO DO COMENTÁRIO:\n------------------\n${content}\n------------------\n\n` +
-                       `Ação necessária: Revisão de conduta.`;
-                       
-    window.open(`mailto:mira.app@hotmail.com?subject=DENUNCIA COMENTARIO ${commentId}&body=${encodeURIComponent(reportBody)}`);
-    
     try {
-        await communityService.report({
-            postId,
-            commentId,
-            reporterId: user.id,
-            targetAuthorId,
-            reason: 'Denúncia via App',
-            reportedContentText: content
-        });
-    } catch (e) {
-        console.warn("MIRA: Falha ao registar denúncia no banco.");
+      await communityService.report({
+        postId,
+        commentId,
+        reporterId: user.id,
+        targetAuthorId,
+        reason: 'Denúncia de Comentário',
+        reportedContentText: content
+      });
+      showToast(t('toast_report_sent', language) || 'Denúncia enviada para a moderação MIRA.', 'success');
+    } catch (e: any) {
+      console.error("MIRA: Erro ao registar denúncia:", e);
+      showToast(e?.message || 'Falha ao enviar denúncia. Tenta novamente.', 'error');
     }
-    
-    showToast(t('toast_report_sent', language), 'success');
   };
 
   const handleLike = async (postId: string) => {
@@ -520,10 +526,13 @@ const handleDeletePost = async (postId: string) => {
         return p;
       }));
       
-      if (action === 'added') onEarnPoints && onEarnPoints(1);
+      // Feedback háptico/visual
+      if (action === 'added') {
+        showToast(t('toast_liked', language), "success");
+      }
 
-      // Persistência: Enfileirar via SyncService (Idempotente)
-      await syncService.enqueue('like', { postId, userId: user.id, voteType: 'like' });
+      // Persistência Soberana: Invocação direta
+      await communityService.vote(postId, user.id, 'like');
       analytics.track('post_like', user.id, 'comunidade', { postId, action });
     } catch (e) {
       console.error("MIRA Like Error:", e);
@@ -540,7 +549,7 @@ const handleDeletePost = async (postId: string) => {
 
       setUserVotes(prev => ({
         ...prev,
-        [postId]: action === 'added' ? (isTrue ? 'true' : 'false') : undefined
+        [postId]: action === 'added' ? (isTrue ? 'true' : 'false') : (null as any)
       }));
 
       setMasterPosts(prev => prev.map(p => {
@@ -565,8 +574,8 @@ const handleDeletePost = async (postId: string) => {
 
       showToast(isTrue ? t('toast_fact_true', language) : t('toast_fact_false', language), "success");
 
-      // Persistência Soberana: Enfileirar via SyncService (Gamificação gerida 100% pelo Servidor Gateway)
-      await syncService.enqueue('vote', { postId, userId: user.id, voteType });
+      // Persistência Soberana: Invocar communityService.vote diretamente no Supabase PostgreSQL
+      await communityService.vote(postId, user.id, voteType);
       analytics.track('post_fact_vote', user.id, 'comunidade', { postId, voteType, action });
     } catch (e) {
       console.error("MIRA Vote Error:", e);
@@ -693,21 +702,25 @@ const handleDeletePost = async (postId: string) => {
         }));
     };
 
-    setMasterPosts(prev => prev.map(p => {
-      if (p.id === postId) {
-        return {
-          ...p,
-          comments: recursiveFilter(p.comments || [])
-        };
-      }
-      return p;
-    }));
-
     try {
-      await syncService.enqueue('delete_comment', { commentId });
-      showToast(t('toast_comment_deleted', language), "success");
-    } catch (e) {
+      // 1. Executar exclusão real no PostgreSQL via Gateway Soberano
+      await communityService.deleteComment(commentId, user?.id);
+
+      // 2. Atualizar estado local após confirmação
+      setMasterPosts(prev => prev.map(p => {
+        if (p.id === postId) {
+          return {
+            ...p,
+            comments: recursiveFilter(p.comments || [])
+          };
+        }
+        return p;
+      }));
+
+      showToast(t('toast_comment_deleted', language) || 'Comentário eliminado com sucesso.', "success");
+    } catch (e: any) {
       console.error("MIRA: Delete Comment Error:", e);
+      showToast(e?.message || 'Falha ao eliminar comentário. Tenta novamente.', "error");
     }
   };
 

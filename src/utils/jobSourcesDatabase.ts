@@ -105,7 +105,7 @@ export const JOB_SOURCES_DATABASE: JobSource[] = [
     { id: 'src-84', name: 'LinkedIn Portugal', url: 'https://pt.linkedin.com/', category: 'Rede Social Líder', trust_level: 9 },
     { id: 'src-85', name: 'Indeed Portugal', url: 'https://pt.indeed.com/', category: 'Agregador Global', trust_level: 8 },
     { id: 'src-86', name: 'Glassdoor Portugal', url: 'https://www.glassdoor.com/Job/portugal', category: 'Reviews/Vagas', trust_level: 8 },
-    { id: 'src-87', name: 'beBee', url: 'https://pt.bebee.com', category: 'Rede Social', trust_level: 7 },
+    { id: 'src-87', name: 'beBee Jobs Portugal', url: 'https://bebee.com/pt/jobs', category: 'Agregador/Rede Social', trust_level: 8 },
     { id: 'src-88', name: 'StepStone', url: 'https://www.stepstone.pt', category: 'Internacional', trust_level: 8 },
     { id: 'src-89', name: 'Monster', url: 'https://www.monster.pt', category: 'Internacional', trust_level: 8 },
 
@@ -136,5 +136,6 @@ export const JOB_SOURCES_DATABASE: JobSource[] = [
     { id: 'src-113', name: 'Concentrix Portugal', url: 'https://jobs.concentrix.com', category: 'Contact Center', trust_level: 9 },
     { id: 'src-114', name: 'Foundever Portugal', url: 'https://jobs.foundever.com', category: 'Contact Center', trust_level: 9 },
     { id: 'src-115', name: 'Majorel Portugal', url: 'https://majorel.com/portugal/careers/', category: 'Contact Center', trust_level: 9 },
-    { id: 'src-116', name: 'Webhelp Portugal', url: 'https://webhelp.com/pt-pt/carreiras/', category: 'Contact Center', trust_level: 9 }
+    { id: 'src-116', name: 'Webhelp Portugal', url: 'https://webhelp.com/pt-pt/carreiras/', category: 'Contact Center', trust_level: 9 },
+    { id: 'src-117', name: 'Plataforma Portuguesa das ONGD', url: 'https://www.plataformaongd.pt/oportunidades-de-emprego-e-voluntariado', category: 'Social/ONG/Voluntariado', trust_level: 10 }
 ];

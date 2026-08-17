@@ -11,8 +11,8 @@ export const initPageSDKs = async () => {
         const win = window as any;
         win._mira_identity = PROJECT_REF;
         
-        // 1. Register Service Worker for Push Notifications (V2026)
-        if ('serviceWorker' in navigator) {
+        // 1. Register Service Worker for Push Notifications in Production (V2026)
+        if ('serviceWorker' in navigator && !import.meta.env.DEV) {
             navigator.serviceWorker.register('/sw.js').then((registration) => {
                 console.log('MIRA Service Worker registered with scope:', registration.scope);
             }).catch((error) => {

@@ -20,8 +20,12 @@ export const followService = {
         } catch (e) {}
 
         try {
-            const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
-            const token = sessionRes.data.session?.access_token || '';
+            let sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+            let token = sessionRes.data.session?.access_token || '';
+            if (!token) {
+                const refreshRes = await supabase.auth.refreshSession().catch(() => ({ data: { session: null } }));
+                token = refreshRes.data.session?.access_token || '';
+            }
 
             const headers: Record<string, string> = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -35,7 +39,9 @@ export const followService = {
                     targetUserId: followedId
                 })
             });
-        } catch (e) {}
+        } catch (e) {
+            console.error("MIRA: Error calling follow API:", e);
+        }
 
         try {
             const { gamificationService } = await import('./gamificationService');
@@ -61,8 +67,12 @@ export const followService = {
         } catch (e) {}
 
         try {
-            const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
-            const token = sessionRes.data.session?.access_token || '';
+            let sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+            let token = sessionRes.data.session?.access_token || '';
+            if (!token) {
+                const refreshRes = await supabase.auth.refreshSession().catch(() => ({ data: { session: null } }));
+                token = refreshRes.data.session?.access_token || '';
+            }
 
             const headers: Record<string, string> = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -76,7 +86,9 @@ export const followService = {
                     targetUserId: followedId
                 })
             });
-        } catch (e) {}
+        } catch (e) {
+            console.error("MIRA: Error calling unfollow API:", e);
+        }
         
         return { error: null };
     },

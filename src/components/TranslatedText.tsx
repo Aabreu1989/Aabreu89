@@ -30,10 +30,16 @@ export const TranslatedText: React.FC<TranslatedTextProps> = ({
     const [isTranslating, setIsTranslating] = useState(false);
 
     useEffect(() => {
+        const dictTranslation = t(text, language);
+        if (dictTranslation && dictTranslation !== text) {
+            setTranslatedText(dictTranslation);
+            setIsTranslating(false);
+            return;
+        }
+
         // Se a tradução não foi explicitamente solicitada/ativada
         if (!shouldTranslate) {
-            const dictTranslation = t(text, language);
-            setTranslatedText(dictTranslation !== text ? dictTranslation : text);
+            setTranslatedText(text);
             setIsTranslating(false);
             return;
         }

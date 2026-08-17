@@ -285,14 +285,31 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               </div>
 
               {/* Link Action Button */}
-              {selectedNotification.link && (
+              {selectedNotification.metadata?.sourceUrl || (selectedNotification.link && selectedNotification.link.startsWith('http')) ? (
+                <button
+                  onClick={() => {
+                    const url = selectedNotification.metadata?.sourceUrl || selectedNotification.link;
+                    if (url) {
+                      let finalUrl = url;
+                      if (!finalUrl.startsWith('http') && !finalUrl.startsWith('mailto:')) {
+                        finalUrl = `https://${finalUrl}`;
+                      }
+                      window.open(finalUrl, '_blank');
+                    }
+                    setSelectedNotification(null);
+                  }}
+                  className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
+                >
+                  <ExternalLink size={14} /> VER VAGA
+                </button>
+              ) : selectedNotification.link ? (
                 <button
                   onClick={() => handleActionLink(selectedNotification.link!)}
-                  className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20"
+                  className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
                 >
                   {t('notif_go_section', language)} <ExternalLink size={14} />
                 </button>
-              )}
+              ) : null}
             </div>
 
             {/* Decorative background logo blob */}

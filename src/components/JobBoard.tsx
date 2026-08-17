@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { JobPost, WORK_TOPICS, CATEGORIES, ViewType } from '../types';
-import { Search, Briefcase, ExternalLink, MapPin, Building2, TrendingUp, TrendingDown, Minus, ChevronDown, Filter, X, SlidersHorizontal, Map as MapIcon, Globe, FileText, RefreshCcw, AlertTriangle, Volume2, AlertCircle, Activity, CheckCircle2, Sparkles, ChevronRight, Bell } from 'lucide-react';
+import { Search, Briefcase, ExternalLink, MapPin, Building2, TrendingUp, TrendingDown, Minus, ChevronDown, Filter, X, SlidersHorizontal, Map as MapIcon, Globe, FileText, RefreshCcw, AlertTriangle, Volume2, AlertCircle, Activity, CheckCircle2, Sparkles, ChevronRight, ChevronLeft, Bell } from 'lucide-react';
 import { analytics } from '../services/analyticsService';
 import { supabase } from '../lib/supabase';
 import { t } from '../utils/translations';
@@ -212,8 +212,11 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const [jobs, setJobs] = useState<JobPost[]>(initialJobs);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [visibleJobsCount, setVisibleJobsCount] = useState(20);
-  const loadMoreRef = React.useRef<HTMLDivElement>(null);
+  
+  // 📱 MIRA MOBILE & DESKTOP RESPONSIVE PAGINATION (15 VAGAS POR PÁGINA)
+  const JOBS_PER_PAGE = 15;
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobListTopRef = React.useRef<HTMLDivElement>(null);
   
   const [totalPlatformJobs, setTotalPlatformJobs] = useState<number>(() => Math.max(initialJobs.length, 5280));
   const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
@@ -715,6 +718,42 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     });
   }, [jobs, searchQuery, selectedCity, selectedWorkTopic, selectedSource, selectedDateRange, selectedQuickFilter, language]);
 
+  // 📱 MIRA PAGINATION RESET ON ANY FILTER/SEARCH
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCity, selectedWorkTopic, selectedSource, selectedDateRange, selectedQuickFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / JOBS_PER_PAGE));
+
+  const paginatedJobs = React.useMemo(() => {
+    const startIndex = (currentPage - 1) * JOBS_PER_PAGE;
+    return filteredJobs.slice(startIndex, startIndex + JOBS_PER_PAGE);
+  }, [filteredJobs, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
+    setCurrentPage(newPage);
+    if (jobListTopRef.current) {
+      jobListTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('...');
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedCity(t('jobs_all_districts', language));
@@ -722,6 +761,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     setSelectedSource(t('jobs_all_sources', language));
     setSelectedDateRange('all');
     setSelectedQuickFilter(null);
+    setCurrentPage(1);
   };
 
   const scrollerTopics = React.useMemo(() => {
@@ -733,6 +773,27 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       return true;
     });
   }, []);
+
+  const availableSources = React.useMemo(() => {
+    const defaultSources = [
+      'Net-Empregos',
+      'Michael Page',
+      'beBee Jobs Portugal',
+      'Expresso Emprego',
+      'Plataforma Portuguesa das ONGD',
+      'IEFP',
+      'BEP - Bolsa de Emprego Público',
+      'Randstad Portugal',
+      'Landing.jobs',
+      'IT Jobs',
+      'Carga de Trabalhos',
+      'We Work Remotely',
+      'RemoteOK'
+    ];
+    const presentSources = jobs.map(j => j.sourceName).filter(Boolean);
+    const combined = Array.from(new Set([...defaultSources, ...presentSources]));
+    return combined.sort();
+  }, [jobs]);
 
   // 📊 SOBERANIA MIRA: Contagem em tempo real de vagas disponíveis por setor
   const topicCounts = React.useMemo(() => {
@@ -747,20 +808,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     });
     return counts;
   }, [jobs]);
-
-  // MIRA V2026.ELITE: Auto-load jobs on scroll (Infinite Scroll)
-  useEffect(() => {
-    if (!loadMoreRef.current || loading) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setVisibleJobsCount(prev => prev + 20);
-      }
-    }, { threshold: 0.1, rootMargin: '100px' });
-
-    observer.observe(loadMoreRef.current);
-    return () => observer.disconnect();
-  }, [filteredJobs.length, visibleJobsCount, loading]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-sans">
@@ -973,8 +1020,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               </div>
             )}
 
-            {/* Advanced Filters Grid ( responsive 2-column grid with Area and Location dropdowns ) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white p-4 rounded-[2rem] border border-slate-100 shadow-sm">
+            {/* Advanced Filters Grid ( responsive 3-column grid with Area, Location and Protected Source dropdowns ) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-4 rounded-[2rem] border border-slate-100 shadow-sm">
               {/* Category Select */}
               <div className="relative space-y-2 group cursor-pointer">
                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-1.5">
@@ -1017,6 +1064,24 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-mira-orange transition-colors" size={14} />
                 </div>
               </div>
+
+              {/* Source Select */}
+              <div className="relative space-y-2 group cursor-pointer">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-1.5"><Building2 size={12} className="text-indigo-500" /> {language === 'EN' ? 'Protected Source' : language === 'ES' ? 'Fuente Protegida' : language === 'FR' ? 'Source Protégée' : 'Fonte Protegida'}</label>
+                <div className="relative">
+                  <select
+                    value={selectedSource}
+                    onChange={(e) => setSelectedSource(e.target.value)}
+                    className="w-full pl-4 pr-10 py-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest appearance-none outline-none focus:ring-2 focus:ring-indigo-500/20 border border-transparent focus:border-indigo-500/30 text-slate-700 transition-all cursor-pointer"
+                  >
+                    <option value={t('jobs_all_sources', language)}>🏛️ {t('jobs_all_sources', language)}</option>
+                    {availableSources.map(source => (
+                      <option key={source} value={source}>{source}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-indigo-500 transition-colors" size={14} />
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1040,20 +1105,109 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           </div>
         ) : activeTab === 'jobs' ? (
           filteredJobs.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5">
-              {filteredJobs.slice(0, visibleJobsCount).map(job => (
-                <JobItem key={job.id} job={job} language={language} />
-              ))}
+            <div className="space-y-5">
+              <div ref={jobListTopRef} className="scroll-mt-6" />
 
-              {filteredJobs.length > visibleJobsCount && (
-                <div ref={loadMoreRef} className="flex justify-center pt-8">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setVisibleJobsCount(prev => prev + 20); }}
-                    className="px-10 py-5 bg-mira-orange text-white border border-mira-orange/10 rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-xl shadow-mira-orange/20 hover:bg-slate-900 transition-all active:scale-95 flex items-center gap-3"
-                  >
-                    <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} /> 
-                    {t('jobs_load_more_btn', language)}
-                  </button>
+              {/* 📊 Responsive Results Counter Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50 border border-slate-200/70 px-4 sm:px-5 py-3 rounded-2xl">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <span className="text-xs font-bold text-slate-700">
+                    {language === 'EN'
+                      ? `Showing ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} of ${filteredJobs.length.toLocaleString()} jobs`
+                      : language === 'ES'
+                      ? `Mostrando ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} de ${filteredJobs.length.toLocaleString()} ofertas`
+                      : language === 'FR'
+                      ? `Affichage de ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} sur ${filteredJobs.length.toLocaleString()} offres`
+                      : `A mostrar ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} de ${filteredJobs.length.toLocaleString()} vagas`}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest self-end sm:self-auto">
+                  {language === 'EN' ? `Page ${currentPage} of ${totalPages}` : language === 'ES' ? `Pág. ${currentPage} de ${totalPages}` : language === 'FR' ? `Page ${currentPage} sur ${totalPages}` : `Página ${currentPage} de ${totalPages}`}
+                </span>
+              </div>
+
+              {/* 📋 Paginated Jobs Grid */}
+              <div className="grid grid-cols-1 gap-5">
+                {paginatedJobs.map(job => (
+                  <JobItem key={job.id} job={job} language={language} />
+                ))}
+              </div>
+
+              {/* 📱 Mobile & Desktop Sovereign Responsive Pagination Bar */}
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 pb-2 border-t border-slate-100">
+                  {/* Mobile Quick Page Selector */}
+                  <div className="flex items-center justify-between w-full sm:w-auto gap-3 text-xs font-bold text-slate-500">
+                    <span>
+                      {language === 'EN' ? 'Jump to page:' : language === 'ES' ? 'Ir a la página:' : language === 'FR' ? 'Aller à la page :' : 'Ir para página:'}
+                    </span>
+                    <select
+                      value={currentPage}
+                      onChange={(e) => handlePageChange(Number(e.target.value))}
+                      aria-label="Selecionar página"
+                      className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-mira-orange/30 cursor-pointer"
+                    >
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                        <option key={p} value={p}>
+                          {p} / {totalPages}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Navigation Buttons (Touch Optimized) */}
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      aria-label="Página anterior"
+                      className="flex items-center gap-1 px-3.5 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-95 touch-manipulation"
+                    >
+                      <ChevronLeft size={16} />
+                      <span className="hidden sm:inline">{language === 'EN' ? 'Prev' : language === 'ES' ? 'Ant.' : language === 'FR' ? 'Préc.' : 'Anterior'}</span>
+                    </button>
+
+                    {/* Numeric buttons on desktop/tablet */}
+                    <div className="flex items-center gap-1">
+                      {getPageNumbers().map((p, idx) => {
+                        if (p === '...') {
+                          return (
+                            <span key={`ellipsis-${idx}`} className="w-7 sm:w-8 text-center text-slate-400 font-black text-xs">
+                              …
+                            </span>
+                          );
+                        }
+                        const isActive = p === currentPage;
+                        return (
+                          <button
+                            key={`page-${p}`}
+                            type="button"
+                            onClick={() => handlePageChange(Number(p))}
+                            className={`h-9 min-w-[34px] sm:min-w-[38px] px-2 rounded-xl text-xs font-black transition-all active:scale-95 touch-manipulation ${
+                              isActive
+                                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20'
+                                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      aria-label="Página seguinte"
+                      className="flex items-center gap-1 px-3.5 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-95 touch-manipulation"
+                    >
+                      <span className="hidden sm:inline">{language === 'EN' ? 'Next' : language === 'ES' ? 'Sig.' : language === 'FR' ? 'Suiv.' : 'Seguinte'}</span>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

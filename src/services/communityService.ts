@@ -15,8 +15,17 @@ import { gamificationService } from './gamificationService';
  * 🛡️ HELPER SOBERANO: CHAMADA SEGURA AO GATEWAY DE ESCRITA DE COMUNIDADE (/api/community)
  */
 async function callCommunityGateway(action: string, payload: any, userId?: string, userEmail?: string) {
-  const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
-  const token = sessionRes.data.session?.access_token || '';
+  let sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+  let token = sessionRes.data.session?.access_token || '';
+
+  // 🛡️ REVALIDAÇÃO PROATIVA DE JWT: Se não houver token ou se estiver perto de expirar, renovar sessão
+  if (!token || (sessionRes.data.session?.expires_at && sessionRes.data.session.expires_at < (Date.now() / 1000) + 30)) {
+    const refreshRes = await supabase.auth.refreshSession().catch(() => ({ data: { session: null } }));
+    if (refreshRes.data.session?.access_token) {
+      token = refreshRes.data.session.access_token;
+      sessionRes = refreshRes;
+    }
+  }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json'
@@ -179,49 +188,72 @@ export const communityService = {
         }));
       }
 
-      // 🛡️ RECONCILIAÇÃO DE VOTOS E ESTADO DE UTILIZADOR (userVote: 'like' | 'true' | 'fake')
-      let userVotes: Record<string, 'like' | 'true' | 'fake'> = {};
+      // 🛡️ RECONCILIAÇÃO DE VOTOS GLOBAIS E ESTADO DO UTILIZADOR ATUAL
+      let userFactVotes: Record<string, 'true' | 'fake'> = {};
+      let userLikes = new Set<string>();
       let userSavedPosts = new Set<string>();
+      let aggregatedVotesMap: Record<string, { trueCount: number; falseCount: number; likeCount: number }> = {};
 
-      const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id;
-
-      if (activeUserId && postsData && postsData.length > 0) {
+      if (postsData && postsData.length > 0) {
         const postIds = postsData.map((p: any) => p.id);
+        const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id;
 
-        const [{ data: voteRows, error: voteError }, { data: savedRows }] = await Promise.all([
-          supabase
-            .from('post_votes')
-            .select('post_id, vote_type')
-            .eq('user_id', activeUserId)
-            .in('post_id', postIds),
-          supabase
-            .from('saved_posts')
-            .select('post_id')
-            .eq('user_id', activeUserId)
-            .in('post_id', postIds)
-        ]);
+        const promises: Promise<any>[] = [
+          // 1. Busca agregada de votos reais para TODOS os utilizadores (Conta A, B, Guest)
+          callCommunityGateway('get_aggregated_votes', { postIds, userId: activeUserId }, activeUserId).catch(() => ({ aggregatedVotes: {} }))
+        ];
 
-        if (!voteError && voteRows) {
-          for (const vote of voteRows) {
-            if (vote.vote_type === 'like' || vote.vote_type === 'true' || vote.vote_type === 'fake') {
-              userVotes[vote.post_id] = vote.vote_type;
+        // 2. Se logado, busca o voto e salvamento específico do utilizador atual
+        if (activeUserId) {
+          promises.push(
+            Promise.resolve(supabase.from('post_votes').select('post_id, vote_type').eq('user_id', activeUserId).in('post_id', postIds)),
+            Promise.resolve(supabase.from('saved_posts').select('post_id').eq('user_id', activeUserId).in('post_id', postIds))
+          );
+        }
+
+        const [aggRes, userVoteRes, userSaveRes] = await Promise.all(promises);
+
+        if (aggRes?.aggregatedVotes) {
+          aggregatedVotesMap = aggRes.aggregatedVotes;
+        }
+
+        if (aggRes?.userFactVotes) {
+          userFactVotes = { ...aggRes.userFactVotes };
+        }
+
+        if (Array.isArray(aggRes?.userLikes)) {
+          aggRes.userLikes.forEach((id: string) => userLikes.add(id));
+        }
+
+        if (userVoteRes?.data) {
+          for (const vote of userVoteRes.data) {
+            if (vote.vote_type === 'like') {
+              userLikes.add(vote.post_id);
+            } else if (vote.vote_type === 'true' || vote.vote_type === 'useful') {
+              userFactVotes[vote.post_id] = 'true';
+            } else if (vote.vote_type === 'fake') {
+              userFactVotes[vote.post_id] = 'fake';
             }
           }
         }
 
-        if (savedRows) {
-          savedRows.forEach((s: any) => userSavedPosts.add(s.post_id));
+        if (userSaveRes?.data) {
+          userSaveRes.data.forEach((s: any) => userSavedPosts.add(s.post_id));
         }
       }
 
       return (postsData || []).map((row: any) => {
-        const vote = userVotes[row.id] ?? null;
+        const factVote = userFactVotes[row.id] ?? null;
         const isSaved = userSavedPosts.has(row.id);
-        const isLiked = vote === 'like';
+        const isLiked = userLikes.has(row.id);
+        const agg = aggregatedVotesMap[row.id] || { trueCount: 0, falseCount: 0, likeCount: 0 };
 
         return communityService.mapRowToPost({
           ...row,
-          user_vote: vote,
+          likes: agg.likeCount ?? 0,
+          useful_votes: agg.trueCount ?? 0,
+          fake_votes: agg.falseCount ?? 0,
+          user_vote: factVote,
           is_liked_by_user: isLiked,
           is_saved_by_user: isSaved
         });
@@ -260,20 +292,35 @@ export const communityService = {
       const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id;
       let userVoteVal: 'like' | 'true' | 'fake' | null = null;
       let isSavedVal = false;
+      let aggVote = { trueCount: 0, falseCount: 0, likeCount: 0 };
+
+      const promises: Promise<any>[] = [
+        callCommunityGateway('get_aggregated_votes', { postIds: [postId] }, activeUserId).catch(() => ({ aggregatedVotes: {} }))
+      ];
 
       if (activeUserId) {
-        const [{ data: voteRow }, { data: saveRow }] = await Promise.all([
-          supabase.from('post_votes').select('vote_type').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle(),
-          supabase.from('saved_posts').select('post_id').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle()
-        ]);
-        if (voteRow && (voteRow.vote_type === 'like' || voteRow.vote_type === 'true' || voteRow.vote_type === 'fake')) {
-          userVoteVal = voteRow.vote_type;
-        }
-        if (saveRow) isSavedVal = true;
+        promises.push(
+          Promise.resolve(supabase.from('post_votes').select('vote_type').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle()),
+          Promise.resolve(supabase.from('saved_posts').select('post_id').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle())
+        );
       }
+
+      const [aggRes, voteRes, saveRes] = await Promise.all(promises);
+
+      if (aggRes?.aggregatedVotes?.[postId]) {
+        aggVote = aggRes.aggregatedVotes[postId];
+      }
+
+      if (voteRes?.data && (voteRes.data.vote_type === 'like' || voteRes.data.vote_type === 'true' || voteRes.data.vote_type === 'fake')) {
+        userVoteVal = voteRes.data.vote_type;
+      }
+      if (saveRes?.data) isSavedVal = true;
 
       const fullPostData = {
         ...rawPost,
+        likes: aggVote.likeCount || rawPost.likes || rawPost.likes_count || 0,
+        useful_votes: aggVote.trueCount,
+        fake_votes: aggVote.falseCount,
         profiles: authorProfile || null,
         comments: (commentsData || []).map((c: any) => ({
           ...c,
@@ -355,6 +402,16 @@ export const communityService = {
   },
 
   /**
+   * 🗑️ DELETAR COMENTÁRIO (Via Gateway Soberano)
+   */
+  deleteComment: async (commentId: string, userId?: string) => {
+    console.log(`🗑️ MIRA: Eliminando comentário ${commentId} via Gateway...`);
+    const data = await callCommunityGateway('delete_comment', { commentId }, userId);
+    console.log("✅ Comentário eliminado com sucesso do PostgreSQL.");
+    return data;
+  },
+
+  /**
    * 📤 PUBLICAÇÃO DE NOVO POST (Via Gateway Soberano)
    */
   createPost: async (postData: Partial<Post>) => {
@@ -426,10 +483,15 @@ export const communityService = {
   /**
    * 📊 MUTAÇÃO DE INTERAÇÃO / VOTO (Via Gateway Soberano -> post_votes)
    */
-  vote: async (postId: string, userId: string, voteType: 'like' | 'true' | 'fake' | 'useful') => {
+  vote: async (postId: string, userId?: string, voteType: 'like' | 'true' | 'fake' | 'useful' = 'like') => {
+    let activeUserId = userId;
+    if (!activeUserId) {
+      const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+      activeUserId = sessionRes.data.session?.user?.id;
+    }
     const normalizedVoteType = voteType === 'useful' ? 'true' : voteType;
-    console.log(`⚡ [MIRA DB] Interação ${normalizedVoteType} de User ${userId} no Post ${postId}`);
-    return callCommunityGateway('vote', { postId, voteType: normalizedVoteType }, userId);
+    console.log(`⚡ [MIRA DB] Interação ${normalizedVoteType} de User ${activeUserId} no Post ${postId}`);
+    return callCommunityGateway('vote', { postId, voteType: normalizedVoteType }, activeUserId);
   },
 
   voteOrLike: async (postId: string, userId: string, voteType: 'like' | 'useful' | 'fake' = 'like') => {
@@ -574,8 +636,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 12,
-    usefulVotes: 12,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,
@@ -597,8 +659,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 8,
-    usefulVotes: 8,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,
@@ -620,8 +682,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 15,
-    usefulVotes: 15,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,
@@ -643,8 +705,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 6,
-    usefulVotes: 6,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,
@@ -666,8 +728,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 19,
-    usefulVotes: 19,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,
@@ -689,8 +751,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 24,
-    usefulVotes: 24,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,
@@ -712,8 +774,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 11,
-    usefulVotes: 11,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,
@@ -735,8 +797,8 @@ export const DEFAULT_FALLBACK_POSTS: Post[] = [
     isFraudWarning: false,
     validationStatus: 'validated',
     timestamp: new Date().toISOString(),
-    likes: 9,
-    usefulVotes: 9,
+    likes: 0,
+    usefulVotes: 0,
     fakeVotes: 0,
     reviewVotes: 0,
     reports: 0,

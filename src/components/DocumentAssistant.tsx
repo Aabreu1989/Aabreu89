@@ -701,9 +701,9 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
 
                                     <div>
                                         <h3 className={`font-black text-slate-900 text-base uppercase tracking-tight leading-tight group-hover:${item.isTemplate ? 'text-[#0ea5e9]' : 'text-[#f97316]'} transition-colors`}>
-                                            {t(item.id, language) !== item.id 
-                                                ? t(item.id, language) 
-                                                : <TranslatedText text={item.title} language={language} shouldTranslate={language !== 'PT'} />}
+                                            {t(item.title || item.id, language) !== (item.title || item.id)
+                                                ? t(item.title || item.id, language)
+                                                : (t(item.id, language) !== item.id ? t(item.id, language) : <TranslatedText text={item.title} language={language} shouldTranslate={language !== 'PT'} />)}
                                         </h3>
                                         <p className="text-[10px] text-slate-500 font-medium line-clamp-2 mt-1 leading-relaxed">
                                             <TranslatedText text={item.description || ''} language={language} shouldTranslate={language !== 'PT'} />
@@ -1059,19 +1059,19 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                                 </div>
                             </div>
 
-                            {selectedGuide.faq && (
-                                <div className="space-y-6">
-                                    <h3 className="text-xs font-black text-slate-900 uppercase tracking-[0.2em] border-l-4 border-mira-blue pl-3">{t('doc_faq_title', language)}</h3>
-                                    <div className="space-y-4">
-                                        {selectedGuide.faq.map((item: any, idx: number) => (
-                                            <div key={idx} className="p-6 bg-blue-50/50 rounded-[2.5rem] border border-blue-100">
-                                                <p className="text-[11px] font-black text-blue-900 uppercase tracking-tight mb-2">P: {item.q}</p>
-                                                <p className="text-[11px] text-blue-700 font-medium leading-relaxed">R: {item.a}</p>
+                                    {selectedGuide.faq && (
+                                        <div className="space-y-6">
+                                            <h3 className="text-xs font-black text-slate-900 uppercase tracking-[0.2em] border-l-4 border-mira-blue pl-3">{t('doc_faq_title', language)}</h3>
+                                            <div className="space-y-4">
+                                                {selectedGuide.faq.map((item: any, idx: number) => (
+                                                    <div key={idx} className="p-6 bg-blue-50/50 rounded-[2.5rem] border border-blue-100">
+                                                        <p className="text-[11px] font-black text-blue-900 uppercase tracking-tight mb-2">P: <TranslatedText text={item.q} language={language} shouldTranslate={language !== 'PT'} /></p>
+                                                        <p className="text-[11px] text-blue-700 font-medium leading-relaxed">R: <TranslatedText text={item.a} language={language} shouldTranslate={language !== 'PT'} /></p>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                                        </div>
+                                    )}
 
                             <div className="p-8 bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[3rem] text-white space-y-4 shadow-2xl relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>

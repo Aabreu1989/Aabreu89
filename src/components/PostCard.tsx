@@ -139,11 +139,17 @@ const PostCardComponent: React.FC<PostCardProps> = ({
         const isTrue = vote === 'true';
         const alreadyVotedAsThis = localVote === vote;
         
-        // 🧪 SOLDADURA OTIMISTA: Incrementar/Decrementar instantaneamente
+        // 🧪 SOLDADURA OTIMISTA CIRÚRGICA: Incrementar e decrementar o oposto instantaneamente
         if (isTrue) {
-            setLocalUsefulCount(prev => alreadyVotedAsThis ? Math.max(0, prev - 1) : prev + 1);
+            setLocalUsefulCount(prev => alreadyVotedAsThis ? Math.max(0, (prev || 0) - 1) : (prev || 0) + 1);
+            if (!alreadyVotedAsThis && localVote === 'false') {
+                setLocalFakeCount(prev => Math.max(0, (prev || 0) - 1));
+            }
         } else {
-            setLocalFakeCount(prev => alreadyVotedAsThis ? Math.max(0, prev - 1) : prev + 1);
+            setLocalFakeCount(prev => alreadyVotedAsThis ? Math.max(0, (prev || 0) - 1) : (prev || 0) + 1);
+            if (!alreadyVotedAsThis && localVote === 'true') {
+                setLocalUsefulCount(prev => Math.max(0, (prev || 0) - 1));
+            }
         }
 
         setLocalVote(alreadyVotedAsThis ? undefined : vote);

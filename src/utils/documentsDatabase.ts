@@ -631,15 +631,15 @@ export const serviceGuides = [
         description: 'g_parlamento_vistos_2026_desc',
         explanation: 'g_parlamento_vistos_2026_expl',
         steps: [
-            { docName: '1. Fim das Manifestações de Interesse (Lei 61/2025 & DL 37-A/2024)', whereToGet: 'Extinção definitiva dos Artigos 88.º n.º 2 e 89.º n.º 2. Obrigatoriedade de visto prévio no Consulado de origem.' },
-            { docName: '2. Visto de Procura de Trabalho (D8)', whereToGet: 'Exigência de validação prévia de qualificações técnicas ou oferta prévia de emprego.' },
-            { docName: '3. Autorização de Residência CPLP', whereToGet: 'Processamento regulado com emissão prévia no consulado e agendamento oficial AIMA.' },
-            { docName: '4. Reagrupamento Familiar Reforçado', whereToGet: 'Aprovação de requisitos mais estritos de alojamento, subsistência e tempo de residência prévia.' },
-            { docName: '5. Descentralização dos Processos AIMA', whereToGet: 'Ações judiciais por atraso passam a ser julgadas nos tribunais administrativos da residência do utente.' }
+            { docName: 'g_parlamento_step_1_title', whereToGet: 'g_parlamento_step_1_desc' },
+            { docName: 'g_parlamento_step_2_title', whereToGet: 'g_parlamento_step_2_desc' },
+            { docName: 'g_parlamento_step_3_title', whereToGet: 'g_parlamento_step_3_desc' },
+            { docName: 'g_parlamento_step_4_title', whereToGet: 'g_parlamento_step_4_desc' },
+            { docName: 'g_parlamento_step_5_title', whereToGet: 'g_parlamento_step_5_desc' }
         ],
         faq: [
-            { q: 'Posso entrar como turista e pedir regularização em Portugal?', a: 'Não. O Parlamento extinguiu a regularização via estatuto de turista. É obrigatório obter o visto no Consulado antes de viajar.' },
-            { q: 'Como funcionam os processos antigos submetidos antes da mudança?', a: 'Os processos pendentes anteriores continuam sob regime transitório a ser analisados e concluídos pela AIMA.' }
+            { q: 'g_parlamento_faq_1_q', a: 'g_parlamento_faq_1_a' },
+            { q: 'g_parlamento_faq_2_q', a: 'g_parlamento_faq_2_a' }
         ]
     },
     {
@@ -647,89 +647,88 @@ export const serviceGuides = [
         description: 'g_manifestacao_cima_desc',
         explanation: 'g_manifestacao_cima_expl',
         steps: [
-            { docName: 'Obter Visto no Consulado do País de Origem', whereToGet: 'Obrigatório para entrar legalmente em Portugal com intenção de trabalhar (Visto D1, D2, D3 ou Visto de Procura de Trabalho).' },
-            { docName: 'Agendamento na AIMA após chegada', whereToGet: 'Via portal aima.gov.pt — para requerer a Autorização de Residência.' },
-            { docName: 'NIF e NISS', whereToGet: 'AT (Finanças) e Segurança Social — obtê-los logo na chegada.' }
+            { docName: 'g_manifestacao_step_1_title', whereToGet: 'g_manifestacao_step_1_desc' },
+            { docName: 'g_manifestacao_step_2_title', whereToGet: 'g_manifestacao_step_2_desc' },
+            { docName: 'g_manifestacao_step_3_title', whereToGet: 'g_manifestacao_step_3_desc' }
         ],
-        faq: [{ q: 'A Manifestação de Interesse ainda existe?', a: 'Não. Foi extinta em 2024. Desde então, é obrigatório obter o visto no consulado antes de vir para Portugal. Processos submetidos antes de Junho 2024 continuam a ser tramitados — consulte aima.gov.pt.' }]
+        faq: [{ q: 'g_manifestacao_faq_1_q', a: 'g_manifestacao_faq_1_a' }]
     },
     {
         id: 'g_cnaim_triagem', category: CATEGORIES.IMMIGRATION, title: 'g_cnaim_triagem_title', authority: 'CNAIM (gov.pt)',
         description: 'g_cnaim_triagem_desc',
         explanation: 'g_cnaim_triagem_expl',
         steps: [
-            { docName: 'Ligar para a Linha', whereToGet: 'Via telefone.' },
-            { docName: 'Registo Prévio', whereToGet: 'Identificação básica e motivo da ida ao CNAIM.' }
+            { docName: 'g_cnaim_step_1_title', whereToGet: 'g_cnaim_step_1_desc' },
+            { docName: 'g_cnaim_step_2_title', whereToGet: 'g_cnaim_step_2_desc' }
         ],
-        faq: [{ q: 'Posso ir sem marcação?', a: 'Normalmente não, salvo emergências documentadas.' }]
+        faq: [{ q: 'g_cnaim_faq_1_q', a: 'g_cnaim_faq_1_a' }]
     },
     {
         id: 'g_irn_cidadania', category: CATEGORIES.RIGHTS, title: 'g_irn_cidadania_title', authority: 'IRN / gov.pt',
         description: 'g_irn_cidadania_desc',
         explanation: 'g_irn_cidadania_expl',
         steps: [
-            { docName: 'Passaporte', whereToGet: 'Cópia integral e traduzida se aplicável.' },
-            { docName: 'Certificado de Nível A2 de Português', whereToGet: 'CIPLE ou escola oficial certificada. ⚠️ Dispensado para cidadãos da CPLP (Brasil, Angola, Cabo Verde, etc.).' },
-            { docName: 'Registo Criminal', whereToGet: 'País de origem e países onde habitou mais de 1 ano.' },
-            { docName: 'Comprovativo de Residência Legal', whereToGet: 'Mínimo 7 anos (CPLP) ou 10 anos (outras nacionalidades) — Nova Lei da Nacionalidade, Maio 2026.' }
+            { docName: 'g_irn_step_1_title', whereToGet: 'g_irn_step_1_desc' },
+            { docName: 'g_irn_step_2_title', whereToGet: 'g_irn_step_2_desc' },
+            { docName: 'g_irn_step_3_title', whereToGet: 'g_irn_step_3_desc' },
+            { docName: 'g_irn_step_4_title', whereToGet: 'g_irn_step_4_desc' }
         ],
-        faq: [{ q: 'Onde encontro as leis base?', a: 'Toda a jurisprudência está em diariodarepublica.pt ou eur-lex.europa.eu para diretivas europeias.' }]
+        faq: [{ q: 'g_irn_faq_1_q', a: 'g_irn_faq_1_a' }]
     },
     {
         id: 'g_dges_reconhecimento', category: CATEGORIES.EDUCATION, title: 'g_dges_reconhecimento_title', authority: 'DGES',
         description: 'g_dges_reconhecimento_desc',
         explanation: 'g_dges_reconhecimento_expl',
         steps: [
-            { docName: 'Criar conta na DGES', whereToGet: 'Em dges.gov.pt/pt' },
-            { docName: 'Preparar Diploma com Apostila de Haia', whereToGet: 'Emitido no país onde estudou.' },
-            { docName: 'Pagar a Taxa de Serviço', whereToGet: 'Referência Multibanco gerada na plataforma.' }
+            { docName: 'g_dges_step_1_title', whereToGet: 'g_dges_step_1_desc' },
+            { docName: 'g_dges_step_2_title', whereToGet: 'g_dges_step_2_desc' },
+            { docName: 'g_dges_step_3_title', whereToGet: 'g_dges_step_3_desc' }
         ],
-        faq: [{ q: 'É imediato?', a: 'O Reconhecimento Automático leva até 30 dias; os específicos podem levar vários meses.' }]
+        faq: [{ q: 'g_dges_faq_1_q', a: 'g_dges_faq_1_a' }]
     },
     {
         id: 'g_ss_direta', category: CATEGORIES.FINANCE, title: 'g_ss_direta_title', authority: 'Segurança Social',
         description: 'g_ss_direta_desc',
         explanation: 'g_ss_direta_expl',
         steps: [
-            { docName: 'Chave Móvel Digital ou Senha SS', whereToGet: 'gov.pt (Chave Móvel) ou no balcão físico da SS.' },
-            { docName: 'IBAN na plataforma', whereToGet: 'Obrigatório para receber qualquer valor.' }
+            { docName: 'g_ss_step_1_title', whereToGet: 'g_ss_step_1_desc' },
+            { docName: 'g_ss_step_2_title', whereToGet: 'g_ss_step_2_desc' }
         ],
-        faq: [{ q: 'Como sei se os descontos estão registados?', a: 'Na SS Direta, vá a Remunerações > Conta-Corrente.' }]
+        faq: [{ q: 'g_ss_faq_1_q', a: 'g_ss_faq_1_a' }]
     },
     {
         id: 'g_sns_24', category: CATEGORIES.HEALTH, title: 'g_sns_24_title', authority: 'SNS',
         description: 'g_sns_24_desc',
         explanation: 'g_sns_24_expl',
         steps: [
-            { docName: 'Chave Móvel Digital', whereToGet: 'Ativada remotamente ou no Espaço Cidadão.' },
-            { docName: 'App SNS 24', whereToGet: 'Instalar na App Store ou Play Store.' }
+            { docName: 'g_sns_step_1_title', whereToGet: 'g_sns_step_1_desc' },
+            { docName: 'g_sns_step_2_title', whereToGet: 'g_sns_step_2_desc' }
         ],
-        faq: [{ q: 'O que é a Triagem da Linha SNS 24?', a: 'Ligue 808 24 24 24 antes de ir às urgências para ser aconselhado e triado.' }]
+        faq: [{ q: 'g_sns_faq_1_q', a: 'g_sns_faq_1_a' }]
     },
     {
         id: 'g_estatuto_igualdade', category: CATEGORIES.RIGHTS, title: 'g_estatuto_igualdade_title', authority: 'IRN / AIMA',
         description: 'g_estatuto_igualdade_desc',
         explanation: 'g_estatuto_igualdade_expl',
         steps: [
-            { docName: 'Certificado de Residência', whereToGet: 'Emitido pela AIMA.' },
-            { docName: 'Requerimento de Igualdade', whereToGet: 'Submetido online ou via Conservatória.' }
+            { docName: 'g_estatuto_step_2_title', whereToGet: 'g_estatuto_step_2_desc' },
+            { docName: 'g_estatuto_step_3_title', whereToGet: 'g_estatuto_step_3_desc' }
         ],
-        faq: [{ q: 'Dá direito a passaporte?', a: 'Não. O Estatuto não concede nacionalidade, apenas igualdade de direitos civis/políticos.' }]
+        faq: [{ q: 'g_estatuto_faq_1_q', a: 'g_estatuto_faq_1_a' }]
     },
     {
-        id: 'g_estatuto_igualdade_cartao_cidadao', category: CATEGORIES.RIGHTS, title: 'Estatuto de Direitos Iguais (2 Tipos) & Cartão de Cidadão para Estrangeiro', authority: 'IRN / AIMA / Consulado do Brasil',
-        description: 'Guia completo do Estatuto de Igualdade de Direitos Civis e Direitos Políticos (Tratado de Porto Seguro) e emissão do Cartão de Cidadão Português para Estrangeiros com Chave Móvel Digital.',
-        explanation: 'O Tratado de Porto Seguro entre Portugal e o Brasil permite que cidadãos brasileiros a residir legalmente em Portugal usufruam de igualdade de direitos. Existem dois tipos de Estatuto:\n\n1. Estatuto de Direitos Civis: Dá acesso a concursos públicos, exercer qualquer profissão, saúde no SNS, segurança social e criação de empresas em igualdade com portugueses (exige Título de Residência válido).\n2. Estatuto de Direitos Políticos: Concede o direito de votar e ser votado nas eleições autárquicas e legislativas (exige 3 anos de residência legal).\n\nApós o deferimento do Estatuto de Igualdade pelo IRN, o cidadão pode solicitar o Cartão de Cidadão para Estrangeiro num balcão do IRN e ativar a Chave Móvel Digital (CMD).',
+        id: 'g_estatuto_igualdade_cartao_cidadao', category: CATEGORIES.RIGHTS, title: 'g_estatuto_igualdade_cartao_cidadao_title', authority: 'IRN / AIMA / Consulado do Brasil',
+        description: 'g_estatuto_igualdade_cartao_cidadao_desc',
+        explanation: 'g_estatuto_igualdade_cartao_cidadao_expl',
         steps: [
-            { docName: '1. Certificado de Nacionalidade e Pleno Gozo de Direitos', whereToGet: 'Emitido pelo Consulado do Brasil em Portugal (Lisboa, Porto ou Faro).' },
-            { docName: '2. Título de Residência Válido / Certificado AIMA', whereToGet: 'Emitido pela AIMA.' },
-            { docName: '3. Requerimento do Estatuto de Direitos Iguais no IRN', whereToGet: 'Entregue num balcão do IRN ou via Conservatória do Registo Civil.' },
-            { docName: '4. Pedido do Cartão de Cidadão para Estrangeiro', whereToGet: 'Após publicação do Estatuto no Diário da República, agende no IRN / Lojas do Cidadão para emitir o Cartão de Cidadão físico e ativar a Chave Móvel Digital.' }
+            { docName: 'g_estatuto_step_1_title', whereToGet: 'g_estatuto_step_1_desc' },
+            { docName: 'g_estatuto_step_2_title', whereToGet: 'g_estatuto_step_2_desc' },
+            { docName: 'g_estatuto_step_3_title', whereToGet: 'g_estatuto_step_3_desc' },
+            { docName: 'g_estatuto_step_4_title', whereToGet: 'g_estatuto_step_4_desc' }
         ],
         faq: [
-            { q: 'Quais são os 2 tipos de Estatuto de Direitos Iguais?', a: 'Tipo 1: Direitos Civis (concursos públicos, negócios, trabalho, saúde e SS em igualdade com portugueses); Tipo 2: Direitos Políticos (votar e ser votado em eleições em Portugal, requer 3 anos de residência).' },
-            { q: 'O Cartão de Cidadão para Estrangeiro dá direito a passaporte português?', a: 'Não. O Cartão de Cidadão para Estrangeiro atesta o Estatuto de Igualdade e a Chave Móvel Digital, mas mantém a nacionalidade brasileira e o passaporte de origem.' },
-            { q: 'Posso fazer concursos públicos em Portugal com o Estatuto?', a: 'Sim! Com o Estatuto de Direitos Civis, o cidadão brasileiro pode concorrer à função pública em Portugal em igualdade de condições.' }
+            { q: 'g_estatuto_faq_1_q', a: 'g_estatuto_faq_1_a' },
+            { q: 'g_estatuto_faq_2_q', a: 'g_estatuto_faq_2_a' }
         ]
     },
     {
@@ -737,50 +736,50 @@ export const serviceGuides = [
         description: 'g_direitos_politicos_desc',
         explanation: 'g_direitos_politicos_expl',
         steps: [
-            { docName: 'Recenseamento Eleitoral', whereToGet: 'Automático para portadores de CC ou via Comissão de Recenseamento.' },
-            { docName: 'Declaração de Opção', whereToGet: 'Apenas necessária em casos específicos de múltiplas nacionalidades.' }
+            { docName: 'g_direitos_step_1_title', whereToGet: 'g_direitos_step_1_desc' },
+            { docName: 'g_direitos_step_2_title', whereToGet: 'g_direitos_step_2_desc' }
         ],
-        faq: [{ q: 'Quando posso votar?', a: 'Depende da nacionalidade. Brasileiros com Estatuto de Direitos Políticos e outros com 2-5 anos de residência.' }]
+        faq: [{ q: 'g_direitos_faq_1_q', a: 'g_direitos_faq_1_a' }]
     },
     {
         id: 'g_indeferimento_ajuda', category: CATEGORIES.IMMIGRATION, title: 'g_indeferimento_ajuda_title', authority: 'AIMA / CPA',
         description: 'g_indeferimento_ajuda_desc',
         explanation: 'g_indeferimento_ajuda_expl',
         steps: [
-            { docName: 'Minuta de Audiência Prévia (Resposta a Indeferimento)', whereToGet: 'Disponível acima no gerador de documentos MIRA.' },
-            { docName: 'Anexos a Pedidos na Notificação', whereToGet: 'Junte NIF, Passaporte Novo ou SS se era isso que faltava e envie via CTT Registado urgente.' }
+            { docName: 'g_indeferimento_step_1_title', whereToGet: 'g_indeferimento_step_1_desc' },
+            { docName: 'g_indeferimento_step_2_title', whereToGet: 'g_indeferimento_step_2_desc' }
         ],
-        faq: [{ q: 'Posso pedir ajuda a advogado?', a: 'Sim, mas se o prazo for curto, preencha o MIRA, assine, envie com CTT registado, e procure advogado DEPOIS. O prazo não pausa!' }]
+        faq: [{ q: 'g_indeferimento_faq_1_q', a: 'g_indeferimento_faq_1_a' }]
     },
     {
         id: 'g_apoio_humanitario', category: CATEGORIES.HUMANITARIAN, title: 'g_apoio_humanitario_title', authority: 'CPR / AIMA',
         description: 'g_apoio_humanitario_desc',
         explanation: 'g_apoio_humanitario_expl',
         steps: [
-            { docName: 'Contacto com CPR', whereToGet: 'Conselho Português para os Refugiados.' },
-            { docName: 'Registo de Pedido', whereToGet: 'Centros de acolhimento (ex: Bobadela).' }
+            { docName: 'g_apoio_step_1_title', whereToGet: 'g_apoio_step_1_desc' },
+            { docName: 'g_apoio_step_2_title', whereToGet: 'g_apoio_step_2_desc' }
         ],
-        faq: [{ q: 'Onde posso dormir hoje?', a: 'O CPR e a Santa Casa da Misericórdia gerem centros de emergência. Dirija-se a um balcão da AIMA ou esquadra da PSP para sinalização.' }]
+        faq: [{ q: 'g_apoio_faq_1_q', a: 'g_apoio_faq_1_a' }]
     },
     {
         id: 'g_bancos_alimentos', category: CATEGORIES.HUMANITARIAN, title: 'g_bancos_alimentos_title', authority: 'Juntas / ONGs',
         description: 'g_bancos_alimentos_desc',
         explanation: 'g_bancos_alimentos_expl',
         steps: [
-            { docName: 'Inscrição na Junta', whereToGet: 'Junta de Freguesia da sua área.' },
-            { docName: 'Prova de Rendimentos', whereToGet: 'SS Direta (Histórico de Remunerações).' }
+            { docName: 'g_alimentos_step_1_title', whereToGet: 'g_alimentos_step_1_desc' },
+            { docName: 'g_alimentos_step_2_title', whereToGet: 'g_alimentos_step_2_desc' }
         ],
-        faq: [{ q: 'Quem tem direito?', a: 'Pessoas com rendimentos abaixo do limiar de pobreza ou em situação de desemprego sem subsídio.' }]
+        faq: [{ q: 'g_alimentos_faq_1_q', a: 'g_alimentos_faq_1_a' }]
     },
     {
         id: 'g_apoio_psicologico', category: CATEGORIES.WELLBEING, title: 'g_apoio_psicologico_title', authority: 'SNS / NGOs',
         description: 'g_apoio_psicologico_desc',
         explanation: 'g_apoio_psicologico_expl',
         steps: [
-            { docName: 'Consulta Centro de Saúde', whereToGet: 'SNS (Inscrição no Centro de Saúde).' },
-            { docName: 'Sinalização Psicologia', whereToGet: 'Referenciamento pelo Médico de Família.' }
+            { docName: 'g_psico_step_1_title', whereToGet: 'g_psico_step_1_desc' },
+            { docName: 'g_psico_step_2_title', whereToGet: 'g_psico_step_2_desc' }
         ],
-        faq: [{ q: 'É gratuito?', a: 'No SNS as consultas são isentas de taxas moderadoras para requerentes de proteção internacional.' }]
+        faq: [{ q: 'g_psico_faq_1_q', a: 'g_psico_faq_1_a' }]
     },
     {
         id: 'g_equivalencia_notas', category: CATEGORIES.EDUCATION, title: 'g_equivalencia_notas_title', authority: 'DGES / DGE',

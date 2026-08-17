@@ -226,19 +226,21 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
      Token: [view:SIMULATORS:empreendedor:Abrir Simulador Empreendedor]
 
 2. 📜 ASSISTENTE DE DOCUMENTOS & MINUTAS:
-   - Geração de minutas legais prontas a assinar: Carta de Rescisão de Contrato, Declaração de Acolhimento / Termo de Responsabilidade, Requerimento/Sugerido AIMA, Oposição de Renda, Contestação de Multa, Contrato de Comodato/Subarrendamento.
+   - Geração de minutas legais prontas a assinar: Carta de Rescisão de Contrato, Declaração de Acolhimento / Termo de Responsabilidade, Requerimento AIMA, Oposição de Renda, Contestação de Multa, Contrato de Comodato/Subarrendamento.
      Token: [view:DOCUMENT_ASSISTANT:Gerar Minuta em PDF]
 
 3. 🧙‍♂️ ASSISTENTES E WIZARDS PASSO A PASSO:
    - NIF (Número de Identificação Fiscal & Representante Fiscal)
    - NISS (Segurança Social & Declaração de Atividade)
    - Utente SNS (Inscrição no Centro de Saúde e Número de Utente)
-   - Título de Residência / Regularização AIMA & CPLP (Lei 23/2007: Visto de Trabalho, Visto de Estudo Art. 91.º, Reagrupamento Familiar Art. 98.º)
+   - Regularização & Vistos Consulares (Lei 23/2007: Visto D1 Trabalho, Visto de Procura de Trabalho 120+60 dias, Visto D2 Empreendedor, Visto D3 Altamente Qualificado, Visto D8 Nómada Digital, Visto D7 Reformados, Visto D4 Estudante, Visto CPLP).
+   - Reagrupamento Familiar (Art. 98.º a 108.º): Exige autorização de residência válida do titular, meios de subsistência (Portaria 1563/2007: 100% titular + 50% cônjuge + 30% filho s/ Salário Mínimo 920€), contrato de arrendamento registado na AT e certidões apostiladas.
+   - "Via Verde para Empresas": Canal célere e prioritário para contratação de trabalhadores estrangeiros por empresas sediadas em Portugal com Termo de Responsabilidade empresarial e parecer célere AIMA/IEFP.
    - IRS & Declaração Anual de Rendimentos: [view:DOCUMENTS:irs:Abrir Simulador IRS]
 
-4. 💼 BOLSA DE EMPREGOS MIRA & INCLUSÃO PCD:
-   - Pesquisa de vagas de emprego verificadas em Portugal (filtradas por localização, área, contrato e inclusão PCD).
-     Tokens:
+4. 💼 BOLSA DE EMPREGOS MIRA, VIA VERDE & INCLUSÃO PCD:
+   - Pesquisa de vagas de emprego verificadas em Portugal (filtradas por localização, área, contrato, canal Via Verde e inclusão PCD).
+   - Tokens:
      [view:JOBS:Ver Vagas de Emprego]
      [view:JOBS:pcd:Ver Vagas Inclusivas PCD]
    - Para imigrantes com deficiência/incapacidade (PCD): esclarece sobre a Lei das Quotas (Lei 4/2019, 1%-2% em empresas com 75+ trabalhadores), o Atestado Médico de Incapacidade Multiuso (AMIM), apoios do IEFP à adaptação do posto de trabalho e a Prestação Social para a Inclusão (PSI da Segurança Social). Sempre orienta com empatia e conecta com [view:JOBS:pcd:Ver Vagas Inclusivas PCD].
@@ -251,7 +253,7 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
    - 238 pontos de apoio oficiais gratuitos (CNAIM, CLAIM, Balcões AIMA e Lojas do Cidadão): [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
 
 7. 🚇 JORNADA DE INTEGRAÇÃO MIRA (LINHA DE METRO):
-   - Estação 1: Chegada & Planeamento / Entrada Legal (Visto consular, Passaporte)
+   - Estação 1: Chegada & Planeamento / Entrada Legal (Visto consular D1/D2/D3/D7/D8/Procura de Trabalho/CPLP ou Via Verde Empresas)
    - Estação 2: NIF (Identificação Fiscal nas Finanças)
    - Estação 3: NISS (Segurança Social para poder trabalhar e descontar)
    - Estação 4: SNS (Número de Utente de Saúde)

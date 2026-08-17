@@ -706,7 +706,6 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                                             const result = await followService.unfollowUser(currentUser.id, user.id);
                                             if (result?.error) throw result.error;
                                             
-                                            setLocalFollowersCount(prev => Math.max(0, prev - 1));
                                             setIsFollowing(false);
                                             showToast("MIRA: Deixou de seguir.", "success");
                                         } else {
@@ -714,33 +713,22 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                                             const result = await followService.followUser(currentUser.id, user.id);
                                             if (result?.error) throw result.error;
                                             
-                                            setLocalFollowersCount(prev => prev + 1);
                                             setIsFollowing(true);
                                             showToast("MIRA: Seguidor registado.", "success");
-                                            
-                                            // 🛡️ MIRA SOBERANIA: Auto-refresh de métricas sem vazar e-mail (Atomic Read)
-                                            const { data: updated } = await supabase
-                                                .from('profiles')
-                                                .select('id, name, full_name, avatar_url, reputation, trust_level, role, followers_count, following_count, verified_posts_count, total_likes_received')
-                                                .eq('id', user.id)
-                                                .single();
-                                                
-                                            if (updated) {
-                                                const mapped = authService.mapProfileToUser(updated, null);
-                                                // 🛡️ MIRA SOBERANIA: Forçar contagem real se o campo do banco estiver estagnado
-                                                const realFollowers = await followService.getFollowerCount(user.id);
-                                                const realFollowing = await followService.getFollowingCount(user.id);
-                                                
-                                                mapped.followersCount = realFollowers;
-                                                mapped.followingCount = realFollowing;
-
-                                                const isOwner = currentUser?.id === user?.id;
-                                                const isAdmin = isUserAdmin(currentUser);
-                                                if (!isAdmin && !isOwner) mapped.email = undefined;
-                                                setProfileUser(mapped);
-                                                setLocalFollowersCount(realFollowers);
-                                            }
                                         }
+
+                                        // 🛡️ MIRA SOBERANIA: Auto-refresh de métricas reais de user_follows (Atomic Read)
+                                        const [realFollowers, realFollowing] = await Promise.all([
+                                            followService.getFollowerCount(user.id),
+                                            followService.getFollowingCount(user.id)
+                                        ]);
+
+                                        setLocalFollowersCount(realFollowers);
+                                        setProfileUser(prev => prev ? {
+                                            ...prev,
+                                            followersCount: realFollowers,
+                                            followingCount: realFollowing
+                                        } : null);
                                     } catch (err: any) {
                                         console.error('MIRA DB ERROR:', err);
                                         showToast(`ERRO DE DISCO: ${err.message || 'Falha na escrita'}`, "error");

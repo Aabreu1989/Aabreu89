@@ -186,65 +186,57 @@ const AppContent: React.FC = () => {
     // Helper functions for bulletproof interaction persistence across user sessions
     const loadSavedLikes = (): Set<string> => {
         try {
-            const merged = new Set<string>();
-            Object.keys(localStorage).forEach(k => {
-                if (k.startsWith('mira_liked_posts')) {
-                    const val = localStorage.getItem(k);
-                    if (val) {
-                        const parsed = JSON.parse(val);
-                        if (Array.isArray(parsed)) parsed.forEach(id => merged.add(String(id)));
-                    }
-                }
-            });
-            return merged;
+            const userStr = localStorage.getItem('mira_user');
+            const uId = userStr ? JSON.parse(userStr)?.id : null;
+            const key = uId ? `mira_liked_posts_${uId}` : 'mira_liked_posts';
+            const val = localStorage.getItem(key);
+            if (val) {
+                const parsed = JSON.parse(val);
+                if (Array.isArray(parsed)) return new Set(parsed.map(String));
+            }
+            return new Set();
         } catch { return new Set(); }
     };
 
     const loadSavedPostsList = (): Set<string> => {
         try {
-            const merged = new Set<string>();
-            Object.keys(localStorage).forEach(k => {
-                if (k.startsWith('mira_saved_posts')) {
-                    const val = localStorage.getItem(k);
-                    if (val) {
-                        const parsed = JSON.parse(val);
-                        if (Array.isArray(parsed)) parsed.forEach(id => merged.add(String(id)));
-                    }
-                }
-            });
-            return merged;
+            const userStr = localStorage.getItem('mira_user');
+            const uId = userStr ? JSON.parse(userStr)?.id : null;
+            const key = uId ? `mira_saved_posts_${uId}` : 'mira_saved_posts';
+            const val = localStorage.getItem(key);
+            if (val) {
+                const parsed = JSON.parse(val);
+                if (Array.isArray(parsed)) return new Set(parsed.map(String));
+            }
+            return new Set();
         } catch { return new Set(); }
     };
 
     const loadSavedCommentLikes = (): Set<string> => {
         try {
-            const merged = new Set<string>();
-            Object.keys(localStorage).forEach(k => {
-                if (k.startsWith('mira_liked_comments')) {
-                    const val = localStorage.getItem(k);
-                    if (val) {
-                        const parsed = JSON.parse(val);
-                        if (Array.isArray(parsed)) parsed.forEach(id => merged.add(String(id)));
-                    }
-                }
-            });
-            return merged;
+            const userStr = localStorage.getItem('mira_user');
+            const uId = userStr ? JSON.parse(userStr)?.id : null;
+            const key = uId ? `mira_liked_comments_${uId}` : 'mira_liked_comments';
+            const val = localStorage.getItem(key);
+            if (val) {
+                const parsed = JSON.parse(val);
+                if (Array.isArray(parsed)) return new Set(parsed.map(String));
+            }
+            return new Set();
         } catch { return new Set(); }
     };
 
     const loadSavedVotes = (): Record<string, 'true' | 'false'> => {
         try {
-            const merged: Record<string, 'true' | 'false'> = {};
-            Object.keys(localStorage).forEach(k => {
-                if (k.startsWith('mira_user_votes')) {
-                    const val = localStorage.getItem(k);
-                    if (val) {
-                        const parsed = JSON.parse(val);
-                        if (parsed && typeof parsed === 'object') Object.assign(merged, parsed);
-                    }
-                }
-            });
-            return merged;
+            const userStr = localStorage.getItem('mira_user');
+            const uId = userStr ? JSON.parse(userStr)?.id : null;
+            const key = uId ? `mira_user_votes_${uId}` : 'mira_user_votes';
+            const val = localStorage.getItem(key);
+            if (val) {
+                const parsed = JSON.parse(val);
+                if (parsed && typeof parsed === 'object') return parsed;
+            }
+            return {};
         } catch { return {}; }
     };
 
@@ -352,9 +344,9 @@ const AppContent: React.FC = () => {
 
                             return {
                                 ...remotePost,
-                                likes: Math.max(remotePost.likes || 0, localPost.likes || 0),
-                                usefulVotes: Math.max(remotePost.usefulVotes || 0, localPost.usefulVotes || 0),
-                                fakeVotes: Math.max(remotePost.fakeVotes || 0, localPost.fakeVotes || 0),
+                                likes: remotePost.likes ?? 0,
+                                usefulVotes: remotePost.usefulVotes ?? 0,
+                                fakeVotes: remotePost.fakeVotes ?? 0,
                                 comments: mergedComments
                             };
                         });
@@ -391,8 +383,6 @@ const AppContent: React.FC = () => {
         };
     }, []);
     
-    // Community Cache
-    useEffect(() => { localStorage.setItem('mira_community_cache', JSON.stringify(masterPosts)); }, [masterPosts]);
     
     // Phase 2 Social presence
     useEffect(() => {
@@ -493,17 +483,17 @@ const AppContent: React.FC = () => {
             localStorage.setItem('mira_liked_comments', JSON.stringify([...commentLikeSet]));
             localStorage.setItem(`mira_liked_comments_${userId}`, JSON.stringify([...commentLikeSet]));
 
-            // Fetch Votes
-            const { data: votes, error: votesErr } = await supabase.from('post_votes').select('post_id, vote_type').eq('user_id', userId).in('vote_type', ['useful', 'fake']);
+            // Fetch Votes (Suporte canónico a 'true', 'fake' e legacy 'useful')
+            const { data: votes, error: votesErr } = await supabase.from('post_votes').select('post_id, vote_type').eq('user_id', userId).in('vote_type', ['true', 'fake', 'useful']);
             if (!votesErr && votes) {
                 votes.forEach(v => {
-                    voteMap[String(v.post_id)] = v.vote_type === 'useful' ? 'true' : 'false';
+                    voteMap[String(v.post_id)] = (v.vote_type === 'true' || v.vote_type === 'useful') ? 'true' : 'false';
                 });
             }
             
             // Apply pending votes
             pendingActions.filter(a => a.action === 'vote').forEach(a => {
-                voteMap[String(a.payload.postId)] = a.payload.voteType === 'useful' ? 'true' : 'false';
+                voteMap[String(a.payload.postId)] = (a.payload.voteType === 'true' || a.payload.voteType === 'useful') ? 'true' : 'false';
             });
 
             setUserVotes(prev => ({ ...prev, ...voteMap }));
@@ -529,6 +519,25 @@ const AppContent: React.FC = () => {
         if (user?.id) {
             fetchSavedPosts(user.id);
             fetchUserInteractions(user.id);
+            import('./services/communityService').then(({ communityService }) => {
+                communityService.fetchPosts(user.id).then(fetchedPosts => {
+                    if (fetchedPosts && fetchedPosts.length > 0) {
+                        setMasterPosts(prev => {
+                            const prevMap = new Map(prev.map(p => [p.id, p]));
+                            return fetchedPosts.map(remotePost => {
+                                const localPost = prevMap.get(remotePost.id);
+                                if (!localPost) return remotePost;
+                                const remoteCommentIds = new Set((remotePost.comments || []).map(c => c.id));
+                                const extraLocalComments = (localPost.comments || []).filter(c => !remoteCommentIds.has(c.id));
+                                return {
+                                    ...remotePost,
+                                    comments: [...(remotePost.comments || []), ...extraLocalComments]
+                                };
+                            });
+                        });
+                    }
+                });
+            });
 
             // V98.0 REAL-TIME OR NOTHING PROTOCOL
             const channel = supabase

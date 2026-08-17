@@ -330,6 +330,33 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
         return [...result].sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     }, [searchTerm, selectedCategory, selectedLocation, services]);
 
+    // 🚀 MIRA SERVICE INTERACTION TRACKING
+    const trackServiceInteraction = (service: MapAlert, interactionType: string = 'card_click') => {
+        try {
+            const nameLower = ((service as any).name || service.title || '').toLowerCase();
+            let matchedGroup = 'Lojas do Cidadão & Espaços Cidadão';
+            if (nameLower.includes('aima') || nameLower.includes('conservatóri') || nameLower.includes('irn') || nameLower.includes('sef') || nameLower.includes('cnaim')) {
+                matchedGroup = 'Balcões AIMA / Conservatórias';
+            } else if (nameLower.includes('finança') || nameLower.includes('at') || nameLower.includes('tributári')) {
+                matchedGroup = 'Serviço de Finanças (AT)';
+            } else if (nameLower.includes('segurança social') || nameLower.includes('iss')) {
+                matchedGroup = 'Segurança Social (ISS)';
+            } else if (nameLower.includes('saúde') || nameLower.includes('sns') || nameLower.includes('usf') || nameLower.includes('hospital') || nameLower.includes('centro de saúde')) {
+                matchedGroup = 'Centros de Saúde SNS & USF';
+            } else if (nameLower.includes('iefp') || nameLower.includes('emprego') || nameLower.includes('formação')) {
+                matchedGroup = 'Centros de Emprego IEFP';
+            }
+            const current = parseInt(localStorage.getItem(`mira_service_click_${matchedGroup}`) || '0', 10);
+            localStorage.setItem(`mira_service_click_${matchedGroup}`, (current + 1).toString());
+            analyticsService.logActivity('click_service', { 
+                serviceName: matchedGroup,
+                serviceTitle: service.title,
+                district: service.city,
+                interactionType
+            });
+        } catch (err) {}
+    };
+
     // 🚀 MIRA INFINITE SCROLL: Serviços
     useEffect(() => {
         if (!listEndRef.current || loading) return;
@@ -380,7 +407,10 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                         <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-mira-blue transition-colors pointer-events-none" size={18} />
                         <select
                             value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            onChange={(e) => {
+                                setSelectedCategory(e.target.value);
+                                analyticsService.logActivity('click_service', { action: 'filter_category', category: e.target.value });
+                            }}
                             className="w-full pl-12 pr-10 py-5 sm:py-4 bg-slate-50 border-2 border-transparent rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-900 outline-none focus:bg-white focus:border-mira-blue transition-all shadow-sm appearance-none cursor-pointer"
                         >
                             <option value="Todos">{t('map_all_areas', language)} ({services.length})</option>
@@ -399,7 +429,10 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-mira-blue transition-colors pointer-events-none" size={18} />
                         <select
                             value={selectedLocation}
-                            onChange={(e) => setSelectedLocation(e.target.value)}
+                            onChange={(e) => {
+                                setSelectedLocation(e.target.value);
+                                analyticsService.logActivity('click_service', { action: 'filter_location', location: e.target.value });
+                            }}
                             className="w-full pl-12 pr-10 py-5 sm:py-4 bg-slate-50 border-2 border-transparent rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-900 outline-none focus:bg-white focus:border-mira-blue transition-all shadow-sm appearance-none cursor-pointer"
                         >
                             <option value="Todos">
@@ -437,6 +470,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                             <div 
                                 id={`service-${service.id}`}
                                 key={service.id} 
+                                onClick={() => trackServiceInteraction(service, 'card_click')}
                                 className="bg-white text-slate-900 p-6 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-[#0ea5e9]/10 transition-all cursor-pointer group active:scale-[0.98] relative overflow-hidden"
                                 style={{ border: '3px solid #0ea5e9' }}
                             >
@@ -478,25 +512,9 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                             {service.phone && (
                                                 <a
                                                     href={`tel:${service.phone}`}
-                                                    onClick={() => {
-                                                        try {
-                                                            const nameLower = ((service as any).name || service.title || '').toLowerCase();
-                                                            let matchedGroup = 'Lojas do Cidadão & Espaços Cidadão';
-                                                            if (nameLower.includes('aima') || nameLower.includes('conservatóri') || nameLower.includes('irn') || nameLower.includes('sef')) {
-                                                                matchedGroup = 'Balcões AIMA / Conservatórias';
-                                                            } else if (nameLower.includes('finança') || nameLower.includes('at')) {
-                                                                matchedGroup = 'Serviço de Finanças (AT)';
-                                                            } else if (nameLower.includes('segurança social') || nameLower.includes('iss')) {
-                                                                matchedGroup = 'Segurança Social (ISS)';
-                                                            } else if (nameLower.includes('saúde') || nameLower.includes('sns') || nameLower.includes('usf')) {
-                                                                matchedGroup = 'Centros de Saúde SNS & USF';
-                                                            } else if (nameLower.includes('iefp') || nameLower.includes('emprego')) {
-                                                                matchedGroup = 'Centros de Emprego IEFP';
-                                                            }
-                                                            const current = parseInt(localStorage.getItem(`mira_service_click_${matchedGroup}`) || '0', 10);
-                                                            localStorage.setItem(`mira_service_click_${matchedGroup}`, (current + 1).toString());
-                                                            analyticsService.logActivity('click_service', { serviceName: matchedGroup });
-                                                        } catch (err) {}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        trackServiceInteraction(service, 'phone');
                                                     }}
                                                     className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:border-[#0ea5e9] hover:text-[#0ea5e9] transition-all"
                                                 >
@@ -507,24 +525,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    try {
-                                                        const nameLower = ((service as any).name || service.title || '').toLowerCase();
-                                                        let matchedGroup = 'Lojas do Cidadão & Espaços Cidadão';
-                                                        if (nameLower.includes('aima') || nameLower.includes('conservatóri') || nameLower.includes('irn') || nameLower.includes('sef')) {
-                                                            matchedGroup = 'Balcões AIMA / Conservatórias';
-                                                        } else if (nameLower.includes('finança') || nameLower.includes('at')) {
-                                                            matchedGroup = 'Serviço de Finanças (AT)';
-                                                        } else if (nameLower.includes('segurança social') || nameLower.includes('iss')) {
-                                                            matchedGroup = 'Segurança Social (ISS)';
-                                                        } else if (nameLower.includes('saúde') || nameLower.includes('sns') || nameLower.includes('usf')) {
-                                                            matchedGroup = 'Centros de Saúde SNS & USF';
-                                                        } else if (nameLower.includes('iefp') || nameLower.includes('emprego')) {
-                                                            matchedGroup = 'Centros de Emprego IEFP';
-                                                        }
-                                                        const current = parseInt(localStorage.getItem(`mira_service_click_${matchedGroup}`) || '0', 10);
-                                                        localStorage.setItem(`mira_service_click_${matchedGroup}`, (current + 1).toString());
-                                                        analyticsService.logActivity('click_service', { serviceName: matchedGroup });
-                                                    } catch (err) {}
+                                                    trackServiceInteraction(service, 'website');
                                                     const finalUrl = getServiceWebsite(service);
                                                     window.open(finalUrl, '_blank');
                                                 }}
@@ -535,8 +536,6 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                             </button>
                                         </div>
                                     </div>
-
-                                    {/* Ratings Functionality Purged - MIRA V2026 Sovereign */}
                                 </div>
                             </div>
                         ))}
