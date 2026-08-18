@@ -1,12 +1,14 @@
 import { MapAlert, JobPost, UNIFIED_CATEGORIES } from '../types';
 import { MASSIVE_SERVICES_DATABASE } from './massiveServicesDatabase';
+import { NATIONALITY_ASSOCIATIONS_DATABASE } from './nationalityAssociationsDatabase';
 import { JOB_SOURCES_DATABASE } from './jobSourcesDatabase';
 import { HOUSING_SOURCES_DATABASE } from './housingSourcesDatabase';
 
-export { JOB_SOURCES_DATABASE, HOUSING_SOURCES_DATABASE };
+export { JOB_SOURCES_DATABASE, HOUSING_SOURCES_DATABASE, NATIONALITY_ASSOCIATIONS_DATABASE };
 
 export const PROTECTED_SERVICES: MapAlert[] = [
     ...MASSIVE_SERVICES_DATABASE,
+    ...NATIONALITY_ASSOCIATIONS_DATABASE,
 
     // ============================================================
     // 🏛️ CNAIM – CENTROS NACIONAIS DE APOIO À INTEGRAÇÃO DE MIGRANTES

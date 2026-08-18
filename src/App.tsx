@@ -451,59 +451,67 @@ const AppContent: React.FC = () => {
     };
 
     const fetchUserInteractions = async (userId: string) => {
+        if (!userId) {
+            return { 
+                likes: loadSavedLikes(), 
+                comments: loadSavedCommentLikes(), 
+                votes: loadSavedVotes() 
+            };
+        }
         try {
-            const likeSet = loadSavedLikes();
-            const commentLikeSet = loadSavedCommentLikes();
-            const voteMap = loadSavedVotes();
+            // 🛡️ RECONCILIAÇÃO CANÓNICA SOBERANA:
+            // 1. Supabase é a autoridade canónica. Criar novos sets limpos a partir da resposta do banco.
+            const canonicalLikeSet = new Set<string>();
+            const canonicalCommentLikeSet = new Set<string>();
+            const canonicalVoteMap: Record<string, 'true' | 'false'> = {};
 
-            // 🛡️ MIRA SOVEREIGN: Merge with pending actions to prevent state regression
             const pendingActions = syncService.getPendingActions();
             
-            // Fetch Likes from DB
+            // 2. Fetch Likes from DB
             const { data: likes, error: likesErr } = await supabase.from('post_votes').select('post_id').eq('user_id', userId).eq('vote_type', 'like');
             if (!likesErr && likes) {
-                likes.forEach(l => likeSet.add(String(l.post_id)));
+                likes.forEach(l => canonicalLikeSet.add(String(l.post_id)));
             }
             
-            // Apply pending likes
+            // 3. Apply pending in-flight likes
             pendingActions.filter(a => a.action === 'like').forEach(a => {
-                likeSet.add(String(a.payload.postId));
+                canonicalLikeSet.add(String(a.payload.postId));
             });
             
-            setLikedPostsIds(prev => new Set([...prev, ...likeSet]));
-            localStorage.setItem('mira_liked_posts', JSON.stringify([...likeSet]));
-            localStorage.setItem(`mira_liked_posts_${userId}`, JSON.stringify([...likeSet]));
+            setLikedPostsIds(canonicalLikeSet);
+            localStorage.setItem('mira_liked_posts', JSON.stringify([...canonicalLikeSet]));
+            localStorage.setItem(`mira_liked_posts_${userId}`, JSON.stringify([...canonicalLikeSet]));
 
-            // Fetch Comment Likes
+            // 4. Fetch Comment Likes from DB
             const { data: cLikes, error: cLikesErr } = await supabase.from('comment_likes').select('comment_id').eq('user_id', userId);
             if (!cLikesErr && cLikes) {
-                cLikes.forEach(cl => commentLikeSet.add(String(cl.comment_id)));
+                cLikes.forEach(cl => canonicalCommentLikeSet.add(String(cl.comment_id)));
             }
-            setLikedCommentsIds(prev => new Set([...prev, ...commentLikeSet]));
-            localStorage.setItem('mira_liked_comments', JSON.stringify([...commentLikeSet]));
-            localStorage.setItem(`mira_liked_comments_${userId}`, JSON.stringify([...commentLikeSet]));
+            setLikedCommentsIds(canonicalCommentLikeSet);
+            localStorage.setItem('mira_liked_comments', JSON.stringify([...canonicalCommentLikeSet]));
+            localStorage.setItem(`mira_liked_comments_${userId}`, JSON.stringify([...canonicalCommentLikeSet]));
 
-            // Fetch Votes (Suporte canónico a 'true', 'fake' e legacy 'useful')
+            // 5. Fetch Votes (Suporte canónico a 'true', 'fake' e legacy 'useful')
             const { data: votes, error: votesErr } = await supabase.from('post_votes').select('post_id, vote_type').eq('user_id', userId).in('vote_type', ['true', 'fake', 'useful']);
             if (!votesErr && votes) {
                 votes.forEach(v => {
-                    voteMap[String(v.post_id)] = (v.vote_type === 'true' || v.vote_type === 'useful') ? 'true' : 'false';
+                    canonicalVoteMap[String(v.post_id)] = (v.vote_type === 'true' || v.vote_type === 'useful') ? 'true' : 'false';
                 });
             }
             
-            // Apply pending votes
+            // 6. Apply pending in-flight votes
             pendingActions.filter(a => a.action === 'vote').forEach(a => {
-                voteMap[String(a.payload.postId)] = (a.payload.voteType === 'true' || a.payload.voteType === 'useful') ? 'true' : 'false';
+                canonicalVoteMap[String(a.payload.postId)] = (a.payload.voteType === 'true' || a.payload.voteType === 'useful') ? 'true' : 'false';
             });
 
-            setUserVotes(prev => ({ ...prev, ...voteMap }));
-            localStorage.setItem('mira_user_votes', JSON.stringify(voteMap));
-            localStorage.setItem(`mira_user_votes_${userId}`, JSON.stringify(voteMap));
+            setUserVotes(canonicalVoteMap);
+            localStorage.setItem('mira_user_votes', JSON.stringify(canonicalVoteMap));
+            localStorage.setItem(`mira_user_votes_${userId}`, JSON.stringify(canonicalVoteMap));
 
             return {
-                likes: likeSet,
-                comments: commentLikeSet,
-                votes: voteMap
+                likes: canonicalLikeSet,
+                comments: canonicalCommentLikeSet,
+                votes: canonicalVoteMap
             };
         } catch (e) {
             console.error("MIRA: Error fetching interactions:", e);

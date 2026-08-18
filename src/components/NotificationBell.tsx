@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell, CheckCheck, MessageCircle, Heart, AtSign, Shield, Info, Trash2, ArrowRight, Briefcase, FileText, ShieldAlert, ExternalLink, X, MapPin, Building2, Calendar, Sparkles } from 'lucide-react';
 import { AppNotification } from '../services/notificationService';
+import { resolveNotificationJobUrl } from '../utils/notificationUrlHelper';
 
 interface NotificationBellProps {
   unreadCount: number;
@@ -58,8 +59,33 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     return () => document.removeEventListener('mousedown', handler);
   }, [isOpen, onToggle]);
 
+  // Acesso direto e imediato à vaga externa (1 clique)
+  const handleOpenJobDirectly = (n: AppNotification, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    onMarkRead(n.id);
+    const jobUrl = resolveNotificationJobUrl(n);
+    if (jobUrl) {
+      window.open(jobUrl, '_blank', 'noopener,noreferrer');
+      if (isOpen) onToggle();
+    } else {
+      // Fallback: se por algum motivo não achar URL externo, abre os detalhes ou MIRA
+      setSelectedNotification(n);
+      if (isOpen) onToggle();
+    }
+  };
+
   const handleNotificationClick = (n: AppNotification) => {
     onMarkRead(n.id);
+    const jobUrl = resolveNotificationJobUrl(n);
+    
+    // Se for notificação de vaga e tiver URL externa resolvida, abre direto sem intermediários
+    if (n.type === 'jobs' && jobUrl) {
+      window.open(jobUrl, '_blank', 'noopener,noreferrer');
+      if (isOpen) onToggle();
+      return;
+    }
+
+    // Caso contrário (ou notificação geral/sistema), abre modal de detalhes
     setSelectedNotification(n);
     if (isOpen) onToggle();
   };
@@ -84,10 +110,17 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       </button>
 
       {isOpen && (
-        <div className="fixed sm:absolute top-16 sm:top-12 left-3 right-3 sm:left-auto sm:right-0 sm:w-80 md:w-96 bg-white rounded-[2rem] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] border border-slate-200 p-0 z-[99999] animate-in slide-in-from-top-3 overflow-hidden max-w-[calc(100vw-24px)] text-slate-900">
+        <div className="fixed sm:absolute top-16 sm:top-12 left-3 right-3 sm:left-auto sm:right-0 sm:w-84 md:w-96 bg-white rounded-[2rem] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] border border-slate-200 p-0 z-[99999] animate-in slide-in-from-top-3 overflow-hidden max-w-[calc(100vw-24px)] text-slate-900">
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-900">Notificações</p>
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-black uppercase tracking-widest text-slate-900">Notificações</p>
+              {unreadCount > 0 && (
+                <span className="px-2 py-0.5 bg-orange-100 text-orange-700 font-extrabold text-[9px] rounded-full">
+                  {unreadCount} nova{unreadCount > 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
             {notifications.length > 0 && (
               <button
                 onClick={async (e) => {
@@ -99,45 +132,83 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 title="Apagar todas as notificações permanentemente"
               >
                 <Trash2 size={12} />
-                APAGAR NOTIFICAÇÕES
+                APAGAR TODAS
               </button>
             )}
           </div>
 
           {/* List */}
-          <div className="max-h-96 overflow-y-auto no-scrollbar divide-y divide-slate-50">
+          <div className="max-h-96 overflow-y-auto no-scrollbar divide-y divide-slate-100">
             {notifications.length === 0 ? (
-              <div className="py-10 text-center">
+              <div className="py-12 text-center">
                 <Bell size={28} className="mx-auto text-slate-200 mb-3" />
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">
                   Sem notificações
                 </p>
               </div>
             ) : (
-              notifications.map(n => (
-                <button
-                  key={n.id}
-                  onClick={() => handleNotificationClick(n)}
-                  className={`w-full text-left flex items-start gap-3 px-5 py-4 transition-all cursor-pointer ${n.is_read ? 'opacity-60 hover:bg-slate-50' : 'bg-orange-50/50 hover:bg-orange-50'}`}
-                >
-                  {/* Icon */}
-                  <div className={`mt-0.5 w-7 h-7 flex items-center justify-center rounded-xl shrink-0 ${n.is_read ? 'bg-slate-100' : 'bg-white shadow-sm'}`}>
-                    {TYPE_ICON[n.type] || TYPE_ICON.system}
-                  </div>
+              notifications.map(n => {
+                const jobUrl = resolveNotificationJobUrl(n);
+                const isJob = n.type === 'jobs' || !!jobUrl;
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-black text-slate-900 leading-tight truncate">{n.title}</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5 leading-snug line-clamp-2">{n.message}</p>
-                    <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest mt-1">{timeAgo(n.created_at)}</p>
-                  </div>
+                return (
+                  <div
+                    key={n.id}
+                    onClick={() => handleNotificationClick(n)}
+                    className={`w-full text-left p-4 transition-all cursor-pointer group hover:bg-slate-50/80 ${n.is_read ? 'opacity-70 bg-white' : 'bg-orange-50/40 hover:bg-orange-50/70 border-l-4 border-l-orange-500'}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      {/* Icon */}
+                      <div className={`mt-0.5 w-8 h-8 flex items-center justify-center rounded-xl shrink-0 ${n.is_read ? 'bg-slate-100 text-slate-500' : 'bg-white shadow-sm ring-1 ring-slate-200/50'}`}>
+                        {TYPE_ICON[n.type] || TYPE_ICON.system}
+                      </div>
 
-                  {/* Unread dot */}
-                  {!n.is_read && (
-                    <div className="w-2 h-2 bg-red-500 rounded-full shrink-0 mt-1.5 animate-pulse" />
-                  )}
-                </button>
-              ))
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <p className="text-[11px] font-black text-slate-900 leading-tight truncate">{n.title}</p>
+                          <span className="text-[9px] font-bold text-slate-400 shrink-0">{timeAgo(n.created_at)}</span>
+                        </div>
+                        <p className="text-[10px] text-slate-600 leading-snug line-clamp-2">{n.message}</p>
+                        
+                        {/* Direct Action Bar for Jobs */}
+                        {isJob && (
+                          <div className="mt-2.5 flex items-center gap-2 pt-1">
+                            <button
+                              type="button"
+                              onClick={(e) => handleOpenJobDirectly(n, e)}
+                              className="px-3 py-1.5 bg-slate-950 hover:bg-mira-orange text-white rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
+                              title="Aceder diretamente à vaga no site externo"
+                            >
+                              <ExternalLink size={11} className="shrink-0" />
+                              <span>Aceder à Vaga</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onMarkRead(n.id);
+                                setSelectedNotification(n);
+                                if (isOpen) onToggle();
+                              }}
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[9px] font-extrabold uppercase transition-all"
+                              title="Ver detalhes do alerta"
+                            >
+                              Detalhes
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Unread indicator */}
+                      {!n.is_read && !isJob && (
+                        <div className="w-2 h-2 bg-orange-500 rounded-full shrink-0 mt-1.5 animate-pulse" />
+                      )}
+                    </div>
+                  </div>
+                );
+              })
             )}
           </div>
 
@@ -221,34 +292,38 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               </div>
 
               {/* Direct VER VAGA Action Button */}
-              {selectedNotification.metadata?.sourceUrl || (selectedNotification.link && selectedNotification.link.startsWith('http')) ? (
-                <button
-                  onClick={() => {
-                    const url = selectedNotification.metadata?.sourceUrl || selectedNotification.link;
-                    if (url) {
-                      let finalUrl = url;
-                      if (!finalUrl.startsWith('http') && !finalUrl.startsWith('mailto:')) {
-                        finalUrl = `https://${finalUrl}`;
-                      }
-                      window.open(finalUrl, '_blank');
-                    }
-                    setSelectedNotification(null);
-                  }}
-                  className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
-                >
-                  <ExternalLink size={16} /> VER VAGA
-                </button>
-              ) : selectedNotification.link ? (
-                <button
-                  onClick={() => {
-                    if (onViewNotificationsPage) onViewNotificationsPage();
-                    setSelectedNotification(null);
-                  }}
-                  className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 cursor-pointer"
-                >
-                  <ExternalLink size={16} /> ABRIR NO MIRA
-                </button>
-              ) : null}
+              {(() => {
+                const jobUrl = resolveNotificationJobUrl(selectedNotification);
+                if (jobUrl) {
+                  return (
+                    <button
+                      onClick={() => {
+                        window.open(jobUrl, '_blank', 'noopener,noreferrer');
+                        setSelectedNotification(null);
+                      }}
+                      className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
+                    >
+                      <ExternalLink size={16} /> ACEDER À VAGA NA FONTE EXTERNA ↗
+                    </button>
+                  );
+                }
+
+                if (selectedNotification.link) {
+                  return (
+                    <button
+                      onClick={() => {
+                        if (onViewNotificationsPage) onViewNotificationsPage();
+                        setSelectedNotification(null);
+                      }}
+                      className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 cursor-pointer"
+                    >
+                      <ExternalLink size={16} /> ABRIR NO MIRA
+                    </button>
+                  );
+                }
+
+                return null;
+              })()}
             </div>
           </div>
         </div>
@@ -263,4 +338,5 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 };
 
 export default NotificationBell;
+
 

@@ -181,16 +181,28 @@ const CommunityViewComponent = ({
     return combined
         .filter(p => !pendingDeletes.has(p.id))
         .map(p => {
-            const isLocalLiked = likedPosts.has(p.id);
-            const isLocalSaved = savedPostsIds.has(p.id);
-            const localV = userVotes[p.id] !== undefined ? (userVotes[p.id] || undefined) : p.userVote;
+            // 🛡️ RECONCILIAÇÃO CANÓNICA SOBERANA:
+            // 1. Se há ação otimista em trânsito local para este post, usar o estado otimista imediato.
+            // 2. Caso contrário, a verdade canónica do Supabase (p.isLikedByUser / p.userVote) prevalece soberana.
+            const hasPendingLike = pendingActions.some(a => a.action === 'like' && String(a.payload.postId) === String(p.id));
+            const hasPendingVote = pendingActions.some(a => a.action === 'vote' && String(a.payload.postId) === String(p.id));
+
+            const isLiked = hasPendingLike 
+              ? likedPosts.has(p.id) 
+              : (p.isLikedByUser !== undefined ? p.isLikedByUser : likedPosts.has(p.id));
+
+            const currentVote = hasPendingVote 
+              ? userVotes[p.id] 
+              : (p.userVote !== undefined ? p.userVote : (userVotes[p.id] || undefined));
+
+            const isSaved = savedPostsIds.has(p.id) || !!p.isSaved;
             const isFollowingAuthor = followedUserIds.has(p.authorId);
             
             return {
                 ...p,
-                isLikedByUser: isLocalLiked,
-                userVote: localV,
-                isSaved: isLocalSaved,
+                isLikedByUser: isLiked,
+                userVote: currentVote,
+                isSaved: isSaved,
                 isFollowing: isFollowingAuthor,
                 likes: p.likes ?? 0,
                 usefulVotes: p.usefulVotes ?? 0,

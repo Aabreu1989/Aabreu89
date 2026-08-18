@@ -189,11 +189,6 @@ class SyncService {
                                     await communityService.toggleSavePost(item.payload.postId, item.payload.userId, !!item.payload.isRemoving);
                                 }
                                 break;
-                            case 'vote':
-                                if (item.payload.postId && item.payload.userId && item.payload.voteType) {
-                                    await communityService.vote(item.payload.postId, item.payload.userId, item.payload.voteType);
-                                }
-                                break;
                             case 'post':
                                 {
                                     const data = await communityService.createPost(item.payload);

@@ -3,6 +3,7 @@ import { Bell, Trash2, CheckCheck, X, MessageCircle, Heart, AtSign, Shield, Info
 import { AppNotification } from '../services/notificationService';
 import { ViewType } from '../types';
 import { t } from '../utils/translations';
+import { resolveNotificationJobUrl } from '../utils/notificationUrlHelper';
 
 interface NotificationCenterProps {
   notifications: AppNotification[];
@@ -62,11 +63,27 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     });
   }, [notifications, activeTab]);
 
+  const handleOpenJobDirectly = (n: AppNotification, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!n.is_read) onRead(n.id);
+    const jobUrl = resolveNotificationJobUrl(n);
+    if (jobUrl) {
+      window.open(jobUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      setSelectedNotification(n);
+    }
+  };
+
   const handleNotificationClick = (n: AppNotification) => {
-    setSelectedNotification(n);
     if (!n.is_read) {
       onRead(n.id);
     }
+    const jobUrl = resolveNotificationJobUrl(n);
+    if (n.type === 'jobs' && jobUrl) {
+      window.open(jobUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    setSelectedNotification(n);
   };
 
   const handleMarkAllAsRead = () => {
@@ -116,7 +133,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="px-4 py-2.5 bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 rounded-2xl transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest active:scale-95 shadow-sm"
+                className="px-4 py-2.5 bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 rounded-2xl transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest active:scale-95 shadow-sm cursor-pointer"
               >
                 <CheckCheck size={14} className="text-emerald-500" /> {t('notif_mark_read', language)}
               </button>
@@ -124,7 +141,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             {notifications.length > 0 && (
               <button
                 onClick={onClearAll}
-                className="px-4 py-2.5 bg-red-50 text-red-500 hover:bg-red-100 border border-red-100 rounded-2xl transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest active:scale-95 shadow-sm"
+                className="px-4 py-2.5 bg-red-50 text-red-500 hover:bg-red-100 border border-red-100 rounded-2xl transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest active:scale-95 shadow-sm cursor-pointer"
               >
                 <Trash2 size={14} /> {t('notif_clear', language)}
               </button>
@@ -135,7 +152,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         <div className="flex bg-slate-100 p-1 rounded-2xl w-full border border-slate-200/50 shadow-inner relative overflow-hidden">
           <button
             onClick={() => setActiveTab('all')}
-            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${
+            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 cursor-pointer ${
               activeTab === 'all' ? 'bg-white text-slate-950 shadow-sm border border-slate-200/40' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -143,7 +160,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('unread')}
-            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${
+            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 cursor-pointer ${
               activeTab === 'unread' ? 'bg-white text-slate-950 shadow-sm border border-slate-200/40' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -151,7 +168,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('read')}
-            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${
+            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 cursor-pointer ${
               activeTab === 'read' ? 'bg-white text-slate-950 shadow-sm border border-slate-200/40' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -184,19 +201,22 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <div className="grid grid-cols-1 gap-3.5">
             {filteredNotifications.map((n) => {
               const meta = TYPE_ICON[n.type] || TYPE_ICON.system;
+              const jobUrl = resolveNotificationJobUrl(n);
+              const isJob = n.type === 'jobs' || !!jobUrl;
+
               return (
                 <div
                   key={n.id}
                   onClick={() => handleNotificationClick(n)}
-                  className={`p-4 sm:p-5 rounded-[1.8rem] border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] flex gap-3.5 sm:gap-4 items-center justify-between group ${
+                  className={`p-4 sm:p-5 rounded-[1.8rem] border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${
                     n.is_read
                       ? 'bg-white border-slate-100 hover:bg-slate-50 opacity-80'
                       : 'bg-white border-orange-200/60 hover:bg-orange-50/20 ring-1 ring-orange-500/5'
                   }`}
                 >
-                  <div className="flex gap-3 sm:gap-4 items-start min-w-0 flex-1">
+                  <div className="flex gap-3.5 sm:gap-4 items-start min-w-0 flex-1">
                     {/* Icon Panel */}
-                    <div className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-2xl border ${meta.bg} ${meta.color} shrink-0 shadow-sm`}>
+                    <div className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-2xl border ${meta.bg} ${meta.color} shrink-0 shadow-sm`}>
                       {meta.icon}
                     </div>
 
@@ -222,9 +242,23 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     </div>
                   </div>
 
-                  {/* Action Icon Indicator */}
-                  <div className="text-slate-300 group-hover:text-slate-500 transition-colors ml-2 shrink-0">
-                    <ArrowRight size={16} />
+                  {/* Actions Panel */}
+                  <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                    {isJob ? (
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenJobDirectly(n, e)}
+                        className="px-4 py-2 bg-slate-950 hover:bg-mira-orange text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
+                        title="Aceder diretamente à vaga no site externo"
+                      >
+                        <ExternalLink size={12} />
+                        <span>Aceder à Vaga</span>
+                      </button>
+                    ) : (
+                      <div className="text-slate-300 group-hover:text-slate-500 transition-colors">
+                        <ArrowRight size={16} />
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -259,7 +293,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               </div>
               <button
                 onClick={() => setSelectedNotification(null)}
-                className="p-2.5 bg-slate-50 border border-slate-150 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all active:scale-90"
+                className="p-2.5 bg-slate-50 border border-slate-150 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all active:scale-90 cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -285,31 +319,35 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               </div>
 
               {/* Link Action Button */}
-              {selectedNotification.metadata?.sourceUrl || (selectedNotification.link && selectedNotification.link.startsWith('http')) ? (
-                <button
-                  onClick={() => {
-                    const url = selectedNotification.metadata?.sourceUrl || selectedNotification.link;
-                    if (url) {
-                      let finalUrl = url;
-                      if (!finalUrl.startsWith('http') && !finalUrl.startsWith('mailto:')) {
-                        finalUrl = `https://${finalUrl}`;
-                      }
-                      window.open(finalUrl, '_blank');
-                    }
-                    setSelectedNotification(null);
-                  }}
-                  className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
-                >
-                  <ExternalLink size={14} /> VER VAGA
-                </button>
-              ) : selectedNotification.link ? (
-                <button
-                  onClick={() => handleActionLink(selectedNotification.link!)}
-                  className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
-                >
-                  {t('notif_go_section', language)} <ExternalLink size={14} />
-                </button>
-              ) : null}
+              {(() => {
+                const jobUrl = resolveNotificationJobUrl(selectedNotification);
+                if (jobUrl) {
+                  return (
+                    <button
+                      onClick={() => {
+                        window.open(jobUrl, '_blank', 'noopener,noreferrer');
+                        setSelectedNotification(null);
+                      }}
+                      className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
+                    >
+                      <ExternalLink size={14} /> ACEDER À VAGA NA FONTE EXTERNA ↗
+                    </button>
+                  );
+                }
+
+                if (selectedNotification.link) {
+                  return (
+                    <button
+                      onClick={() => handleActionLink(selectedNotification.link!)}
+                      className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
+                    >
+                      {t('notif_go_section', language)} <ExternalLink size={14} />
+                    </button>
+                  );
+                }
+
+                return null;
+              })()}
             </div>
 
             {/* Decorative background logo blob */}
@@ -320,3 +358,4 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     </div>
   );
 };
+

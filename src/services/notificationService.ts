@@ -115,7 +115,14 @@ export const notificationService = {
       }
     }
 
-    return unified.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const sorted = unified.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    // 🛡️ REIDRATAÇÃO CANÓNICA: Se recebemos resposta remota válida, sincronizar com o cache local do dispositivo
+    if (remoteNotifs.length > 0) {
+      this.saveLocalNotifications(sorted);
+    }
+
+    return sorted;
   },
 
   /**

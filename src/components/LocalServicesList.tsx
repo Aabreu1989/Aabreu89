@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { submitReportRest } from '../services/reportService';
-import { Search, Filter, MapPin, Phone, Globe, Building2, RefreshCcw, ChevronDown, X } from 'lucide-react';
+import { Search, Filter, MapPin, Phone, Globe, Building2, RefreshCcw, ChevronDown, X, Mail } from 'lucide-react';
 import { MapAlert } from '../types';
 import { t } from '../utils/translations';
 import { PROTECTED_SERVICES } from '../utils/protectedData';
@@ -484,17 +484,28 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                                 <h3 className="text-sm sm:text-lg font-black text-slate-900 leading-tight tracking-tight uppercase group-hover:text-mira-blue transition-colors break-words" style={{ overflowWrap: 'break-word', hyphens: 'auto' }}>
                                                     {service.title}
                                                 </h3>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="w-2 h-2 rounded-full animate-pulse shrink-0" style={{ backgroundColor: getCategoryColor(service.category) }}></span>
-                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                                <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                                                    <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-lg text-[9px] font-black uppercase tracking-[0.15em] text-slate-600">
+                                                        <span className="w-2 h-2 rounded-full animate-pulse shrink-0" style={{ backgroundColor: getCategoryColor(service.category) }}></span>
                                                         {t(getCategoryKey(service.category), language)}
                                                     </span>
+                                                    {service.type && (
+                                                        <span className="px-2.5 py-1 bg-sky-50 text-sky-700 border border-sky-200/60 rounded-lg text-[9px] font-black tracking-wider uppercase">
+                                                            {service.type}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-3">
+                                        {service.description && (
+                                            <p className="text-[12px] font-medium text-slate-600 leading-relaxed bg-slate-50/80 p-3 rounded-2xl border border-slate-100">
+                                                {service.description}
+                                            </p>
+                                        )}
+
                                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-start gap-3">
                                             <div className="w-8 h-8 bg-white rounded-xl shadow-sm text-[#0ea5e9] shrink-0 flex items-center justify-center border border-slate-200">
                                                 <MapPin size={14} />
@@ -520,6 +531,19 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                                 >
                                                     <Phone size={14} className="shrink-0" />
                                                     <span className="text-[9px] font-black tracking-widest">{service.phone}</span>
+                                                </a>
+                                            )}
+                                            {service.email && (
+                                                <a
+                                                    href={`mailto:${service.email}`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        trackServiceInteraction(service, 'email');
+                                                    }}
+                                                    className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:border-[#0ea5e9] hover:text-[#0ea5e9] transition-all"
+                                                >
+                                                    <Mail size={14} className="shrink-0" />
+                                                    <span className="text-[9px] font-black tracking-widest">{service.email}</span>
                                                 </a>
                                             )}
                                             <button

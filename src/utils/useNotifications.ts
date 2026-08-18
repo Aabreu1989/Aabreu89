@@ -3,8 +3,8 @@ import { notificationService, AppNotification, NOTIFICATION_EVENT } from '../ser
 import { RealtimeChannel } from '@supabase/supabase-js';
 
 export function useNotifications(userId: string | undefined) {
-  const [notifications, setNotifications] = useState<AppNotification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState<AppNotification[]>(() => notificationService.getLocalNotifications());
+  const [unreadCount, setUnreadCount] = useState(() => notificationService.getLocalNotifications().filter(n => !n.is_read).length);
   const [isOpen, setIsOpen] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
