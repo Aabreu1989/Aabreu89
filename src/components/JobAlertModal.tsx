@@ -217,54 +217,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
     setViewMode('edit');
   };
 
-  const getEligibleJobsForScan = async (): Promise<JobPost[]> => {
-    if (jobs && jobs.length > 0) return jobs;
 
-    try {
-      const cached = localStorage.getItem('mira_jobs_cache_v2') || localStorage.getItem('mira_jobs_cache');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        const data = Array.isArray(parsed) ? parsed : (parsed?.data || []);
-        if (Array.isArray(data) && data.length > 0) return data;
-      }
-    } catch (_) {}
-
-    try {
-      const ninetyDaysAgoISO = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-      const PAGE_SIZE = 1000;
-      const pageIndexes = [0, 1, 2, 3, 4];
-      const pageQueries = pageIndexes.map(pIdx => 
-        supabase
-          .from('job_posts')
-          .select('id, title, location, source_name, source_url, created_at, category, work_topic')
-          .gte('created_at', ninetyDaysAgoISO)
-          .order('created_at', { ascending: false })
-          .range(pIdx * PAGE_SIZE, (pIdx + 1) * PAGE_SIZE - 1)
-      );
-
-      const pageResponses = await Promise.all(pageQueries);
-      const data: any[] = [];
-      pageResponses.forEach(res => {
-        if (res.data) data.push(...res.data);
-      });
-
-      return data.map(dbJob => ({
-        id: dbJob.id,
-        title: dbJob.title,
-        location: dbJob.location || 'Portugal',
-        sourceName: dbJob.source_name || 'MIRA',
-        sourceUrl: dbJob.source_url,
-        datePosted: dbJob.created_at,
-        posted_at: dbJob.created_at,
-        tags: Array.isArray((dbJob as any).tags) ? (dbJob as any).tags : [],
-        category: dbJob.category || 'Trabalho & Carreira',
-        workTopic: dbJob.work_topic || 'Outros'
-      }));
-    } catch (e) {
-      console.warn('MIRA: Fallback scan fetch error', e);
-      return [];
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,9 +254,8 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
     }
 
     // MODO CRIAÇÃO
-    setScanFeedback({ status: 'scanning', matchesCount: 0 });
     try {
-      // 1. Salvar o novo alerta
+      // 1. Salvar o novo alerta de forma atómica e instantânea
       const newAlert = await jobAlertService.saveAlert({
         workTopic,
         location,
@@ -311,36 +263,30 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
         frequency
       }, user?.id);
 
-      // Injeta imediatamente o novo alerta no estado para garantir renderização instantânea
+      // Injeta imediatamente o novo alerta no estado
       setExistingAlerts(prev => [newAlert, ...prev.filter(a => a.id !== newAlert.id)]);
 
-      // 2. Scan imediato sobre as 4.368 vagas
-      const eligibleJobs = await getEligibleJobsForScan();
-      const matchesFound = await jobAlertService.processJobMatching(eligibleJobs, user?.id);
+      // 2. Feedback visual limpo (zero notificações geradas no banco na criação)
+      const freqLabel = frequency === 'daily'
+        ? 'Enviaremos um resumo diário às 06:00 UTC com as novas oportunidades.'
+        : frequency === 'weekly'
+          ? 'Enviaremos um resumo semanal com as novas oportunidades.'
+          : 'Avisaremos em tempo real assim que novas vagas compatíveis forem publicadas.';
 
-      // 3. Feedback visual
-      if (matchesFound > 0) {
-        setScanFeedback({
-          status: 'success',
-          matchesCount: matchesFound,
-          message: `🎉 Alerta criado com sucesso! Encontrámos ${matchesFound} vaga${matchesFound > 1 ? 's' : ''} compatíveis agora mesmo.`
-        });
-      } else {
-        setScanFeedback({
-          status: 'zero',
-          matchesCount: 0,
-          message: `🔔 Alerta criado com sucesso! Nenhuma vaga compatível no momento. Iremos avisar-te assim que novas oportunidades surgirem.`
-        });
-      }
+      setScanFeedback({
+        status: 'success',
+        matchesCount: 0,
+        message: `🎉 Alerta ativado com sucesso! ${freqLabel}`
+      });
 
       setKeywords('');
       await loadAlerts();
       if (onAlertsChanged) onAlertsChanged();
-      
-      // Transitar imediatamente para a lista de alertas para exibir o novo alerta
+
+      // Transitar imediatamente para a lista de alertas
       setViewMode('list');
     } catch (err: any) {
-      console.error('MIRA: Erro ao salvar e escanear alerta:', err);
+      console.error('MIRA: Erro ao salvar alerta:', err);
       setScanFeedback({
         status: 'error',
         matchesCount: 0,

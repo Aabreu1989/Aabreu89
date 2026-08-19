@@ -479,8 +479,7 @@ export const adminService: AdminService = {
     },
 
     async syncServicesFromProtected() {
-        const { MASSIVE_SERVICES_DATABASE } = await import('../utils/massiveServicesDatabase');
-        const allServices = [...PROTECTED_SERVICES, ...MASSIVE_SERVICES_DATABASE];
+        const allServices = PROTECTED_SERVICES;
         
         const serviceMap = new Map();
         allServices.forEach(s => {

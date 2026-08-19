@@ -155,7 +155,8 @@ export const jobAlertService = {
             keywords: newAlert.keywords,
             is_active: newAlert.isActive,
             frequency: newAlert.frequency,
-            created_at: newAlert.createdAt
+            created_at: newAlert.createdAt,
+            last_notified_at: newAlert.createdAt
           })
           .select()
           .single();
@@ -475,35 +476,51 @@ export const jobAlertService = {
           if (userId && !alert.id.startsWith('alert-')) {
             // Utilizador Autenticado: Inserção Atómica Idempotente em job_alert_deliveries
             try {
-              const { error: delErr } = await supabase
+              const { data: delivery, error: delErr } = await supabase
                 .from('job_alert_deliveries')
                 .insert({
                   alert_id: alert.id,
                   job_id: job.id
-                });
+                })
+                .select('id')
+                .single();
 
               if (delErr) {
-                // Já entregue por outro scan/backend cron -> registar na memória e ignorar
-                remoteDeliveredSet.add(dedupKey);
-                this.recordDeliveredKey(dedupKey);
+                const isDuplicate =
+                  delErr.code === '23505' ||
+                  delErr.message?.includes('duplicate key') ||
+                  delErr.message?.includes('uq_alert_job_delivery');
+
+                if (isDuplicate) {
+                  // Conflito legítimo: já entregue anteriormente por outro processo/scan
+                  remoteDeliveredSet.add(dedupKey);
+                  this.recordDeliveredKey(dedupKey);
+                } else {
+                  // Falha real (Rede / RLS / 500): NÃO marcar como entregue para permitir retry futuro
+                  console.warn(`MIRA JobAlert: Falha real ao registrar delivery para ${dedupKey}:`, delErr.message || delErr);
+                }
                 continue;
               }
 
-              // Entrega registada no banco com sucesso -> criar notificação com metadados completos
+              // Entrega registada no banco com sucesso -> criar notificação
               remoteDeliveredSet.add(dedupKey);
               this.recordDeliveredKey(dedupKey);
-              newMatchesCount++;
 
-              await supabase.from('notifications').insert({
+              const { error: nErr } = await supabase.from('notifications').insert({
                 user_id: userId,
                 type: 'jobs',
                 title: notifTitle,
                 message: notifMsg,
                 is_read: false,
                 link: notifLink,
-                metadata: notifMetadata,
                 created_at: new Date().toISOString()
               });
+
+              if (nErr) {
+                console.warn('MIRA JobAlert: Supabase notification insert error:', nErr);
+              } else {
+                newMatchesCount++;
+              }
             } catch (e) {
               console.warn('MIRA JobAlert: Supabase notification insert error:', e);
             }

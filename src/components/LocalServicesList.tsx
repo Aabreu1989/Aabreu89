@@ -123,14 +123,34 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
         }
     }, [targetServiceId, services]);
 
+    const cleanDescText = (text: string | undefined): string => {
+        if (!text) return '';
+        return text
+            .replace(/📍\s*Endereço:[^\n]+/gi, '')
+            .replace(/🌐\s*Site:[^\n]+/gi, '')
+            .replace(/🏙️\s*Cidade:[^\n]+/gi, '')
+            .replace(/📞\s*Telefone:[^\n]+/gi, '')
+            .replace(/✉️\s*Email:[^\n]+/gi, '')
+            .replace(/Apoio ao Migrante/gi, '')
+            .replace(/\n+/g, ' ')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
+    };
+
     const fetchServices = async () => {
         // 🛡️ MIRA ANTI-FLICKER: Prevent duplicate fetches
         if (hasFetchedRef.current) return;
         hasFetchedRef.current = true;
         setError(null);
 
-        // 1. Tentar carregar do cache local para resposta rápida
-        const cached = localStorage.getItem('mira_services_cache_v2') || localStorage.getItem('mira_services_cache');
+        // Limpar caches antigos corrompidos
+        try {
+            localStorage.removeItem('mira_services_cache');
+            localStorage.removeItem('mira_services_cache_v2');
+        } catch (e) { }
+
+        // 1. Tentar carregar do cache local v3 para resposta rápida
+        const cached = localStorage.getItem('mira_services_cache_v3');
         if (cached) {
             try {
                 const parsed = JSON.parse(cached);
@@ -143,7 +163,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                         const normKey = (ps.title || ps.name || '').toLowerCase().replace(/[^a-z0-9à-ú]/g, '');
                         if (!seen.has(normKey)) {
                             seen.add(normKey);
-                            dedup.push({ ...ps, category: normalizeCategory(ps.category, ps.title) });
+                            dedup.push({ ...ps, category: normalizeCategory(ps.category, ps.title), description: cleanDescText(ps.description) });
                         }
                     });
                     // Cache recente (< 10 min): usar direto, sem novo fetch
@@ -191,95 +211,75 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
 
             let mappedData: MapAlert[] = [];
             if (data && Array.isArray(data)) {
-                mappedData = data.map(item => {
-                    const rawTitle = item.name || item.title || 'Serviço';
-                    const rawAddr = item.address || item.description || 'Morada não disponível';
-                    const rawDesc = item.description || '';
-                    
-                    const extractField = (text: string, markers: string[]): string => {
-                        if (!text) return '';
-                        for (const marker of markers) {
-                            const index = text.indexOf(marker);
-                            if (index !== -1) {
-                                return text.substring(index + marker.length).split('\n')[0].trim();
-                            }
+                mappedData = data
+                    .filter(item => {
+                        const name = item.name || item.title || '';
+                        // Rejeitar registos obsoletos (como ACM) e registos sem morada
+                        if (name.toUpperCase().includes('ACM') || !item.address || item.address.trim().length < 4) {
+                            return false;
                         }
-                        return '';
-                    };
+                        return true;
+                    })
+                    .map(item => {
+                        const rawTitle = item.name || item.title || 'Serviço';
+                        const rawAddr = item.address || '';
+                        const rawDesc = cleanDescText(item.description || '');
 
-                    const detectedCity = item.city || extractField(rawDesc, ['🏙️ Cidade:', 'Cidade:']) || 'Portugal';
-                    const detectedPhone = item.phone || extractField(rawDesc, ['📞 Telefone:', '📞 Tel:', 'Telefone:']) || '';
-                    const detectedEmail = item.email || extractField(rawDesc, ['✉️ Email:', '✉️ E-mail:', 'Email:']) || '';
-                    
-                    const cleanAddr = (addr: string, title: string) => {
-                        let text = addr;
-                        if (title && title.length > 5) {
-                            const escapedTitle = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                            text = text.replace(new RegExp(escapedTitle, 'gi'), '');
-                        }
-                        text = text.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/gi, '');
-                        // 🛡️ MIRA SOBERANIA: Remoção agressiva de termos redundantes nos endereços
-                        text = text.replace(/(Centro\s+de\s+)?Apoio\s+(ao\s+)?(E?migrante|Imigrante|Família|Cidadão)/gi, '');
-                        text = text.replace(/Serviço\s+de\s+Apoio/gi, '');
-                        text = text.replace(/Apenas Online|Online:|🌐|📍|🏙️|Endereço:|Site:|Cidade:/gi, '');
-                        text = text.replace(/Portugal$/gi, '');
-                        return text.replace(/\s{2,}/g, ' ').replace(/^[,\-\s\–]+|[,\-\s\–]+$/g, '').trim();
-                    };
+                        const detectedCity = item.city || 'Portugal';
+                        const detectedPhone = item.phone || '';
+                        const detectedEmail = item.email || '';
+                        const finalWebsite = item.website || '';
+                        const finalCategory = normalizeCategory(item.category, rawTitle);
 
-                    const cleanTitle = (t: string) => {
-                        return t.replace(/📍|🌐|🏙️|Endereço:|Site:|Cidade:/gi, '').replace(/\s{2,}/g, ' ').trim();
-                    };
-
-                    const finalTitle = cleanTitle(rawTitle);
-                    
-                    // 🌐 MIRA URL RECOVERY: Extrair o site da morada original ANTES de a limpar
-                    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
-                    const embeddedUrl = rawAddr.match(urlRegex)?.[0] || null;
-                    const finalWebsite = item.website || embeddedUrl || '';
-
-                    const finalCategory = normalizeCategory(item.category, rawTitle);
-
-                    return {
-                        id: item.id || Math.random().toString(),
-                        title: finalTitle,
-                        category: finalCategory,
-                        lat: Number(item.lat) || Number(item.latitude) || 0,
-                        lng: Number(item.lng) || Number(item.longitude) || 0,
-                        distance: 'N/A',
-                        address: cleanAddr(rawAddr, finalTitle),
-                        city: detectedCity,
-                        phone: detectedPhone,
-                        email: detectedEmail,
-                        website: finalWebsite,
-                        description: rawDesc,
-                        avgRating: 0,
-                        ratings: []
-                    };
-                });
+                        return {
+                            id: item.id || Math.random().toString(),
+                            title: rawTitle,
+                            category: finalCategory,
+                            lat: Number(item.lat) || Number(item.latitude) || 0,
+                            lng: Number(item.lng) || Number(item.longitude) || 0,
+                            distance: 'N/A',
+                            address: rawAddr,
+                            city: detectedCity,
+                            phone: detectedPhone,
+                            email: detectedEmail,
+                            website: finalWebsite,
+                            description: rawDesc,
+                            avgRating: 5.0,
+                            ratings: []
+                        };
+                    });
             }
 
-            // 🛡️ MIRA SOBERANIA: Deduplicação Estrita por Título Normalizado
-            const seenKeys = new Set<string>();
-            const deduplicatedServices: MapAlert[] = [];
+            // 🛡️ MIRA SOBERANIA: Prioridade Absoluta para Dados Protegidos Curados (Moradas e Descrições)
+            const seenKeys = new Map<string, MapAlert>();
 
-            const addUniqueService = (srv: MapAlert) => {
-                const normKey = (srv.title || '').toLowerCase().replace(/[^a-z0-9à-ú]/g, '');
-                if (normKey && seenKeys.has(normKey)) return;
-                if (normKey) seenKeys.add(normKey);
-                deduplicatedServices.push(srv);
-            };
-
-            mappedData.forEach(addUniqueService);
+            // 1. Inserir primeiro a base de dados curada com moradas e descrições completas
             PROTECTED_SERVICES.forEach(ps => {
-                addUniqueService({ ...ps, category: normalizeCategory(ps.category, ps.title) });
+                const normKey = (ps.title || '').toLowerCase().replace(/[^a-z0-9à-ú]/g, '');
+                if (normKey) {
+                    seenKeys.set(normKey, {
+                        ...ps,
+                        category: normalizeCategory(ps.category, ps.title),
+                        description: cleanDescText(ps.description)
+                    });
+                }
             });
 
-            // 🛡️ ANTI-FLICKER: Só atualiza o estado uma única vez, só se houver mais serviços
-            setServices(prev => 
-                deduplicatedServices.length > prev.length ? deduplicatedServices : prev
-            );
+            // 2. Adicionar apenas novos serviços válidos que não existam na base protegida
+            mappedData.forEach(srv => {
+                const normKey = (srv.title || '').toLowerCase().replace(/[^a-z0-9à-ú]/g, '');
+                if (!normKey) return;
+                if (!seenKeys.has(normKey)) {
+                    seenKeys.set(normKey, srv);
+                }
+            });
+
+            const deduplicatedServices = Array.from(seenKeys.values());
+
+            // 🛡️ ANTI-FLICKER: Só atualiza o estado se houver dados consistentes
+            setServices(deduplicatedServices);
             
-            localStorage.setItem('mira_services_cache_v2', JSON.stringify({
+            localStorage.setItem('mira_services_cache_v3', JSON.stringify({
                 timestamp: Date.now(),
                 data: deduplicatedServices
             }));
@@ -514,7 +514,6 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{t('map_located_at', language)}</p>
                                                 <p className="text-[11px] font-bold text-slate-900 leading-relaxed max-w-[90%]">
                                                     {service.address}
-                                                    {service.city && !service.address?.toLowerCase().includes(service.city.toLowerCase()) && `, ${service.city}`}
                                                 </p>
                                             </div>
                                         </div>

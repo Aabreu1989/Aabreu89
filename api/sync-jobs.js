@@ -500,42 +500,50 @@ export default async function handler(req, res) {
     }
   }
 
-  // 5. Matching imediato com Alertas do Utilizador -> Central de Notificações
+  // 5. Matching Server-Side & Motor de Digest Determinístico MIRA V2026.GOLD
   let notificationsCount = 0;
   let activeAlertsCount = 0;
 
-  if (insertedJobs.length > 0) {
-    try {
-      const { data: activeAlerts } = await supabase
-        .from('user_job_alerts')
-        .select('*')
-        .eq('is_active', true);
+  try {
+    const { data: activeAlerts } = await supabase
+      .from('user_job_alerts')
+      .select('*')
+      .eq('is_active', true);
 
-      if (activeAlerts && activeAlerts.length > 0) {
-        activeAlertsCount = activeAlerts.length;
+    if (activeAlerts && activeAlerts.length > 0) {
+      activeAlertsCount = activeAlerts.length;
+
+      // 5.1 Processar Matching exclusivamente para as Vagas Novas Ingeridas (insertedJobs)
+      if (insertedJobs.length > 0) {
         const candidates = [];
 
-        // 1. Identificar candidatos a match
         for (const alert of activeAlerts) {
           if (!alert.user_id) continue;
-          
+
           for (const job of insertedJobs) {
+            // Barreira Temporal: Vaga deve ter sido publicada/ingerida a partir da criação do alerta
+            if (alert.created_at && job.created_at) {
+              if (new Date(job.created_at) < new Date(alert.created_at)) {
+                continue;
+              }
+            }
+
             if (evaluateMatch(job, alert)) {
               candidates.push({
                 alert_id: alert.id,
                 job_id: job.id,
                 user_id: alert.user_id,
+                frequency: alert.frequency || 'instant',
                 jobTitle: job.title,
                 jobSource: job.source_name || 'MIRA',
                 jobLocation: job.location || 'Portugal',
-                jobSourceUrl: job.source_url || '',
                 alertTopic: alert.work_topic || 'Emprego'
               });
             }
           }
         }
 
-        // 2. Inserção idempotente atómica em job_alert_deliveries com ON CONFLICT DO NOTHING
+        // Inserção idempotente atómica em job_alert_deliveries
         for (const cand of candidates) {
           try {
             const { data: delivery, error: delError } = await supabase
@@ -547,34 +555,160 @@ export default async function handler(req, res) {
               .select('id')
               .single();
 
-            // Somente se a entrega for realmente NOVA, criar a notificação para o user_id
-            if (!delError && delivery) {
-              await supabase.from('notifications').insert({
-                user_id: cand.user_id,
-                type: 'jobs',
-                title: `💼 Nova Vaga Compatível: ${cand.jobTitle}`,
-                message: `${cand.jobSource} • ${cand.jobLocation}\nCorrespondência com o teu alerta de ${cand.alertTopic}.`,
-                is_read: false,
-                link: `/jobs?jobId=${encodeURIComponent(cand.job_id)}`,
-                metadata: {
-                  jobId: cand.job_id,
-                  sourceUrl: cand.jobSourceUrl || '',
-                  sourceName: cand.jobSource,
-                  location: cand.jobLocation,
-                  workTopic: cand.alertTopic
-                },
-                created_at: new Date().toISOString()
-              });
-              notificationsCount++;
+            if (delError) {
+              const isDuplicate =
+                delError.code === '23505' ||
+                delError.message?.includes('duplicate key') ||
+                delError.message?.includes('uq_alert_job_delivery');
+
+              if (!isDuplicate) {
+                console.warn(`[SyncJobs] Erro real ao registrar delivery (${cand.alert_id}:${cand.job_id}):`, delError.message || delError);
+              }
+              continue;
+            }
+
+            // Se a entrega for NOVA:
+            if (delivery) {
+              // ⚡ Frequência Instantânea: Dispara notificação individual imediatamente
+              if (cand.frequency === 'instant') {
+                const { error: notifErr } = await supabase.from('notifications').insert({
+                  user_id: cand.user_id,
+                  type: 'jobs',
+                  title: `💼 Nova Vaga Compatível: ${cand.jobTitle}`,
+                  message: `${cand.jobSource} • ${cand.jobLocation}\nCorrespondência com o teu alerta de ${cand.alertTopic}.`,
+                  is_read: false,
+                  link: `/jobs?jobId=${encodeURIComponent(cand.job_id)}`,
+                  created_at: new Date().toISOString()
+                });
+
+                if (notifErr) {
+                  console.warn(`[SyncJobs] Erro ao registrar notificação instantânea para user ${cand.user_id}:`, notifErr.message || notifErr);
+                } else {
+                  notificationsCount++;
+                }
+              }
+              // 📦 Frequências Diária e Semanal: Apenas gravam delivery, aguardando o Digest Engine abaixo
             }
           } catch (delErr) {
-            // Conflito UNIQUE (alert_id, job_id) -> já entregue, ignorar com segurança
+            console.warn(`[SyncJobs] Exceção inesperada no delivery loop:`, delErr);
           }
         }
       }
-    } catch (alertErr) {
-      console.warn('⚠️ Alerta Matching Warning:', alertErr.message);
+
+      // 5.2 Motor de Digest Determinístico Server-Side (Daily & Weekly)
+      const now = new Date();
+      const todayUtcStr = now.toISOString().split('T')[0];
+      const dailyDigestKey = `daily-${todayUtcStr}`;
+
+      // Calcular semana ISO (ex: weekly-2026-W34)
+      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      const weeklyDigestKey = `weekly-${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+      const isMonday = (now.getUTCDay() === 1);
+
+      // A) Processar Alertas Diários (Daily Digest)
+      const dailyAlerts = activeAlerts.filter(a => a.frequency === 'daily');
+      for (const alert of dailyAlerts) {
+        try {
+          const digestLink = `/jobs?topic=${encodeURIComponent(alert.work_topic || 'Emprego')}&digest=${dailyDigestKey}&alertId=${alert.id}`;
+          const cutoff = alert.last_notified_at || alert.created_at || new Date(0).toISOString();
+
+          const { count: pendingCount, error: countErr } = await supabase
+            .from('job_alert_deliveries')
+            .select('id', { count: 'exact', head: true })
+            .eq('alert_id', alert.id)
+            .gt('delivered_at', cutoff);
+
+          if (!countErr && pendingCount && pendingCount > 0) {
+            const { error: notifErr } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: alert.user_id,
+                type: 'jobs',
+                title: `💼 Resumo Diário: ${pendingCount} Novas Vagas Compatíveis`,
+                message: `Encontrámos ${pendingCount} nova${pendingCount > 1 ? 's' : ''} oportunidade${pendingCount > 1 ? 's' : ''} hoje para o teu alerta de ${alert.work_topic || 'Emprego'}.`,
+                is_read: false,
+                link: digestLink,
+                created_at: new Date().toISOString()
+              });
+
+            if (notifErr) {
+              const isDigestDuplicate =
+                notifErr.code === '23505' ||
+                notifErr.message?.includes('duplicate key') ||
+                notifErr.message?.includes('uq_notifications_digest');
+
+              if (!isDigestDuplicate) {
+                console.warn(`[SyncJobs] Erro ao emitir digest diário (${alert.id}):`, notifErr.message);
+              }
+            } else {
+              await supabase
+                .from('user_job_alerts')
+                .update({ last_notified_at: new Date().toISOString() })
+                .eq('id', alert.id);
+              notificationsCount++;
+            }
+          }
+        } catch (dErr) {
+          console.warn(`[SyncJobs] Exceção no daily digest (${alert.id}):`, dErr);
+        }
+      }
+
+      // B) Processar Alertas Semanais (Weekly Digest - Segundas-feiras)
+      if (isMonday) {
+        const weeklyAlerts = activeAlerts.filter(a => a.frequency === 'weekly');
+        for (const alert of weeklyAlerts) {
+          try {
+            const weeklyLink = `/jobs?topic=${encodeURIComponent(alert.work_topic || 'Emprego')}&digest=${weeklyDigestKey}&alertId=${alert.id}`;
+            const cutoff = alert.last_notified_at || alert.created_at || new Date(0).toISOString();
+
+            const { count: pendingCount, error: countErr } = await supabase
+              .from('job_alert_deliveries')
+              .select('id', { count: 'exact', head: true })
+              .eq('alert_id', alert.id)
+              .gt('delivered_at', cutoff);
+
+            if (!countErr && pendingCount && pendingCount > 0) {
+              const { error: notifErr } = await supabase
+                .from('notifications')
+                .insert({
+                  user_id: alert.user_id,
+                  type: 'jobs',
+                  title: `💼 Resumo Semanal: ${pendingCount} Novas Vagas Compatíveis`,
+                  message: `Encontrámos ${pendingCount} nova${pendingCount > 1 ? 's' : ''} oportunidade${pendingCount > 1 ? 's' : ''} esta semana para o teu alerta de ${alert.work_topic || 'Emprego'}.`,
+                  is_read: false,
+                  link: weeklyLink,
+                  created_at: new Date().toISOString()
+                });
+
+              if (notifErr) {
+                const isDigestDuplicate =
+                  notifErr.code === '23505' ||
+                  notifErr.message?.includes('duplicate key') ||
+                  notifErr.message?.includes('uq_notifications_digest');
+
+                if (!isDigestDuplicate) {
+                  console.warn(`[SyncJobs] Erro ao emitir digest semanal (${alert.id}):`, notifErr.message);
+                }
+              } else {
+                await supabase
+                  .from('user_job_alerts')
+                  .update({ last_notified_at: new Date().toISOString() })
+                  .eq('id', alert.id);
+                notificationsCount++;
+              }
+            }
+          } catch (wErr) {
+            console.warn(`[SyncJobs] Exceção no weekly digest (${alert.id}):`, wErr);
+          }
+        }
+      }
     }
+  } catch (alertErr) {
+    console.warn('⚠️ Alerta Matching & Digest Warning:', alertErr.message);
   }
 
   // 6. Contagem total final na base de dados
