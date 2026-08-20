@@ -40,6 +40,55 @@ function canonicalizeUrl(url) {
   }
 }
 
+function cleanTextEncoding(str) {
+  if (!str || typeof str !== 'string') return '';
+  let s = str;
+  // Entidades numéricas
+  s = s.replace(/&#(\d+);/g, (m, dec) => {
+    try { return String.fromCodePoint(parseInt(dec, 10)); } catch { return m; }
+  });
+  s = s.replace(/&#x([0-9a-fA-F]+);/g, (m, hex) => {
+    try { return String.fromCodePoint(parseInt(hex, 16)); } catch { return m; }
+  });
+  // Entidades nomeadas
+  const htmlNamed = {
+    '&amp;': '&', '&apos;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>',
+    '&nbsp;': ' ', '&ndash;': '–', '&mdash;': '—',
+    '&ccedil;': 'ç', '&Ccedil;': 'Ç', '&atilde;': 'ã', '&Atilde;': 'Ã',
+    '&otilde;': 'õ', '&Otilde;': 'Õ', '&aacute;': 'á', '&Aacute;': 'Á',
+    '&eacute;': 'é', '&Eacute;': 'É', '&iacute;': 'í', '&Iacute;': 'Í',
+    '&oacute;': 'ó', '&Oacute;': 'Ó', '&uacute;': 'ú', '&Uacute;': 'Ú',
+    '&acirc;': 'â', '&Acirc;': 'Â', '&ecirc;': 'ê', '&Ecirc;': 'Ê',
+    '&ocirc;': 'ô', '&Ocirc;': 'Ô'
+  };
+  for (const [k, v] of Object.entries(htmlNamed)) {
+    s = s.replaceAll(k, v);
+  }
+  // Mojibake
+  const mojibake = {
+    'Ã¡': 'á', 'Ã ': 'à', 'Ã¢': 'â', 'Ã£': 'ã', 'Ã¤': 'ä',
+    'Ã ': 'Á', 'Ã€': 'À', 'Ã‚': 'Â', 'Ãƒ': 'Ã', 'Ã„': 'Ä',
+    'Ã©': 'é', 'Ã¨': 'è', 'Ãª': 'ê', 'Ã«': 'ë',
+    'Ã‰': 'É', 'Ãˆ': 'È', 'ÃŠ': 'Ê', 'Ã‹': 'Ë',
+    'Ã­': 'í', 'Ã¬': 'ì', 'Ã®': 'î', 'Ã¯': 'ï',
+    'Ã ': 'Í', 'ÃŒ': 'Ì', 'ÃŽ': 'Î', 'Ã ': 'Ï',
+    'Ã³': 'ó', 'Ã²': 'ò', 'Ã´': 'ô', 'Ãµ': 'õ', 'Ã¶': 'ö',
+    'Ã“': 'Ó', 'Ã’': 'Ò', 'Ã”': 'Ô', 'Ã•': 'Õ', 'Ã–': 'Ö',
+    'Ãº': 'ú', 'Ã¹': 'ù', 'Ã»': 'û', 'Ã¼': 'ü',
+    'Ãš': 'Ú', 'Ã™': 'Ù', 'Ã›': 'Û', 'Ãœ': 'Ü',
+    'Ã§': 'ç', 'Ã‡': 'Ç', 'Ã±': 'ñ', 'Ã‘': 'Ñ',
+    'â‚¬': '€', 'â€“': '–', 'â€”': '—',
+    'â€˜': "'", 'â€™': "'", 'â€œ': '"', 'â€ ': '"',
+    'â€¢': '•', 'â€¦': '…',
+    'Âº': 'º', 'Âª': 'ª', 'Â°': '°', 'Â«': '«', 'Â»': '»',
+    'Â©': '©', 'Â®': '®', 'Â§': '§'
+  };
+  for (const [k, v] of Object.entries(mojibake)) {
+    s = s.replaceAll(k, v);
+  }
+  return s.replace(/\s+/g, ' ').trim();
+}
+
 // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 // RSS FEED SOURCES ΓÇö Sites que t├¬m feeds RSS/Atom p├║blicos
 // Cada item RSS tem: t├¡tulo da vaga, link DIRECTO, localiza├º├úo
@@ -998,8 +1047,8 @@ async function main() {
 
   for (let i = 0; i < newJobs.length; i += BATCH) {
     const batch = newJobs.slice(i, i + BATCH).map(j => ({
-      title: j.title,
-      location: j.location || 'Portugal',
+      title: cleanTextEncoding(j.title),
+      location: cleanTextEncoding(j.location || 'Portugal'),
       source_name: j.sourceName,
       source_url: canonicalizeUrl(j.sourceUrl),
       work_topic: j.workTopic || 'Outros',

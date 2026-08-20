@@ -12,6 +12,55 @@ import JobItem from './JobItem';
 import { JobAlertModal } from './JobAlertModal';
 import { jobAlertService } from '../services/jobAlertService';
 
+export function decodeJobText(str: string | undefined | null): string {
+  if (!str) return '';
+  let s = str;
+  // Entidades numéricas
+  s = s.replace(/&#(\d+);/g, (m, dec) => {
+    try { return String.fromCodePoint(parseInt(dec, 10)); } catch { return m; }
+  });
+  s = s.replace(/&#x([0-9a-fA-F]+);/g, (m, hex) => {
+    try { return String.fromCodePoint(parseInt(hex, 16)); } catch { return m; }
+  });
+  // Entidades nomeadas
+  const htmlNamed: Record<string, string> = {
+    '&amp;': '&', '&apos;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>',
+    '&nbsp;': ' ', '&ndash;': '–', '&mdash;': '—',
+    '&ccedil;': 'ç', '&Ccedil;': 'Ç', '&atilde;': 'ã', '&Atilde;': 'Ã',
+    '&otilde;': 'õ', '&Otilde;': 'Õ', '&aacute;': 'á', '&Aacute;': 'Á',
+    '&eacute;': 'é', '&Eacute;': 'É', '&iacute;': 'í', '&Iacute;': 'Í',
+    '&oacute;': 'ó', '&Oacute;': 'Ó', '&uacute;': 'ú', '&Uacute;': 'Ú',
+    '&acirc;': 'â', '&Acirc;': 'Â', '&ecirc;': 'ê', '&Ecirc;': 'Ê',
+    '&ocirc;': 'ô', '&Ocirc;': 'Ô'
+  };
+  for (const [k, v] of Object.entries(htmlNamed)) {
+    s = s.replaceAll(k, v);
+  }
+  // Mojibake
+  const mojibake: Record<string, string> = {
+    'Ã¡': 'á', 'Ã ': 'à', 'Ã¢': 'â', 'Ã£': 'ã', 'Ã¤': 'ä',
+    'Ã€': 'À', 'Ã‚': 'Â', 'Ãƒ': 'Ã', 'Ã„': 'Ä',
+    'Ã©': 'é', 'Ã¨': 'è', 'Ãª': 'ê', 'Ã«': 'ë',
+    'Ã‰': 'É', 'Ãˆ': 'È', 'ÃŠ': 'Ê', 'Ã‹': 'Ë',
+    'Ã­': 'í', 'Ã¬': 'ì', 'Ã®': 'î', 'Ã¯': 'ï',
+    'ÃŒ': 'Ì', 'ÃŽ': 'Î',
+    'Ã³': 'ó', 'Ã²': 'ò', 'Ã´': 'ô', 'Ãµ': 'õ', 'Ã¶': 'ö',
+    'Ã“': 'Ó', 'Ã’': 'Ò', 'Ã”': 'Ô', 'Ã•': 'Õ', 'Ã–': 'Ö',
+    'Ãº': 'ú', 'Ã¹': 'ù', 'Ã»': 'û', 'Ã¼': 'ü',
+    'Ãš': 'Ú', 'Ã™': 'Ù', 'Ã›': 'Û', 'Ãœ': 'Ü',
+    'Ã§': 'ç', 'Ã‡': 'Ç', 'Ã±': 'ñ', 'Ã‘': 'Ñ',
+    'â‚¬': '€', 'â€“': '–', 'â€”': '—',
+    'â€˜': "'", 'â€™': "'", 'â€œ': '"', 'â€ ': '"',
+    'â€¢': '•', 'â€¦': '…',
+    'Âº': 'º', 'Âª': 'ª', 'Â°': '°', 'Â«': '«', 'Â»': '»',
+    'Â©': '©', 'Â®': '®', 'Â§': '§'
+  };
+  for (const [k, v] of Object.entries(mojibake)) {
+    s = s.replaceAll(k, v);
+  }
+  return s.replace(/\s+/g, ' ').trim();
+}
+
 function isSpamOrBlog(title: string, url: string): boolean {
   if (!url) return false;
   const lowerUrl = url.toLowerCase();
@@ -498,8 +547,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
             return {
               id: dbJob.id,
-              title: dbJob.title || t('jobs_no_title', language),
-              location: dbJob.location || 'Portugal',
+              title: decodeJobText(dbJob.title) || t('jobs_no_title', language),
+              location: decodeJobText(dbJob.location) || 'Portugal',
               sourceName: dbJob.source_name || 'MIRA',
               sourceUrl: dbJob.source_url,
               datePosted: displayDate,
