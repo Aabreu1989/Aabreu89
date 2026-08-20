@@ -267,7 +267,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const [currentPage, setCurrentPage] = useState(1);
   const jobListTopRef = React.useRef<HTMLDivElement>(null);
   
-  const [totalPlatformJobs, setTotalPlatformJobs] = useState<number>(() => Math.max(initialJobs.length, 5280));
+  // 🔒 MIRA GOLD: totalPlatformJobs SEMPRE começa null — só recebe valor via COUNT(*) real do Supabase
+  const [totalPlatformJobs, setTotalPlatformJobs] = useState<number | null>(null);
   const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts(user?.id).filter(a => a.isActive).length);
@@ -441,50 +442,35 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         try {
           const parsed = JSON.parse(cached);
           const data = Array.isArray(parsed) ? parsed : (parsed?.data || []);
-          const cachedTotal = parsed?.totalPlatformJobs || 0;
           const cachedGrowth = parsed?.jobsGrowth || null;
           
           if (Array.isArray(data) && data.length > 0) {
+            // 🔒 MIRA GOLD: cache restaura a LISTA de vagas para reduzir latência perceptível,
+            // mas NUNCA fornece o totalPlatformJobs — esse valor vem exclusivamente do COUNT(*) real.
+            // NÃO retornamos aqui: a query de COUNT(*) prossegue sempre.
             setJobs(data);
-            setTotalPlatformJobs(cachedTotal || 0);
             if (cachedGrowth) setJobsGrowth(cachedGrowth);
             setLoading(false);
-            hasLoadedFromCache = true;
-
-            // Se o cache tiver menos de 5 minutos, não fazemos novo fetch em background
-            const timestamp = parsed?.timestamp || 0;
-            if (timestamp && Date.now() - timestamp < 300000) {
-              return;
-            }
           }
         } catch (e) { }
       }
     }
 
     try {
-      // 📊 MIRA INSIGHTS: Fetch platform totals and trend with short timeout
+      // 🔒 MIRA GOLD: COUNT(*) sem timeout artificial — aguarda sempre a resposta real do Supabase.
+      // Se a rede demorar 1s ou 2s, espera-se. Nunca se inventa outro número.
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
-
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout 500ms')), 500)
-      );
-
-      const countPromise = Promise.all([
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }),
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo),
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).gte('created_at', fourteenDaysAgo).lt('created_at', sevenDaysAgo)
-      ]);
 
       const [
         { count: totalCount },
         { count: recentCount },
         { count: prevCount }
-      ] = await Promise.race([countPromise, timeoutPromise]).catch(() => [
-        { count: null },
-        { count: null },
-        { count: null }
+      ] = await Promise.all([
+        supabase.from('job_posts').select('id', { count: 'exact', head: true }),
+        supabase.from('job_posts').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo),
+        supabase.from('job_posts').select('id', { count: 'exact', head: true }).gte('created_at', fourteenDaysAgo).lt('created_at', sevenDaysAgo)
       ]);
 
       if (totalCount !== null && totalCount !== undefined) {
@@ -562,8 +548,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
       // Única fonte de verdade: Supabase job_posts
       const finalJobs = formattedJobs.length > 0 ? formattedJobs : initialJobs;
-      const totalCalculated = totalCount !== null && totalCount !== undefined ? totalCount : finalJobs.length;
-      setTotalPlatformJobs(totalCalculated);
+      // 🔒 MIRA GOLD: setTotalPlatformJobs SÓ é chamado se COUNT(*) real retornou valor.
+      // Já foi feito acima. Aqui apenas atualizamos a lista de vagas.
       setJobs(finalJobs);
       
       // 🚀 Desacoplamento não-bloqueante: processar matching de alertas em microtask/background
@@ -571,11 +557,11 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         jobAlertService.processJobMatching(finalJobs, user?.id);
       }, 50);
       
-      // Guardar estrutura completa em cache local com timestamp TTL
+      // Guardar estrutura de LISTA em cache local para acelerar renderização inicial futura.
+      // 🔒 NÃO persistimos o totalPlatformJobs no cache — ele é sempre lido diretamente do Supabase.
       const cacheObj = {
           timestamp: Date.now(),
           data: finalJobs,
-          totalPlatformJobs: totalCalculated,
           jobsGrowth: computedGrowth
       };
       localStorage.setItem('mira_jobs_cache_v2', JSON.stringify(cacheObj));
@@ -905,7 +891,11 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               <div className="bg-white p-4 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-sky-500" />
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Briefcase size={10} className="text-sky-500" /> {t('jobs_active_title', language)}</span>
-                <span className="text-xl font-black font-mono text-slate-800 tracking-tighter mt-1">+{totalPlatformJobs > 0 ? totalPlatformJobs : filteredJobs.length}</span>
+                {totalPlatformJobs !== null ? (
+                  <span className="text-xl font-black font-mono text-slate-800 tracking-tighter mt-1">+{totalPlatformJobs.toLocaleString('pt-PT')}</span>
+                ) : (
+                  <span className="text-xl font-black font-mono text-slate-400 tracking-tighter mt-1 animate-pulse">••••</span>
+                )}
               </div>
               
               {/* Metric 2: Average Estimated Salary */}
@@ -1275,7 +1265,11 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                   <div className="flex-1 sm:flex-none bg-slate-50 border border-slate-200/60 px-5 py-4 rounded-2xl flex flex-col justify-center min-w-[120px] sm:min-w-[130px] relative overflow-hidden group">
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-mira-orange" />
                     <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">{t('jobs_active_offers', language)}</span>
-                    <span className="text-xl font-black font-mono text-slate-800 leading-none tracking-tighter">+{totalPlatformJobs > 0 ? totalPlatformJobs : totalActiveOffers}</span>
+                    {totalPlatformJobs !== null ? (
+                      <span className="text-xl font-black font-mono text-slate-800 leading-none tracking-tighter">+{totalPlatformJobs.toLocaleString('pt-PT')}</span>
+                    ) : (
+                      <span className="text-xl font-black font-mono text-slate-400 leading-none tracking-tighter animate-pulse">••••</span>
+                    )}
                     {jobsGrowth && (
                         <div className={`mt-2 text-[9px] font-black flex items-center gap-1 ${jobsGrowth.trend === 'up' ? 'text-emerald-500' : jobsGrowth.trend === 'down' ? 'text-rose-500' : 'text-slate-500'}`}>
                             {jobsGrowth.trend === 'up' ? <TrendingUp size={10} strokeWidth={3} /> : jobsGrowth.trend === 'down' ? <TrendingDown size={10} strokeWidth={3} /> : <Minus size={10} strokeWidth={3} />}
