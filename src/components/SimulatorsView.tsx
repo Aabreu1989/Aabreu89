@@ -882,73 +882,87 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
         </div>
       </div>
 
-      {/* ── TAB BAR FOR ALL 6 CORE SIMULATORS ───────────────────────────── */}
-      <div className="flex border-b border-slate-200 bg-white relative z-10 overflow-x-auto no-scrollbar shrink-0">
-        <button
-          onClick={() => { setActiveTab('salary_outrem'); setSalaryRegime('outrem'); }}
-          className={`px-3 sm:px-4 py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all whitespace-nowrap ${
-            activeTab === 'salary_outrem' 
-              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          {tLocal('tab_1_salary')}
-        </button>
+      {/* ── TAB BAR FOR ALL 6 CORE SIMULATORS (RESPONSIVE GRID — ZERO HORIZONTAL SCROLL) ───────────────────────────── */}
+      <div className="p-2.5 sm:p-3 bg-white border-b border-slate-200/80 relative z-10 shrink-0 shadow-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 sm:gap-2">
+          {/* Tab 1 */}
+          <button
+            type="button"
+            onClick={() => { setActiveTab('salary_outrem'); setSalaryRegime('outrem'); }}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'salary_outrem' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_1_salary')}</span>
+          </button>
 
-        <button
-          onClick={() => { setActiveTab('salary_recibos'); setSalaryRegime('recibos'); }}
-          className={`px-3 sm:px-4 py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all whitespace-nowrap ${
-            activeTab === 'salary_recibos' 
-              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          {tLocal('tab_2_recibos')}
-        </button>
+          {/* Tab 2 */}
+          <button
+            type="button"
+            onClick={() => { setActiveTab('salary_recibos'); setSalaryRegime('recibos'); }}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'salary_recibos' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_2_recibos')}</span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab('cost')}
-          className={`px-3 sm:px-4 py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all whitespace-nowrap ${
-            activeTab === 'cost' 
-              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          {tLocal('tab_3_cost')}
-        </button>
+          {/* Tab 3 */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('cost')}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'cost' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_3_cost')}</span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab('housing_protection')}
-          className={`px-3 sm:px-4 py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all whitespace-nowrap ${
-            activeTab === 'housing_protection' 
-              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          {tLocal('tab_4_housing')}
-        </button>
+          {/* Tab 4 */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('housing_protection')}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'housing_protection' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_4_housing')}</span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab('aima_health')}
-          className={`px-3 sm:px-4 py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all whitespace-nowrap ${
-            activeTab === 'aima_health' 
-              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          {tLocal('tab_5_aima')}
-        </button>
+          {/* Tab 5 */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('aima_health')}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'aima_health' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_5_aima')}</span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab('small_business')}
-          className={`px-3 sm:px-4 py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-center shrink-0 transition-all whitespace-nowrap ${
-            activeTab === 'small_business' 
-              ? 'text-[#FF8C00] border-b-4 border-[#FF8C00] bg-slate-50' 
-              : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          {tLocal('tab_6_business')}
-        </button>
+          {/* Tab 6 */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('small_business')}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'small_business' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_6_business')}</span>
+          </button>
+        </div>
       </div>
 
       {/* ── SCROLLABLE BODY ──────────────────────────────────────────── */}

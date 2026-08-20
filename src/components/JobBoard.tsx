@@ -58,6 +58,10 @@ export function decodeJobText(str: string | undefined | null): string {
   for (const [k, v] of Object.entries(mojibake)) {
     s = s.replaceAll(k, v);
   }
+
+  // Limpeza de qualquer caractere de substituição isolado
+  s = s.replace(/\ufffd+/g, '');
+
   return s.replace(/\s+/g, ' ').trim();
 }
 
@@ -261,6 +265,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const [jobs, setJobs] = useState<JobPost[]>([]);
   const [totalPlatformJobs, setTotalPlatformJobs] = useState<number | null>(null);
   const [filteredTotalCount, setFilteredTotalCount] = useState<number | null>(null);
+  const [topicCounts, setTopicCounts] = useState<Record<string, number>>({});
   const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts(user?.id).filter(a => a.isActive).length);
@@ -270,6 +275,28 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const JOBS_PER_PAGE = 15;
   const [currentPage, setCurrentPage] = useState(1);
   const jobListTopRef = React.useRef<HTMLDivElement>(null);
+
+  // 📊 SOBERANIA MIRA: Carregar distribuição real de vagas por setor direto do Supabase
+  const loadTopicCounts = React.useCallback(async () => {
+    try {
+      const results = await Promise.all(
+        WORK_TOPICS.map(async (topic) => {
+          const { count } = await supabase
+            .from('job_posts')
+            .select('id', { count: 'exact', head: true })
+            .eq('work_topic', topic);
+          return [topic, count || 0];
+        })
+      );
+      setTopicCounts(Object.fromEntries(results));
+    } catch (e) {
+      console.warn('MIRA: Erro ao carregar contagens por setor:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTopicCounts();
+  }, [loadTopicCounts]);
 
   const refreshAlertsCount = React.useCallback(async () => {
     const alerts = await jobAlertService.getAlertsAsync(user?.id);
@@ -580,20 +607,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     return combined.sort();
   }, [jobs]);
 
-  // 📊 SOBERANIA MIRA: Contagem em tempo real de vagas disponíveis por setor
-  const topicCounts = React.useMemo(() => {
-    const counts: Record<string, number> = {};
-    WORK_TOPICS.forEach(topic => {
-      counts[topic] = 0;
-    });
-    jobs.forEach(job => {
-      if (job.workTopic) {
-        counts[job.workTopic] = (counts[job.workTopic] || 0) + 1;
-      }
-    });
-    return counts;
-  }, [jobs]);
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-sans">
       {/* Header Sticky Section - SLIM & RESPONSIVE */}
@@ -822,13 +835,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                     onChange={(e) => setSelectedWorkTopic(e.target.value)}
                     className="w-full pl-4 pr-10 py-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest appearance-none outline-none focus:ring-2 focus:ring-sky-500/20 border border-transparent focus:border-sky-500/30 text-slate-700 transition-all cursor-pointer"
                   >
-                    <option value="Todos">🌐 {t('jobs_all_areas', language)} ({jobs.length})</option>
+                    <option value="Todos">🌐 {t('jobs_all_areas', language)} ({totalPlatformJobs !== null ? totalPlatformJobs.toLocaleString('pt-PT') : '••••'})</option>
                     {scrollerTopics.map(topic => {
                       const details = TOPIC_DETAILS[topic] || TOPIC_DETAILS["Outros"];
-                      const count = topicCounts[topic] || 0;
+                      const count = topicCounts[topic];
                       return (
                         <option key={topic} value={topic}>
-                          {details?.emoji || "💼"} {t(getWorkTopicKey(topic), language)} ({count})
+                          {details?.emoji || "💼"} {t(getWorkTopicKey(topic), language)} ({typeof count === 'number' ? count.toLocaleString('pt-PT') : '•'})
                         </option>
                       );
                     })}

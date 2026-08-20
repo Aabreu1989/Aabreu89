@@ -324,7 +324,27 @@ async function fetchCascadeCollector(source) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const contentType = res.headers.get('content-type') || '';
-    const bodyText = await res.text();
+    const arrayBuffer = await res.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+
+    // Deteção inteligente de codificação (ISO-8859-1 vs UTF-8)
+    let bodyText = '';
+    const isExplicitIso = /charset=(iso-8859-1|windows-1252|latin1)/i.test(contentType) || source.name === 'Net-Empregos';
+    
+    if (isExplicitIso) {
+      bodyText = new TextDecoder('iso-8859-1').decode(bytes);
+    } else {
+      bodyText = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+      // Se a decodificação UTF-8 gerou caracteres de substituição ou o XML declara ISO
+      if (bodyText.includes('\ufffd') || /<\?xml[^>]+encoding=["'](iso-8859-1|windows-1252|latin1)["']/i.test(bodyText.substring(0, 300))) {
+        try {
+          const latinText = new TextDecoder('iso-8859-1').decode(bytes);
+          if (!latinText.includes('\ufffd')) {
+            bodyText = latinText;
+          }
+        } catch (e) {}
+      }
+    }
 
     // 1. Camada RSS / Atom
     if (contentType.includes('xml') || bodyText.startsWith('<?xml') || bodyText.includes('<rss') || bodyText.includes('<feed')) {
