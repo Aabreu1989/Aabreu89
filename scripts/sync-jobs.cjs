@@ -28,6 +28,18 @@ if (!SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+function canonicalizeUrl(url) {
+  if (!url) return url;
+  try {
+    const u = new URL(url.trim());
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','fbclid','gclid'].forEach(p => u.searchParams.delete(p));
+    u.pathname = u.pathname.replace(/\/+$/, '') || '/';
+    return u.toString();
+  } catch {
+    return url.trim().replace(/\/+$/, '');
+  }
+}
+
 // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 // RSS FEED SOURCES ΓÇö Sites que t├¬m feeds RSS/Atom p├║blicos
 // Cada item RSS tem: t├¡tulo da vaga, link DIRECTO, localiza├º├úo
@@ -859,7 +871,7 @@ async function main() {
   };
 
   const unique = allJobs.filter(j => {
-    const urlKey = j.sourceUrl.toLowerCase().trim();
+    const urlKey = canonicalizeUrl(j.sourceUrl).toLowerCase();
     const fingerKey = createFingerprint(j.title, j.location);
     
     if (seenUrls.has(urlKey) || seenFingerprints.has(fingerKey)) return false;
@@ -917,9 +929,10 @@ async function main() {
   console.log(`📊 Carregadas ${allCurrentJobs.length} vagas atualmente no Supabase.`);
 
   // 5. Verificar URLs existentes para evitar duplicados e ignorar vagas com mais de 30 dias
-  const existingUrls = new Set(allCurrentJobs.map(j => (j.source_url || '').toLowerCase()));
+  const existingUrls = new Set(allCurrentJobs.map(j => canonicalizeUrl(j.source_url).toLowerCase()));
   let newJobs = unique.filter(j => {
-    const exists = existingUrls.has(j.sourceUrl.toLowerCase());
+    const canonical = canonicalizeUrl(j.sourceUrl).toLowerCase();
+    const exists = existingUrls.has(canonical);
     if (exists) return false;
     
     // Filtro contra inserção de vagas antigas (>30 dias)
@@ -979,7 +992,7 @@ async function main() {
 
   console.log(`📊 Novas vagas prontas a inserir: ${newJobs.length}`);
 
-  // 7. Insert in batches of 100
+  // 7. Insert in batches of 100 com Canonicalização e Semântica Controlada
   const BATCH = 100;
   let inserted = 0;
 
@@ -988,7 +1001,7 @@ async function main() {
       title: j.title,
       location: j.location || 'Portugal',
       source_name: j.sourceName,
-      source_url: j.sourceUrl,
+      source_url: canonicalizeUrl(j.sourceUrl),
       work_topic: j.workTopic || 'Outros',
       category: 'Trabalho & Carreira',
       created_at: j.datePosted || new Date().toISOString(),
@@ -996,48 +1009,28 @@ async function main() {
       date_posted: j.datePosted ? new Date(j.datePosted).toISOString() : new Date().toISOString()
     }));
 
-    const { error } = await supabase.from('job_posts').insert(batch);
-    if (error) {
-      console.error(`❌ Erro ao inserir batch ${i}-${i + BATCH}:`, error.message);
+    // Tentar upsert com onConflict se constraint existir, caso contrário insert simples
+    const { error: upsertErr } = await supabase.from('job_posts').upsert(batch, { onConflict: 'source_url' });
+    if (upsertErr) {
+      const { error: insertErr } = await supabase.from('job_posts').insert(batch);
+      if (insertErr) {
+        console.error(`❌ Erro ao inserir batch ${i}-${i + BATCH}:`, insertErr.message);
+      } else {
+        inserted += batch.length;
+      }
     } else {
       inserted += batch.length;
     }
   }
 
-  // 8. Contagem final e actualização do Backup Soberano local
+  // 8. Contagem final (Única Fonte de Verdade: Supabase job_posts)
   const { count: total } = await supabase
     .from('job_posts')
     .select('*', { count: 'exact', head: true });
 
   console.log(`\n🏁 SYNC COMPLETO!`);
   console.log(`   ✅ Inseridas: ${inserted} novas vagas`);
-  console.log(`   📦 Total na DB: ${total} vagas`);
-
-  // Guardar todas as vagas actualizadas de novo no local backup
-  console.log('\n💾 A criar Backup Soberano local (Toda a base de dados)...');
-  let finalCurrentJobs = [];
-  let fFrom = 0;
-  let fTo = 999;
-  let fHasMore = true;
-
-  while (fHasMore) {
-    const { data, error } = await supabase.from('job_posts').select('*').range(fFrom, fTo);
-    if (data && data.length > 0) {
-      finalCurrentJobs = [...finalCurrentJobs, ...data];
-      fFrom += 1000;
-      fTo += 1000;
-      if (data.length < 1000) fHasMore = false;
-    } else {
-      fHasMore = false;
-    }
-  }
-  
-  if (finalCurrentJobs.length > 0) {
-    const backupPath = path.join(__dirname, '../src/utils/massiveJobsDatabase.ts');
-    const backupContent = `export const PROTECTED_JOBS = ${JSON.stringify(finalCurrentJobs, null, 2)};`;
-    fs.writeFileSync(backupPath, backupContent);
-    console.log(`✅ Backup guardado em: ${path.basename(backupPath)} (${finalCurrentJobs.length} vagas)`);
-  }
+  console.log(`   📦 Total na DB (Supabase): ${total} vagas`);
 
   // 9. Atualizar métricas de impacto social reais
   try {

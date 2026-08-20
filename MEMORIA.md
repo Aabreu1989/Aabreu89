@@ -609,5 +609,18 @@ HOMOLOGAÇÃO
 
 ---
 
+## 📌 21. REGRA PERMANENTE: MÓDULO DE EMPREGOS — SINGLE SOURCE OF TRUTH & IDEMPOTÊNCIA
+
+> 🏆 **HOMOLOGAÇÃO GOLD DEFINITIVA (EM 19/08/2026):**
+> O módulo de empregos foi submetido a auditoria forense, saneamento de dados, deduplicação dinâmica, normalização canónica de URLs, eliminação de fontes estáticas e unificação de contadores.
+> 
+> - **Fonte Única de Verdade:** `public.job_posts` no Supabase.
+> - **Invariante Estrutural Permanente:** `COUNT(*) === COUNT(DISTINCT source_url)` com 0 duplicações, 0 URLs NULL e 0 URLs vazias.
+> - **Contadores Unificados:** JobBoard, Admin Hub e Dashboard leem estritamente do Supabase, sem baselines, fallbacks fixos (5326, 5280) ou fusões estáticas em tempo de execução.
+> - **Canonicalização:** Todas as novas vagas passam por `canonicalizeUrl` (remoção de tags UTM, tracking e barras finais) antes da verificação e inserção.
+> - **Idempotência Homologada:** Duas sincronizações consecutivas mantêm a base matematicamente estável, sem gerar duplicações.
+
+---
+
 > 🔒 **ESTE ARQUIVO É A REGRA MESTRA E MEMÓRIA PERMANENTE DO PROJETO MIRA. CONSULTAR ANTES DE QUALQUER AÇÃO OU ALTERAÇÃO.**
 > 📜 **O PROTOCOLO INTEGRAL DE AUDITORIA E HOMOLOGAÇÃO ESTÁ REGISTADO EM [`STANDARD_OF_AUDIT.md`](file:///c:/Users/Utilizador/mira-projeto/STANDARD_OF_AUDIT.md).**

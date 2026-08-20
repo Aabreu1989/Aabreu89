@@ -433,12 +433,14 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         { count: recentCount },
         { count: prevCount }
       ] = await Promise.race([countPromise, timeoutPromise]).catch(() => [
-        { count: 5326 },
-        { count: 120 },
-        { count: 100 }
+        { count: null },
+        { count: null },
+        { count: null }
       ]);
 
-      setTotalPlatformJobs(totalCount || 0);
+      if (totalCount !== null && totalCount !== undefined) {
+        setTotalPlatformJobs(totalCount);
+      }
 
       let computedGrowth = { percentage: 0, trend: 'neutral' as 'up' | 'down' | 'neutral' };
       if (recentCount !== null && prevCount !== null) {
@@ -509,52 +511,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           });
       }
 
-      // 👑 SOBERANIA MIRA: Carregamento Dinâmico (Lazy Load) da Base Massiva de Vagas Locais!
-      let fallbackJobs: any[] = [];
-      try {
-        const massiveModule = await import('../utils/massiveJobsDatabase');
-        fallbackJobs = massiveModule.PROTECTED_JOBS || [];
-      } catch (err) {
-        console.warn("MIRA JobBoard: Falha ao carregar base massiva local. Usando fallback básico.", err);
-        fallbackJobs = PROTECTED_JOBS || [];
-      }
-
-      const finalJobs = [...formattedJobs];
-      // O(1) Set lookup para deduplicação instantânea sem congelar a UI principal
-      const existingIds = new Set(finalJobs.map(j => j.id));
-
-      fallbackJobs
-        .filter(pj => {
-          const url = pj.source_url || pj.sourceUrl;
-          const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
-          return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin90Days(dateStr);
-        })
-        .forEach((pj, idx) => {
-          if (!existingIds.has(pj.id)) {
-            const now = new Date();
-            // Stagger fallback job timestamps to represent active recent jobs
-            const offsetHours = (idx % 36) * 1.2;
-            const postDate = new Date(now.getTime() - offsetHours * 60 * 60 * 1000);
-            const isoStr = postDate.toISOString();
-
-            const finalPj = {
-              id: pj.id,
-              title: pj.title || t('jobs_no_title', language),
-              location: pj.location || 'Portugal',
-              sourceName: pj.source_name || pj.sourceName || 'MIRA',
-              sourceUrl: pj.source_url || pj.sourceUrl,
-              datePosted: isoStr,
-              posted_at: isoStr,
-              tags: Array.isArray(pj.tags) ? pj.tags : (pj.title && pj.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
-              category: normalizeCategory(pj.category || 'Trabalho & Carreira'),
-              workTopic: normalizeWorkTopic(pj.work_topic || pj.workTopic, pj.title)
-            } as any;
-            finalJobs.push(finalPj);
-            existingIds.add(pj.id);
-          }
-        });
-
-      const totalCalculated = Math.max(totalCount || 0, finalJobs.length, 5280);
+      // Única fonte de verdade: Supabase job_posts
+      const finalJobs = formattedJobs.length > 0 ? formattedJobs : initialJobs;
+      const totalCalculated = totalCount !== null && totalCount !== undefined ? totalCount : finalJobs.length;
       setTotalPlatformJobs(totalCalculated);
       setJobs(finalJobs);
       

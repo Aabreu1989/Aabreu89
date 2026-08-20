@@ -149,15 +149,15 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         id: 'p-serv-aaeif',
         title: "AAEIF – Associação de Apoio a Emigrantes, Imigrantes e Famílias",
         category: "Direitos & Apoio Social",
-        lat: 38.7230,
-        lng: -9.1450,
+        lat: 38.7223,
+        lng: -9.1393,
         distance: 'N/A',
-        address: "Rua de Santa Marta, 43, 1150-293 Lisboa",
-        city: "Lisboa",
+        address: "Atendimento Online",
+        city: "Online",
         website: "https://www.aaeif.pt/",
         avgRating: 5.0,
         ratings: [],
-        description: "Orientação jurídica e social para emigrantes e imigrantes em Portugal: suporte em processos de legalização, vistos de trabalho e reagrupamento familiar."
+        description: "Orientação civica e social para emigrante e imigrantes em Portugal, e informações sobre legalização."
     },
     {
         id: 'p-serv-portuando',
