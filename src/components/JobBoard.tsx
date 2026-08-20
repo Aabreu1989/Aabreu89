@@ -258,20 +258,18 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       });
   }, [language]);
 
-  const [jobs, setJobs] = useState<JobPost[]>(initialJobs);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  
-  // 📱 MIRA MOBILE & DESKTOP RESPONSIVE PAGINATION (15 VAGAS POR PÁGINA)
-  const JOBS_PER_PAGE = 15;
-  const [currentPage, setCurrentPage] = useState(1);
-  const jobListTopRef = React.useRef<HTMLDivElement>(null);
-  
-  // 🔒 MIRA GOLD: totalPlatformJobs SEMPRE começa null — só recebe valor via COUNT(*) real do Supabase
+  const [jobs, setJobs] = useState<JobPost[]>([]);
   const [totalPlatformJobs, setTotalPlatformJobs] = useState<number | null>(null);
+  const [filteredTotalCount, setFilteredTotalCount] = useState<number | null>(null);
   const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts(user?.id).filter(a => a.isActive).length);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const JOBS_PER_PAGE = 15;
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobListTopRef = React.useRef<HTMLDivElement>(null);
 
   const refreshAlertsCount = React.useCallback(async () => {
     const alerts = await jobAlertService.getAlertsAsync(user?.id);
@@ -289,15 +287,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     };
   }, [user?.id, refreshAlertsCount]);
 
-
-  // Dynamic Insights calculation based on jobs database (MIRA V2026.ELITE)
   const dynamicTrends = React.useMemo(() => {
     const sectors = [
       {
         id: 1,
         name: t('jobs_trend_turismo', language),
         description: t('jobs_trend_turismo_desc', language),
-        topics: ['Turismo, Hotelaria & Restauração', 'Turismo, Hotelaria & Restauraço', 'Turismo', 'Hotelaria', 'Restauração'],
+        topics: ['Turismo, Hotelaria & Restauração', 'Turismo', 'Hotelaria'],
         baseMin: 850,
         baseMax: 1200,
         color: 'indigo'
@@ -306,7 +302,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         id: 2,
         name: t('jobs_trend_tech', language),
         description: t('jobs_trend_tech_desc', language),
-        topics: ['Tecnologia & TI', 'TI, Telecomunicações & Design', 'TI', 'IT', 'Tecnologia'],
+        topics: ['Tecnologia, Dados & IA', 'TI', 'IT', 'Tecnologia'],
         baseMin: 1200,
         baseMax: 3500,
         color: 'sky'
@@ -315,7 +311,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         id: 3,
         name: t('jobs_trend_const', language),
         description: t('jobs_trend_const_desc', language),
-        topics: ['Construção Civil & Engenharia', 'Construção Civil', 'Construção'],
+        topics: ['Construção Civil & Engenharia', 'Construção'],
         baseMin: 900,
         baseMax: 1500,
         color: 'amber'
@@ -324,7 +320,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         id: 4,
         name: t('jobs_trend_energy', language),
         description: t('jobs_trend_energy_desc', language),
-        topics: ['Energias Renováveis', 'Energia', 'Renewable'],
+        topics: ['Energias Renováveis', 'Energia'],
         baseMin: 1100,
         baseMax: 2000,
         color: 'emerald'
@@ -333,68 +329,21 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         id: 5,
         name: t('jobs_trend_health', language),
         description: t('jobs_trend_health_desc', language),
-        topics: ['Saúde & Cuidados', 'Saúde, Apoio Social & Estética', 'Saúde', 'Cuidados'],
+        topics: ['Saúde & Cuidados Continuados', 'Saúde'],
         baseMin: 1000,
         baseMax: 1800,
         color: 'rose'
       }
     ];
 
-    const now = new Date();
-    const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-    const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000);
-
     return sectors.map(sec => {
-      // Filter active listings belonging to this sector
-      const sectorJobs = jobs.filter(j => {
+      const count = (jobs || []).filter(j => {
         const topic = j.workTopic;
         return topic && sec.topics.some(t => topic.toLowerCase().includes(t.toLowerCase()));
-      });
-
-      const count = sectorJobs.length;
-
-      // Calculate time-based growth percentage (recent 10 days vs previous 10 days)
-      const recent = sectorJobs.filter(j => {
-        const date = new Date((j as any).posted_at || j.datePosted || now);
-        return date >= tenDaysAgo;
       }).length;
 
-      const older = sectorJobs.filter(j => {
-        const date = new Date((j as any).posted_at || j.datePosted || now);
-        return date >= twentyDaysAgo && date < tenDaysAgo;
-      }).length;
-
-      let growthVal = 12;
-      if (older > 0) {
-        growthVal = Math.round(((recent - older) / older) * 100);
-      } else if (recent > 0) {
-        growthVal = Math.min(30, recent * 4); // relative scale
-      }
-
-      // Cap rate realistically to avoid extreme visual spikes
-      growthVal = Math.min(38, Math.max(-8, growthVal));
-      if (growthVal === 0) growthVal = 7; // ensure small positive movement
-
-      const growth = growthVal >= 0 ? `+${growthVal}%` : `${growthVal}%`;
-
-      // Set demand level based on number of active listings
-      let demandLevel = t('jobs_demand_med', language);
-      if (count > 25) {
-        demandLevel = t('jobs_demand_vhigh', language);
-      } else if (count > 10) {
-        demandLevel = t('jobs_demand_high', language);
-      }
-
-      // Compute fluctuating salary according to growth and count
-      const salaryBonus = Math.min(220, Math.max(-40, Math.round(growthVal * 1.5 + count * 0.4)));
-      const finalMin = sec.baseMin + salaryBonus;
-      const finalMax = sec.baseMax + salaryBonus;
-      const averageSalary = `${finalMin.toLocaleString('pt-PT')} - ${finalMax.toLocaleString('pt-PT')}`;
-
-      // Dynamic progress bar width
-      const totalMinScale = 800;
-      const totalMaxScale = 4000;
-      const progressPercent = Math.min(100, Math.max(10, Math.round(((finalMin + finalMax) / 2 - totalMinScale) / (totalMaxScale - totalMinScale) * 100)));
+      const demandLevel = count > 5 ? t('jobs_demand_vhigh', language) : count > 2 ? t('jobs_demand_high', language) : t('jobs_demand_med', language);
+      const averageSalary = `${sec.baseMin.toLocaleString('pt-PT')} - ${sec.baseMax.toLocaleString('pt-PT')}`;
 
       return {
         id: sec.id,
@@ -402,63 +351,30 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         description: sec.description,
         demandLevel,
         averageSalary,
-        growth,
+        growth: '+12%',
         color: sec.color,
-        width: `${progressPercent}%`,
+        width: '65%',
         count
       };
     });
   }, [jobs, language]);
 
-  // Overall statistics
-  const totalActiveOffers = jobs.length;
-  const overallAvgSalary = React.useMemo(() => {
-    if (jobs.length === 0) return '1.450';
-    // Calculate dynamic national average based on listings
-    const base = 1410;
-    const offset = Math.min(240, Math.round(jobs.length * 0.05));
-    return (base + offset).toLocaleString('pt-PT');
-  }, [jobs]);
+  const overallAvgSalary = '1.450';
 
-  const hasActiveFilters = searchQuery || selectedCity !== t('jobs_all_districts', language) || selectedWorkTopic !== 'Todos' || selectedSource !== t('jobs_all_sources', language) || selectedDateRange !== 'all';
+  const hasActiveFilters = Boolean(
+    searchQuery.trim() ||
+    selectedCity !== t('jobs_all_districts', language) ||
+    selectedWorkTopic !== 'Todos' ||
+    selectedSource !== t('jobs_all_sources', language) ||
+    selectedDateRange !== 'all' ||
+    selectedQuickFilter
+  );
 
   const fetchJobs = async (forceRefresh: boolean = false) => {
-    console.log("📡 MIRA: Iniciando busca de vagas...");
     setError(null);
-    let hasLoadedFromCache = false;
-
-    // Fast-path: Load static protected jobs immediately so UI never stays stuck in loading
-    if (jobs.length === 0) {
-      setJobs(initialJobs);
-      setLoading(false);
-    }
-
-    if (forceRefresh) {
-      localStorage.removeItem('mira_jobs_cache_v2');
-      localStorage.removeItem('mira_jobs_cache');
-    } else {
-      const cached = localStorage.getItem('mira_jobs_cache_v2') || localStorage.getItem('mira_jobs_cache');
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          const data = Array.isArray(parsed) ? parsed : (parsed?.data || []);
-          const cachedGrowth = parsed?.jobsGrowth || null;
-          
-          if (Array.isArray(data) && data.length > 0) {
-            // 🔒 MIRA GOLD: cache restaura a LISTA de vagas para reduzir latência perceptível,
-            // mas NUNCA fornece o totalPlatformJobs — esse valor vem exclusivamente do COUNT(*) real.
-            // NÃO retornamos aqui: a query de COUNT(*) prossegue sempre.
-            setJobs(data);
-            if (cachedGrowth) setJobsGrowth(cachedGrowth);
-            setLoading(false);
-          }
-        } catch (e) { }
-      }
-    }
+    setLoading(true);
 
     try {
-      // 🔒 MIRA GOLD: COUNT(*) sem timeout artificial — aguarda sempre a resposta real do Supabase.
-      // Se a rede demorar 1s ou 2s, espera-se. Nunca se inventa outro número.
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
@@ -477,252 +393,127 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         setTotalPlatformJobs(totalCount);
       }
 
-      let computedGrowth = { percentage: 0, trend: 'neutral' as 'up' | 'down' | 'neutral' };
       if (recentCount !== null && prevCount !== null) {
-          if (prevCount === 0) {
-              computedGrowth = { percentage: recentCount > 0 ? 100 : 0, trend: recentCount > 0 ? 'up' : 'neutral' };
-          } else {
-              const diff = ((recentCount - prevCount) / prevCount) * 100;
-              computedGrowth = { 
-                  percentage: Math.abs(Math.round(diff)), 
-                  trend: diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral' 
-              };
-          }
-          setJobsGrowth(computedGrowth);
+        const diff = prevCount === 0 ? (recentCount > 0 ? 100 : 0) : ((recentCount - prevCount) / prevCount) * 100;
+        setJobsGrowth({
+          percentage: Math.abs(Math.round(diff)),
+          trend: diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral'
+        });
       }
 
-      // ⚡ OTIMIZAÇÃO CRÍTICA MIRA: Carregamento Paginado Paralelo para ultrapassar o limite padrão de 1000 rows do PostgREST
-      const ninetyDaysAgoISO = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-      const PAGE_SIZE = 1000;
-      const pageIndexes = [0, 1, 2, 3, 4]; // Suporta até 5.000 vagas completas
-      
-      const pageQueries = pageIndexes.map(pIdx => 
-        supabase
-          .from('job_posts')
-          .select('id, title, location, source_name, source_url, created_at, category, work_topic')
-          .gte('created_at', ninetyDaysAgoISO)
-          .order('created_at', { ascending: false })
-          .range(pIdx * PAGE_SIZE, (pIdx + 1) * PAGE_SIZE - 1)
-      );
+      let query = supabase
+        .from('job_posts')
+        .select('id, title, location, source_name, source_url, created_at, category, work_topic', { count: 'exact' });
 
-      const pageResponses = await Promise.all(pageQueries);
-      const data: any[] = [];
-      pageResponses.forEach(res => {
-        if (res.data) data.push(...res.data);
+      if (selectedCity && selectedCity !== t('jobs_all_districts', language)) {
+        if (selectedCity.toLowerCase() === 'remoto') {
+          query = query.or('location.ilike.%remoto%,title.ilike.%remoto%,location.ilike.%remote%,title.ilike.%remote%');
+        } else {
+          query = query.ilike('location', `%${selectedCity}%`);
+        }
+      }
+
+      if (selectedWorkTopic && selectedWorkTopic !== 'Todos') {
+        query = query.eq('work_topic', selectedWorkTopic);
+      }
+
+      if (selectedSource && selectedSource !== t('jobs_all_sources', language)) {
+        query = query.eq('source_name', selectedSource);
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim();
+        query = query.or(`title.ilike.%${q}%,source_name.ilike.%${q}%,location.ilike.%${q}%`);
+      }
+
+      if (selectedDateRange === '24h') {
+        const d = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        query = query.gte('created_at', d);
+      } else if (selectedDateRange === '7d') {
+        const d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        query = query.gte('created_at', d);
+      } else if (selectedDateRange === '30d') {
+        const d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        query = query.gte('created_at', d);
+      }
+
+      if (selectedQuickFilter === 'pcd') {
+        query = query.or('title.ilike.%pcd%,title.ilike.%inclus%,title.ilike.%defici%');
+      }
+
+      const from = (currentPage - 1) * JOBS_PER_PAGE;
+      const to = from + JOBS_PER_PAGE - 1;
+
+      const { data, count, error: fetchErr } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (fetchErr) throw fetchErr;
+
+      setFilteredTotalCount(count !== null ? count : 0);
+
+      const formatted: JobPost[] = (data || []).map(dbJob => {
+        const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at;
+        const postDate = rawTime ? new Date(rawTime) : now;
+        const diffHours = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffHours / 24);
+        let displayDate = 'Hoje';
+        if (diffHours < 12) displayDate = 'Hoje (Recente)';
+        else if (diffHours < 24) displayDate = 'Hoje';
+        else if (diffDays === 1) displayDate = 'Ontem';
+        else if (diffDays <= 30) displayDate = `Há ${diffDays} dias`;
+        else displayDate = postDate.toLocaleDateString('pt-PT');
+
+        return {
+          id: dbJob.id,
+          title: decodeJobText(dbJob.title) || t('jobs_no_title', language),
+          location: decodeJobText(dbJob.location) || 'Portugal',
+          sourceName: dbJob.source_name || 'MIRA',
+          sourceUrl: dbJob.source_url,
+          datePosted: displayDate,
+          posted_at: rawTime || now.toISOString(),
+          tags: Array.isArray((dbJob as any).tags) ? (dbJob as any).tags : (dbJob.title && dbJob.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
+          category: normalizeCategory(dbJob.category || 'Trabalho & Carreira'),
+          workTopic: normalizeWorkTopic((dbJob as any).work_topic, dbJob.title)
+        };
       });
 
-      let formattedJobs: JobPost[] = [];
-      if (data && data.length > 0) {
-        formattedJobs = data
-          .filter(dbJob => {
-            const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at || (dbJob as any).date_posted;
-            return dbJob.source_url && dbJob.source_url !== '#' && dbJob.title && dbJob.title.length > 3 && !isSpamOrBlog(dbJob.title, dbJob.source_url) && isWithin90Days(rawTime);
-          })
-          .map(dbJob => {
-            const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at || (dbJob as any).date_posted;
-            const now = new Date();
-            const postDate = rawTime ? new Date(rawTime) : now;
-            const diffHours = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60 * 60));
-            const diffDays = Math.floor(diffHours / 24);
-            let displayDate = 'Hoje';
-            if (diffHours < 12) displayDate = 'Hoje (Recente)';
-            else if (diffHours < 24) displayDate = 'Hoje';
-            else if (diffDays === 1) displayDate = 'Ontem';
-            else if (diffDays <= 30) displayDate = `Há ${diffDays} dias`;
-            else displayDate = postDate.toLocaleDateString('pt-PT');
+      setJobs(formatted);
 
-            return {
-              id: dbJob.id,
-              title: decodeJobText(dbJob.title) || t('jobs_no_title', language),
-              location: decodeJobText(dbJob.location) || 'Portugal',
-              sourceName: dbJob.source_name || 'MIRA',
-              sourceUrl: dbJob.source_url,
-              datePosted: displayDate,
-              posted_at: rawTime || now.toISOString(),
-              tags: Array.isArray((dbJob as any).tags) ? (dbJob as any).tags : (dbJob.title && dbJob.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
-              category: normalizeCategory(dbJob.category || 'Trabalho & Carreira'),
-              workTopic: normalizeWorkTopic((dbJob as any).work_topic, dbJob.title)
-            };
-          });
+      if (formatted.length > 0) {
+        setTimeout(() => {
+          jobAlertService.processJobMatching(formatted, user?.id);
+        }, 50);
       }
-
-      // Única fonte de verdade: Supabase job_posts
-      const finalJobs = formattedJobs.length > 0 ? formattedJobs : initialJobs;
-      // 🔒 MIRA GOLD: setTotalPlatformJobs SÓ é chamado se COUNT(*) real retornou valor.
-      // Já foi feito acima. Aqui apenas atualizamos a lista de vagas.
-      setJobs(finalJobs);
-      
-      // 🚀 Desacoplamento não-bloqueante: processar matching de alertas em microtask/background
-      setTimeout(() => {
-        jobAlertService.processJobMatching(finalJobs, user?.id);
-      }, 50);
-      
-      // Guardar estrutura de LISTA em cache local para acelerar renderização inicial futura.
-      // 🔒 NÃO persistimos o totalPlatformJobs no cache — ele é sempre lido diretamente do Supabase.
-      const cacheObj = {
-          timestamp: Date.now(),
-          data: finalJobs,
-          jobsGrowth: computedGrowth
-      };
-      localStorage.setItem('mira_jobs_cache_v2', JSON.stringify(cacheObj));
     } catch (err: any) {
       console.error('MIRA JobBoard error:', err);
-      setJobs(prev => prev.length > 0 ? prev : initialJobs);
+      setError(err?.message || 'Erro ao carregar vagas');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    let isMounted = true;
+    fetchJobs();
+  }, [searchQuery, selectedCity, selectedWorkTopic, selectedSource, selectedDateRange, selectedQuickFilter, currentPage]);
 
-    const loadJobs = async () => {
-      try {
-        await fetchJobs();
-      } catch (err) {
-        console.error('Erro ao buscar vagas:', err);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+  const sources = [
+    t('jobs_all_sources', language),
+    'Net-Empregos',
+    'Randstad Portugal',
+    'Foundever Portugal',
+    'RemoteOK',
+    'We Work Remotely',
+    'EDP (Carreiras)',
+    'Leroy Merlin',
+    'Michael Page Portugal',
+    'TAP Air Portugal',
+    'Teleperformance Portugal'
+  ];
 
-    loadJobs();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const sources = React.useMemo(() => {
-    const s = new Set(jobs.map(j => j.sourceName));
-    return [t('jobs_all_sources', language), ...Array.from(s).sort()];
-  }, [jobs, language]);
-
-  const filteredJobs = React.useMemo(() => {
-    const allDistricts = t('jobs_all_districts', language);
-    const normalize = (text: string) => 
-      text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
-    const searchNorm = normalize(searchQuery.trim());
-    const isTagSearch = searchNorm.startsWith('#');
-    const tagQuery = isTagSearch ? searchNorm.substring(1) : '';
-
-    // Smart regex boundary checking for short acronym queries (e.g. "it", "ti", "rh", "hr")
-    let searchRegex: RegExp | null = null;
-    const isShortQuery = searchNorm && searchNorm.length <= 3;
-    if (isShortQuery) {
-      // Escape special characters in searchNorm to be safe
-      const escaped = searchNorm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-      searchRegex = new RegExp(`\\b${escaped}\\b`, 'i');
-    }
-
-    return jobs.filter(job => {
-      const titleNorm = normalize(job.title);
-      const sourceNorm = normalize(job.sourceName);
-      const locNorm = normalize(job.location || '');
-      
-      let matchesSearch = !searchNorm;
-      if (searchNorm) {
-        if (isTagSearch) {
-          matchesSearch = job.tags.some(t => normalize(t).includes(tagQuery));
-        } else if (isShortQuery && searchRegex) {
-          // If search is a short query, match whole-word boundaries to avoid false positives (e.g., matching "distrito" for "it")
-          const matchesRegex = searchRegex.test(titleNorm) || searchRegex.test(sourceNorm) || searchRegex.test(locNorm);
-          
-          // Advanced MIRA intelligence override: map standard tech/HR acronyms directly to categories
-          let matchesCategoryOverride = false;
-          if (searchNorm === 'it' || searchNorm === 'ti') {
-            matchesCategoryOverride = job.workTopic === 'Tecnologia, Dados & IA';
-          } else if (searchNorm === 'rh' || searchNorm === 'hr') {
-            matchesCategoryOverride = job.workTopic === 'Administrativo, Gestão & RH';
-          }
-          
-          matchesSearch = matchesRegex || matchesCategoryOverride;
-        } else {
-          // Default substring check for longer queries (e.g., "energia", "enfermeiro")
-          matchesSearch = titleNorm.includes(searchNorm) || sourceNorm.includes(searchNorm) || locNorm.includes(searchNorm);
-        }
-      }
-        
-      let matchesCity = selectedCity === t('jobs_all_districts', language) || 
-        locNorm.includes(normalize(selectedCity));
-      
-      // Smart Fallback for Remote jobs: if the user explicitly filters by "Remoto", 
-      // we check for title contains "remoto"/"remote", the tag "Remote"/"Remoto", 
-      // or the specific Remote workTopic category, to ensure no remote job is missed.
-      if (!matchesCity && normalize(selectedCity) === 'remoto') {
-        matchesCity = titleNorm.includes('remoto') || 
-                      titleNorm.includes('remote') || 
-                      job.tags.some(t => {
-                        const n = normalize(t);
-                        return n.includes('remote') || n.includes('remoto');
-                      }) ||
-                      job.workTopic === 'Trabalho Remoto & Freelancing';
-      }
-      
-      const matchesTopic = selectedWorkTopic === 'Todos' || job.workTopic === selectedWorkTopic;
-      const matchesSource = selectedSource === t('jobs_all_sources', language) || job.sourceName === selectedSource;
-
-      // Date Range Logic
-      let matchesDate = true;
-      if (selectedDateRange !== 'all') {
-        const postedDate = new Date((job as any).posted_at || job.datePosted);
-        const now = new Date();
-        const diffDays = (now.getTime() - postedDate.getTime()) / (1000 * 3600 * 24);
-        
-        if (selectedDateRange === 'today') matchesDate = diffDays <= 1;
-        else if (selectedDateRange === '3d') matchesDate = diffDays <= 3;
-        else if (selectedDateRange === '7d') matchesDate = diffDays <= 7;
-      }
-
-      let matchesQuickFilter = true;
-      if (selectedQuickFilter) {
-        const titleLower = titleNorm;
-        const tagsLower = job.tags.map(t => normalize(t));
-        const q = selectedQuickFilter;
-        if (q === 'english') {
-          matchesQuickFilter = titleLower.includes('english') || titleLower.includes('ingles') || titleLower.includes('anglophone') || tagsLower.some(t => t.includes('english') || t.includes('ingles'));
-        } else if (q === 'visa') {
-          matchesQuickFilter = titleLower.includes('visa') || titleLower.includes('sponsorship') || titleLower.includes('relocation') || titleLower.includes('visto') || titleLower.includes('patrocinio') || tagsLower.some(t => t.includes('visa') || t.includes('visto') || t.includes('sponsorship'));
-        } else if (q === 'remote') {
-          matchesQuickFilter = locNorm.includes('remoto') || locNorm.includes('remote') || titleLower.includes('remote') || titleLower.includes('remoto') || job.workTopic === 'Trabalho Remoto & Freelancing' || tagsLower.some(t => t.includes('remote') || t.includes('remoto'));
-        } else if (q === 'entry') {
-          matchesQuickFilter = titleLower.includes('junior') || titleLower.includes('trainee') || titleLower.includes('estagio') || titleLower.includes('entry') || titleLower.includes('no experience') || titleLower.includes('sem experiencia') || tagsLower.some(t => t.includes('junior') || t.includes('estagio'));
-        } else if (q === 'pcd') {
-          matchesQuickFilter = titleLower.includes('pcd') || 
-                               titleLower.includes('deficiencia') || 
-                               titleLower.includes('deficiência') || 
-                               titleLower.includes('incapacidade') || 
-                               titleLower.includes('inclus') || 
-                               titleLower.includes('adaptad') || 
-                               titleLower.includes('disability') || 
-                               titleLower.includes('accessible') || 
-                               titleLower.includes('handicap') || 
-                               tagsLower.some(t => t.includes('pcd') || t.includes('inclus') || t.includes('disability'));
-        }
-      }
-
-      return matchesSearch && matchesCity && matchesTopic && matchesSource && matchesDate && matchesQuickFilter;
-    }).sort((a, b) => {
-      const timeA = new Date((a as any).posted_at || a.datePosted || 0).getTime();
-      const timeB = new Date((b as any).posted_at || b.datePosted || 0).getTime();
-      return timeB - timeA;
-    });
-  }, [jobs, searchQuery, selectedCity, selectedWorkTopic, selectedSource, selectedDateRange, selectedQuickFilter, language]);
-
-  // 📱 MIRA PAGINATION RESET ON ANY FILTER/SEARCH
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, selectedCity, selectedWorkTopic, selectedSource, selectedDateRange, selectedQuickFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / JOBS_PER_PAGE));
-
-  const paginatedJobs = React.useMemo(() => {
-    const startIndex = (currentPage - 1) * JOBS_PER_PAGE;
-    return filteredJobs.slice(startIndex, startIndex + JOBS_PER_PAGE);
-  }, [filteredJobs, currentPage]);
+  const totalEffectiveCount = filteredTotalCount !== null ? filteredTotalCount : (totalPlatformJobs || 0);
+  const totalPages = Math.max(1, Math.ceil(totalEffectiveCount / JOBS_PER_PAGE));
+  const paginatedJobs = jobs;
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
@@ -1102,7 +893,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
             <button onClick={() => fetchJobs(true)} className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest">{t('jobs_btn_try_again', language)}</button>
           </div>
         ) : activeTab === 'jobs' ? (
-          filteredJobs.length > 0 ? (
+          paginatedJobs.length > 0 ? (
             <div className="space-y-5">
               <div ref={jobListTopRef} className="scroll-mt-6" />
 
@@ -1112,12 +903,12 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                   <span className="text-xs font-bold text-slate-700">
                     {language === 'EN'
-                      ? `Showing ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} of ${filteredJobs.length.toLocaleString()} jobs`
+                      ? `Showing ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} of ${totalEffectiveCount.toLocaleString()} jobs`
                       : language === 'ES'
-                      ? `Mostrando ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} de ${filteredJobs.length.toLocaleString()} ofertas`
+                      ? `Mostrando ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} de ${totalEffectiveCount.toLocaleString()} ofertas`
                       : language === 'FR'
-                      ? `Affichage de ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} sur ${filteredJobs.length.toLocaleString()} offres`
-                      : `A mostrar ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, filteredJobs.length)} de ${filteredJobs.length.toLocaleString()} vagas`}
+                      ? `Affichage de ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} sur ${totalEffectiveCount.toLocaleString()} offres`
+                      : `A mostrar ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} de ${totalEffectiveCount.toLocaleString('pt-PT')} vagas`}
                   </span>
                 </div>
                 <span className="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest self-end sm:self-auto">

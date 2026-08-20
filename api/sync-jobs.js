@@ -18,6 +18,67 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE || process.env.VITE_SUPABASE_ANON_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
 
+export function canonicalizeUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  try {
+    const u = new URL(url.trim());
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','fbclid','gclid','ref'].forEach(p => u.searchParams.delete(p));
+    u.pathname = u.pathname.replace(/\/+$/, '') || '/';
+    return u.toString();
+  } catch {
+    return url.trim().replace(/\/+$/, '');
+  }
+}
+
+export function cleanTextEncoding(str) {
+  if (!str || typeof str !== 'string') return '';
+  let s = str;
+  // Entidades numéricas
+  s = s.replace(/&#(\d+);/g, (m, dec) => {
+    try { return String.fromCodePoint(parseInt(dec, 10)); } catch { return m; }
+  });
+  s = s.replace(/&#x([0-9a-fA-F]+);/g, (m, hex) => {
+    try { return String.fromCodePoint(parseInt(hex, 16)); } catch { return m; }
+  });
+  // Entidades nomeadas
+  const htmlNamed = {
+    '&amp;': '&', '&apos;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>',
+    '&nbsp;': ' ', '&ndash;': '–', '&mdash;': '—',
+    '&ccedil;': 'ç', '&Ccedil;': 'Ç', '&atilde;': 'ã', '&Atilde;': 'Ã',
+    '&otilde;': 'õ', '&Otilde;': 'Õ', '&aacute;': 'á', '&Aacute;': 'Á',
+    '&eacute;': 'é', '&Eacute;': 'É', '&iacute;': 'í', '&Iacute;': 'Í',
+    '&oacute;': 'ó', '&Oacute;': 'Ó', '&uacute;': 'ú', '&Uacute;': 'Ú',
+    '&acirc;': 'â', '&Acirc;': 'Â', '&ecirc;': 'ê', '&Ecirc;': 'Ê',
+    '&ocirc;': 'ô', '&Ocirc;': 'Ô'
+  };
+  for (const [k, v] of Object.entries(htmlNamed)) {
+    s = s.replaceAll(k, v);
+  }
+  // Mojibake
+  const mojibake = {
+    'Ã¡': 'á', 'Ã ': 'à', 'Ã¢': 'â', 'Ã£': 'ã', 'Ã¤': 'ä',
+    'Ã ': 'Á', 'Ã€': 'À', 'Ã‚': 'Â', 'Ãƒ': 'Ã', 'Ã„': 'Ä',
+    'Ã©': 'é', 'Ã¨': 'è', 'Ãª': 'ê', 'Ã«': 'ë',
+    'Ã‰': 'É', 'Ãˆ': 'È', 'ÃŠ': 'Ê', 'Ã‹': 'Ë',
+    'Ã­': 'í', 'Ã¬': 'ì', 'Ã®': 'î', 'Ã¯': 'ï',
+    'Ã ': 'Í', 'ÃŒ': 'Ì', 'ÃŽ': 'Î', 'Ã ': 'Ï',
+    'Ã³': 'ó', 'Ã²': 'ò', 'Ã´': 'ô', 'Ãµ': 'õ', 'Ã¶': 'ö',
+    'Ã“': 'Ó', 'Ã’': 'Ò', 'Ã”': 'Ô', 'Ã•': 'Õ', 'Ã–': 'Ö',
+    'Ãº': 'ú', 'Ã¹': 'ù', 'Ã»': 'û', 'Ã¼': 'ü',
+    'Ãš': 'Ú', 'Ã™': 'Ù', 'Ã›': 'Û', 'Ãœ': 'Ü',
+    'Ã§': 'ç', 'Ã‡': 'Ç', 'Ã±': 'ñ', 'Ã‘': 'Ñ',
+    'â‚¬': '€', 'â€“': '–', 'â€”': '—',
+    'â€˜': "'", 'â€™': "'", 'â€œ': '"', 'â€ ': '"',
+    'â€¢': '•', 'â€¦': '…',
+    'Âº': 'º', 'Âª': 'ª', 'Â°': '°', 'Â«': '«', 'Â»': '»',
+    'Â©': '©', 'Â®': '®', 'Â§': '§'
+  };
+  for (const [k, v] of Object.entries(mojibake)) {
+    s = s.replaceAll(k, v);
+  }
+  return s.replace(/\s+/g, ' ').trim();
+}
+
 // ─── CLASSIFICAÇÃO SOBERANA DAS FONTES MIRA ──────────────────────────────────
 export const AUTOMATED_SOURCES = [
   { id: 'net-empregos',    name: 'Net-Empregos',                   type: 'rss',  url: 'https://www.net-empregos.com/rss.asp' },
@@ -401,15 +462,7 @@ export default async function handler(req, res) {
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
   await supabase.from('job_posts').delete().lt('created_at', ninetyDaysAgo);
 
-  // 2. Coletar URLs existentes para deduplicação precisa nos últimos 90 dias
-  const { data: existing } = await supabase
-    .from('job_posts')
-    .select('source_url')
-    .gte('created_at', ninetyDaysAgo);
-
-  const existingUrls = new Set((existing || []).map(j => (j.source_url || '').toLowerCase().trim()));
-
-  // 3. Executar coletas simultâneas com relatórios individuais
+  // 2. Executar coletas simultâneas com relatórios individuais
   const sourceResults = await Promise.all(
     AUTOMATED_SOURCES.map(source => {
       if (source.type === 'json') return fetchJsonApi(source);
@@ -425,6 +478,7 @@ export default async function handler(req, res) {
   let failedSources = [];
   const allNewJobs = [];
   const detailedBreakdown = [];
+  const localSeenUrls = new Set();
 
   sourceResults.forEach(res => {
     const rawCount = res.items ? res.items.length : 0;
@@ -435,10 +489,19 @@ export default async function handler(req, res) {
       successfulSources++;
       totalCollected += rawCount;
       res.items.forEach(job => {
-        const urlKey = (job.source_url || '').toLowerCase().trim();
-        if (!existingUrls.has(urlKey)) {
-          existingUrls.add(urlKey);
-          allNewJobs.push(job);
+        const canonical = canonicalizeUrl(job.source_url);
+        if (!canonical || canonical === '#' || !job.title || job.title.length < 3) return;
+
+        const urlKey = canonical.toLowerCase();
+        if (!localSeenUrls.has(urlKey)) {
+          localSeenUrls.add(urlKey);
+          allNewJobs.push({
+            ...job,
+            title: cleanTextEncoding(job.title),
+            location: cleanTextEncoding(job.location || 'Portugal'),
+            source_url: canonical,
+            created_at: job.created_at || new Date().toISOString()
+          });
           validCount++;
         } else {
           duplicateCount++;
@@ -450,7 +513,7 @@ export default async function handler(req, res) {
         found: rawCount,
         validNew: validCount,
         discarded: duplicateCount,
-        discardReason: duplicateCount > 0 ? 'Já existente na base' : 'Nenhum',
+        discardReason: duplicateCount > 0 ? 'Duplicado na mesma coleta' : 'Nenhum',
         status: 'OK'
       });
     } else {
@@ -484,19 +547,36 @@ export default async function handler(req, res) {
     });
   }
 
-  // 4. Inserir novas vagas em batches de 50 (Modo de Produção)
+  // 3. Inserir novas vagas via UPSERT idempotente em batches de 50 (Modo de Produção)
   let insertedCount = 0;
   const insertedJobs = [];
   const BATCH_SIZE = 50;
 
   for (let i = 0; i < allNewJobs.length; i += BATCH_SIZE) {
     const batch = allNewJobs.slice(i, i + BATCH_SIZE);
-    const { data, error } = await supabase.from('job_posts').insert(batch).select('id, title, location, work_topic, source_name, source_url');
-    if (!error && data) {
-      insertedCount += data.length;
-      insertedJobs.push(...data);
-    } else if (error) {
-      console.error(`❌ Erro no lote de vagas ${i}:`, error.message);
+    
+    // Tentativa soberana de UPSERT com onConflict: 'source_url'
+    const { data: upsertData, error: upsertError } = await supabase
+      .from('job_posts')
+      .upsert(batch, { onConflict: 'source_url' })
+      .select('id, title, location, work_topic, source_name, source_url');
+
+    if (!upsertError && upsertData) {
+      insertedCount += upsertData.length;
+      insertedJobs.push(...upsertData);
+    } else if (upsertError) {
+      // Fallback resiliente caso schema cache do PostgREST ainda não tenha propagado
+      const { data: insData, error: insError } = await supabase
+        .from('job_posts')
+        .insert(batch)
+        .select('id, title, location, work_topic, source_name, source_url');
+
+      if (!insError && insData) {
+        insertedCount += insData.length;
+        insertedJobs.push(...insData);
+      } else {
+        console.error(`❌ Erro no lote de vagas ${i}:`, insError?.message || upsertError.message);
+      }
     }
   }
 
