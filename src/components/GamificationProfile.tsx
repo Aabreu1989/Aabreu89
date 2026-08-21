@@ -10,6 +10,7 @@ import { useToast } from './Toast';
 import { MiraBadgeSeal } from './MiraBadgeSeal';
 import { CANONICAL_12 } from '../services/gamificationService';
 import { getPostBackgroundImage } from '../utils/imageUtils';
+import { t } from '../utils/translations';
 
 interface GamificationProfileProps {
     user: User | null; // The user whose profile is being viewed

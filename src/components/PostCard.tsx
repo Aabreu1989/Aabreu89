@@ -2,7 +2,7 @@ import React, { memo, useState, useMemo, useEffect } from 'react';
 import {
     Handshake, MessageCircle, MoreHorizontal, Bookmark,
     Trash2, AlertCircle, Sparkles, CheckCircle, XCircle, Reply,
-    Share2, Loader2, Flag, Star, ShieldAlert, Shield, Zap, X,
+    Share2, Loader2, Flag, Star, ShieldAlert, Shield, X,
     Medal, MapPin, Heart, ShieldCheck, UserPlus, UserMinus, Globe, AlertTriangle
 } from 'lucide-react';
 import { Post, User, Comment, ValidationStatus } from '../types';
@@ -14,6 +14,7 @@ import { HandsHeartIcon } from './HandsHeartIcon';
 import CommentCard from './CommentCard';
 import { useToast } from './Toast';
 import { authService } from '../services/authService';
+import { communityService } from '../services/communityService';
 import { supabase } from '../lib/supabase';
 
 const timeAgo = (dateStr: string): string => {
@@ -137,8 +138,9 @@ const PostCardComponent: React.FC<PostCardProps> = ({
     const commentTree = useMemo(() => {
         const map = new Map<string, any>();
         const roots: any[] = [];
-        post.comments.forEach(c => map.set(c.id, { ...c, replies: [] }));
-        post.comments.forEach(c => {
+        const comments = post.comments || [];
+        comments.forEach(c => map.set(c.id, { ...c, replies: [] }));
+        comments.forEach(c => {
             if (c.parentId && map.has(c.parentId)) {
                 map.get(c.parentId).replies.push(map.get(c.id));
             } else {
@@ -391,7 +393,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({
                             <div className="p-2.5 bg-white text-slate-300 rounded-2xl shadow-sm border border-slate-50">
                                 <MessageCircle size={18} />
                             </div>
-                            <span className="text-[7px] font-extrabold text-slate-500 uppercase tracking-tighter">{post.comments.length}</span>
+                            <span className="text-[7px] font-extrabold text-slate-500 uppercase tracking-tighter">{(post.comments || []).length}</span>
                         </button>
 
                         <button 
