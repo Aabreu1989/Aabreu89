@@ -12,7 +12,16 @@ export default async function handler(req, res) {
 
     const { prompt, history, communityContext, language, action, kbContext, profileContext } = req.body;
     const apiKey = (process.env.GEMINI_API_KEY || "").trim();
-    if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
+    if (!apiKey) {
+        console.warn('⚠️ [MIRA CHAT] GEMINI_API_KEY not configured, switching to local fallback');
+        return res.status(200).json({
+            success: false,
+            fallbackRequired: true,
+            errorType: 'CONFIG_MISSING',
+            error: 'GEMINI_API_KEY not configured',
+            source: 'local_fallback'
+        });
+    }
     
     const isTranslate = action === 'translate';
     const lang = (language || 'PT').toUpperCase();
