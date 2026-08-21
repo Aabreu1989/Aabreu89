@@ -93,28 +93,34 @@ export const authService = {
 
             if (profileError || !profile) return null;
 
-            // ­ƒøí´©Å NORE: Busca at├│mica de medalhas na tabela central
-            const { data: badgesData } = await supabase
+            // 🛡️ SOBERANIA MIRA: Busca atómica de medalhas na tabela central
+            let { data: badgesData } = await supabase
                 .from('user_badges')
                 .select('badge_id, awarded_at')
                 .eq('user_id', userId);
 
-            const user = this.mapProfileToUser(profile, null);
-            if (badgesData && badgesData.length > 0) {
-                user.badges = badgesData.map(b => ({
-                    badge_id: b.badge_id,
-                    awarded_at: b.awarded_at
-                }));
-            } else {
-                user.badges = [
-                    { badge_id: 'pioneer', awarded_at: new Date().toISOString() },
-                    { badge_id: 'verified', awarded_at: new Date().toISOString() },
-                    { badge_id: 'expert', awarded_at: new Date().toISOString() },
-                    { badge_id: 'curador', awarded_at: new Date().toISOString() },
-                    { badge_id: 'especialista_leis', awarded_at: new Date().toISOString() },
-                    { badge_id: 'mestre_docs', awarded_at: new Date().toISOString() }
-                ];
+            // Se o utilizador ainda não tiver medalhas registadas, executar onboarding de gamificação (persiste pioneiro no DB)
+            if (!badgesData || badgesData.length === 0) {
+                try {
+                    const { gamificationService } = await import('./gamificationService');
+                    await gamificationService.autoAwardBadges(userId, profile.reputation || 0, profile.is_verified || false);
+                    const { data: freshBadges } = await supabase
+                        .from('user_badges')
+                        .select('badge_id, awarded_at')
+                        .eq('user_id', userId);
+                    if (freshBadges && freshBadges.length > 0) {
+                        badgesData = freshBadges;
+                    }
+                } catch (e) {
+                    console.warn('MIRA: Aviso ao inicializar medalhas no onboarding:', e);
+                }
             }
+
+            const user = this.mapProfileToUser(profile, null);
+            user.badges = (badgesData || []).map(b => ({
+                badge_id: b.badge_id,
+                awarded_at: b.awarded_at
+            }));
             
             return user;
         } catch (e) {

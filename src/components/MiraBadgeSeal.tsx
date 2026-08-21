@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Star, ShieldCheck, Search, BookOpen, Diamond, ShieldAlert, 
-  Scale, Flame, Heart, Award, CheckCircle2, Lock, Sparkles, Crown, Zap, Check
+  Scale, Flame, Heart, Award, CheckCircle2, Lock, Sparkles, Crown, Zap, Check, MapPin
 } from 'lucide-react';
 
 export interface MiraBadgeSealProps {
@@ -143,6 +143,45 @@ export const BADGE_CONFIGS: Record<string, {
     accentColor: '#fdf2f8',
     shineColor: '#fbcfe8',
     description: 'O maior símbolo de empatia, acolhimento e apoio humano aos novos chegados a Portugal.'
+  },
+  voz_autoridade: {
+    name: 'Voz de Autoridade',
+    tier: 'soberano',
+    category: 'help',
+    icon: Zap,
+    gradient: 'from-purple-400 via-violet-300 to-amber-500',
+    outerRing: '#a855f7',
+    ribbonColor: '#6b21a8',
+    ribbonBg: 'bg-gradient-to-r from-purple-600 to-amber-600',
+    accentColor: '#faf5ff',
+    shineColor: '#e9d5ff',
+    description: 'Alcançou 500+ pontos de reputação. A voz mais respeitada e ouvida da comunidade MIRA.'
+  },
+  escudo_anti_burla: {
+    name: 'Escudo Anti-Burla',
+    tier: 'diamante',
+    category: 'trust',
+    icon: ShieldCheck,
+    gradient: 'from-blue-400 via-teal-300 to-cyan-600',
+    outerRing: '#60a5fa',
+    ribbonColor: '#1e40af',
+    ribbonBg: 'bg-gradient-to-r from-blue-600 to-teal-700',
+    accentColor: '#eff6ff',
+    shineColor: '#bfdbfe',
+    description: 'Denunciador verificado de esquemas e fraudes de agendamento AIMA. Protege a comunidade.'
+  },
+  guia_local: {
+    name: 'Guia Local',
+    tier: 'prata',
+    category: 'social',
+    icon: MapPin,
+    gradient: 'from-emerald-400 via-green-300 to-teal-600',
+    outerRing: '#34d399',
+    ribbonColor: '#065f46',
+    ribbonBg: 'bg-gradient-to-r from-emerald-600 to-teal-700',
+    accentColor: '#ecfdf5',
+    shineColor: '#a7f3d0',
+    description: 'Avaliou serviços de apoio ao imigrante no Mapa Local. Disponível quando o módulo de avaliações estiver ativo.'
   }
 };
 

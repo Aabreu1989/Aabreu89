@@ -8,8 +8,7 @@ import {
 import { Post, User, Comment, ValidationStatus } from '../types';
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
-import { communityService } from '../services/communityService';
-import { getImageUrl } from '../utils/imageUtils';
+import { getImageUrl, getPostBackgroundImage } from '../utils/imageUtils';
 import { getCategoryKey } from '../utils/categoryUtils';
 import { HandsHeartIcon } from './HandsHeartIcon';
 import CommentCard from './CommentCard';
@@ -64,30 +63,6 @@ interface PostCardProps {
     isAdmin?: boolean;
     onTranslationGenerated?: (translated: string) => void;
 }
-
-const RAGVerification = ({ docs }: { docs: any[] }) => (
-    <div className="mt-4 sm:mt-6 bg-gradient-to-br from-orange-50/80 to-white border border-orange-100 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] animate-in slide-in-from-top-2 duration-700 shadow-sm relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:rotate-12 transition-transform">
-            <Zap size={40} className="text-orange-500" />
-        </div>
-        <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-orange-500 rounded-lg shadow-lg shadow-orange-200">
-                <Zap size={14} className="text-white fill-white" />
-            </div>
-            <span className="text-[10px] font-black text-slate-800 uppercase tracking-[0.2em] italic">Saber IA: Verificação de Soberania</span>
-        </div>
-        <div className="space-y-4">
-            {docs.map((doc, idx) => (
-                <div key={idx} className="relative pl-4 border-l-2 border-orange-200">
-                    <p className="text-[13px] text-slate-700 leading-relaxed font-bold italic">"{doc.info}"</p>
-                    <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{doc.auth} • {doc.ref}</span>
-                    </div>
-                </div>
-            ))}
-        </div>
-    </div>
-);
 
 const PostCardComponent: React.FC<PostCardProps> = ({
     post, user, language, isPostLiked, isPostSaved, userVote, translatedPosts, likedComments,
@@ -157,15 +132,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({
         setTimeout(() => setIsAnimating(null), 400);
     };
     
-    const ragDocs = useMemo(() => {
-        const KNOWLEDGE_BASE = [
-            { token: 'aima', auth: 'AIMA', ref: 'DL 41-A/2024', info: 'Documentos expirados retêm validade jurídica total no Hub MIRA até 31/12/2025.' },
-            { token: 'visto', auth: 'GOV.PT', ref: 'CPLP-HUB', info: 'Agendamentos CPLP são processados exclusivamente via Hub MIRA para eliminar fraudes.' },
-            { token: 'documento', auth: 'AIMA', ref: 'PROTOCOLO HUB', info: 'A validação digital de documentos via Saber IA substitui a necessidade de agendamento físico em 87% dos casos.' }
-        ];
-        const content = post.content.toLowerCase();
-        return KNOWLEDGE_BASE.filter(kb => content.includes(kb.token));
-    }, [post.content]);
+
 
     const commentTree = useMemo(() => {
         const map = new Map<string, any>();
@@ -331,7 +298,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({
             {/* Post Image & Content Container */}
             <div className="relative w-full aspect-square sm:aspect-[4/5] overflow-hidden group/img">
                 <img 
-                    src={getImageUrl(post.backgroundImage || '')} 
+                    src={getPostBackgroundImage(post.backgroundImage, post.id)} 
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover/img:scale-110" 
                     alt="Post Visual" 
                     referrerPolicy="no-referrer" 
@@ -360,7 +327,6 @@ const PostCardComponent: React.FC<PostCardProps> = ({
                                     }}
                                 />
                             </p>
-                            {ragDocs.length > 0 && <RAGVerification docs={ragDocs} />}
                         </div>
                     </div>
                 </div>

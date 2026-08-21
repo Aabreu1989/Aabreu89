@@ -292,6 +292,44 @@ export default async function handler(req, res) {
         } else if (gError) {
           console.warn('⚠️ [MIRA API Community] Aviso ao invocar RPC de gamificação:', gError.message);
         }
+
+        // 🔰 GATILHO SERVER-SIDE SOBERANO: ESCUDO ANTI-BURLA (5+ votos fake/denúncias confirmadas)
+        if (normalizedVoteType === 'fake') {
+          try {
+            const { count: fakeVotesCount } = await supabaseAdmin
+              .from('post_votes')
+              .select('*', { count: 'exact', head: true })
+              .eq('user_id', authenticatedUserId)
+              .eq('vote_type', 'fake');
+
+            if ((fakeVotesCount || 0) >= 5) {
+              const { data: existingBadge } = await supabaseAdmin
+                .from('user_badges')
+                .select('badge_id')
+                .eq('user_id', authenticatedUserId)
+                .eq('badge_id', 'escudo_anti_burla')
+                .maybeSingle();
+
+              if (!existingBadge) {
+                await supabaseAdmin
+                  .from('user_badges')
+                  .insert([{ user_id: authenticatedUserId, badge_id: 'escudo_anti_burla' }]);
+
+                await supabaseAdmin.from('notifications').insert([{
+                  user_id: authenticatedUserId,
+                  type: 'social',
+                  title: 'Selo Conquistado! 🔰',
+                  message: 'Parabéns! Conquistaste o selo "Escudo Anti-Burla" por combater fraudes na comunidade.',
+                  is_read: false,
+                  link: '/profile',
+                  created_at: new Date().toISOString()
+                }]);
+              }
+            }
+          } catch (e) {
+            console.warn('⚠️ [MIRA API Community] Erro ao verificar badge escudo_anti_burla:', e);
+          }
+        }
       }
 
       return res.status(200).json({

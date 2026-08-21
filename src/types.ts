@@ -36,6 +36,8 @@ export type BadgeId =
   | 'exemplar'
   | 'voz_autoridade'
   | 'guia_local'
+  | 'mentor_emprego'
+  | 'especialista_leis'
   | 'coracao';
 
 export interface BadgeRegistryItem {

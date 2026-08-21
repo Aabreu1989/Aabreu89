@@ -4,6 +4,29 @@ import { analytics } from './analyticsService';
 import { syncService } from './syncService';
 import { BadgeId, BadgeRegistryItem, UserBadgeConcession } from '../types';
 
+/**
+ * 🏆 MIRA V2026.GOLD — CATÁLOGO SOBERANO ÚNICO
+ * Esta é a única fonte de verdade do catálogo oficial.
+ * Nenhum componente, serviço ou query pode definir uma lista alternativa.
+ * guia_local: incluído no catálogo, sem gatilho ativo até o módulo de mapa existir.
+ */
+export const CANONICAL_12 = [
+    'pioneiro',
+    'coracao',
+    'curador',
+    'mestre_docs',
+    'exemplar',
+    'mentor_emprego',
+    'sentinela',
+    'especialista_leis',
+    'verificado',
+    'voz_autoridade',
+    'escudo_anti_burla',
+    'guia_local',
+] as const;
+
+export type CanonicalBadgeId = typeof CANONICAL_12[number];
+
 export const DEFAULT_GAMIFICATION_RULES: Record<string, number> = {
     publish_post: 10,
     add_comment: 5,
@@ -143,28 +166,32 @@ export const gamificationService = {
 
             const badgeMetadata: Record<string, any> = {
                 pioneiro:          { icon: 'Star',          icon_emoji: '⭐', category: 'social', rarity_level: 3 },
-                verificado:        { icon: 'CheckCircle2',  icon_emoji: '✅', category: 'trust',  rarity_level: 4 },
-                verificada:        { icon: 'CheckCircle2',  icon_emoji: '✅', category: 'trust',  rarity_level: 4 },
-                sentinela:         { icon: 'ShieldAlert',   icon_emoji: '🛡️', category: 'trust',  rarity_level: 2 },
-                escudo_anti_burla: { icon: 'ShieldCheck',   icon_emoji: '🔰', category: 'trust',  rarity_level: 4 },
-                mestre_docs:       { icon: 'Bookmark',      icon_emoji: '📚', category: 'help',   rarity_level: 2 },
-                curador:           { icon: 'Check',         icon_emoji: '🔍', category: 'trust',  rarity_level: 1 },
-                exemplar:          { icon: 'Award',         icon_emoji: '💎', category: 'social', rarity_level: 2 },
-                voz_autoridade:    { icon: 'Zap',           icon_emoji: '🎙️', category: 'help',   rarity_level: 3 },
-                guia_local:        { icon: 'MapPin',        icon_emoji: '🗺️', category: 'social', rarity_level: 2 },
                 coracao:           { icon: 'Heart',         icon_emoji: '❤️', category: 'social', rarity_level: 1 },
+                curador:           { icon: 'Check',         icon_emoji: '🔍', category: 'trust',  rarity_level: 1 },
+                mestre_docs:       { icon: 'Bookmark',      icon_emoji: '📚', category: 'help',   rarity_level: 2 },
+                exemplar:          { icon: 'Award',         icon_emoji: '💎', category: 'social', rarity_level: 2 },
+                mentor_emprego:    { icon: 'Flame',         icon_emoji: '🔥', category: 'help',   rarity_level: 3 },
+                sentinela:         { icon: 'ShieldAlert',   icon_emoji: '🛡️', category: 'trust',  rarity_level: 2 },
+                especialista_leis: { icon: 'Scale',         icon_emoji: '⚖️', category: 'help',   rarity_level: 3 },
+                verificado:        { icon: 'CheckCircle2',  icon_emoji: '✅', category: 'trust',  rarity_level: 4 },
+                voz_autoridade:    { icon: 'Zap',           icon_emoji: '🎙️', category: 'help',   rarity_level: 3 },
+                escudo_anti_burla: { icon: 'ShieldCheck',   icon_emoji: '🔰', category: 'trust',  rarity_level: 4 },
+                guia_local:        { icon: 'MapPin',        icon_emoji: '🗺️', category: 'social', rarity_level: 2 },
             };
 
-            return (data || []).map(b => {
-                const meta = badgeMetadata[b.id] || {};
-                return {
-                    ...b,
-                    icon: b.icon || meta.icon || 'Award',
-                    icon_emoji: b.icon_emoji || meta.icon_emoji,
-                    category: b.category || meta.category || 'social',
-                    rarity_level: b.rarity_level || meta.rarity_level || 1
-                };
-            });
+            const canonicalSet = new Set<string>(CANONICAL_12);
+            return (data || [])
+                .filter(b => canonicalSet.has(b.id))
+                .map(b => {
+                    const meta = badgeMetadata[b.id] || {};
+                    return {
+                        ...b,
+                        icon: b.icon || meta.icon || 'Award',
+                        icon_emoji: b.icon_emoji || meta.icon_emoji,
+                        category: b.category || meta.category || 'social',
+                        rarity_level: b.rarity_level || meta.rarity_level || 1
+                    };
+                });
         } catch (err) {
             console.error('MIRA: Error fetching all badges:', err);
             return [];
@@ -172,21 +199,22 @@ export const gamificationService = {
     },
 
     /**
-     * 🛡️ MIRA BADGES BOOTSTRAP: Garante que os 10 selos oficiais padrão existem no banco de dados.
+     * 🛡️ MIRA BADGES BOOTSTRAP V2026.GOLD: Garante que os 12 selos canónicos existem no banco de dados.
      */
     async bootstrapBadges(): Promise<void> {
         const defaultBadges = [
-            { id: 'pioneiro', name: 'Membro Pioneiro', description: 'Pertence à primeira geração de utilizadores do MIRA', icon_emoji: '⭐', category: 'social', rarity_level: 3 },
-            { id: 'verificado', name: 'Cidadão Verificado', description: 'Conta com identidade pessoalmente validada', icon_emoji: '✅', category: 'trust', rarity_level: 4 },
-            { id: 'verificada', name: 'Cidadã Verificada', description: 'Conta com identidade pessoalmente validada', icon_emoji: '✅', category: 'trust', rarity_level: 4 },
-            { id: 'sentinela', name: 'Sentinela MIRA', description: 'Atuação constante na manutenção da qualidade da comunidade', icon_emoji: '🛡️', category: 'trust', rarity_level: 2 },
-            { id: 'escudo_anti_burla', name: 'Escudo Anti-Burla', description: 'Denunciador verificado de esquemas e fraudes de agendamento', icon_emoji: '🔰', category: 'trust', rarity_level: 4 },
-            { id: 'mestre_docs', name: 'Mestre dos Documentos', description: 'Preencheu minutas e assistentes documentais com sucesso', icon_emoji: '📚', category: 'help', rarity_level: 2 },
-            { id: 'curador', name: 'Curador de Conteúdo', description: 'Publicou guias informativos de elevadíssima utilidade pública', icon_emoji: '🔍', category: 'trust', rarity_level: 1 },
-            { id: 'exemplar', name: 'Cidadão Exemplar', description: 'Membro altamente ativo nas avaliações de veracidade', icon_emoji: '💎', category: 'social', rarity_level: 2 },
-            { id: 'voz_autoridade', name: 'Voz de Autoridade', description: 'Alcançou 500+ pontos de reputação e autoridade na comunidade', icon_emoji: '🎙️', category: 'help', rarity_level: 3 },
-            { id: 'guia_local', name: 'Guia Local', description: 'Contribuiu com avaliações de serviços locais de apoio ao imigrante', icon_emoji: '🗺️', category: 'social', rarity_level: 2 },
-            { id: 'coracao', name: 'Coração da Tribo', description: 'Reputação de ajuda comunitária generosa na tribo MIRA', icon_emoji: '❤️', category: 'social', rarity_level: 1 }
+            { id: 'pioneiro',           name: 'Membro Pioneiro',       description: 'Pertence à primeira geração de utilizadores do MIRA',                            icon_emoji: '⭐', category: 'social', rarity_level: 3 },
+            { id: 'coracao',            name: 'Coração da Tribo',      description: 'Reputação de ajuda comunitária generosa na tribo MIRA',                         icon_emoji: '❤️', category: 'social', rarity_level: 1 },
+            { id: 'curador',            name: 'Curador de Conteúdo',   description: 'Publicou guias informativos de elevadíssima utilidade pública',                  icon_emoji: '🔍', category: 'trust',  rarity_level: 1 },
+            { id: 'mestre_docs',        name: 'Mestre dos Documentos', description: 'Preencheu minutas e assistentes documentais com sucesso',                        icon_emoji: '📚', category: 'help',   rarity_level: 2 },
+            { id: 'exemplar',           name: 'Cidadão Exemplar',      description: 'Membro altamente ativo nas avaliações de veracidade',                            icon_emoji: '💎', category: 'social', rarity_level: 2 },
+            { id: 'mentor_emprego',     name: 'Mentor de Emprego',     description: 'Apoiou candidatos na integração no mercado de trabalho português',               icon_emoji: '🔥', category: 'help',   rarity_level: 3 },
+            { id: 'sentinela',          name: 'Sentinela MIRA',        description: 'Atuação constante na manutenção da qualidade da comunidade',                     icon_emoji: '🛡️', category: 'trust',  rarity_level: 2 },
+            { id: 'especialista_leis',  name: 'Especialista em Leis',  description: 'Esclareceu legislação de estrangeiros e direito português com rigor',            icon_emoji: '⚖️', category: 'help',   rarity_level: 3 },
+            { id: 'verificado',         name: 'Cidadão Verificado',    description: 'Conta com identidade pessoalmente validada pela equipa MIRA',                   icon_emoji: '✅', category: 'trust',  rarity_level: 4 },
+            { id: 'voz_autoridade',     name: 'Voz de Autoridade',     description: 'Alcançou 500+ pontos de reputação e autoridade na comunidade',                  icon_emoji: '🎙️', category: 'help',   rarity_level: 3 },
+            { id: 'escudo_anti_burla',  name: 'Escudo Anti-Burla',     description: 'Denunciador verificado de esquemas e fraudes de agendamento AIMA',              icon_emoji: '🔰', category: 'trust',  rarity_level: 4 },
+            { id: 'guia_local',         name: 'Guia Local',            description: 'Contribuiu com avaliações de serviços locais de apoio ao imigrante',            icon_emoji: '🗺️', category: 'social', rarity_level: 2 },
         ];
 
         for (const badge of defaultBadges) {
@@ -240,15 +268,16 @@ export const gamificationService = {
         const newBadges: string[] = [];
         
         const milestones = [
-            { id: 'pioneiro', threshold: 0, name: 'Membro Pioneiro', icon_emoji: '⭐', always: true },
-            { id: 'coracao', threshold: 10, name: 'Coração da Tribo', icon_emoji: '❤️' },
-            { id: 'curador', threshold: 50, name: 'Curador de Conteúdo', icon_emoji: '🔍' },
-            { id: 'mestre_docs', threshold: 80, name: 'Mestre dos Documentos', icon_emoji: '📚' },
-            { id: 'exemplar', threshold: 100, name: 'Cidadão Exemplar', icon_emoji: '💎' },
-            { id: 'sentinela', threshold: 150, name: 'Sentinela MIRA', icon_emoji: '🛡️' },
-            { id: 'voz_autoridade', threshold: 500, name: 'Voz de Autoridade', icon_emoji: '🎙️' },
-            { id: 'verificado', threshold: 0, name: 'Cidadão Verificado', icon_emoji: '✅', requireVerified: true },
-            { id: 'verificada', threshold: 0, name: 'Cidadã Verificada', icon_emoji: '✅', requireVerified: true }
+            { id: 'pioneiro',          threshold: 0,   name: 'Membro Pioneiro',      icon_emoji: '⭐', always: true },
+            { id: 'coracao',           threshold: 10,  name: 'Coração da Tribo',     icon_emoji: '❤️' },
+            { id: 'curador',           threshold: 50,  name: 'Curador de Conteúdo',  icon_emoji: '🔍' },
+            { id: 'mestre_docs',       threshold: 80,  name: 'Mestre dos Documentos',icon_emoji: '📚' },
+            { id: 'exemplar',          threshold: 100, name: 'Cidadão Exemplar',     icon_emoji: '💎' },
+            { id: 'mentor_emprego',    threshold: 120, name: 'Mentor de Emprego',    icon_emoji: '🔥' },
+            { id: 'sentinela',         threshold: 150, name: 'Sentinela MIRA',       icon_emoji: '🛡️' },
+            { id: 'especialista_leis', threshold: 200, name: 'Especialista em Leis', icon_emoji: '⚖️' },
+            { id: 'voz_autoridade',    threshold: 500, name: 'Voz de Autoridade',    icon_emoji: '🎙️' },
+            { id: 'verificado',        threshold: 0,   name: 'Cidadão Verificado',   icon_emoji: '✅', requireVerified: true },
         ];
 
         for (const milestone of milestones) {

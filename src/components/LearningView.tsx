@@ -25,57 +25,60 @@ interface LearningViewProps {
 
 const MANUAL_TRANSLATIONS = {
   PT: {
-    title: '📖 MANUAL DO UTILIZADOR – MIRA',
-    summary: 'Bem-vindo ao MIRA, o teu escudo e a tua bússola em Portugal! Criámos este guia rápido para te localizares facilmente dentro da nossa aplicação e saberes o que encontras em cada secção.',
-    content: `🔒 Segurança e Privacidade em Primeiro Lugar: O MIRA é 100% seguro. Nós não guardamos as tuas informações pessoais. Podes navegar, consultar os teus documentos e tirar as tuas dúvidas com total privacidade e tranquilidade.
+    title: '📖 MANUAL DO UTILIZADOR – MIRA V2026.GOLD',
+    summary: 'O guia definitivo do teu escudo e da tua bússola em Portugal! Descobre todas as ferramentas, simuladores, empregos e o sistema de comunidade que criámos para a tua integração segura.',
+    content: `🔒 Segurança e Privacidade em Primeiro Lugar: O MIRA é 100% seguro. Nós não guardamos as tuas informações pessoais ou documentos. Podes navegar, simular processos e tirar dúvidas com total privacidade e tranquilidade.
 
 🗺️ A tua Barra de Navegação (Menu Inferior)
-O menu na parte de baixo do ecrã é o teu ponto de partida para explorar o ecossistema MIRA:
+O menu na parte de baixo do ecrã é o teu ponto de partida para explorar todo o ecossistema MIRA:
 
-🏠 Início: O teu painel principal de boas-vindas.
+🏠 Início: O teu painel principal de boas-vindas com atalhos rápidos e novidades.
 
-👥 MIRA HUB: A nossa rede social e maior comunidade de apoio entre imigrantes. Partilha experiências e conecta-te com quem já chegou.
+👥 MIRA HUB (Comunidade): A maior rede de apoio entre imigrantes em Portugal. Partilha relatos, tira dúvidas com tradução instantânea em 4 idiomas e participa no Fact-Checking Comunitário (votação de veracidade para combater fraudes e esquemas).
 
-💼 Empregos: Acesso a mais de 5.000 vagas de trabalho filtradas para o talento internacional.
+💼 Empregos (JobBoard): Mais de 11.600 vagas de emprego reais atualizadas diariamente (IEFP, Net-Empregos, Jooble e Indeed), com filtros por distrito e área de atuação.
 
-📍 Serviços: Mapa com geolocalização exata de 178 pontos de apoio essenciais (centros de saúde, associações e órgãos públicos).
+📍 Serviços Locais: Mapa interativo com a geolocalização exata de pontos essenciais de acolhimento (centros de saúde, conservatórias, associações e órgãos públicos).
 
-📚 Cursos: Central de evolução profissional com 156 cursos certificados (reconhecidos pelo IEFP e DGES).
+📚 Cursos & Formação: Central de evolução profissional com cursos certificados e reconhecidos pelo IEFP e DGES.
 
-📄 Documentos: Onde encontras a tua Jornada MIRA para descomplicares toda a burocracia.
+📄 Documentos & Jornada: O teu centro de descomplicar a burocracia com guias passo a passo e minutas prontas para download.
 
-🚀 Dentro do Módulo "Documentos": A Jornada MIRA
-Ao clicares no ícone de Documentos, tens acesso a guias práticos com downloads de formulários oficiais em PDF. A tua jornada divide-se em caminhos claros:
+---
 
-📄 Documentos: Formulários oficiais prontos a usar e o passo a passo para o teu dia a dia (como o IMT para a Troca de Carta de Condução).
+🏆 Sistema de Gamificação & 12 Selos de Conquista
+No teu Perfil, tens acesso ao sistema oficial de reputação MIRA. Ganhas pontos e desbloqueias 12 medalhas oficiais ao ajudar outros membros e manter a comunidade segura:
+• ⭐ Pioneiro MIRA: Membro fundador da comunidade.
+• ❤️ Coração da Tribo: Reconhecimento por generosidade e empatia comunitária.
+• 🔍 Curador de Conteúdo: Validador de informações úteis e guias essenciais.
+• 📚 Mestre dos Documentos: Especialista em minutas e processos práticos.
+• 💎 Cidadão Exemplar: Conduta exemplar e participação ativa.
+• 🔥 Mentor de Emprego: Apoio na inserção de talentos no mercado de trabalho.
+• 🛡️ Sentinela MIRA: Guardião da qualidade e integridade do ecossistema.
+• ⚖️ Especialista em Leis: Domínio da legislação de estrangeiros e direitos em Portugal.
+• ✅ Cidadão Verificado: Identidade validada pela moderação MIRA.
+• 🎙️ Voz de Autoridade: Nível de elite com 500+ pontos de reputação.
+• 🔰 Escudo Anti-Burla: Denunciador verificado de fraudes de agendamento e esquemas ilegais.
+• 🗺️ Guia Local: Avaliador de serviços e apoio comunitário no mapa.
 
-📋 Legalização: Tudo o que precisas para descobrir e estruturar o teu Visto em Portugal.
+---
 
-⚖️ Cidadania: Informações atualizadas sobre Passaporte e Leis de nacionalidade.
+🚀 Assistentes Interativos & Simuladores MIRA
+Dentro dos módulos de Documentos e Ferramentas, podes usar assistentes inteligentes:
+• 🆔 Assistente NIF (Finanças): Guia para obtenção e regularização do Número de Identificação Fiscal.
+• 🛡️ Assistente NISS (Segurança Social): Passo a passo para obtenção do teu número de proteção social.
+• 🧮 Simulador de IRS: Cálculo de retenção na fonte, recibos verdes e enquadramento fiscal.
+• 🚗 Assistente IMT: Guia completo para a Troca da Carta de Condução estrangeira.
+• 🏥 Utente SNS: Como aceder ao Serviço Nacional de Saúde e obter o teu número de utente.
+• ⚖️ Nacionalidade: Calculadora e orientações sobre os 5 anos de residência legal.
 
-💼 Empreender: O teu guia prático para abrir e gerir Negócios em Portugal.
+---
 
-🎓 Educação & Diplomas: O caminho certo para Revalidação e Equivalências de estudos.
+🤖 Precisa de Ajuda Extra? Usa o Assistente MIRA
+Em qualquer ecrã, clica no botão cor-de-laranja flutuante com o robô no canto inferior direito.
+O nosso Assistente foi treinado nas leis e normativas oficiais em tempo real para responder com clareza e empatia a qualquer dúvida.
 
-🛡️ Os Documentos Essenciais
-Mais abaixo, encontras secções dedicadas aos passos obrigatórios e iniciais da tua chegada:
-
-🏠 Morada e Alojamento: Como fazer o teu Registo de Residência em Portugal.
-
-🏦 Abertura de Conta Bancária: Quais os bancos, regras de KYC e como aderir.
-
-🆔 NIF (Finanças - AT): Guia completo para o teu Número de Identificação Fiscal.
-
-🛡️ NISS (Segurança Social): Como obter o teu Número de Identificação da Segurança Social.
-
-🏥 Utente SNS (Saúde Pública): Como te registares no sistema público de saúde e acederes a hospitais e centros de saúde.
-
-🤖 Precisa de Ajuda Extra? Usa o Chat MIRA
-Em qualquer ecrã, vais ver um botão cor-de-laranja flutuante com um robô no canto inferior direito.
-
-Apenas tens de clicar nele para falar com o nosso Assistente. É uma inteligência artificial humanizada, alimentada com dados oficiais em tempo real, pronta para responder com precisão a qualquer dúvida, sem registar ou guardar os teus dados privados.
-
-💡 Dica: O MIRA é um ecossistema 100% gratuito e focado na tua proteção. Usa a bússola e faz a tua jornada ao teu próprio ritmo!`,
+📱 Dica Extra: Instala o MIRA no teu telemóvel (PWA)! Podes adicionar à tela inicial no iOS ou Android para ter acesso rápido mesmo offline.`,
     art406_title: 'CONVENÇÃO DE GENEBRA: PROTEÇÃO & DIGNIDADE',
     art406_summary: 'Explore os pilares da proteção internacional e o compromisso de Portugal com o acolhimento humanitário soberano.',
     art406_content: `A Convenção de Genebra de 1951 é o marco civilizacional que garante segurança a quem foge da perseguição. Em Portugal, a soberania e a solidariedade caminham juntas:
@@ -122,57 +125,60 @@ Apenas tens de clicar nele para falar com o nosso Assistente. É uma inteligênc
     3. BANCARIZAÇÃO DIGITAL: O Banco de Portugal exige agora provas de rendimentos digitais. Evite depósitos em numerário sem fatura. Tudo o que não é digital em 2026, não existe para a AIMA.`
   },
   EN: {
-    title: '📖 USER MANUAL – MIRA',
-    summary: 'Welcome to MIRA, your shield and compass in Portugal! We created this quick guide to help you easily locate yourself within our application and know what you can find in each section.',
-    content: `🔒 Security and Privacy First: MIRA is 100% secure. We do not store your personal information. You can browse, consult your documents, and clear your doubts with total privacy and peace of mind.
+    title: '📖 USER MANUAL – MIRA V2026.GOLD',
+    summary: 'The definitive guide to your shield and compass in Portugal! Explore all tools, simulators, jobs, and the community support system designed for your safe integration.',
+    content: `🔒 Security and Privacy First: MIRA is 100% secure. We do not store your personal information or documents. You can browse, simulate processes, and clear doubts with total privacy and peace of mind.
 
 🗺️ Your Navigation Bar (Bottom Menu)
-The menu at the bottom of the screen is your starting point to explore the MIRA ecosystem:
+The menu at the bottom of the screen is your starting point to explore the full MIRA ecosystem:
 
-🏠 Home: Your main welcome dashboard.
+🏠 Home: Your main welcome dashboard with quick shortcuts and latest updates.
 
-👥 MIRA HUB: Our social network and largest support community among immigrants. Share experiences and connect with those who have already arrived.
+👥 MIRA HUB (Community): The largest support network for immigrants in Portugal. Share experiences, get answers with instant 4-language translation, and participate in Community Fact-Checking (veracity voting to combat scams).
 
-💼 Jobs: Access to more than 5,000 job vacancies filtered for international talent.
+💼 Jobs (JobBoard): Over 11,600 real job openings updated daily (IEFP, Net-Empregos, Jooble, Indeed), with filters by district and field.
 
-📍 Services: Map with the exact geolocation of 178 essential support points (health centers, associations, and public bodies).
+📍 Local Services: Interactive map with the exact geolocation of essential support points (health centers, registry offices, associations, and public bodies).
 
-📚 Courses: Professional development hub with 156 certified courses (recognized by IEFP and DGES).
+📚 Courses & Training: Professional development hub with certified courses recognized by IEFP and DGES.
 
-📄 Documents: Where you find your MIRA Journey to simplify all bureaucracy.
+📄 Documents & Journey: Your center to simplify bureaucracy with step-by-step guides and official PDF form downloads.
 
-🚀 Inside the "Documents" Module: The MIRA Journey
-When you click on the Documents icon, you have access to practical guides with official form downloads in PDF. Your journey is divided into clear paths:
+---
 
-📄 Documents: Official forms ready to use and a step-by-step guide for your daily life (such as IMT for Driving License Exchange).
+🏆 Gamification System & 12 Official Achievement Badges
+In your Profile, access the official MIRA reputation system. Earn points and unlock 12 badges by helping other members and keeping the community safe:
+• ⭐ MIRA Pioneer: Founding member of the community.
+• ❤️ Heart of the Tribe: Recognition for community empathy and support.
+• 🔍 Content Curator: Validator of useful information and essential guides.
+• 📚 Master of Documents: Expert in forms and practical processes.
+• 💎 Exemplary Citizen: Impeccable conduct and active participation.
+• 🔥 Employment Mentor: Supporting international talent entering the job market.
+• 🛡️ MIRA Sentinel: Guardian of ecosystem quality and integrity.
+• ⚖️ Law Specialist: Deep knowledge of foreigners' legislation and rights.
+• ✅ Verified Citizen: Identity validated by MIRA moderation.
+• 🎙️ Voice of Authority: Elite tier with 500+ reputation points.
+• 🔰 Anti-Scam Shield: Verified reporter of appointment scams and illegal fraud.
+• 🗺️ Local Guide: Reviewer of local services and community support.
 
-📋 Legalization: Everything you need to discover and structure your Visa in Portugal.
+---
 
-⚖️ Citizenship: Updated information on Passport and Nationality laws.
+🚀 Interactive Assistants & MIRA Simulators
+Inside Documents and Tools modules, use smart assistants:
+• 🆔 NIF Assistant (Tax Authority): Guide to obtaining and regularizing your Tax Number.
+• 🛡️ NISS Assistant (Social Security): Step-by-step to get your social security number.
+• 🧮 IRS Simulator: Calculate tax withholding, green receipts, and fiscal brackets.
+• 🚗 IMT Assistant: Complete guide for Foreign Driving License Exchange.
+• 🏥 SNS User: How to access the National Health Service and get your user number.
+• ⚖️ Nationality: Calculator and rules on the 5 years of legal residence.
 
-💼 Entrepreneurship: Your practical guide to opening and managing Businesses in Portugal.
+---
 
-🎓 Education & Diplomas: The right path for Degree Validation and Equivalencies of studies.
+🤖 Need Extra Help? Use the MIRA Assistant
+On any screen, click the floating orange robot button in the bottom right corner.
+Our Assistant is trained on official laws in real time to answer any questions with precision and empathy.
 
-🛡️ Essential Documents
-Below, you will find sections dedicated to the mandatory and initial steps of your arrival:
-
-🏠 Address and Accommodation: How to register your Residence in Portugal.
-
-🏦 Opening a Bank Account: Which banks, KYC rules, and how to join.
-
-🆔 NIF (Tax Authority - AT): Complete guide to your Tax Identification Number.
-
-🛡️ NISS (Social Security): How to obtain your Social Security Identification Number.
-
-🏥 SNS User (Public Health): How to register in the public health system and access hospitals and health centers.
-
-🤖 Need Extra Help? Use MIRA Chat
-On any screen, you will see a floating orange button with a robot in the bottom right corner.
-
-Just click on it to speak with our Assistant. It is a humanized artificial intelligence, powered by official data in real time, ready to answer any question with precision, without registering or storing your private data.
-
-💡 Tip: MIRA is a 100% free ecosystem focused on your protection. Use the compass and make your journey at your own pace!`,
+📱 Extra Tip: Install MIRA on your mobile device (PWA)! Add it to your home screen on iOS or Android for fast access even offline.`,
     art406_title: 'GENEVA CONVENTION: PROTECTION & DIGNITY',
     art406_summary: 'Explore the pillars of international protection and Portugal\'s commitment to humanitarian reception.',
     art406_content: `The 1951 Geneva Convention is the civilizational framework that guarantees safety. In Portugal:
@@ -212,57 +218,60 @@ Just click on it to speak with our Assistant. It is a humanized artificial intel
     3. DIGITAL BANKING: Everything that is not digital in 2026 does not exist for AIMA.`
   },
   ES: {
-    title: '📖 MANUAL DEL USUARIO – MIRA',
-    summary: '¡Bienvenido a MIRA, tu escudo y tu brújula en Portugal! Hemos creado esta guía rápida para que te localices fácilmente dentro de nuestra aplicación y sepas qué encuentras en cada sección.',
-    content: `🔒 Seguridad y Privacidad Primero: MIRA es 100% seguro. Nosotros no guardamos tu información personal. Puedes navegar, consultar tus documentos y resolver tus dudas con total privacidad y tranquilidad.
+    title: '📖 MANUAL DEL USUARIO – MIRA V2026.GOLD',
+    summary: '¡La guía definitiva de tu escudo y tu brújula en Portugal! Descubre todas las herramientas, simuladores, empleos y el sistema comunitario que creamos para tu integración segura.',
+    content: `🔒 Seguridad y Privacidad Primero: MIRA es 100% seguro. Nosotros no guardamos tu información personal ni documentos. Puedes navegar, simular trámites y resolver dudas con total privacidad y tranquilidad.
 
 🗺️ Tu Barra de Navegación (Menú Inferior)
-El menú en la parte inferior de la pantalla es tu punto de partida para explorar el ecosistema MIRA:
+El menú en la parte inferior de la pantalla es tu punto de partida para explorar todo el ecosistema MIRA:
 
-🏠 Inicio: Tu panel principal de bienvenida.
+🏠 Inicio: Tu panel principal de bienvenida con accesos rápidos y novedades.
 
-👥 MIRA HUB: Nuestra red social y la mayor comunidad de apoyo entre inmigrantes. Comparte experiencias y conéctate con quienes ya llegaron.
+👥 MIRA HUB (Comunidad): La mayor red de apoyo entre inmigrantes en Portugal. Comparte experiencias, resuelve dudas con traducción instantánea en 4 idiomas y participa en el Fact-Checking Comunitario (votación de veracidad para combatir estafas).
 
-💼 Empleos: Acceso a más de 5.000 ofertas de trabajo filtradas para el talento internacional.
+💼 Empleos (JobBoard): Más de 11.600 ofertas de trabajo reales actualizadas diariamente (IEFP, Net-Empregos, Jooble e Indeed), con filtros por distrito y área profesional.
 
-📍 Servicios: Mapa con geolocalización exacta de 178 puntos de apoyo esenciales (centros de salud, asociaciones y organismos públicos).
+📍 Servicios Locales: Mapa interactivo con la geolocalización exacta de puntos esenciales de apoyo (centros de salud, registros, asociaciones y organismos públicos).
 
-📚 Cursos: Central de evolución profesional con 156 cursos certificados (reconocidos por el IEFP y la DGES).
+📚 Cursos y Formación: Central de desarrollo profesional con cursos certificados reconocidos por el IEFP y la DGES.
 
-📄 Documentos: Donde encuentras tu Jornada MIRA para descomplicar toda la burocracia.
+📄 Documentos y Jornada: Tu centro para descomplicar la burocracia con guías paso a paso y formularios oficiales en PDF listos para descargar.
 
-🚀 Dentro del Módulo "Documentos": La Jornada MIRA
-Al hacer clic en el icono de Documentos, tienes acceso a guías prácticas con descargas de formularios oficiales en PDF. Tu jornada se divide en caminos claros:
+---
 
-📄 Documentos: Formularios oficiales listos para usar y el paso a paso para tu día a día (como el IMT para el Canje de Licencia de Conducir).
+🏆 Sistema de Gamificación y 12 Sellos Oficiales de Logro
+En tu Perfil, accede al sistema oficial de reputación MIRA. Gana puntos y desbloquea 12 insignias oficiales ayudando a otros miembros y protegiendo a la comunidad:
+• ⭐ Pionero MIRA: Miembro fundador de la comunidad.
+• ❤️ Corazón de la Tribu: Reconocimiento por empatía y apoyo comunitario.
+• 🔍 Curador de Contenido: Validador de información útil y guías clave.
+• 📚 Maestro de Documentos: Experto en trámites y minutas prácticas.
+• 💎 Ciudadano Exemplar: Conducta ejemplar y participación activa.
+• 🔥 Mentor de Empleo: Apoyo para talentos que ingresan al mercado laboral.
+• 🛡️ Centinela MIRA: Guardián de la integridad y calidad del ecosistema.
+• ⚖️ Especialista en Leyes: Conocimiento de la legislación de extranjería.
+• ✅ Ciudadano Verificado: Identidad validada por moderación MIRA.
+• 🎙️ Voz de Autoridad: Nivel élite con 500+ puntos de reputación.
+• 🔰 Escudo Anti-Estafa: Denunciante verificado de fraudes de citas y engaños ilegales.
+• 🗺️ Guía Local: Evaluador de servicios y apoyo comunitario en el mapa.
 
-📋 Legalización: Todo lo que necesitas para descubrir y estructurar tu Visado en Portugal.
+---
 
-⚖️ Ciudadanía: Información actualizada sobre Pasaporte y Leyes de nacionalidad.
+🚀 Asistentes Interactivos y Simuladores MIRA
+Dentro de los módulos de Documentos y Herramientas, utiliza asistentes inteligentes:
+• 🆔 Asistente NIF (Hacienda - AT): Guía para obtener y regularizar tu Número Fiscal.
+• 🛡️ Asistente NISS (Seguridad Social): Paso a paso para tu número de seguridad social.
+• 🧮 Simulador de IRS: Cálculo de retención en la fuente, recibos verdes y régimen fiscal.
+• 🚗 Asistente IMT: Guía completa para el Canje de Carnet de Conducir extranjero.
+• 🏥 Usuario SNS: Cómo acceder al Servicio Nacional de Salud y obtener tu número.
+• ⚖️ Nacionalidad: Calculadora y normativas sobre los 5 años de residencia legal.
 
-💼 Emprender: Tu guía práctica para abrir y gestionar Negocios en Portugal.
+---
 
-🎓 Educación & Diplomas: El camino correcto para Revalidación e Equivalencias de estudios.
+🤖 ¿Necesitas Ayuda Extra? Usa el Asistente MIRA
+En cualquier pantalla, haz clic en el botón naranja flotante con el robot en la esquina inferior derecha.
+Nuestro Asistente está capacitado con leyes oficiales en tiempo real para responder con precisión y calidez.
 
-🛡️ Los Documentos Esenciales
-Más abajo, encuentras secciones dedicadas a los pasos obligatorios e iniciales de tu llegada:
-
-🏠 Dirección y Alojamiento: Cómo hacer tu Registro de Residencia en Portugal.
-
-🏦 Apertura de Cuenta Bancaria: Qué bancos, reglas de KYC y cómo adherirte.
-
-🆔 NIF (Hacienda - AT): Guía completa para tu Número de Identificación Fiscal.
-
-🛡️ NISS (Seguridad Social): Cómo obtener tu Número de Identificación de la Seguridad Social.
-
-🏥 Usuario SNS (Salud Pública): Cómo registrarte en el sistema público de salud y acceder a hospitales y centros de salud.
-
-🤖 ¿Necesitas Ayuda Extra? Usa el Chat MIRA
-En cualquier pantalla, verás un botón naranja flotante con un robot en la esquina inferior derecha.
-
-Solo tienes que hacer clic en él para hablar con nuestro Asistente. Es una inteligencia artificial humanizada, alimentada con datos oficiales en tiempo real, lista para responder con precisión a cualquier duda, sin registrar ni guardar tus datos privados.
-
-💡 Consejo: MIRA es un ecosistema 100% gratuito y enfocado en tu protección. ¡Usa la brújula y haz tu jornada a tu propio ritmo!`,
+📱 Consejo Extra: ¡Instala MIRA en tu móvil (PWA)! Añádelo a la pantalla de inicio en iOS o Android para acceso rápido incluso sin conexión.`,
     art406_title: 'CONVENCIÓN DE GINEBRA: PROTECCIÓN Y DIGNIDAD',
     art406_summary: 'Explore los pilares de la protección internacional y el compromiso de Portugal con el acogimiento humanitario.',
     art406_content: `La Convención de Ginebra de 1951 es el marco que garantiza la seguridad. En Portugal:
@@ -304,57 +313,60 @@ Solo tienes que hacer clic en él para hablar con nuestro Asistente. Es una inte
     3. BANCARIZAÇÃO DIGITAL: Todo lo que no es digital en 2026, no existe para la AIMA.`
   },
   FR: {
-    title: '📖 MANUEL DE L\'UTILISATEUR – MIRA',
-    summary: 'Bienvenue sur MIRA, ton bouclier et ta boussole au Portugal ! Nous avons créé ce guide rapide pour t\'aider à te repérer facilement dans notre application et à savoir ce que tu trouveras dans chaque section.',
-    content: `🔒 Sécurité et Confidentialité d'abord : MIRA est 100% sécurisé. Nous ne conservons pas vos informations personnelles. Vous pouvez naviguer, consulter vos documents et poser vos questions en toute confidentialité et sérénité.
+    title: '📖 MANUEL DE L\'UTILISATEUR – MIRA V2026.GOLD',
+    summary: 'Le guide ultime de ton bouclier et de ta boussole au Portugal ! Découvre tous les outils, simulateurs, offres d\'emploi et le système communautaire pour ton intégration sereine.',
+    content: `🔒 Sécurité et Confidentialité d'abord : MIRA est 100% sécurisé. Nous ne conservons pas vos informations personnelles ni vos documents. Vous pouvez naviguer, simuler vos démarches et poser vos questions en toute confidentialité et sérénité.
 
 🗺️ Ta Barre de Navigation (Menu Inférieur)
-Le menu en bas de l'écran est ton point de départ pour explorer l'écosystème MIRA :
+Le menu en bas de l'écran est ton point de départ pour explorer tout l'écosystème MIRA :
 
-🏠 Accueil : Ton tableau de bord principal de bienvenue.
+🏠 Accueil : Ton tableau de bord principal de bienvenue avec raccourcis et actualités.
 
-👥 MIRA HUB : Notre réseau social et la plus grande communauté de soutien entre immigrés. Partage tes expériences et connecte-toi avec ceux qui sont déjà arrivés.
+👥 MIRA HUB (Communauté) : Le plus grand réseau d'entraide entre immigrés au Portugal. Partage tes expériences, pose des questions avec traduction instantanée en 4 langues et participe au Fact-Checking Communautaire (vote de véracité pour contrer les fraudes).
 
-💼 Emplois : Accès à plus de 5 000 offres d'emploi filtrées pour les talents internationaux.
+💼 Emplois (JobBoard) : Plus de 11 600 offres d'emploi réelles mises à jour quotidiennement (IEFP, Net-Empregos, Jooble, Indeed), avec filtres par district et secteur.
 
-📍 Services : Carte avec géolocalisation exacte de 178 points de soutien essentiels (centres de santé, associations et organismes publics).
+📍 Services Locaux : Carte interactive avec géolocalisation exacte des points d'accueil essentiels (centres de santé, mairies, associations, organismes publics).
 
-📚 Cursos (Cours) : Centre de développement professionnel avec 156 cours certifiés (reconnus par l'IEFP et la DGES).
+📚 Cours et Formations : Pôle de développement professionnel avec formations certifiées reconnues par l'IEFP et la DGES.
 
-📄 Documents : Où tu trouveras ton Parcours MIRA pour simplifier toutes les démarches administratives.
+📄 Documents et Parcours : Ton centre pour simplifier la bureaucratie avec guides pas à pas et téléchargements de formulaires officiels en PDF.
 
-🚀 Dans le Module "Documents" : Le Parcours MIRA
-En cliquant sur l'icône Documents, tu accèdes à des guides pratiques avec téléchargement de formulaires officiels en PDF. Ton parcours est divisé en chemins clairs :
+---
 
-📄 Documents : Formulaires officiels prêts à l'emploi et guide étape par étape pour ton quotidien (comme l'IMT pour l'Échange de Permis de Conduire).
+🏆 Système de Gamification et 12 Badges Officiels
+Dans ton Profil, accède au système officiel de réputation MIRA. Gagne des points et débloque 12 badges en aidant la communauté et en protégeant les nouveaux arrivants :
+• ⭐ Pionnier MIRA : Membre fondateur de la communauté.
+• ❤️ Cœur de la Tribu : Reconnaissance pour l'entraide et l'empathie.
+• 🔍 Curateur de Contenu : Validateur d'informations fiables et de guides pratiques.
+• 📚 Maître des Documents : Expert des démarches et formulaires utiles.
+• 💎 Citoyen Exemplaire : Conduite exemplaire et engagement actif.
+• 🔥 Mentor Emploi : Soutien à l'insertion professionnelle des talents.
+• 🛡️ Sentinelle MIRA : Gardien de l'intégrité et de la qualité du réseau.
+• ⚖️ Spécialiste des Lois : Maîtrise du droit des étrangers au Portugal.
+• ✅ Citoyen Vérifié : Identité validée par la modération MIRA.
+• 🎙️ Voix d'Autorité : Niveau élite avec 500+ points de réputation.
+• 🔰 Bouclier Anti-Arnaque : Dénonciateur officiel des fraudes de rendez-vous et faux intermédiaires.
+• 🗺️ Guide Local : Évaluateur des services de proximité sur la carte.
 
-📋 Légalisation : Tout ce dont tu as besoin pour découvrir et structurer ton Visa au Portugal.
+---
 
-⚖️ Citoyenneté : Informations à jour sur le Passeport et les Lois sur la nationalité.
+🚀 Assistants Interactifs et Simulateurs MIRA
+Dans les modules Documents et Outils, utilise nos assistants intelligents :
+• 🆔 Assistant NIF (Finances - AT) : Guide pour obtenir et mettre à jour ton Numéro Fiscal.
+• 🛡️ Assistant NISS (Sécurité Sociale) : Démarche pas à pas pour ton numéro de protection sociale.
+• 🧮 Simulateur d'IRS : Calcul de retenue à la source, reçus verts et tranches d'imposition.
+• 🚗 Assistant IMT : Guide complet pour l'Échange de Permis de Conduire étranger.
+• 🏥 Usager SNS : Inscription au système de santé publique et numéro d'usager.
+• ⚖️ Nationalité : Calculateur et règles relatives aux 5 ans de résidence légale.
 
-💼 Entreprendre : Ton guide pratique pour ouvrir et gérer des Entreprises au Portugal.
+---
 
-🎓 Éducation & Diplômes : Le bon chemin pour la Validation et l'Équivalence des études.
+🤖 Besoin d'Aide Supplémentaire ? Utilise l'Assistant MIRA
+Sur n'importe quel écran, clique sur le bouton orange flottant avec le robot en bas à droite.
+Notre Assistant est entraîné sur les textes officiels en temps réel pour répondre avec clarté et bienveillance.
 
-🛡️ Les Documents Essentiels
-Plus bas, tu trouveras des sections dédiées aux étapes obligatoires et initiales de ton arrivée :
-
-🏠 Adresse et Logement : Comment enregistrer ton justificatif de Domicile au Portugal.
-
-🏦 Ouverture de Compte Bancária : Quelles banques, règles KYC et comment y adhérer.
-
-🆔 NIF (Impôts - AT) : Guide complet pour ton Numéro d'Identification Fiscale.
-
-🛡️ NISS (Sécurité Sociale) : Comment obtenir ton Numéro d'Identification de la Sécurité Sociale.
-
-🏥 Usager SNS (Santé Publique) : Comment t'inscrire au système de santé publique et accéder aux hôpitaux et centres de santé.
-
-🤖 Besoin d'Aide Supplémentaire ? Utilise le Chat MIRA
-Sur n'importe quel écran, tu verras un bouton orange flottant avec un robot dans le coin inférieur droit.
-
-Il te suffit de cliquer dessus pour parler à notre Assistant. C'est une intelligence artificielle humanisée, alimentée par des données officielles en temps réel, prête à répondre avec précision à toutes tes questions, sans enregistrer ni conserver tes données privées.
-
-💡 Conseil : MIRA est un écosystème 100% gratuit et axé sur ta protection. Utilise la boussole et fais ton parcours à ton propre rythme!`,
+📱 Astuce : Installe MIRA sur ton téléphone (PWA) ! Ajoute l'application à ton écran d'accueil sur iOS ou Android pour un accès rapide même hors-ligne.`,
     art406_title: 'CONVENTION DE GENÈVE : PROTECTION & DIGNITÉ',
     art406_summary: 'Explorez les piliers de la protection internationale et l\'engagement du Portugal.',
     art406_content: `La Convention de Genève de 1951 est le cadre garantissant la sécurité. Au Portugal :

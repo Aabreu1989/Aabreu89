@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { followService } from '../services/followService';
 import { isUserAdmin } from '../utils/adminUtils';
 import { User, Comment, ForumPost, ViewType, Badge, Post } from '../types';
-import { FileText, Bookmark, Shield, CheckCircle2, Heart, Zap, Star, X, LogOut, Award, Flame, UserCheck, ShieldAlert, Book, MapPin, Activity, Edit2, Check, CalendarCheck, Trash2, Lock, Users, MessageSquare, Mail, Map, Download } from 'lucide-react';
+import { FileText, Bookmark, Shield, CheckCircle2, Heart, Zap, Star, X, LogOut, Award, Flame, UserCheck, ShieldAlert, Book, MapPin, ShieldCheck, Activity, Edit2, Check, CalendarCheck, Trash2, Lock, Users, MessageSquare, Mail, Map, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { PREDEFINED_AVATARS } from '../constants';
 import { authService } from '../services/authService';
 import { useToast } from './Toast';
-import { t } from '../utils/translations';
 import { MiraBadgeSeal } from './MiraBadgeSeal';
+import { CANONICAL_12 } from '../services/gamificationService';
+import { getPostBackgroundImage } from '../utils/imageUtils';
 
 interface GamificationProfileProps {
     user: User | null; // The user whose profile is being viewed
@@ -251,7 +252,10 @@ const BADGE_LOCALES = {
         b6n: "Sentinela",                b6d: "Guardião da integridade da plataforma. Atribuído a quem identifica e reporta fraudes. Requer mais de 10 denúncias confirmadas.",
         b7n: "Especialista em Leis",     b7d: "Reconhece um profundo conhecimento da Lei de Estrangeiros e da legislação portuguesa. Requer mais de 50 consultas informativas.",
         b8n: "Mentor de Emprego",        b8d: "Atribuído a quem apoia outros membros na procura de emprego em Portugal. Requer mais de 10 comentários úteis em Vagas.",
-        b9n: "Coração da Comunidade",    b9d: "O maior reconhecimento de empatia e apoio emocional. Atribuído a quem demonstra um cuidado constante."
+        b9n: "Coração da Comunidade",    b9d: "O maior reconhecimento de empatia e apoio emocional. Atribuído a quem demonstra um cuidado constante.",
+        b10n: "Voz de Autoridade",       b10d: "Alcançou 500+ pontos de reputação. A voz mais respeitada e ouvida da comunidade MIRA.",
+        b11n: "Escudo Anti-Burla",       b11d: "Denunciador verificado de esquemas e fraudes de agendamento AIMA. Protege a comunidade com 5+ denúncias confirmadas.",
+        b12n: "Guia Local",              b12d: "Avaliou serviços de apoio ao imigrante no Mapa Local. Disponível quando o módulo de avaliações estiver ativo.",
     },
     en: {
         b1n: "MIRA Pioneer",             b1d: "Awarded to the first users who believed in the project. Represents the foundation of our community.",
@@ -262,7 +266,10 @@ const BADGE_LOCALES = {
         b6n: "Sentinel",                 b6d: "Guardian of platform integrity. Awarded to those who identify and report fraud. Requires more than 10 confirmed reports.",
         b7n: "Law Specialist",           b7d: "Recognizes deep knowledge of the Foreigners Law and Portuguese legislation. Requires more than 50 informative queries.",
         b8n: "Employment Mentor",        b8d: "Awarded to those who support other members in finding employment in Portugal. Requires more than 10 useful comments in Jobs.",
-        b9n: "Heart of the Community",   b9d: "The highest recognition of empathy and emotional support. Awarded to those who demonstrate constant care."
+        b9n: "Heart of the Community",   b9d: "The highest recognition of empathy and emotional support. Awarded to those who demonstrate constant care.",
+        b10n: "Voice of Authority",      b10d: "Reached 500+ reputation points. The most respected and heard voice in the MIRA community.",
+        b11n: "Anti-Scam Shield",        b11d: "Verified reporter of AIMA appointment scams and fraud. Protects the community with 5+ confirmed reports.",
+        b12n: "Local Guide",             b12d: "Reviewed local immigrant support services on the Local Map. Available when the review module is active.",
     },
     fr: {
         b1n: "Pionnier MIRA",            b1d: "Décerné aux premiers utilisateurs qui ont cru au projet. Représente la base de notre communauté.",
@@ -273,7 +280,10 @@ const BADGE_LOCALES = {
         b6n: "Sentinelle",               b6d: "Gardien de l'intégrité de la plateforme. Décerné à ceux qui identifient et signalent les fraudes. Nécessite plus de 10 signalements confirmés.",
         b7n: "Spécialiste en Droit",     b7d: "Reconnaît une connaissance approfondie de la Loi sur les Étrangers et de la législation portugaise. Nécessite plus de 50 requêtes informatives.",
         b8n: "Mentor d'Emploi",          b8d: "Décerné à ceux qui soutiennent d'autres membres dans leur recherche d'emploi au Portugal. Nécessite plus de 10 commentaires utiles dans Emplois.",
-        b9n: "Cœur de la Communauté",    b9d: "La plus haute reconnaissance d'empathie et de soutien émotionnel. Décerné à ceux qui font preuve d'une attention constante."
+        b9n: "Cœur de la Communauté",    b9d: "La plus haute reconnaissance d'empathie et de soutien émotionnel. Décerné à ceux qui font preuve d'une attention constante.",
+        b10n: "Voix d'Autorité",         b10d: "A atteint 500+ points de réputation. La voix la plus respectée de la communauté MIRA.",
+        b11n: "Bouclier Anti-Arnaque",   b11d: "Signaleur vérifié d'arnaques et de fraudes aux rendez-vous AIMA. Protège la communauté avec 5+ signalements confirmés.",
+        b12n: "Guide Local",             b12d: "A évalué des services d'aide aux immigrants sur la Carte Locale. Disponible quand le module d'évaluations sera actif.",
     },
     es: {
         b1n: "Pionero MIRA",             b1d: "Concedido a los primeros usuarios que creyeron en el proyecto. Representa la base de nuestra comunidad.",
@@ -284,7 +294,10 @@ const BADGE_LOCALES = {
         b6n: "Centinela",                b6d: "Guardián de la integridad de la plataforma. Otorgado a quienes identifican y reportan fraudes. Requiere más de 10 denuncias confirmadas.",
         b7n: "Especialista en Leyes",    b7d: "Reconoce un profundo conocimiento de la Ley de Extranjería y la legislación portuguesa. Requiere más de 50 consultas informativas.",
         b8n: "Mentor de Empleo",         b8d: "Otorgado a quienes apoyan a otros miembros en la búsqueda de empleo en Portugal. Requiere más de 10 comentarios útiles en Vacantes.",
-        b9n: "Corazón de la Comunidad",  b9d: "El mayor reconocimiento de empatía y apoyo emocional. Otorgado a quienes demuestran un cuidado constante."
+        b9n: "Corazón de la Comunidad",  b9d: "El mayor reconocimiento de empatía y apoyo emocional. Otorgado a quienes demuestran un cuidado constante.",
+        b10n: "Voz de Autoridad",        b10d: "Alcanzó 500+ puntos de reputación. La voz más respetada de la comunidad MIRA.",
+        b11n: "Escudo Anti-Estafa",      b11d: "Denunciador verificado de estafas y fraudes en citas AIMA. Protege la comunidad con 5+ denuncias confirmadas.",
+        b12n: "Guía Local",              b12d: "Evaluó servicios de apoyo al inmigrante en el Mapa Local. Disponible cuando el módulo de evaluaciones esté activo.",
     }
 };
 
@@ -302,6 +315,9 @@ const getBadges = (lang: string): Badge[] => {
         { id: 'especialista_leis', name: b.b7n,  icon: 'Book',          description: b.b7d,  unlocked: false, category: 'help'   },
         { id: 'mentor_emprego',    name: b.b8n,  icon: 'Flame',         description: b.b8d,  unlocked: false, category: 'help'   },
         { id: 'coracao',           name: b.b9n,  icon: 'Heart',         description: b.b9d,  unlocked: false, category: 'social' },
+        { id: 'voz_autoridade',    name: b.b10n, icon: 'Zap',           description: b.b10d, unlocked: false, category: 'help'   },
+        { id: 'escudo_anti_burla', name: b.b11n, icon: 'ShieldCheck',   description: b.b11d, unlocked: false, category: 'trust'  },
+        { id: 'guia_local',        name: b.b12n, icon: 'MapPin',        description: b.b12d, unlocked: false, category: 'social' },
     ];
 };
 
@@ -482,11 +498,14 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
     }, [user?.id, currentUser?.id, currentUser?.role, currentUser?.email]);
 
 
-    // Helper: Verificar se selo está conquistado (por registo atómico, marco de reputação ou Admin)
+    // Helper: Verificar se selo está conquistado
+    // REGRA SOBERANA: nunca inventar uma conquista que não esteja persistida em user_badges.
+    // A elegibilidade (cumprir a condição) é distinta da conquista efetiva (estar gravado no banco).
     const checkIsUnlocked = React.useCallback((badgeId: string) => {
         const isTargetAdmin = isUserAdmin(profileUser);
         if (isTargetAdmin) return true; // 👑 SOBERANIA AMANDA: Administradores possuem todos os selos desbloqueados
 
+        // Verificar persistência em user_badges (fonte primária de verdade)
         const hasDbBadge = !!profileUser?.badges?.find(ub => 
             (ub as any)?.badge_id === badgeId || 
             (typeof ub === 'string' && ub === badgeId) || 
@@ -494,29 +513,32 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
         );
         if (hasDbBadge) return true;
 
+        // Thresholds de reputação (fallback para utilizadores com rep elevada mas perfil desatualizado)
+        // NOTA: pioneiro não está aqui — requer persistência real, garantida pelo onboarding.
         const currentRep = profileUser?.reputation || 0;
         const thresholds: Record<string, number> = {
-            coracao: 10,
-            curador: 50,
-            mestre_docs: 80,
-            exemplar: 100,
-            mentor_emprego: 120,
-            sentinela: 150,
-            especialista_leis: 200
+            coracao:           10,
+            curador:           50,
+            mestre_docs:       80,
+            exemplar:          100,
+            mentor_emprego:    120,
+            sentinela:         150,
+            especialista_leis: 200,
+            voz_autoridade:    500,
         };
 
         if (thresholds[badgeId] !== undefined && currentRep >= thresholds[badgeId]) return true;
         if (badgeId === 'verificado' && (profileUser?.isVerified || isTargetAdmin)) return true;
-        if (badgeId === 'pioneiro') return true;
+        // REMOVIDO: if (badgeId === 'pioneiro') return true; — viola a regra soberana de persistência
 
         return false;
     }, [profileUser]);
 
-    // Calcular quantidade de medalhas conquistadas pelo utilizador
+    // 🏆 CONTADOR SOBERANO X/12 — denominador sempre CANONICAL_12.length = 12
+    // NUNCA usar allBadges.length (pode ser 20) nem getBadges().length (pode ser 9)
     const unlockedBadgesCount = React.useMemo(() => {
-        const badgesList = allBadges.length > 0 ? allBadges : getBadges(language);
-        return badgesList.filter(badge => checkIsUnlocked(badge.id)).length;
-    }, [allBadges, checkIsUnlocked, language]);
+        return CANONICAL_12.filter(id => checkIsUnlocked(id)).length;
+    }, [checkIsUnlocked]);
 
     // Consolidate stats for display - MIRA V2026.GOLD: High Resilience Mapping
 
@@ -868,7 +890,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                                 <div key={post.id} className="p-4 bg-white border border-slate-100 rounded-[2.5rem] shadow-xl hover:border-[#FF8C00]/30 transition-all flex items-center gap-4 group relative">
                                     <div onClick={() => onNavigateToPost(post.id)} className="w-20 h-20 rounded-[1.8rem] overflow-hidden shrink-0 border border-slate-100 cursor-pointer">
                                         <img 
-                                            src={post.backgroundImage || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=80'} 
+                                            src={getPostBackgroundImage(post.backgroundImage, post.id)} 
                                             alt="" 
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                                         />
@@ -904,7 +926,7 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                             {savedPosts.length > 0 ? savedPosts.map(post => (
                                 <div key={post.id} onClick={() => onNavigateToPost(post.id)} className="flex gap-4 p-4 bg-white border border-slate-100 rounded-[2.5rem] shadow-xl hover:border-[#FF8C00]/30 transition-all cursor-pointer group">
                                     <div className="w-20 h-20 rounded-[1.8rem] overflow-hidden shrink-0 border border-slate-100">
-                                        <img src={post.backgroundImage} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        <img src={getPostBackgroundImage(post.backgroundImage, post.id)} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                     </div>
                                     <div className="flex flex-col justify-center min-w-0 flex-1">
                                         <span className="text-[8px] font-black bg-[#FF8C00]/10 text-[#FF8C00] px-3 py-1 rounded-full uppercase tracking-widest w-fit mb-2">{post.category}</span>
