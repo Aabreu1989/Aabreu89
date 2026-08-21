@@ -82,30 +82,34 @@ const sanitizeTTS = (text: string) => {
     .trim();
 };
 
-const getSuggestions = (lang: string, user?: UserType) => {
+const getSuggestions = (lang: string, _user?: UserType) => {
   const normLang = (lang || 'PT').toUpperCase();
-  const completed = getCompletedStations(user);
-  const hasNif = completed.includes('nif');
-  const hasNiss = completed.includes('niss');
-  const hasSns = completed.includes('sns');
-
-  if (normLang === 'PT') {
-    if (hasNif && hasNiss && hasSns) {
-      return ["Ver 5.000+ Vagas de Emprego", "Calcular Salário Líquido", "Agendamento AIMA 2026", "Ver Linha de Metro"];
-    }
-    if (hasNif && hasNiss) {
-      return ["Inscrição no Centro de Saúde (SNS)", "Calcular Salário Líquido", "Ver Vagas de Emprego", "Ver Linha de Metro"];
-    }
-    if (hasNif) {
-      return ["Como pedir o NISS na Segurança Social?", "Inscrição no Centro de Saúde (SNS)", "Calcular Salário Líquido", "Ver Linha de Metro"];
-    }
-    return ["Como tirar o NIF?", "Regularização por Estudos (Art. 91.º)", "Agendamento AIMA 2026", "Linha de Metro da Integração"];
-  }
 
   const suggestions: Record<string, string[]> = {
-    EN: hasNif ? ["Register with SNS (Healthcare)", "Calculate Net Salary", "AIMA Appointment 2026", "View Metro Line"] : ["HOW TO GET THE NIF?", "AIMA Appointment 2026", "NISS Registration", "Citizenship Request"],
-    FR: hasNif ? ["Inscription au SNS (Santé)", "Calculer le Salaire Net", "Rendez-vous AIMA 2026", "Voir la Ligne de Métro"] : ["COMMENT OBTENIR LE NIF ?", "Rendez-vous AIMA 2026", "Inscription NISS", "Demande de Citoyenneté"],
-    ES: hasNif ? ["Inscripción en Centro de Salud (SNS)", "Calcular Salario Neto", "Cita AIMA 2026", "Ver Línea de Metro"] : ["¿CÓMO OBTENER EL NIF?", "Cita AIMA 2026", "Registro NISS", "Solicitud de Ciudadanía"]
+    PT: [
+      "Visto D1 (Trabalho)",
+      "Via Verde para Empresas",
+      "Regularização por Estudos (Art. 91.º)",
+      "Visto D8 (Nómada Digital)"
+    ],
+    EN: [
+      "D1 Visa (Work)",
+      "Via Verde for Companies",
+      "Student Regularization (Art. 91)",
+      "D8 Visa (Digital Nomad)"
+    ],
+    ES: [
+      "Visado D1 (Trabajo)",
+      "Vía Verde para Empresas",
+      "Regularización por Estudios (Art. 91)",
+      "Visado D8 (Nómada Digital)"
+    ],
+    FR: [
+      "Visa D1 (Travail)",
+      "Via Verde pour Entreprises",
+      "Régularisation Études (Art. 91)",
+      "Visa D8 (Nomade Digital)"
+    ]
   };
   return suggestions[normLang] || suggestions['PT'];
 };
@@ -116,61 +120,61 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     return getSuggestions(normLang, user);
   }
 
-  // Analisa as mensagens recentes para sugerir próximos passos contextuais na jornada
+  // Analisa as mensagens recentes para sugerir próximos passos contextuais na jornada de regularização
   const recentText = messages.slice(-3).map(m => m.text || '').join(' ').toLowerCase();
 
   if (normLang === 'PT') {
-    if (recentText.includes('nif') && (recentText.includes('já tenho') || recentText.includes('ja tenho') || recentText.includes('obter') || recentText.includes('tirar'))) {
-      return ["Como pedir o NISS na Segurança Social?", "Inscrição no Centro de Saúde (SNS)", "Calcular Salário Líquido", "Ver Linha de Metro da Integração"];
+    if (recentText.includes('estud') || recentText.includes('faculdade') || recentText.includes('universidade') || recentText.includes('91')) {
+      return ["Regularização por Estudos (Art. 91.º)", "Visto D4 de Estudante", "Estudante Pode Trabalhar?", "Cursos e Equivalências DGES"];
     }
-    if (recentText.includes('niss') || recentText.includes('trabalh') || recentText.includes('emprego') || recentText.includes('contrato')) {
-      return ["Calcular Salário Líquido", "Simular Recibos Verdes", "Ver 5.000+ Vagas de Emprego", "Cursos e Formação IEFP"];
+    if (recentText.includes('d1') || recentText.includes('promessa') || recentText.includes('contrato')) {
+      return ["Visto D1 (Trabalho)", "Via Verde para Empresas", "Minuta de Promessa de Contrato", "Requisitos IEFP e VFS"];
     }
-    if (recentText.includes('salário') || recentText.includes('salario') || recentText.includes('bruto') || recentText.includes('líquido') || recentText.includes('recibos')) {
-      return ["Calcular Salário Líquido", "Simular Recibos Verdes", "Comparar Custo de Vida", "Simular IRS 2026"];
+    if (recentText.includes('d8') || recentText.includes('nomada') || recentText.includes('remoto') || recentText.includes('teletrabalho')) {
+      return ["Visto D8 (Nómada Digital)", "Comprovação de Rendimentos D8", "D8 Estada Temporária vs Residência", "Enquadramento Fiscal IRS"];
     }
-    if (recentText.includes('habit') || recentText.includes('arrend') || recentText.includes('casa') || recentText.includes('renda') || recentText.includes('senhorio')) {
-      return ["Simular Proteção à Habitação", "Comparar Custo de Vida nos Distritos", "Minuta Declaração de Acolhimento", "Ver Centros CNAIM / CLAIM"];
+    if (recentText.includes('via verde') || recentText.includes('empresa')) {
+      return ["Via Verde para Empresas", "Visto D1 (Trabalho)", "Termo de Responsabilidade Empresarial", "Agendamento Prioritário AIMA"];
     }
-    if (recentText.includes('aima') || recentText.includes('resid') || recentText.includes('visto') || recentText.includes('reagrupamento') || recentText.includes('cplp')) {
-      return ["Requisitos AIMA & Salário Mínimo", "Reagrupamento Familiar", "Gerar Minuta AIMA em PDF", "Centros Oficiais CNAIM / CLAIM"];
+    if (recentText.includes('aima') || recentText.includes('resid') || recentText.includes('agendamento')) {
+      return ["Agendamento AIMA 2026", "Regularização por Estudos (Art. 91.º)", "Reagrupamento Familiar", "Gerar Minuta AIMA em PDF"];
     }
-    if (recentText.includes('sns') || recentText.includes('saude') || recentText.includes('saúde') || recentText.includes('médico')) {
-      return ["Como obter Número de Utente", "Documentos para Centro de Saúde", "Centros CNAIM / CLAIM", "Ver Linha de Metro"];
+    if (recentText.includes('nif') || recentText.includes('niss')) {
+      return ["Como tirar o NIF?", "Como pedir o NISS?", "Visto D1 (Trabalho)", "Linha de Metro da Integração"];
     }
   } else if (normLang === 'EN') {
-    if (recentText.includes('nif')) {
-      return ["How to request NISS?", "Register with SNS (Healthcare)", "Calculate Net Salary", "View Metro Integration Line"];
+    if (recentText.includes('study') || recentText.includes('student') || recentText.includes('91')) {
+      return ["Student Regularization (Art. 91)", "D4 Student Visa", "Can Students Work?", "DGES Courses & Equivalence"];
     }
-    if (recentText.includes('job') || recentText.includes('work') || recentText.includes('salary') || recentText.includes('niss')) {
-      return ["Calculate Net Salary", "Freelancer Simulator (Recibos Verdes)", "Browse Job Offers", "Compare Cost of Living"];
+    if (recentText.includes('d1') || recentText.includes('contract') || recentText.includes('job')) {
+      return ["D1 Visa (Work)", "Via Verde for Companies", "Work Promise Letter PDF", "IEFP & VFS Requirements"];
     }
-    if (recentText.includes('aima') || recentText.includes('residence') || recentText.includes('visa')) {
-      return ["AIMA Income Requirements", "Family Reunification Rules", "Generate AIMA PDF Template", "CNAIM/CLAIM Support Centers"];
+    if (recentText.includes('d8') || recentText.includes('nomad') || recentText.includes('remote')) {
+      return ["D8 Visa (Digital Nomad)", "D8 Income Proof", "D8 Temporary vs Residence", "Tax Guidance IRS"];
     }
   } else if (normLang === 'ES') {
-    if (recentText.includes('nif')) {
-      return ["¿Cómo solicitar el NISS?", "Inscripción en Centro de Salud (SNS)", "Calcular Salario Neto", "Ver Línea de Metro"];
+    if (recentText.includes('estud') || recentText.includes('universidad') || recentText.includes('91')) {
+      return ["Regularización por Estudios (Art. 91)", "Visado D4 Estudiante", "¿Estudiantes Pueden Trabajar?", "Cursos y Equivalencias DGES"];
     }
-    if (recentText.includes('trabaj') || recentText.includes('empleo') || recentText.includes('salario')) {
-      return ["Calcular Salario Neto", "Simular Recibos Verdes (Autónomo)", "Ver Ofertas de Empleo", "Comparar Coste de Vida"];
+    if (recentText.includes('d1') || recentText.includes('contrato') || recentText.includes('trabajo')) {
+      return ["Visado D1 (Trabajo)", "Vía Verde para Empresas", "Minuta Promesa de Contrato", "Requisitos IEFP y VFS"];
     }
-    if (recentText.includes('aima') || recentText.includes('residencia') || recentText.includes('visado')) {
-      return ["Requisitos AIMA y Salario Mínimo", "Reagrupación Familiar", "Generar Minuta AIMA en PDF", "Centros Oficiales CNAIM/CLAIM"];
+    if (recentText.includes('d8') || recentText.includes('nomada') || recentText.includes('remoto')) {
+      return ["Visado D8 (Nómada Digital)", "Comprobación de Ingresos D8", "D8 Temporal vs Residencia", "Orientación Fiscal IRS"];
     }
   } else if (normLang === 'FR') {
-    if (recentText.includes('nif')) {
-      return ["Comment obtenir le NISS ?", "Inscription au SNS (Santé)", "Calculer le Salaire Net", "Voir la Ligne de Métro"];
+    if (recentText.includes('etud') || recentText.includes('universite') || recentText.includes('91')) {
+      return ["Régularisation Études (Art. 91)", "Visa D4 Étudiant", "Les Étudiants Peuvent Travailler ?", "Équivalences DGES"];
     }
-    if (recentText.includes('travail') || recentText.includes('emploi') || recentText.includes('salaire')) {
-      return ["Calculer le Salaire Net", "Simulateur Recibos Verdes", "Offres d'Emploi", "Comparer le Coût de la Vie"];
+    if (recentText.includes('d1') || recentText.includes('contrat') || recentText.includes('travail')) {
+      return ["Visa D1 (Travail)", "Via Verde pour Entreprises", "Promesse de Contrat PDF", "Exigences IEFP et VFS"];
     }
-    if (recentText.includes('aima') || recentText.includes('residence') || recentText.includes('visa')) {
-      return ["Exigences de Revenus AIMA", "Regroupement Familial", "Générer Modèle PDF AIMA", "Centres CNAIM / CLAIM"];
+    if (recentText.includes('d8') || recentText.includes('nomade') || recentText.includes('distance')) {
+      return ["Visa D8 (Nomade Digital)", "Justificatifs de Revenus D8", "D8 Séjour Temporaire vs Résidence", "Fiscalité IRS"];
     }
   }
 
-  return getSuggestions(normLang);
+  return getSuggestions(normLang, user);
 };
 
 const getUIText = (lang: string, name: string) => {

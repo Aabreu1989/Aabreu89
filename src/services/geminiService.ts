@@ -332,6 +332,257 @@ const hasWord = (text: string, wordOrPhrase: string): boolean => {
   return regex.test(text);
 };
 
+// 🏛️ DOMÍNIOS CANÓNICOS DE REGULARIZAÇÃO (MIRA AGENT POSTURE & DOMAIN RESILIENCE)
+export const CANONICAL_DOMAINS: Record<string, { aliases: string[], PT: string, EN: string, ES: string, FR: string }> = {
+  STUDENT_RESIDENCY: {
+    aliases: [
+      'regularizacao por estudos', 'regularização por estudos', 'regularizacao de estudantes', 'regularização de estudantes',
+      'regularizacion por estudios', 'régularisation études', 'student regularization',
+      'estudos', 'estudo', 'estudante', 'estudantes', 'student', 'students', 'étudiant', 'étudiants', 'estudiante', 'estudiantes',
+      'art. 91', 'artigo 91', 'art 91', 'art. 91.º', 'artigo 91.º', 'art 91.º', '91.º', '91º', 'artículo 91', 'article 91',
+      'visto d4', 'visto de estudante', 'residencia de estudante', 'residência de estudante', 'd4 visa', 'visado d4', 'visa d4',
+      'faculdade', 'universidade', 'ensino superior', 'estudar em portugal', 'posso estudar', 'estudante pode trabalhar',
+      'quiero estudiar en portugal', 'want to study in portugal', 'étudier au portugal'
+    ],
+    PT: `🎓 RESIDÊNCIA DE ESTUDANTE & ART. 91.º (LEI DE ESTRANGEIROS):
+
+1. ENTRADA LEGAL & VISTO D4:
+Para quem está no país de origem, o percurso inicia-se com o pedido de Visto D4 de Estudante no Consulado de Portugal / VFS, mediante comprovativo de matrícula ou admissão em estabelecimento de Ensino Superior ou cursos oficialmente reconhecidos.
+
+2. EM TERRITÓRIO NACIONAL (ART. 91.º, N.º 4):
+Estudantes que tenham entrado legalmente em Portugal e estejam matriculados no Ensino Superior podem requerer a Autorização de Residência diretamente na AIMA em território nacional, sem necessidade de regresso ao país de origem.
+- Requisitos: Matrícula ativa + Comprovativo de propinas + Meios de subsistência (bolsa, apoio familiar ou recursos próprios) + Alojamento + Registo criminal apostilado + Seguro de saúde / inscrição SNS.
+
+3. DIREITO AO TRABALHO (ART. 97.º):
+O estudante residente tem pleno direito legal de trabalhar a contrato ou recibos verdes. Basta efetuar a comunicação à AIMA e registar a atividade na Segurança Social (NISS).
+
+4. JORNADA MIRA:
+Posicionas-te na Estação 1 (Entrada/Vistos) ou Estação 6 (Residência AIMA).
+
+[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante] [view:LEARNING:Ver Cursos e Equivalências DGES] [view:JOBS:Ver Vagas Compatíveis com Estudante]`,
+    EN: `🎓 STUDENT RESIDENCY & ART. 91 (PORTUGUESE IMMIGRATION LAW):
+
+1. LEGAL ENTRY & D4 VISA:
+From abroad, apply for a D4 Student Visa at the Portuguese Consulate/VFS with proof of enrollment/acceptance in Higher Education or recognized study programs.
+
+2. WITHIN PORTUGAL (ART. 91, PARA 4):
+Students who entered legally and are enrolled in Higher Education can apply for a Residence Permit directly with AIMA in Portugal.
+- Requirements: Active Enrollment + Tuition payment proof + Means of subsistence + Registered accommodation + Police clearance + Health insurance / SNS.
+
+3. RIGHT TO WORK (ART. 97):
+Student residents are legally entitled to work (employment contract or self-employment). You only need to notify AIMA and register with Social Security (NISS).
+
+4. MIRA JOURNEY:
+Anchored in Station 1 (Entry/Visas) or Station 6 (AIMA Residence).
+
+[view:SIMULATORS:Open AIMA Student Guide] [view:LEARNING:View DGES Courses & Equivalence] [view:JOBS:View Student Friendly Jobs]`,
+    ES: `🎓 RESIDENCIA DE ESTUDIANTE Y ART. 91 (LEY DE EXTRANJERÍA DE PORTUGAL):
+
+1. ENTRADA LEGAL Y VISADO D4:
+Desde el país de origen, el trámite se inicia solicitando el Visado D4 de Estudiante en el Consulado de Portugal / VFS con matrícula o carta de aceptación en Educación Superior.
+
+2. DENTRO DE PORTUGAL (ART. 91, APARTADO 4):
+Los estudiantes matriculados en Educación Superior que hayan entrado legalmente pueden solicitar la Autorización de Residencia directamente en AIMA sin regresar a su país.
+- Requisitos: Matrícula activa + Pago de propinas/tasas + Medios de subsistencia + Alojamiento acreditado + Antecedentes penales + Seguro médico / SNS.
+
+3. DERECHO A TRABAJAR (ART. 97):
+El estudiante residente tiene derecho legal a trabajar (contrato laboral o autónomo/recibos verdes). Debe comunicarse a AIMA y registrarse en la Seguridad Social (NISS).
+
+[view:SIMULATORS:Abrir Requisitos AIMA y Guía de Estudiante] [view:LEARNING:Ver Cursos y Equivalencias DGES] [view:JOBS:Ver Ofertas de Empleo Compatibles]`,
+    FR: `🎓 RÉSIDENCE ÉTUDIANT & ART. 91 (LOI SUR L'IMMIGRATION AU PORTUGAL) :
+
+1. ENTRÉE LÉGALE & VISA D4 :
+Depuis l'étranger, demandez le Visa D4 Étudiant au Consulat du Portugal / VFS avec attestation d'inscription dans l'Enseignement Supérieur.
+
+2. SUR LE TERRITOIRE PORTUGAIS (ART. 91, AL. 4) :
+Les étudiants inscrits dans l'Enseignement Supérieur entrés légalement peuvent demander le Titre de Séjour directement auprès de l'AIMA.
+- Conditions : Inscription active + Moyens de subsistance + Logement + Casier judiciaire + Assurance santé / SNS.
+
+3. DROIT DE TRAVAILLER (ART. 97) :
+Les étudiants résidents ont le droit légal de travailler (contrat ou travail indépendant). Déclaration requise auprès de l'AIMA et inscription à la Sécurité Sociale (NISS).
+
+[view:SIMULATORS:Guide Résidence Étudiant AIMA] [view:LEARNING:Formations et Équivalences DGES] [view:JOBS:Offres d'Emploi Compatibles]`
+  },
+
+  VISTO_D1: {
+    aliases: [
+      'visto d1', 'd1', 'visto de trabalho', 'trabalho subordinado',
+      'promessa de contrato', 'promessa de contrato de trabalho', 'promessa de trabalho', 'contrato de trabalho para visto',
+      'd1 visa', 'visado d1', 'visa d1', 'trabajo subordinado', 'promesa de contrato'
+    ],
+    PT: `💼 VISTO D1 (TRABALHO SUBORDINADO & PROMESSA DE CONTRATO):
+
+1. OBRIGAÇÃO CONSULAR PRÉVIA:
+Para exercer atividade profissional subordinada em Portugal, o cidadão deve obter o Visto D1 no Consulado de Portugal no país de origem antes de viajar. A regularização como turista em território nacional foi extinta.
+
+2. REQUISITOS DA EMPRESA CONTRATANTE:
+- Emissão de Contrato de Trabalho ou Promessa de Contrato de Trabalho formal.
+- Vencimento igual ou superior ao Salário Mínimo Nacional (RMMG em vigor).
+- A empresa deve estar com situação contributiva e fiscal regularizada perante as Finanças e Segurança Social e registar a oferta no IEFP (ou utilizar o canal "Via Verde para Empresas").
+
+3. INSTRUÇÃO DO PEDIDO:
+Apresentação da Promessa assinada, registo criminal apostilado, seguro de viagem e comprovativo do IEFP junto do Consulado / VFS.
+
+4. APÓS A CHEGADA:
+Entrada legal em Portugal com visto de 2 entradas e agendamento na AIMA para emissão do Título de Residência de 2 anos.
+
+[view:JOBS:Ver Vagas e Contratos] [view:DOCUMENT_ASSISTANT:Gerar Minuta de Promessa de Contrato]`,
+    EN: `💼 D1 VISA (SUBORDINATE WORK & PROMISE OF EMPLOYMENT):
+
+1. MANDATORY CONSULAR VISA:
+Must be obtained at the Portuguese Consulate/VFS in your home country before travelling. Regularization from tourist status is legally extinct.
+
+2. EMPLOYER REQUIREMENTS:
+- Formal Employment Contract or Promise of Employment contract.
+- Salary equal to or above the Portuguese National Minimum Wage in force.
+- Employer with clean tax and Social Security standing, registering the position with IEFP (or Via Verde channel).
+
+3. APPLICATION & ARRIVAL:
+Submit signed promise, apostilled police clearance and travel insurance. Upon arrival, attend AIMA appointment to receive your 2-year Residence Card.
+
+[view:JOBS:Browse Job Offers] [view:DOCUMENT_ASSISTANT:Generate Promise Letter PDF]`,
+    ES: `💼 VISADO D1 (TRABAJO POR CUENTA AJENA Y PROMESA DE CONTRATO):
+
+1. OBLIGATORIEDAD DE VISADO PREVIO:
+Debe tramitarse en el Consulado de Portugal en el país de origen antes de viajar. La regularización como turista está extinta.
+
+2. REQUISITOS DE LA EMPRESA CONTRATANTE:
+- Contrato o Promesa formal de Contrato de Trabajo.
+- Remuneración igual o superior al Salario Mínimo Nacional vigente.
+- Empresa al corriente de pagos con Hacienda y Seguridad Social, con registro en IEFP (o canal Vía Verde).
+
+3. LLEGADA Y AIMA:
+Entrada a Portugal y cita en AIMA para emisión de la Tarjeta de Residencia de 2 años.
+
+[view:JOBS:Ver Ofertas de Empleo] [view:DOCUMENT_ASSISTANT:Generar Minuta Promesa de Contrato]`,
+    FR: `💼 VISA D1 (TRAVAIL SALARIÉ & PROMESSE D'EMBAUCHE) :
+
+1. VISA CONSULAIRE OBLIGATOIRE :
+À obtenir au Consulat du Portugal avant le départ. La régularisation sur place comme touriste est abrogée.
+
+2. EXIGENCES EMPLOYEUR :
+- Contrat ou Promesse formelle d'embauche avec salaire au moins égal au Salaire Minimum National en vigueur.
+- Situation fiscale et sociale en règle et enregistrement auprès de l'IEFP (ou Via Verde).
+
+[view:JOBS:Offres d'Emploi] [view:DOCUMENT_ASSISTANT:Modèle Promesse de Contrat]`
+  },
+
+  VIA_VERDE_EMPRESAS: {
+    aliases: [
+      'via verde para empresas', 'via verde empresas', 'via verde', 'tech visa',
+      'contratacao acelerada', 'contratação acelerada', 'via verde for companies',
+      'via verde pour entreprises', 'vía verde para empresas', 'vía verde empresas'
+    ],
+    PT: `🚀 VIA VERDE PARA EMPRESAS & ATRAÇÃO DE TALENTOS:
+
+1. CANAL PRIORITÁRIO DESBUROCRATIZADO:
+Regime especial criado para acelerar a contratação de trabalhadores e quadros internacionais por empresas sediadas em Portugal com atividade económica comprovada.
+
+2. COMO FUNCIONA:
+- A empresa emite a Promessa de Contrato e um Termo de Responsabilidade empresarial (que assegura alojamento e subsistência);
+- Tramitação consular prioritária no país de origem e parecer célere articulado entre AIMA e IEFP;
+- Agendamento facilitado e prioritário na AIMA após a entrada em território nacional.
+
+3. TECH VISA & QUADROS TÉCNICOS:
+Empresas tecnológicas certificadas pelo IAPMEI beneficiam de canal 100% digital com critérios salariais qualificados.
+
+[view:JOBS:Ver Vagas Via Verde] [view:LOCAL_SERVICES:Ver Balcões AIMA e CLAIM]`,
+    EN: `🚀 VIA VERDE FOR COMPANIES & TALENT ATTRACTION:
+
+1. FAST-TRACK EMPLOYMENT CHANNEL:
+Dedicated priority route for Portuguese companies hiring international talent with streamlined bureaucratic steps.
+
+2. PROCESS:
+- Employer issues a Promise of Contract and Corporate Responsibility Undertaking.
+- Fast-track consular processing and fast AIMA/IEFP clearance.
+- Priority AIMA appointment upon arrival in Portugal.
+
+[view:JOBS:View Fast-Track Jobs] [view:LOCAL_SERVICES:View AIMA Support Centers]`,
+    ES: `🚀 VÍA VERDE PARA EMPRESAS Y ATRACCIÓN DE TALENTO:
+
+1. CANAL PRIORITARIO DE CONTRATACIÓN:
+Mecanismo ágil para empresas radicadas en Portugal que contratan profesionales extranjeros.
+
+2. FUNCIONAMIENTO:
+- La empresa suscribe un Término de Responsabilidad y Promesa de Contrato.
+- Tramitación consular preferente y dictamen rápido AIMA/IEFP.
+- Cita preferente en AIMA a la llegada.
+
+[view:JOBS:Ver Ofertas Vía Verde] [view:LOCAL_SERVICES:Ver Centros AIMA y CLAIM]`,
+    FR: `🚀 VIA VERDE POUR ENTREPRISES & RECRUTEMENT INTERNATIONAL :
+
+1. CANAL PRIORITAIRE ACCÉLÉRÉ :
+Procédure rapide pour les entreprises au Portugal recrutant des talents étrangers avec Engagement de Prise en Charge d'entreprise et RDV AIMA prioritaire.
+
+[view:JOBS:Offres Via Verde] [view:LOCAL_SERVICES:Centres AIMA et CLAIM]`
+  },
+
+  VISTO_D8: {
+    aliases: [
+      'visto d8', 'd8', 'nomada digital', 'nómada digital', 'nomadas digitais', 'nómadas digitais',
+      'digital nomad', 'digital nomads', 'nomade digital', 'teletrabalho', 'trabalho remoto',
+      'trabalhar remotamente', 'remote work', 'd8 visa', 'visado d8', 'visa d8'
+    ],
+    PT: `💻 VISTO D8 (NÓMADAS DIGITAIS & TRABALHO REMOTO INTERNACIONAL):
+
+1. A QUEM SE DESTINA:
+Trabalhadores dependentes (teletrabalho) ou independentes (prestadores de serviços) com contrato ou clientes sediados fora de Portugal.
+
+2. MODALIDADES:
+- Estada Temporária: Válido até 1 ano (para estadas de curta duração, sem direito inicial a reagrupamento de longa duração).
+- Visto de Residência: Válido para entrada e emissão de Título de Residência AIMA de 2 anos (renovável por 3 anos).
+
+3. COMPROVAÇÃO DE MEIOS DE SUBSISTÊNCIA:
+- Rendimentos mensais médios comprovados nos últimos 3 meses iguais ou superiores a 4 vezes o Salário Mínimo Nacional (RMMG em vigor).
+- Contrato de trabalho remoto, declaração da entidade empregadora ou contratos de prestação de serviços internacionais.
+- Comprovativo de domicílio fiscal e extratos bancários que atestem solvência.
+
+4. ENQUADRAMENTO FISCAL:
+Estrangeiros residentes podem usufruir de regimes fiscais competitivos mediante inscrição no Portal das Finanças com NIF.
+
+[view:SIMULATORS:recibos:Simular Rendimentos] [view:DOCUMENTS:irs:Guia Fiscal Nómada Digital]`,
+    EN: `💻 D8 VISA (DIGITAL NOMADS & REMOTE WORK):
+
+1. ELIGIBILITY:
+Remote employees or freelancers providing services to companies/clients based outside Portugal.
+
+2. MODALITIES:
+- Temporary Stay: Up to 1 year.
+- Residency Visa: Leads to a 2-year renewable AIMA Residence Card.
+
+3. FINANCIAL REQUIREMENT:
+- Average monthly earnings over the last 3 months equal to or exceeding 4 times the Portuguese National Minimum Wage in force.
+- Remote employment contract, employer declaration, or service contracts.
+- Proof of tax residence and bank statements.
+
+[view:SIMULATORS:recibos:Simulate Income] [view:DOCUMENTS:irs:Digital Nomad Tax Guide]`,
+    ES: `💻 VISADO D8 (NÓMADAS DIGITALES Y TRABAJO REMOTO):
+
+1. DESTINATARIOS:
+Trabajadores por cuenta ajena en teletrabajo o autónomos con clientes fuera de Portugal.
+
+2. MODALIDADES:
+- Estancia Temporal: Hasta 1 año.
+- Visado de Residencia: Para obtener Tarjeta de Residencia AIMA de 2 años.
+
+3. REQUISITO DE INGRESOS:
+- Ingresos medios de los últimos 3 meses iguales o superiores a 4 veces el Salario Mínimo Nacional vigente en Portugal.
+- Contrato laboral remoto o de servicios, extractos bancarios y certificado de residencia fiscal.
+
+[view:SIMULATORS:recibos:Simulador de Ingresos] [view:DOCUMENTS:irs:Guía Fiscal Nómada Digital]`,
+    FR: `💻 VISA D8 (NOMADES DIGITAUX & TÉLÉTRAVAIL) :
+
+1. BÉNÉFICIAIRES :
+Télétravailleurs salariés ou indépendants pour des clients situés hors du Portugal.
+
+2. CONDITIONS FINANCIÈRES :
+- Revenus mensuels moyens des 3 derniers mois au moins égaux à 4 fois le Salaire Minimum National en vigueur au Portugal.
+- Contrat de travail à distance ou contrats de prestations internationales.
+
+[view:SIMULATORS:recibos:Simulateur Revenus] [view:DOCUMENTS:irs:Guide Fiscal Nomade Digital]`
+  }
+};
+
 export const getMiraLocalResponse = (prompt: string, language: string = 'PT', historyLang?: string): string => {
   const p = prompt.toLowerCase().trim();
   const lang = resolveConversationLanguage(prompt, historyLang, language);
@@ -352,6 +603,17 @@ export const getMiraLocalResponse = (prompt: string, language: string = 'PT', hi
       return "⚠️ AVERTISSEMENT ET NOTICE JURIDIQUE OFFICIELLE :\nMIRA est une plateforme 100% GRATUITE d'information et de tri numérique. NOUS NE FOURNISSONS PAS DE CONSEIL JURIDIQUE INDIVIDUEL ET NOUS NE VENDONS PAS DE SERVICES D'ACCOMPAGNEMENT PRIVÉ.\n\nPour un conseil juridique personnalisé, consultez un avocat inscrit à l'Ordre des Avocats Portugais (oa.pt) ou rendez-vous dans les centres d'aide officiels (CNAIM / CLAIM).\n[view:LOCAL_SERVICES:Voir les Centres d'Aide Officiels]";
     }
     return "⚠️ AVISO LEGAL E DISCLAIMER OFICIAL DA PLATAFORMA:\n\n1. O MIRA NÃO PRESTA ACONSELHAMENTO JURÍDICO INDIVIDUALIZADO NEM VENDE SERVIÇOS DE ASSESSORIA DE IMIGRAÇÃO.\n\n2. O MIRA é uma plataforma 100% gratuita de cidadania, informação e triagem digital para orientar os cidadãos sobre os seus direitos em Portugal.\n\n3. Não somos um escritório de advogados nem cobramos por qualquer serviço de regularização. Para apoio jurídico individualizado ou representação formal, deves consultar um advogado inscrito na Ordem dos Advogados (oa.pt) ou recorrer aos gabinetes de apoio oficial gratuito do CNAIM / CLAIM.\n[view:LOCAL_SERVICES:Ver Mapa de Apoio Oficial e Serviços]";
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🏛️ DOMÍNIOS CANÓNICOS DE REGULARIZAÇÃO (PRIORIDADE MÁXIMA)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  for (const [_, domain] of Object.entries(CANONICAL_DOMAINS)) {
+    for (const alias of domain.aliases) {
+      if (hasWord(p, alias)) {
+        return domain[lang] || domain['PT'];
+      }
+    }
   }
 
   const kb = lang === 'EN' ? MIRA_LOCAL_KB_EN :

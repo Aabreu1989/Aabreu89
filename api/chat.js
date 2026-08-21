@@ -405,7 +405,7 @@ ${userProfileBlock}
         ? `Professional Translation: Translate the following text to ${lang}. Output ONLY the translated text, no comments or greetings.`
         : (SYSTEM_PROMPTS[lang] || SYSTEM_PROMPTS['PT']);
 
-    const modelId = 'gemini-2.5-flash';
+    const modelId = 'gemini-3.6-flash';
     
     // 🧬 3. SMART HISTORY MERGER (V1.7M - Amanda Abreu Standards)
     let processedHistory = [];
@@ -447,10 +447,7 @@ ${userProfileBlock}
                 system_instruction: { parts: [{ text: systemInstruction }] },
                 contents: [...finalHistory, { role: "user", parts: [{ text: prompt || "Olá!" }] }],
                 generationConfig: {
-                    temperature: isTranslate ? 0.1 : 0.3,
-                    maxOutputTokens: 2500,
-                    topP: 0.8,
-                    topK: 40
+                    maxOutputTokens: 2500
                 }
             })
         });
