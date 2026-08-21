@@ -114,150 +114,27 @@ export const communityService = {
   },
   
   /**
-   * 🛡️ FEED SOBERANO (Supabase PostgreSQL Real)
+   * 🛡️ FEED SOBERANO (Supabase PostgreSQL Real via RPC get_sovereign_community_feed_v25)
    */
   fetchPosts: async (_userId?: string, limit = 50, offset = 0): Promise<Post[]> => {
     try {
-      let postsData: any[] | null = null;
-      
-      const { data: joinData, error: joinError } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          profiles (
-            id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count
-          ),
-          comments (
-            id, author_id, content, created_at, likes_count, parent_id,
-            profiles ( id, full_name, username, avatar_url )
-          )
-        `)
-        .neq('validation_status', 'blocked')
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
+      const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id || null;
 
-      if (!joinError && joinData) {
-        const hasProfiles = joinData.some((p: any) => p.profiles && (p.profiles.full_name || p.profiles.username));
-        if (hasProfiles) {
-          postsData = joinData;
-        }
-      }
-
-      if (!postsData) {
-        const { data: rawPosts, error: rawError } = await supabase
-          .from('posts')
-          .select('*')
-          .neq('validation_status', 'blocked')
-          .order('created_at', { ascending: false })
-          .range(offset, offset + limit - 1);
-
-        if (rawError || !rawPosts) return [];
-
-        const authorIds = Array.from(new Set(rawPosts.map((p: any) => p.author_id).filter(Boolean)));
-        const postIds = rawPosts.map((p: any) => p.id);
-
-        const { data: profilesData } = authorIds.length > 0
-          ? await supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count').in('id', authorIds)
-          : { data: [] };
-        const { data: commentsData } = postIds.length > 0
-          ? await supabase.from('comments').select('id, post_id, author_id, content, created_at, likes_count, parent_id').in('post_id', postIds)
-          : { data: [] };
-
-        const profileMap = new Map((profilesData || []).map((pr: any) => [pr.id, pr]));
-        
-        const commentAuthorIds = Array.from(new Set((commentsData || []).map((c: any) => c.author_id).filter(Boolean)));
-        const { data: commentProfiles } = commentAuthorIds.length > 0
-          ? await supabase.from('profiles').select('id, full_name, username, avatar_url').in('id', commentAuthorIds)
-          : { data: [] };
-        const commentProfileMap = new Map((commentProfiles || []).map((pr: any) => [pr.id, pr]));
-
-        const commentsByPost = new Map<string, any[]>();
-        (commentsData || []).forEach((c: any) => {
-          const list = commentsByPost.get(c.post_id) || [];
-          list.push({
-            ...c,
-            profiles: commentProfileMap.get(c.author_id) || null
-          });
-          commentsByPost.set(c.post_id, list);
-        });
-
-        postsData = rawPosts.map((p: any) => ({
-          ...p,
-          profiles: profileMap.get(p.author_id) || null,
-          comments: commentsByPost.get(p.id) || []
-        }));
-      }
-
-      // 🛡️ RECONCILIAÇÃO DE VOTOS GLOBAIS E ESTADO DO UTILIZADOR ATUAL
-      let userFactVotes: Record<string, 'true' | 'fake'> = {};
-      let userLikes = new Set<string>();
-      let userSavedPosts = new Set<string>();
-      let aggregatedVotesMap: Record<string, { trueCount: number; falseCount: number; likeCount: number }> = {};
-
-      if (postsData && postsData.length > 0) {
-        const postIds = postsData.map((p: any) => p.id);
-        const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id;
-
-        const promises: Promise<any>[] = [
-          // 1. Busca agregada de votos reais para TODOS os utilizadores (Conta A, B, Guest)
-          callCommunityGateway('get_aggregated_votes', { postIds, userId: activeUserId }, activeUserId).catch(() => ({ aggregatedVotes: {} }))
-        ];
-
-        // 2. Se logado, busca o voto e salvamento específico do utilizador atual
-        if (activeUserId) {
-          promises.push(
-            Promise.resolve(supabase.from('post_votes').select('post_id, vote_type').eq('user_id', activeUserId).in('post_id', postIds)),
-            Promise.resolve(supabase.from('saved_posts').select('post_id').eq('user_id', activeUserId).in('post_id', postIds))
-          );
-        }
-
-        const [aggRes, userVoteRes, userSaveRes] = await Promise.all(promises);
-
-        if (aggRes?.aggregatedVotes) {
-          aggregatedVotesMap = aggRes.aggregatedVotes;
-        }
-
-        if (aggRes?.userFactVotes) {
-          userFactVotes = { ...aggRes.userFactVotes };
-        }
-
-        if (Array.isArray(aggRes?.userLikes)) {
-          aggRes.userLikes.forEach((id: string) => userLikes.add(id));
-        }
-
-        if (userVoteRes?.data) {
-          for (const vote of userVoteRes.data) {
-            if (vote.vote_type === 'like') {
-              userLikes.add(vote.post_id);
-            } else if (vote.vote_type === 'true' || vote.vote_type === 'useful') {
-              userFactVotes[vote.post_id] = 'true';
-            } else if (vote.vote_type === 'fake') {
-              userFactVotes[vote.post_id] = 'fake';
-            }
-          }
-        }
-
-        if (userSaveRes?.data) {
-          userSaveRes.data.forEach((s: any) => userSavedPosts.add(s.post_id));
-        }
-      }
-
-      return (postsData || []).map((row: any) => {
-        const factVote = userFactVotes[row.id] ?? null;
-        const isSaved = userSavedPosts.has(row.id);
-        const isLiked = userLikes.has(row.id);
-        const agg = aggregatedVotesMap[row.id] || { trueCount: 0, falseCount: 0, likeCount: 0 };
-
-        return communityService.mapRowToPost({
-          ...row,
-          likes: agg.likeCount ?? 0,
-          useful_votes: agg.trueCount ?? 0,
-          fake_votes: agg.falseCount ?? 0,
-          user_vote: factVote,
-          is_liked_by_user: isLiked,
-          is_saved_by_user: isSaved
-        });
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_sovereign_community_feed_v25', {
+        p_limit: limit,
+        p_offset: offset,
+        p_user_id: activeUserId
       });
+
+      if (!rpcError && Array.isArray(rpcData)) {
+        return rpcData.map((row: any) => communityService.mapRowToPost(row));
+      }
+
+      if (rpcError) {
+        console.warn("⚠️ [MIRA Community] Aviso ao executar get_sovereign_community_feed_v25:", rpcError.message);
+      }
+
+      return [];
     } catch (err: any) {
       console.error("🚨 [MIRA Erro ao buscar feed do Supabase]:", err?.message || err);
       return [];
@@ -342,20 +219,23 @@ export const communityService = {
    * 🏗️ MAPEAMENTO RESILIENTE (Supabase -> TypeScript)
    */
   mapRowToPost: (row: any): Post => {
-    const authorData = row.profiles || row.author || {};
+    const authorData = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) || row.author || {};
+    const authorNameVal = row.author_name || authorData.name || authorData.full_name || authorData.username || 'Membro MIRA';
+    const authorAvatarVal = row.author_avatar || authorData.avatar_url || '';
+    const authorIsVerifiedVal = row.author_is_verified ?? authorData.is_verified ?? false;
     
     return {
       id: row.id,
       authorId: row.author_id || authorData.id || '',
-      authorName: authorData.full_name || authorData.username || row.author_name || 'Membro MIRA',
-      authorAvatar: authorData.avatar_url || row.author_avatar || '',
-      authorIsVerified: authorData.is_verified ?? row.author_is_verified ?? false,
+      authorName: authorNameVal,
+      authorAvatar: authorAvatarVal,
+      authorIsVerified: authorIsVerifiedVal,
       authorRole: authorData.role || 'member',
       title: row.title || 'Post Comunitário',
       content: row.content || '',
       category: row.category || 'Geral',
       isVerified: row.is_verified || false,
-      backgroundImage: row.media_url || row.background_image || '',
+      backgroundImage: row.background_image || row.media_url || '',
       validationStatus: row.validation_status || 'validated',
       timestamp: row.created_at || new Date().toISOString(),
       likes: row.likes || row.likes_count || 0,
@@ -366,15 +246,17 @@ export const communityService = {
       nobelScore: row.nobel_score || 10,
       translations: row.translations || {},
       comments: (row.comments || []).map((c: any) => {
-        const commentAuthor = c.profiles || c.author || {};
+        const commentAuthor = (Array.isArray(c.profiles) ? c.profiles[0] : c.profiles) || c.author || {};
+        const commentAuthorName = c.author_name || commentAuthor.name || commentAuthor.full_name || commentAuthor.username || 'Membro';
+        const commentAuthorAvatar = c.author_avatar || commentAuthor.avatar_url || '';
         return {
           id: c.id,
           authorId: c.author_id || commentAuthor.id || '',
-          authorName: commentAuthor.full_name || commentAuthor.username || c.author_name || 'Membro',
-          authorAvatar: commentAuthor.avatar_url || c.author_avatar || '',
+          authorName: commentAuthorName,
+          authorAvatar: commentAuthorAvatar,
           content: c.content || '',
           timestamp: c.created_at || new Date().toISOString(),
-          likes: c.likes_count ?? 0,
+          likes: c.likes ?? c.likes_count ?? 0,
           parentId: c.parent_id || null,
           translations: c.translations || {}
         };
@@ -560,44 +442,17 @@ export const communityService = {
 
   fetchTopStories: async (): Promise<Post[]> => {
     try {
-      const { data: posts, error } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          profiles ( id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count )
-        `)
-        .order('created_at', { ascending: false })
-        .limit(10);
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_sovereign_community_feed_v25', {
+        p_limit: 10,
+        p_offset: 0,
+        p_user_id: null
+      });
 
-      if (!error && posts && posts.length > 0) {
-        const hasProfiles = posts.some((p: any) => p.profiles && (p.profiles.full_name || p.profiles.username));
-        if (hasProfiles) {
-          return posts.map((row: any) => communityService.mapRowToPost(row));
-        }
+      if (!rpcError && Array.isArray(rpcData) && rpcData.length > 0) {
+        return rpcData.map((row: any) => communityService.mapRowToPost(row));
       }
 
-      // Fallback: Busca manual de posts e perfis se o join do PostgREST não trouxer profiles
-      const { data: rawPosts } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (!rawPosts || rawPosts.length === 0) return [];
-
-      const authorIds = Array.from(new Set(rawPosts.map((p: any) => p.author_id).filter(Boolean)));
-      const { data: profilesData } = authorIds.length > 0
-        ? await supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role, followers_count, following_count').in('id', authorIds)
-        : { data: [] };
-
-      const profileMap = new Map((profilesData || []).map((pr: any) => [pr.id, pr]));
-
-      const combined = rawPosts.map((p: any) => ({
-        ...p,
-        profiles: profileMap.get(p.author_id) || null
-      }));
-
-      return combined.map((row: any) => communityService.mapRowToPost(row));
+      return [];
     } catch (err) {
       return [];
     }

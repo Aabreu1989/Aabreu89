@@ -148,9 +148,9 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
     const totalSims = (platformCounts as any)?.simulations || 0;
     const totalDocs = platformCounts?.downloads || 0;
     const totalAi = platformCounts?.aiQueries || auditData?.totalQueries || 0;
-    const totalJobs = (platformCounts?.jobs as any)?.db || platformCounts?.jobs || 5280;
-    const totalServices = (platformCounts?.services as any)?.db || platformCounts?.services || 117;
-    const totalJobsCount = Math.max(Number(totalJobs) || 0, 5280);
+    const totalJobs = (platformCounts?.jobs as any)?.db || platformCounts?.jobs || 5000;
+    const totalServices = (platformCounts?.services as any)?.db || (typeof platformCounts?.services === 'number' ? platformCounts?.services : 0) || 127;
+    const totalJobsCount = Math.max(Number(totalJobs) || 0, 5000);
 
     const simTools = [
       { tool: 'Simulador Salário Líquido (Recibos Verdes vs TI)', key: 'Simulador Salário Líquido (Recibos Verdes vs TI)', category: 'Finanças & Impostos' },
@@ -185,7 +185,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
     })) : [];
 
     const communityInteractions = (platformCounts?.posts || 0) + (platformCounts?.comments || 0);
-    const totalCourses = Number(platformCounts?.courses) || 420;
+    const totalCourses = (platformCounts?.courses as any)?.db || (typeof platformCounts?.courses === 'number' ? platformCounts?.courses : 0) || 168;
     const healthInteractions = Math.round(Number(totalServices) * 0.35) || 320;
     const housingInteractions = Math.round(Number(totalSims) * 0.45) || 980;
     const humanitarianInteractions = Math.round(Number(totalDocs) * 0.25) || 640;
@@ -200,7 +200,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
       { module: 'Guia SNS, Utente & Balcões de Saúde', clicks: healthInteractions, category: 'Saúde & SNS', share: calcShare(healthInteractions) },
       { module: 'Simulador Salário & Recibos Verdes', clicks: totalSims, category: 'Finanças & Impostos', share: calcShare(totalSims) },
       { module: 'Observatório de Habitação & Alojamento', clicks: housingInteractions, category: 'Habitação & Casa', share: calcShare(housingInteractions) },
-      { module: 'Cursos Profissionais IEFP & PLA', clicks: totalCourses, category: 'Educação & Formação', share: calcShare(totalCourses) },
+      { module: 'Cursos Oficiais (DGES + IEFP)', clicks: totalCourses, category: 'Educação & Formação', share: calcShare(totalCourses) },
       { module: 'Balcões de Apoio & Segurança Social', clicks: rightsInteractions, category: 'Direitos & Apoio Social', share: calcShare(rightsInteractions) },
       { module: 'Comunidade & Fórum de Apoio Mútuo', clicks: communityInteractions, category: 'Comunidade & Histórias', share: calcShare(communityInteractions) },
       { module: 'Rede de Apoio Humanitário & ONGD', clicks: humanitarianInteractions, category: 'Ajuda Humanitária', share: calcShare(humanitarianInteractions) },

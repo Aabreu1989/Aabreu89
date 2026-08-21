@@ -323,9 +323,12 @@ const AppContent: React.FC = () => {
     useEffect(() => { 
         initPageSDKs();
 
-        // 🚀 MIRA: Initial load of massive courses database
-        import('./utils/iefpCoursesDatabase').then(({ IEFP_MASSIVE_DATABASE }) => {
-            setCourses(prev => prev.length === 0 ? IEFP_MASSIVE_DATABASE : prev);
+        // 🚀 MIRA: Initial load of massive courses database (IEFP + DGES)
+        Promise.all([
+            import('./utils/iefpCoursesDatabase'),
+            import('./utils/dgesCoursesDatabase')
+        ]).then(([{ IEFP_MASSIVE_DATABASE }, { DGES_RECOGNIZED_DATABASE }]) => {
+            setCourses(prev => prev.length === 0 ? [...IEFP_MASSIVE_DATABASE, ...DGES_RECOGNIZED_DATABASE] : prev);
         });
 
         import('./services/communityService').then(({ communityService }) => {

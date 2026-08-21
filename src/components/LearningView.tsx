@@ -661,17 +661,31 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
   );
   
   const allCourses = useMemo(() => {
-    const seen = new Set<string>();
-    const combined = [...courses, ...extraCourses].map(c => ({
-      ...c,
-      category: normalizeCategory(c.category)
-    }));
-    const filtered = combined.filter(c => {
-      if (!c.id || seen.has(c.id)) return false;
-      seen.add(c.id);
-      return true;
+    const map = new Map<string, Course>();
+    
+    extraCourses.forEach(c => {
+      if (!c.id) return;
+      const isDges = Boolean(c.isDgesRecognized || c.id.startsWith('dges') || c.id.startsWith('ctesp') || c.id.startsWith('dg-') || c.id.startsWith('ts-') || (c.link && c.link.includes('dges.gov.pt')));
+      map.set(c.id, {
+        ...c,
+        category: normalizeCategory(c.category),
+        isDgesRecognized: isDges
+      });
     });
-    return filtered.sort((a, b) => {
+
+    courses.forEach(c => {
+      if (!c.id) return;
+      const existing = map.get(c.id);
+      const isDges = Boolean(c.isDgesRecognized || existing?.isDgesRecognized || c.id.startsWith('dges') || c.id.startsWith('ctesp') || c.id.startsWith('dg-') || c.id.startsWith('ts-') || (c.link && c.link.includes('dges.gov.pt')));
+      map.set(c.id, {
+        ...(existing || {}),
+        ...c,
+        category: normalizeCategory(c.category),
+        isDgesRecognized: isDges
+      });
+    });
+
+    return Array.from(map.values()).sort((a, b) => {
         if (a.isDgesRecognized && !b.isDgesRecognized) return -1;
         if (!a.isDgesRecognized && b.isDgesRecognized) return 1;
         return (b.isIefpSynced ? 1 : 0) - (a.isIefpSynced ? 1 : 0);
@@ -685,9 +699,12 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
     
     const matchesCategory = categoryFilter === 'Todos' || c.category === categoryFilter;
     
+    const isDges = Boolean(c.isDgesRecognized || c.id?.startsWith('dges') || c.id?.startsWith('ctesp') || c.id?.startsWith('dg-') || c.id?.startsWith('ts-') || c.link?.includes('dges.gov.pt'));
+    const isIefp = Boolean(c.isIefpSynced || c.link?.includes('iefp') || (!isDges));
+
     const matchesType = typeFilter === 'Todos' || 
-                        (typeFilter === 'DGES' && c.isDgesRecognized) ||
-                        (typeFilter === 'IEFP' && c.isIefpSynced);
+                        (typeFilter === 'DGES' && isDges) ||
+                        (typeFilter === 'IEFP' && isIefp);
 
     return matchesSearch && matchesCategory && matchesType;
   });

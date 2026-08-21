@@ -12,17 +12,25 @@ export const courseService = {
             return [];
         }
 
-        return (data || []).map(row => ({
-            id: row.id,
-            title: row.title,
-            description: row.description,
-            category: row.category,
-            type: row.type || 'Híbrido/Online',
-            duration: row.duration || 'Variável',
-            image: row.image_url || row.image || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=50',
-            isIefpSynced: row.is_iefp_synced || false,
-            link: row.link || row.source_url
-        }));
+        return (data || []).map(row => {
+            const isDges = row.is_dges_recognized ?? (
+                (row.id && (row.id.startsWith('dges') || row.id.startsWith('ctesp') || row.id.startsWith('dg-') || row.id.startsWith('ts-'))) ||
+                (row.link && row.link.includes('dges.gov.pt')) ||
+                false
+            );
+            return {
+                id: row.id,
+                title: row.title,
+                description: row.description,
+                category: row.category,
+                type: row.type || 'Híbrido/Online',
+                duration: row.duration || 'Variável',
+                image: row.image_url || row.image || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=50',
+                isIefpSynced: row.is_iefp_synced || false,
+                isDgesRecognized: isDges,
+                link: row.link || row.source_url
+            };
+        });
     },
 
     async upsertCourses(courses: Course[]): Promise<boolean> {
@@ -35,7 +43,8 @@ export const courseService = {
             type: c.type,
             duration: c.duration,
             image_url: c.image,
-            is_iefp_synced: c.isIefpSynced || true,
+            is_iefp_synced: c.isIefpSynced || false,
+            is_dges_recognized: c.isDgesRecognized || (c.id && (c.id.startsWith('dges') || c.id.startsWith('ctesp') || c.id.startsWith('dg-') || c.id.startsWith('ts-'))) || (c.link && c.link.includes('dges.gov.pt')) || false,
             link: c.link
         }));
 

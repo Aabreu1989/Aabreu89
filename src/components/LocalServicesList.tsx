@@ -147,10 +147,11 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
         try {
             localStorage.removeItem('mira_services_cache');
             localStorage.removeItem('mira_services_cache_v2');
+            localStorage.removeItem('mira_services_cache_v3');
         } catch (e) { }
 
-        // 1. Tentar carregar do cache local v3 para resposta rápida
-        const cached = localStorage.getItem('mira_services_cache_v3');
+        // 1. Tentar carregar do cache local v4 para resposta rápida
+        const cached = localStorage.getItem('mira_services_cache_v4');
         if (cached) {
             try {
                 const parsed = JSON.parse(cached);
@@ -279,7 +280,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
             // 🛡️ ANTI-FLICKER: Só atualiza o estado se houver dados consistentes
             setServices(deduplicatedServices);
             
-            localStorage.setItem('mira_services_cache_v3', JSON.stringify({
+            localStorage.setItem('mira_services_cache_v4', JSON.stringify({
                 timestamp: Date.now(),
                 data: deduplicatedServices
             }));

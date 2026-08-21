@@ -125,7 +125,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
 
   if (normLang === 'PT') {
     if (recentText.includes('estud') || recentText.includes('faculdade') || recentText.includes('universidade') || recentText.includes('91')) {
-      return ["Regularização por Estudos (Art. 91.º)", "Visto D4 de Estudante", "Estudante Pode Trabalhar?", "Cursos e Equivalências DGES"];
+      return ["Regularização por Estudos (Art. 91.º)", "Via Verde para Empresas", "Estudante Pode Trabalhar?", "Visto de Trabalho (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('promessa') || recentText.includes('contrato')) {
       return ["Visto D1 (Trabalho)", "Via Verde para Empresas", "Minuta de Promessa de Contrato", "Requisitos IEFP e VFS"];
@@ -144,7 +144,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'EN') {
     if (recentText.includes('study') || recentText.includes('student') || recentText.includes('91')) {
-      return ["Student Regularization (Art. 91)", "D4 Student Visa", "Can Students Work?", "DGES Courses & Equivalence"];
+      return ["Student Regularization (Art. 91)", "Via Verde for Companies", "Can Students Work?", "Work Visa (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contract') || recentText.includes('job')) {
       return ["D1 Visa (Work)", "Via Verde for Companies", "Work Promise Letter PDF", "IEFP & VFS Requirements"];
@@ -154,7 +154,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'ES') {
     if (recentText.includes('estud') || recentText.includes('universidad') || recentText.includes('91')) {
-      return ["Regularización por Estudios (Art. 91)", "Visado D4 Estudiante", "¿Estudiantes Pueden Trabajar?", "Cursos y Equivalencias DGES"];
+      return ["Regularización por Estudios (Art. 91)", "Vía Verde para Empresas", "¿Estudiantes Pueden Trabajar?", "Visado de Trabajo (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contrato') || recentText.includes('trabajo')) {
       return ["Visado D1 (Trabajo)", "Vía Verde para Empresas", "Minuta Promesa de Contrato", "Requisitos IEFP y VFS"];
@@ -164,7 +164,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'FR') {
     if (recentText.includes('etud') || recentText.includes('universite') || recentText.includes('91')) {
-      return ["Régularisation Études (Art. 91)", "Visa D4 Étudiant", "Les Étudiants Peuvent Travailler ?", "Équivalences DGES"];
+      return ["Régularisation Études (Art. 91)", "Via Verde pour Entreprises", "Les Étudiants Peuvent Travailler ?", "Visa de Travail (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contrat') || recentText.includes('travail')) {
       return ["Visa D1 (Travail)", "Via Verde pour Entreprises", "Promesse de Contrat PDF", "Exigences IEFP et VFS"];

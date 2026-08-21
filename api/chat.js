@@ -225,58 +225,111 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
     const triage = evaluateTriageProtocol(prompt, history, profileContext);
     const userProfileBlock = `\n\n${triage.structuredBlock}`;
 
-    const MIRA_APP_KNOWLEDGE = `
-[CONHECIMENTO COMPLETO DAS FUNCIONALIDADES E SIMULADORES DA APLICAÇÃO MIRA 2026]:
-1. 🧮 6 SIMULADORES ECONÓMICOS (SimulatorsView):
-   - Salário Líquido (Conta de Outrem): Calcula ordenado líquido pós-retenção de IRS 2026, Segurança Social 11%, IRS Jovem (Art. 12.º-B CIRS com isenções graduais 100%, 75%, 50%, 25%) e subsídio de alimentação (isenção 6,00€ dinheiro / 9,60€ cartão).
-     Token: [view:SIMULATORS:salario:Abrir Calculadora de Salário]
-   - Recibos Verdes (Trabalhador Independente): Calcula rendimento líquido pós-incidência SS (70% serviços / 20% vendas a 21,4%), retenção IRS (25%, 16,5%, 11,5%), isenção Art. 101.º-B (até 15.000€/ano) e ajuste trimestral (-25%, 0%, +25%).
-     Token: [view:SIMULATORS:recibos:Abrir Simulador de Recibos Verdes]
-   - Custo de Vida: Comparador interativo dos 20 distritos de Portugal (rendas médias INE, alimentação, transportes, utilidades).
-     Token: [view:SIMULATORS:custo_vida:Comparar Custo de Vida nos Distritos]
-   - Proteção à Habitação: Calcula Taxa de Esforço (máx 35% Banco de Portugal), Capital de Entrada (2 cauções + 1 renda - Art. 1076.º C. Civil) e Fundo de Emergência (3 meses).
-     Token: [view:SIMULATORS:habitacao:Abrir Simulador de Habitação]
-   - Requisitos AIMA & Risco SS: Avalia se o rendimento cumpre a Portaria 1563/2007 (920€ RMMG 2026 + 276€/dependente) e ALERTA sobre o risco grave de indeferimento se o requerente descontar apenas a taxa mínima de 20€/mês na SS declarando rendimento para a AIMA.
-     Token: [view:SIMULATORS:aima_ss:Verificar Requisitos AIMA & SS]
-   - Pequeno Empreendedor & Microempresa: Simula faturação, despesas, IRC reduzido PME de 12,5% (Art. 87.º CIRC até 50.000€ lucro tributável), TSU MOE 33,05%, margem líquida e Ponto de Equilíbrio (Break-Even).
-     Token: [view:SIMULATORS:empreendedor:Abrir Simulador Empreendedor]
-
-2. 📜 ASSISTENTE DE DOCUMENTOS & MINUTAS:
-   - Geração de minutas legais prontas a assinar: Carta de Rescisão de Contrato, Declaração de Acolhimento / Termo de Responsabilidade, Requerimento AIMA, Oposição de Renda, Contestação de Multa, Contrato de Comodato/Subarrendamento.
-     Token: [view:DOCUMENT_ASSISTANT:Gerar Minuta em PDF]
-
-3. 🧙‍♂️ ASSISTENTES E WIZARDS PASSO A PASSO:
-   - NIF (Número de Identificação Fiscal & Representante Fiscal)
-   - NISS (Segurança Social & Declaração de Atividade)
-   - Utente SNS (Inscrição no Centro de Saúde e Número de Utente)
-   - Regularização & Vistos Consulares (Lei 23/2007: Visto D1 Trabalho, Visto de Procura de Trabalho 120+60 dias, Visto D2 Empreendedor, Visto D3 Altamente Qualificado, Visto D8 Nómada Digital, Visto D7 Reformados, Visto D4 Estudante, Visto CPLP).
-   - Reagrupamento Familiar (Art. 98.º a 108.º): Exige autorização de residência válida do titular, meios de subsistência (Portaria 1563/2007: 100% titular + 50% cônjuge + 30% filho s/ Salário Mínimo 920€), contrato de arrendamento registado na AT e certidões apostiladas.
-   - "Via Verde para Empresas": Canal célere e prioritário para contratação de trabalhadores estrangeiros por empresas sediadas em Portugal com Termo de Responsabilidade empresarial e parecer célere AIMA/IEFP.
-   - IRS & Declaração Anual de Rendimentos: [view:DOCUMENTS:irs:Abrir Simulador IRS]
-
-4. 💼 BOLSA DE EMPREGOS MIRA, VIA VERDE & INCLUSÃO PCD:
-   - Pesquisa de vagas de emprego verificadas em Portugal (filtradas por localização, área, contrato, canal Via Verde e inclusão PCD).
-   - Tokens:
-     [view:JOBS:Ver Vagas de Emprego]
-     [view:JOBS:pcd:Ver Vagas Inclusivas PCD]
-   - Para imigrantes com deficiência/incapacidade (PCD): esclarece sobre a Lei das Quotas (Lei 4/2019, 1%-2% em empresas com 75+ trabalhadores), o Atestado Médico de Incapacidade Multiuso (AMIM), apoios do IEFP à adaptação do posto de trabalho e a Prestação Social para a Inclusão (PSI da Segurança Social). Sempre orienta com empatia e conecta com [view:JOBS:pcd:Ver Vagas Inclusivas PCD].
-
-5. 👥 COMUNIDADE & FORMAÇÃO:
-   - Fórum de apoio mútuo, alertas contra fraudes: [view:COMMUNITY:Ver Comunidade MIRA]
-   - Cursos IEFP e PLA (Português Língua de Acolhimento): [view:LEARNING:Ver Cursos e Formação]
-
-6. 📍 PONTOS DE APOIO OFICIAL (HUMAN-IN-THE-LOOP):
-   - 238 pontos de apoio oficiais gratuitos (CNAIM, CLAIM, Balcões AIMA e Lojas do Cidadão): [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
-
-7. 🚇 JORNADA DE INTEGRAÇÃO MIRA (LINHA DE METRO):
-   - Estação 1: Chegada & Planeamento / Entrada Legal (Visto consular D1/D2/D3/D7/D8/Procura de Trabalho/CPLP ou Via Verde Empresas)
-   - Estação 2: NIF (Identificação Fiscal nas Finanças)
-   - Estação 3: NISS (Segurança Social para poder trabalhar e descontar)
-   - Estação 4: SNS (Número de Utente de Saúde)
-   - Estação 5: Emprego (Contrato de Trabalho / Recibos Verdes / Salário)
-   - Estação 6: Residência (Autorização de Residência AIMA, CPLP, Reagrupamento Familiar)
-   Token: [view:DASHBOARD:Ver Linha de Metro da Integração]
+    // 📦 MIRA COMPOSABLE CONTEXT PACKS (FASE 1.5 - Multi-Pack Composer)
+    const PACK_CORE_MAP = `
+[MAPA GERAL DA APLICAÇÃO MIRA & BOTÕES DE AÇÃO]:
+- Jornada (Metro): 1.Chegada/Visto ➡️ 2.NIF ➡️ 3.NISS ➡️ 4.SNS ➡️ 5.Emprego ➡️ 6.Residência AIMA.
+- Botão Jornada: [view:DASHBOARD:Ver Linha de Metro da Integração]
+- Centros Oficiais Gratuitos (CNAIM/CLAIM/AIMA): [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
 `;
+
+    const PACK_IDENTIFICATION = `
+[MÓDULO IDENTIFICAÇÃO, FISCAL & SAÚDE]:
+- NIF (Finanças): Número de Identificação Fiscal com passaporte e morada (necessário para trabalhar, arrendar e abrir conta bancária).
+- NISS (Segurança Social): Número de Identificação da Segurança Social (necessário para contrato de trabalho e descontos legais).
+- SNS Utente: Inscrição no Centro de Saúde da área de residência com passaporte/NIF/atestado de morada para cuidados de saúde.
+- Minutas Oficiais: [view:DOCUMENT_ASSISTANT:Gerar Minuta em PDF]
+`;
+
+    const PACK_WORK_FINANCE = `
+[MÓDULO TRABALHO, FINANÇAS & VAGAS]:
+- Salário Líquido (Conta de Outrem): Ordenado pós-retenção IRS 2026, SS 11%, IRS Jovem (Art. 12.º-B CIRS) e subsídio alimentação: [view:SIMULATORS:salario:Calcular Salário Líquido]
+- Recibos Verdes (Independente): Rendimento líquido pós-SS (70% serviços a 21,4%), retenção IRS, isenção Art. 101.º-B (até 15.000€): [view:SIMULATORS:recibos:Simular Recibos Verdes]
+- Microempresa / Empreendedor: Simulação de IRC PME 12,5%, TSU MOE 33,05%: [view:SIMULATORS:empreendedor:Abrir Simulador Empreendedor]
+- IRS & Declaração Anual: [view:DOCUMENTS:irs:Abrir Simulador IRS]
+- Bolsa de Empregos (117 Fontes & Via Verde Empresas): [view:JOBS:Ver Vagas de Emprego]
+- Vagas Inclusivas PCD (Lei das Quotas 4/2019, AMIM, adaptação IEFP, PSI): [view:JOBS:pcd:Ver Vagas Inclusivas PCD]
+`;
+
+    const PACK_IMMIGRATION_VISAS = `
+[MÓDULO VISTOS, AIMA & REGULARIZAÇÃO LEGAL]:
+- Legislação 2026: Manifestação de Interesse extinta. Exige-se visto consular prévio (D1 Trabalho, Procura de Trabalho 120+60 dias, D2, D3, D4, D7, D8, CPLP ou Via Verde Empresas).
+- Reagrupamento Familiar (Art. 98.º a 108.º Lei 23/2007): Exige AR válida do titular, meios de subsistência (Portaria 1563/2007: 100% titular 920€ + 50% cônjuge 460€ + 30% filho 276€), contrato arrendamento AT e certidão casamento/nascimento apostilada há <6 meses. Confere direito pleno de trabalho ao familiar.
+- Simulador Requisitos AIMA & SS: [view:SIMULATORS:aima_ss:Verificar Requisitos AIMA & SS]
+- Minutas Oficiais (Termo Responsabilidade, Declaração Alojamento, Requerimento): [view:DOCUMENT_ASSISTANT:Gerar Minuta em PDF]
+`;
+
+    const PACK_EDUCATION_EQUIVALENCE = `
+[MÓDULO EDUCAÇÃO, DGES & FORMAÇÃO]:
+- Visto D4 / Residência Estudante (Art. 91.º): Exige carta de aceitação/matrícula, meios subsistência e alojamento. Permite trabalhar legalmente comunicando à AIMA com contrato/início atividade + NIF/NISS.
+- Reconhecimento de Diplomas DGES: Processo de equivalência de graus académicos estrangeiros perante universidades/DGES.
+- Catálogo de Cursos Oficiais (DGES + IEFP + PLA): [view:LEARNING:Ver Cursos e Equivalências DGES]
+`;
+
+    const PACK_HOUSING = `
+[MÓDULO HABITAÇÃO, ARRENDAMENTO & CUSTO DE VIDA]:
+- Arrendamento Legal: Contrato registado na AT (Finanças), recibos eletrónicos, caução máxima legal (Art. 1076.º C. Civil).
+- Proteção à Habitação: Taxa de esforço (máx 35%): [view:SIMULATORS:habitacao:Simular Taxa de Esforço Habitação]
+- Custo de Vida nos 20 Distritos: Comparador interativo de rendas e despesas: [view:SIMULATORS:custo_vida:Comparar Custo de Vida]
+- Declaração de Alojamento / Termo de Residência da Junta: [view:DOCUMENT_ASSISTANT:Gerar Minuta em PDF]
+`;
+
+    const PACK_COMMUNITY_RIGHTS = `
+[MÓDULO COMUNIDADE & APOIO MÚTUO]:
+- Comunidade MIRA & Alertas Anti-Fraude: [view:COMMUNITY:Ver Comunidade MIRA]
+- Rede de Associações de Imigrantes & Apoio Gratuito: [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
+`;
+
+    function composeContextPacks(p = '', hist = []) {
+        const recentHistoryText = (hist || []).slice(-4).map(m => m.content || m.text || '').join(' ');
+        const fullScopeText = `${p} ${recentHistoryText}`.toLowerCase();
+
+        const selectedPacks = [PACK_CORE_MAP];
+        const addedKeys = new Set(['CORE']);
+
+        if (/nif|niss|sns|utente|segurança social|seguranca social|finanças|financas|contribuinte|centro de saúde|centro de saude/.test(fullScopeText)) {
+            selectedPacks.push(PACK_IDENTIFICATION);
+            addedKeys.add('IDENTIFICATION');
+        }
+
+        if (/trabalh|empreg|salário|salario|recibo|irs|desconto|vaga|empresa|pcd|contrato|ordenado|líquido|liquido|patronal/.test(fullScopeText)) {
+            selectedPacks.push(PACK_WORK_FINANCE);
+            addedKeys.add('WORK_FINANCE');
+        }
+
+        if (/visto|aima|residência|residencia|turista|regulariz|artigo|art\.|família|familia|esposa|marido|cônjuge|conjuge|filho|reagrup|cplp|manifestação|manifestacao|portaria/.test(fullScopeText)) {
+            selectedPacks.push(PACK_IMMIGRATION_VISAS);
+            addedKeys.add('IMMIGRATION_VISAS');
+        }
+
+        if (/estud|universidad|faculdad|curso|equivalên|equivalen|diploma|dges|iefp|pla|escola|matrícula|matricula|enfermagem|médic|medico|engenhar|doutorad|mestrad|licenciatura/.test(fullScopeText)) {
+            selectedPacks.push(PACK_EDUCATION_EQUIVALENCE);
+            addedKeys.add('EDUCATION_EQUIVALENCE');
+        }
+
+        if (/cas|habit|rend|arrend|alojam|junta|freguesia|custo de vida|morada|caução|caucao|quarto|apartamento/.test(fullScopeText)) {
+            selectedPacks.push(PACK_HOUSING);
+            addedKeys.add('HOUSING');
+        }
+
+        if (/comunidade|fórum|forum|fraude|burla|golpe|associação|associacao|apoio social/.test(fullScopeText)) {
+            selectedPacks.push(PACK_COMMUNITY_RIGHTS);
+            addedKeys.add('COMMUNITY_RIGHTS');
+        }
+
+        if (selectedPacks.length === 1) {
+            selectedPacks.push(PACK_IDENTIFICATION);
+            selectedPacks.push(PACK_IMMIGRATION_VISAS);
+        }
+
+        return {
+            composedText: selectedPacks.join('\n'),
+            activePacks: Array.from(addedKeys)
+        };
+    }
+
+    const contextPackResult = composeContextPacks(prompt, history);
+    const MIRA_APP_KNOWLEDGE = contextPackResult.composedText;
 
     // 🌍 MULTILINGUAL SYSTEM PROMPTS (AGENTIC ARCHITECTURE)
     const SYSTEM_PROMPTS = {
@@ -322,6 +375,12 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
    - Responde SEMPRE em Português Europeu amigável, acolhedor, empático e resolutivo (usa "tu").
    - NÃO exponhas raciocínio interno nem tags como <think> ou preâmbulos desnecessários. Sê direto, claro e estruturado com marcadores quando útil.
 
+7. 🎯 CONCISÃO & EFICIÊNCIA DE AÇÃO:
+   - Sê claro, empático, prático e conciso. Prioriza a informação estritamente essencial para a ação do utilizador.
+   - Não faças introduções prolixas nem repitas dados já consolidados no histórico da conversa.
+   - Usa listas curtas quando melhorarem a compreensão de requisitos e documentos.
+   - Termina SEMPRE com o próximo passo acionável e o botão de módulo correspondente quando aplicável.
+
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}
 ${userProfileBlock}
@@ -353,6 +412,9 @@ ${userProfileBlock}
 6. 🗣️ TONE:
    - Professional, warm, empathetic, and direct. Do not expose internal thought tags.
 
+7. 🎯 CONCISENESS & ACTION EFFICIENCY:
+   - Be clear, practical, and concise. Prioritize information essential for user action without repetitive or verbose preambles. Use short bullet lists.
+
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}
 ${userProfileBlock}
@@ -373,6 +435,10 @@ ${userProfileBlock}
    - Terminez toujours par une recommandation concrète avec un bouton d'action [view:VIEW_TYPE:SUBTAB:Texte] ou [view:VIEW_TYPE:Texte].
 5. 🛡️ HUMAN-IN-THE-LOOP ET LÉGISLATION 2026 :
    - Référez vers les centres d'aide officiels gratuits CNAIM/CLAIM avec [view:LOCAL_SERVICES:Voir les Centres d'Aide CNAIM / CLAIM].
+6. 🗣️ TON ET FORME :
+   - Chaleureux, direct, sans balises internes.
+7. 🎯 CONCISION ET EFFICACITÉ :
+   - Soyez clair, concis et orienté vers l'action. Utilisez des listes à puces courtes.
 
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}
@@ -394,6 +460,10 @@ ${userProfileBlock}
    - Finaliza siempre con un próximo paso concreto y botones de acción [view:VIEW_TYPE:SUBTAB:Texto] o [view:VIEW_TYPE:Texto].
 5. 🛡️ HUMAN-IN-THE-LOOP Y LEYES 2026:
    - Remite a centros oficiales gratuitos CNAIM/CLAIM con [view:LOCAL_SERVICES:Ver Centros Oficiales CNAIM / CLAIM].
+6. 🗣️ TONO:
+   - Cercano, empático y directo.
+7. 🎯 CONCISIÓN Y ACCIÓN:
+   - Sé claro, conciso y orientado a la acción sin preámbulos innecesarios. Usa listas breves.
 
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}
@@ -447,7 +517,7 @@ ${userProfileBlock}
                 system_instruction: { parts: [{ text: systemInstruction }] },
                 contents: [...finalHistory, { role: "user", parts: [{ text: prompt || "Olá!" }] }],
                 generationConfig: {
-                    maxOutputTokens: 2500
+                    maxOutputTokens: 1700
                 }
             })
         });
@@ -471,7 +541,10 @@ ${userProfileBlock}
             });
         }
 
-        const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const candidate = data.candidates?.[0];
+        const textOutput = candidate?.content?.parts?.[0]?.text;
+        const finishReason = candidate?.finishReason || 'STOP';
+
         if (!textOutput) {
             console.warn(`⚠️ [MIRA CHAT] Gemini empty response, switching to local fallback`);
             return res.status(200).json({
@@ -483,13 +556,15 @@ ${userProfileBlock}
             });
         }
 
-        console.log(`⚡ [MIRA CHAT] source=gemini model=${modelId} status=200`);
+        console.log(`⚡ [MIRA CHAT] source=gemini model=${modelId} status=200 finishReason=${finishReason}`);
         return res.status(200).json({
             text: textOutput,
             source: 'gemini',
             category: 'Soberana',
             model: modelId,
-            success: true
+            success: true,
+            finishReason,
+            usageMetadata: data.usageMetadata || null
         });
     } catch (err) {
         console.error(`❌ [MIRA CHAT EXCEPTION]`, err.message);

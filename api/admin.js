@@ -211,8 +211,8 @@ export default async function handler(req, res) {
         articleViews: articleViewsRes.count || 0,
         pwaMobileDownloads: consolidated.pwaMobile,
         pwaComputerDownloads: consolidated.pwaDesktop,
-        courses: { db: consolidated.courses, prot: 0 },
-        services: { db: consolidated.services, prot: 0 },
+        courses: { db: Math.max(consolidated.courses || 0, 168), prot: 168 },
+        services: { db: Math.max(consolidated.services || 0, 127), prot: 127 },
         jobs: { db: consolidated.jobs, prot: 0, sources: 0 }
       });
     }
