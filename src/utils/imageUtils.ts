@@ -22,9 +22,18 @@ export const COMMUNITY_FALLBACK_BACKGROUNDS = [
  * Helper to get image URL from Supabase Storage, local paths, or fallback safely.
  */
 export const getImageUrl = (pathOrUrl?: string | null, width = 800): string => {
-    if (!pathOrUrl || typeof pathOrUrl !== 'string' || pathOrUrl.trim() === '') return '';
+    if (!pathOrUrl || typeof pathOrUrl !== 'string') return '';
     
     const trimmed = pathOrUrl.trim();
+    const lower = trimmed.toLowerCase();
+    if (trimmed === '' || lower === 'null' || lower === 'undefined' || trimmed === '[object Object]') {
+        return '';
+    }
+
+    // Handle data URIs (base64) and blob URLs directly
+    if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+        return trimmed;
+    }
 
     // Handle local absolute/relative assets (e.g., '/mira-icon.png')
     if (trimmed.startsWith('/')) {

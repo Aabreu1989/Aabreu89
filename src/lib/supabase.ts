@@ -5,9 +5,9 @@ const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim().replace(/['
 const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim().replace(/['"]/g, '');
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('🚨 MIRA CRITICAL: VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing!');
+  console.error('🚨 MIRA FATAL: VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY ausentes no ambiente de execução!');
 } else {
-  const projectId = supabaseUrl.split('.')[0].split('//')[1];
+  const projectId = supabaseUrl.split('.')[0]?.split('//')[1] || 'sovereign';
   console.log(`📡 MIRA CONNECTED: ${projectId}`);
 }
 
@@ -18,7 +18,10 @@ export const getAuthRedirectUrl = (): string => {
   return 'https://miraimigrante.pt';
 };
 
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase: SupabaseClient = createClient(
+  supabaseUrl || 'https://missing-supabase-url.supabase.co',
+  supabaseAnonKey || 'missing-anon-key',
+  {
   auth: {
     flowType: 'implicit',
     persistSession: true,

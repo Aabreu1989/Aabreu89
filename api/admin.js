@@ -23,7 +23,7 @@ const SUPABASE_URL  = process.env.VITE_SUPABASE_URL  || process.env.SUPABASE_URL
 const SERVICE_ROLE  = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
 const ANON_KEY      = process.env.VITE_SUPABASE_ANON_KEY   || process.env.SUPABASE_ANON_KEY;
 
-const ADMIN_EMAIL = 'amandasabreu89@gmail.com';
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || process.env.VITE_ADMIN_EMAIL || 'amandasabreu89@gmail.com').toLowerCase().trim();
 
 // ─── HELPER: Verificar Admin ──────────────────────────────────────────────────
 async function verifyAdmin(req) {
@@ -302,25 +302,36 @@ export default async function handler(req, res) {
     if (action === 'export-impact') {
       if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-      const { data: metrics } = await supabaseAdmin
+      const { data: metrics, error: mError } = await supabaseAdmin
         .from('metricas_impacto_social')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      const m = metrics || { tempo_poupado_horas: 4157, processos_ajudados: 1663, indice_transparencia: 92.5, usuarios_ativos_mensais: 592, taxa_resolucao_sucesso: 97.1 };
+      if (mError) {
+        console.error('🚨 [MIRA Admin] Erro ao buscar métricas de impacto:', mError.message);
+        return res.status(500).json({ error: 'Erro ao carregar métricas de impacto social do banco.' });
+      }
+
+      const m = metrics || {
+        tempo_poupado_horas: 0,
+        processos_ajudados: 0,
+        indice_transparencia: 0,
+        usuarios_ativos_mensais: 0,
+        taxa_resolucao_sucesso: 0
+      };
 
       return res.status(200).json({
         timestamp: new Date().toISOString(),
         source: 'MIRA Social Impact Analytics Engine',
         awards_target: ['EUSIC 2026', 'BPI Inovação', 'Avisos Portugal 2030'],
         raw_metrics: {
-          tempo_poupado_horas: Number(m.tempo_poupado_horas),
-          processos_ajudados: Number(m.processos_ajudados),
-          indice_transparencia_porcentagem: Number(m.indice_transparencia),
-          usuarios_ativos_mensais: Number(m.usuarios_ativos_mensais),
-          taxa_resolucao_sucesso_porcentagem: Number(m.taxa_resolucao_sucesso),
+          tempo_poupado_horas: Number(m.tempo_poupado_horas || 0),
+          processos_ajudados: Number(m.processos_ajudados || 0),
+          indice_transparencia_porcentagem: Number(m.indice_transparencia || 0),
+          usuarios_ativos_mensais: Number(m.usuarios_ativos_mensais || 0),
+          taxa_resolucao_sucesso_porcentagem: Number(m.taxa_resolucao_sucesso || 0),
         },
       });
     }

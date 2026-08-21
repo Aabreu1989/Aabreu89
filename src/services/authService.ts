@@ -231,14 +231,15 @@ export const authService = {
 
     async deleteAccount(): Promise<boolean> {
         try {
-            console.log("­ƒº¼ [MIRA] Iniciando auto-exclus├úo RGPD...");
+            console.log("🧬 [MIRA] Iniciando auto-exclusão RGPD...");
             
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error("Sess├úo expirada.");
+            if (!session) throw new Error("Sessão expirada.");
 
-            // ­ƒøí´©Å PROTOCOLO SOBERANO: Purga├º├úo via NODE API (RGPD Master)
+            // 🛡️ PROTOCOLO SOBERANO: Purgação via Edge Function ou RPC Fallback
+            let deleted = false;
             try {
-                const { data, error } = await supabase.functions.invoke('mira-admin', {
+                const { error } = await supabase.functions.invoke('mira-admin', {
                     body: { 
                         action: 'delete', 
                         userId: session.user.id 
@@ -246,16 +247,27 @@ export const authService = {
                 });
 
                 if (error) {
-                    throw new Error(error.message || "Edge Function negou a purga├º├úo.");
+                    throw new Error(error.message || "Edge Function negou a purgação.");
                 }
-                console.log("Ô£à [MIRA] Auto-exclus├úo sincronizada com o Auth.");
+                deleted = true;
+                console.log("✅ [MIRA] Auto-exclusão sincronizada com o Auth.");
             } catch (apiErr: any) {
                 console.warn("MIRA: Edge Function Deletion failed, using RPC Fallback.", apiErr);
                 // Fallback attempt via RPC if API fails (though API is preferred for Auth sync)
-                await supabase.rpc('admin_delete_full_user_v2026', { target_uid: session.user.id });
+                const { error: rpcErr } = await supabase.rpc('admin_delete_full_user_v2026', { target_uid: session.user.id });
+                if (rpcErr) {
+                    console.error("MIRA: RPC fallback deletion also failed:", rpcErr);
+                    throw rpcErr;
+                }
+                deleted = true;
+                console.log("✅ [MIRA] Auto-exclusão concluída via RPC.");
             }
 
-            // 3. Encerrar Sess├úo e Limpar Cache
+            if (!deleted) {
+                return false;
+            }
+
+            // 3. Encerrar Sessão e Limpar Cache apenas após exclusão confirmada
             await this.signOut();
             localStorage.clear();
             sessionStorage.clear();
@@ -268,8 +280,7 @@ export const authService = {
             return true;
         } catch (error) {
             console.error("Critical failure during account deletion:", error);
-            localStorage.clear();
-            return true;
+            return false;
         }
     },
 

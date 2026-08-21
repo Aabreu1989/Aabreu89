@@ -617,7 +617,13 @@ export const communityService = {
   },
 
   syncPendingPosts: async () => {
-    console.log("🌍 [MIRA] Sincronização direta via Supabase ativa.");
+    try {
+      const { syncService } = await import('./syncService');
+      await syncService.sync();
+      console.log("🌍 [MIRA] Sincronização offline delegada ao SyncService.");
+    } catch (e) {
+      console.warn("MIRA: Erro ao sincronizar fila offline:", e);
+    }
   }
 };
 

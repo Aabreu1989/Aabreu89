@@ -58,3 +58,35 @@ export const persistence = {
     }
   }
 };
+
+/**
+ * 🛡️ Helper resiliente para localStorage (proteção Safari modo anônimo e quota excedida)
+ */
+export const safeStorage = {
+  getItem(key: string): string | null {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return null;
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem(key: string, value: string): void {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, value);
+      }
+    } catch (e) {
+      console.warn(`MIRA safeStorage: Failed to set key "${key}":`, e);
+    }
+  },
+  removeItem(key: string): void {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch (e) {
+      console.warn(`MIRA safeStorage: Failed to remove key "${key}":`, e);
+    }
+  }
+};

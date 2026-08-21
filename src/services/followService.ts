@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { safeStorage } from '../utils/persistence';
 
 export const followService = {
     getLocalKey(followerId: string) {
@@ -12,12 +13,14 @@ export const followService = {
 
         try {
             const key = this.getLocalKey(followerId);
-            const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
+            const localFollows = JSON.parse(safeStorage.getItem(key) || '[]');
             if (!localFollows.includes(followedId)) {
                 localFollows.push(followedId);
-                localStorage.setItem(key, JSON.stringify(localFollows));
+                safeStorage.setItem(key, JSON.stringify(localFollows));
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn("MIRA [followService] Local follow cache error:", e);
+        }
 
         try {
             let sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
@@ -61,10 +64,12 @@ export const followService = {
 
         try {
             const key = this.getLocalKey(followerId);
-            const localFollows = JSON.parse(localStorage.getItem(key) || '[]');
+            const localFollows = JSON.parse(safeStorage.getItem(key) || '[]');
             const updated = localFollows.filter((id: string) => id !== followedId);
-            localStorage.setItem(key, JSON.stringify(updated));
-        } catch (e) {}
+            safeStorage.setItem(key, JSON.stringify(updated));
+        } catch (e) {
+            console.warn("MIRA [followService] Local unfollow cache error:", e);
+        }
 
         try {
             let sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
