@@ -396,7 +396,7 @@ ${userProfileBlock}
         ? `Professional Translation: Translate the following text to ${lang}. Output ONLY the translated text, no comments or greetings.`
         : (SYSTEM_PROMPTS[lang] || SYSTEM_PROMPTS['PT']);
 
-    const modelId = 'gemini-2.0-flash';
+    const modelId = 'gemini-2.5-flash';
     
     // 🧬 3. SMART HISTORY MERGER (V1.7M - Amanda Abreu Standards)
     let processedHistory = [];
@@ -447,18 +447,52 @@ ${userProfileBlock}
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error?.message || "Gemini API Error");
+        
+        if (!response.ok) {
+            const status = response.status;
+            let errorType = 'ERROR';
+            if (status === 429) errorType = 'QUOTA_EXCEEDED';
+            else if (status === 503) errorType = 'UNAVAILABLE';
+            else if (status === 400) errorType = 'INVALID_REQUEST';
+
+            console.warn(`⚠️ [MIRA CHAT] Gemini ${status} (${errorType}): ${data.error?.message || 'Error'}, switching to local fallback`);
+            return res.status(200).json({
+                success: false,
+                fallbackRequired: true,
+                errorType,
+                error: data.error?.message || 'Gemini API Error',
+                source: 'local_fallback'
+            });
+        }
 
         const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!textOutput) throw new Error("Resposta vazia do Gemini");
+        if (!textOutput) {
+            console.warn(`⚠️ [MIRA CHAT] Gemini empty response, switching to local fallback`);
+            return res.status(200).json({
+                success: false,
+                fallbackRequired: true,
+                errorType: 'EMPTY_RESPONSE',
+                error: 'Resposta vazia do Gemini',
+                source: 'local_fallback'
+            });
+        }
 
+        console.log(`⚡ [MIRA CHAT] source=gemini model=${modelId} status=200`);
         return res.status(200).json({
             text: textOutput,
+            source: 'gemini',
             category: 'Soberana',
-            model: modelId
+            model: modelId,
+            success: true
         });
     } catch (err) {
-        console.error(`❌ [MIRA AI ERROR]`, err.message);
-        return res.status(500).json({ error: err.message });
+        console.error(`❌ [MIRA CHAT EXCEPTION]`, err.message);
+        return res.status(200).json({
+            success: false,
+            fallbackRequired: true,
+            errorType: 'EXCEPTION',
+            error: err.message,
+            source: 'local_fallback'
+        });
     }
 }

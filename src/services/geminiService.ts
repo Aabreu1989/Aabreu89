@@ -88,8 +88,10 @@ const MIRA_LOCAL_KB: Record<string, string> = {
   'banco': 'Para abrir conta bancária em Portugal precisas de: passaporte, NIF e comprovativo de morada. Bancos como a Caixa Geral de Depósitos, BPI e Millennium BCP aceitam imigrantes. Alguns permitem abertura online.\n[view:SIMULATORS:Guia de Abertura de Conta]',
   'contrato': 'O contrato de trabalho em Portugal pode ser a prazo (máximo 2 anos, renovável) ou sem termo (permanente). O salário mínimo em 2026 é de 920€/mês. O empregador deve inscrevê-lo na Segurança Social.\n[view:JOBS:Ver Vagas de Emprego]',
   'documento': 'Os principais documentos para imigrantes em Portugal são: Passaporte, Título de Residência (AR), NIF, NISS e Utente do SNS. Guarda sempre cópias digitalizadas em PDF.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas PDF]',
-  'renovar': 'A renovação do título de residência deve ser pedida na AIMA entre 90 a 30 dias antes do vencimento. Podes fazê-lo pelo portal aima.gov.pt. Tens direito a um comprovativo imediato que mantém a validade legal enquanto aguardas.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'cidadania': 'Para obter a Cidadania Portuguesa (Nacionalidade), os caminhos mais comuns (Lei Orgânica n.º 1/2026, em vigor desde 19 Maio 2026) são: 1. Tempo de residência legal (7 anos para cidadãos da CPLP/Brasileiros, 10 anos para outras nacionalidades. O tempo de espera não conta, só a partir da emissão do cartão); 2. Casamento/União de facto com cidadão português (3 anos); 3. Descendência (filhos ou netos de portugueses). O pedido faz-se no IRN (não na AIMA).\n[view:DOCUMENT_ASSISTANT:Ver Minutas de Nacionalidade]',
+  'lei da nacionalidade': '🏛️ LEI DA NACIONALIDADE EM PORTUGAL & CONTAGEM DO TEMPO DE ESPERA (Art. 15.º):\n\n1. CONTAGEM DO TEMPO DE ESPERA (AIMA / MANIFESTAÇÃO):\nA alteração ao artigo 15.º da Lei da Nacionalidade aprovada pelo Parlamento estabelece que o tempo decorrido desde a submissão inicial do pedido de autorização de residência (incluindo o período de espera da Manifestação de Interesse ou agendamento na AIMA) CONTA para os 5 anos de residência legal exigidos, desde que o título de residência venha a ser deferido.\n\n2. PRINCIPAIS VIAS DE AQUISIÇÃO NO IRN:\n- Tempo de Residência Legal: 5 anos de residência acumulada em Portugal.\n- Casamento / União de Facto: 3 anos com cidadão português.\n- Descendência: Filhos ou netos de cidadãos portugueses.\n\n3. ONDE TRATAR:\nO processo de nacionalidade corre exclusivamente no Instituto dos Registos e do Notariado (IRN) e Conservatórias (não na AIMA).\n[view:DOCUMENT_ASSISTANT:Ver Minutas de Nacionalidade]',
+  'nacionalidade': '🏛️ LEI DA NACIONALIDADE EM PORTUGAL & CONTAGEM DO TEMPO DE ESPERA (Art. 15.º):\n\n1. CONTAGEM DO TEMPO DE ESPERA (AIMA / MANIFESTAÇÃO):\nO tempo decorrido desde a submissão inicial do pedido de autorização de residência (inclusive o período em que aguardavas a Manifestação de Interesse ou decisão da AIMA) CONTA para o cômputo dos 5 anos de residência legal, desde que o título venha a ser deferido.\n\n2. REQUISITOS (5 ANOS):\n- 5 anos de residência legal comprovada.\n- Prova de Língua Portuguesa (nível A2) para países não lusófonos (CPLP isenta).\n- Registo criminal limpo sem condenações ≥ 3 anos de prisão.\n\n3. ONDE SUBMETER:\nConservatórias do Registo Civil e IRN (irn.justica.gov.pt).\n[view:DOCUMENT_ASSISTANT:Ver Minutas de Nacionalidade]',
+  'promessa de contrato': '📜 PROMESSA DE CONTRATO DE TRABALHO & VISTO D1 (PORTUGAL 2026):\n\n1. O QUE É:\nDocumento vinculativo emitido por empresa com sede em Portugal comprometendo-se a contratar o trabalhador estrangeiro assim que o Visto D1 for emitido.\n\n2. OBRIGAÇÕES DA EMPRESA:\n- O vencimento declarado deve ser igual ou superior ao Salário Mínimo Nacional (920€ em 2026).\n- A empresa deve estar em situação contributiva e fiscal regularizada e efetuar o registo da oferta no IEFP (ou utilizar o canal "Via Verde para Empresas").\n\n3. INSTRUÇÃO DO VISTO D1 NO CONSULADO:\nO trabalhador anexa a Promessa assinada, formulário consular/VFS, registo criminal apostilado, seguro de viagem e comprovativo do IEFP no posto consular do seu país de origem.\n[view:JOBS:Ver Vagas e Contratos] [view:DOCUMENT_ASSISTANT:Gerar Minuta de Promessa de Contrato]',
+  'cidadania': 'Para obter a Cidadania Portuguesa (Nacionalidade), os caminhos mais comuns são: 1. Tempo de residência legal (5 anos, contando o tempo de espera desde a manifestação deferida); 2. Casamento/União de facto com cidadão português (3 anos); 3. Descendência (filhos ou netos de portugueses). O pedido faz-se no IRN (não na AIMA).\n[view:DOCUMENT_ASSISTANT:Ver Minutas de Nacionalidade]',
   'estatuto de igualdade': 'ESTATUTO DE DIREITOS IGUAL (TRATADO DE PORTO SEGURO PT-BR):\n1. ESTATUTO DE DIREITOS CIVIS (Tipo 1): Concede aos cidadãos brasileiros com residência legal em Portugal os mesmos direitos e deveres civis que aos portugueses (acesso a concursos públicos, criação de empresas, saúde SNS, segurança social, habitação e exercício profissional em igualdade). Requisitos: Cidadania Brasileira + Título de Residência válido.\n2. ESTATUTO DE DIREITOS POLÍTICOS (Tipo 2): Concede a capacidade eleitoral ativa e passiva (direito de votar e ser votado em eleições autárquicas e legislativas em Portugal). Requisitos: Cidadania Brasileira + 3 anos de residência legal.\n3. CARTÃO DE CIDADÃO PARA ESTRANGEIRO: Após deferimento do Estatuto de Igualdade pelo IRN, o requerente pode emitir o Cartão de Cidadão físico de Estrangeiro no IRN/Conservatórias e ativar a Chave Móvel Digital (CMD) para acesso a todos os portais da administração pública de Portugal.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas de Igualdade]',
   'filho': '⚠️ LEI DA NACIONALIDADE PARA FILHOS NASCIDOS EM PORTUGAL (Nova Lei 2026):\n\n📅 NASCIDO ANTES de 19 Maio 2026 (Lei Antiga — Lei 2/2020):\n✅ Direito à nacionalidade SE um dos pais residia legalmente em Portugal há pelo menos 1 ANO à data do nascimento.\n\n📅 NASCIDO APÓS 19 Maio 2026 (Nova Lei — Lei 1/2026):\n✅ Direito à nacionalidade SE um dos pais residia legalmente em Portugal há pelo menos 5 ANOS à data do nascimento.\n\nOnde tratar: IRN — irn.justica.gov.pt\n[view:DOCUMENT_ASSISTANT:Ver Minutas de Nacionalidade]',
   'filho nasceu': '⚠️ LEI DA NACIONALIDADE PARA FILHOS NASCIDOS EM PORTUGAL (Nova Lei 2026):\n\n📅 NASCIDO ANTES de 19 Maio 2026: 1 ANO de residência dos pais.\n📅 NASCIDO APÓS 19 Maio 2026: 5 ANOS de residência dos pais.\n[view:DOCUMENT_ASSISTANT:Ver Minutas de Nacionalidade]',
@@ -284,16 +286,61 @@ export const getVerifiedKbKnowledge = async (prompt: string, language: string = 
   return null;
 };
 
-const getMiraLocalResponse = (prompt: string, language: string = 'PT'): string | null => {
+/**
+ * 🌐 DETECÇÃO & CONTRATO DE IDIOMA HIERÁRQUICO
+ * 1. Idioma detectado na mensagem atual (prevalência máxima)
+ * 2. Idioma da conversa recente
+ * 3. Idioma da interface (UI)
+ * 4. Fallback padrão: PT
+ */
+export const detectPromptLanguage = (prompt: string): 'PT' | 'EN' | 'ES' | 'FR' | null => {
   const p = prompt.toLowerCase();
-  const lang = (language || 'PT').toUpperCase();
+  
+  const ptScore = (p.match(/\b(não|está|para|com|tenho|fiquei|aguardando|manifestação|nacionalidade|obter|trabalho|quem|como|onde|quanto|tempo|anos|residência|minha|meu|meus|minhas|você|estou|quais|dúvida|notícias|pedir|preciso|precisa|carta|registo|quero|queria|saber|sobre|direitos|fazer|posso|pode|sou|somos|aqui|portugal|agendamento|conta|cartão|marcar)\b/gi) || []).length;
+  const esScore = (p.match(/\b(no|está|para|con|tengo|quedé|esperando|manifestación|nacionalidad|obtener|trabajo|quien|cómo|donde|cuánto|tiempo|años|residencia|mi|mis|usted|estoy|cuáles|duda|noticias|pedir|necesito|necesita|registro|quiero|quisiera|saber|sobre|derechos|hacer|puedo|puede|soy|somos|aquí|cita|tarjeta)\b/gi) || []).length;
+  const enScore = (p.match(/\b(the|is|are|for|with|have|stayed|waiting|nationality|get|work|who|how|where|how much|time|years|residence|my|you|which|doubt|news|need|visa|permit|want|know|about|rights|do|can|am|here|card|book)\b/gi) || []).length;
+  const frScore = (p.match(/\b(le|la|les|pour|avec|ai|suis|attendant|nationalité|obtenir|travail|qui|comment|où|combien|temps|ans|résidence|mon|mes|vous|quels|doute|nouvelles|besoin|veux|savoir|sur|droits|faire|peux|peut|ici|carte|rdv)\b/gi) || []).length;
+
+  if (ptScore > esScore && ptScore > enScore && ptScore > frScore) return 'PT';
+  if (esScore > ptScore && esScore > enScore && esScore > frScore) return 'ES';
+  if (enScore > ptScore && enScore > esScore && enScore > frScore) return 'EN';
+  if (frScore > ptScore && frScore > esScore && frScore > enScore) return 'FR';
+
+  return null;
+};
+
+export const resolveConversationLanguage = (prompt: string, historyLanguage?: string, uiLanguage: string = 'PT'): 'PT' | 'EN' | 'ES' | 'FR' => {
+  const detected = detectPromptLanguage(prompt);
+  if (detected) return detected;
+
+  if (historyLanguage && ['PT', 'EN', 'ES', 'FR'].includes(historyLanguage.toUpperCase())) {
+    return historyLanguage.toUpperCase() as 'PT' | 'EN' | 'ES' | 'FR';
+  }
+
+  if (uiLanguage && ['PT', 'EN', 'ES', 'FR'].includes(uiLanguage.toUpperCase())) {
+    return uiLanguage.toUpperCase() as 'PT' | 'EN' | 'ES' | 'FR';
+  }
+
+  return 'PT';
+};
+
+const hasWord = (text: string, wordOrPhrase: string): boolean => {
+  const escaped = wordOrPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // Suporte a limites de palavra unicode
+  const regex = new RegExp(`(^|[^a-záàâãéèêíïóôõöúçñ])${escaped}(?=[^a-záàâãéèêíïóôõöúçñ]|$)`, 'iu');
+  return regex.test(text);
+};
+
+export const getMiraLocalResponse = (prompt: string, language: string = 'PT', historyLang?: string): string => {
+  const p = prompt.toLowerCase().trim();
+  const lang = resolveConversationLanguage(prompt, historyLang, language);
 
   // 🛡️ DISCLAIMER PRIORITÁRIO: Perguntas sobre aconselhamento jurídico, assessoria, cobrança/vender serviços
   const isLegalOrAdvisoryQuery = [
     'aconselhamento', 'juridico', 'jurídico', 'advogado', 'advogados', 'assessoria', 'pagar', 'pagamento',
     'vender', 'consulta', 'consultoria', 'legal advice', 'lawyer', 'advisory', 'asesoramiento',
     'asesoría', 'conseil juridique', 'cobram', 'preço', 'preco', 'custa', 'serviço pago', 'servicos pagos'
-  ].some(k => p.includes(k));
+  ].some(k => hasWord(p, k));
 
   if (isLegalOrAdvisoryQuery) {
     if (lang === 'EN') {
@@ -309,12 +356,270 @@ const getMiraLocalResponse = (prompt: string, language: string = 'PT'): string |
   const kb = lang === 'EN' ? MIRA_LOCAL_KB_EN :
              lang === 'ES' ? MIRA_LOCAL_KB_ES :
              lang === 'FR' ? MIRA_LOCAL_KB_FR : MIRA_LOCAL_KB;
-  
-  const sortedKeys = Object.keys(kb).sort((a, b) => b.length - a.length);
-  for (const key of sortedKeys) {
-    if (key !== 'default' && p.includes(key)) return kb[key];
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧭 HIERARQUIA DE INTENÇÕES (NÍVEL 1: FRASES ESPECÍFICAS)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const specificPhrases = [
+    'visto de procura de trabalho', 'visto procura de trabalho', 'procura de trabalho',
+    'visado de búsqueda de trabajo', 'visado busqueda de trabajo', 'job seeker visa', 'visa recherche d\'emploi',
+    'promessa de contrato de trabalho', 'promessa de contrato', 'promessa de trabalho', 'contrato de trabalho',
+    'lei da nacionalidade', 'tempo de espera nacionalidade', 'nacionalidade 5 anos', 'tempo de manifestacao conta',
+    'reagrupamento familiar', 'estatuto de igualdade', 'direitos iguais', 'cartao de cidadao para estrangeiro',
+    'cartao de cidadao', 'atestado de residencia', 'atestado de residência', 'comprovativo de morada',
+    'junta de freguesia', 'termo de responsabilidade', 'via verde empresas', 'via verde', 'tech visa',
+    'visto d1', 'visto d2', 'visto d3', 'visto d7', 'visto d8', 'visto cplp', 'visto de estudante',
+    'salario liquido', 'salário líquido', 'recibos verdes', 'custo de vida', 'atestado multiuso'
+  ];
+
+  for (const phrase of specificPhrases) {
+    if (hasWord(p, phrase) && kb[phrase]) {
+      return kb[phrase];
+    }
   }
-  return kb['default'] || null;
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧭 HIERARQUIA DE INTENÇÕES (NÍVEL 2: COMPOSTOS & CONTEXTO)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Caso A: Nacionalidade + Manifestação / Tempo / 5 anos
+  if ((hasWord(p, 'nacionalidade') || hasWord(p, 'cidadania') || hasWord(p, 'nacionalidad') || hasWord(p, 'nationality')) &&
+      (hasWord(p, 'manifestação') || hasWord(p, 'manifestacao') || hasWord(p, 'aima') || hasWord(p, 'tempo') || hasWord(p, 'anos') || hasWord(p, 'espera') || hasWord(p, 'contar') || hasWord(p, 'conta'))) {
+    if (kb['lei da nacionalidade']) return kb['lei da nacionalidade'];
+    if (kb['cidadania']) return kb['cidadania'];
+  }
+
+  // Caso B / C: Visto D1 / Promessa / IEFP
+  if ((hasWord(p, 'd1') || hasWord(p, 'promessa') || hasWord(p, 'proposta') || hasWord(p, 'contrato') || hasWord(p, 'trabalho')) &&
+      (hasWord(p, 'visto') || hasWord(p, 'consulado') || hasWord(p, 'iefp') || hasWord(p, 'carta') || hasWord(p, 'empresa'))) {
+    if (hasWord(p, 'promessa') && kb['promessa de contrato']) return kb['promessa de contrato'];
+    if (kb['visto d1']) return kb['visto d1'];
+  }
+
+  // Procura de trabalho / VFS
+  if ((hasWord(p, 'procura') || hasWord(p, 'busqueda') || hasWord(p, 'seeker')) &&
+      (hasWord(p, 'trabalho') || hasWord(p, 'trabajo') || hasWord(p, 'visto') || hasWord(p, 'vfs') || hasWord(p, 'salários') || hasWord(p, 'salarios') || hasWord(p, 'iefp'))) {
+    if (kb['visto de procura de trabalho']) return kb['visto de procura de trabalho'];
+    if (kb['procura de trabalho']) return kb['procura de trabalho'];
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧭 HIERARQUIA DE INTENÇÕES (NÍVEL 3: TERMOS INDIVIDUAIS COM \b)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const singleTokens = Object.keys(kb)
+    .filter(k => k !== 'default')
+    .sort((a, b) => b.length - a.length);
+
+  for (const token of singleTokens) {
+    if (hasWord(p, token)) {
+      return kb[token];
+    }
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🛡️ NÍVEL 4: RESPOSTA SEGURA DE CLARIFICAÇÃO (NÃO INVENTA)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (lang === 'EN') {
+    return "I could not confidently identify the specific topic of your question. Could you please clarify if you are asking about Visas (D1, Job Seeker, D7, CPLP), AIMA Residence Permits, NIF/NISS, or Portuguese Nationality?\n[view:DASHBOARD:Explore MIRA Modules]";
+  } else if (lang === 'ES') {
+    return "No pude identificar con seguridad el tema específico de tu consulta. ¿Podrías aclarar si te refieres a Visados (D1, Búsqueda de Trabajo, D7, CPLP), Residencia en AIMA, NIF/NISS o Nacionalidad Portuguesa?\n[view:DASHBOARD:Explorar Módulos MIRA]";
+  } else if (lang === 'FR') {
+    return "Je n'ai pas pu identifier avec certitude le sujet précis de votre question. Pourriez-vous préciser s'il s'agit de Visas (D1, Recherche d'emploi, D7, CPLP), Titre de Séjour AIMA, NIF/NISS ou Nationalité Portugaise ?\n[view:DASHBOARD:Explorer les Modules MIRA]";
+  }
+
+  return "Não consegui identificar com segurança o tema específico da tua pergunta. Podes esclarecer se estás a perguntar sobre Vistos (D1, Procura de Trabalho, D7, CPLP), Título de Residência AIMA, NIF/NISS ou Nacionalidade Portuguesa?\n[view:DASHBOARD:Explorar Módulos do MIRA]";
+};
+
+const getGreetingResponse = (prompt: string, language: string = 'PT'): string | null => {
+  const p = prompt.toLowerCase();
+  const lang = resolveConversationLanguage(prompt, undefined, language);
+  const kb = lang === 'EN' ? MIRA_LOCAL_KB_EN :
+             lang === 'ES' ? MIRA_LOCAL_KB_ES :
+             lang === 'FR' ? MIRA_LOCAL_KB_FR : MIRA_LOCAL_KB;
+  
+  if (hasWord(p, 'olá') || hasWord(p, 'ola') || hasWord(p, 'oi') || hasWord(p, 'bom dia') || hasWord(p, 'boa tarde') || hasWord(p, 'boa noite')) {
+    return kb['olá'] || kb['hello'] || kb['bonjour'] || kb['hola'] || null;
+  }
+  if (hasWord(p, 'hello') || hasWord(p, 'hi') || hasWord(p, 'good morning') || hasWord(p, 'good evening')) {
+    return MIRA_LOCAL_KB_EN['hello'] || MIRA_LOCAL_KB_EN['hi'] || null;
+  }
+  if (hasWord(p, 'hola') || hasWord(p, 'buenos dias') || hasWord(p, 'buenas tardes')) {
+    return MIRA_LOCAL_KB_ES['hola'] || null;
+  }
+  if (hasWord(p, 'bonjour') || hasWord(p, 'salut') || hasWord(p, 'bonsoir')) {
+    return MIRA_LOCAL_KB_FR['bonjour'] || MIRA_LOCAL_KB_FR['salut'] || null;
+  }
+  return null;
+};
+
+export interface SafeProfileContext {
+  language?: string;
+  firstName?: string;
+  district?: string;
+  nationalityGroup?: string;
+  completedStations?: string[];
+  activeGoal?: string;
+}
+
+export const generateAssistantResponseV45 = async (
+  prompt: string, 
+  history: any[] = [], 
+  language: string = 'PT', 
+  action: string = 'chat',
+  profileContext?: SafeProfileContext
+) => {
+  try {
+    if (!prompt || !prompt.trim()) return { text: "", source: 'local_fallback' as const, success: true };
+
+    const p = prompt.trim();
+    const pLower = p.toLowerCase();
+    const resolvedLang = resolveConversationLanguage(p, undefined, language);
+
+    // ⚡ Telemetria
+    try { analytics.track('ai_query', 'system', 'chat', { promptLength: p.length }); } catch (e) {}
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🟢 SHORTCIRCUIT: SAUDAÇÕES → SEM GEMINI (E20)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (action === 'chat') {
+      const isGreeting = GREETING_PATTERNS.some(g =>
+        pLower === g || pLower.startsWith(g + ' ') || pLower.startsWith(g + '!')
+      );
+      if (isGreeting) {
+        const localResp = getGreetingResponse(p, resolvedLang);
+        if (localResp) {
+          console.log('⚡ [MIRA CHAT] source=local_fallback (greeting shortcircuit)');
+          return { 
+            text: localResp, 
+            source: 'local_fallback' as const,
+            success: true, 
+            version: 'SHORTCIRCUIT_GREETING', 
+            hydration: 0, 
+            perf: '0ms' 
+          };
+        }
+      }
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🧠 PIPE-3: SABER IA (ai_knowledge) → kbContext selectivo
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const verifiedKb = action === 'chat' ? await getVerifiedKbKnowledge(p, resolvedLang) : null;
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🔵 SESSION CACHE: reutilizar se válido
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (action === 'chat') {
+      const ctxHash = buildContextHash(
+        profileContext?.completedStations || [],
+        profileContext?.district || '',
+        resolvedLang
+      );
+      const cached = cacheGet(p, ctxHash, _currentKbVersion);
+      if (cached) {
+        console.log(`⚡ [MIRA CACHE] Cache hit (${cached.intentType})`);
+        return { 
+          text: cached.response, 
+          source: 'local_fallback' as const,
+          success: true, 
+          version: 'SESSION_CACHE_HIT', 
+          hydration: 0, 
+          perf: '0ms' 
+        };
+      }
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🗜️ HISTÓRICO COMPACTO (máx. 8 turnos selectivos)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const rawHistory = (history || [])
+      .filter(h => (h.content || h.text || h.message))
+      .map(h => ({
+        role: (h.role === 'assistant' || h.role === 'model') ? 'model' : 'user',
+        content: (h.content || h.text || h.message || '').trim()
+      }));
+
+    const sanitizedHistory = compactHistory(rawHistory);
+    console.log(`🧠 [MIRA AGENT] Histórico compacto: ${sanitizedHistory.length}/${rawHistory.length} turnos. SABER IA: ${verifiedKb ? verifiedKb.length + ' chars' : 'sem resultado'}`);
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🤖 GEMINI PRIMARY_LLM — Tentativa prioritária
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
+    const response = await fetch(`${apiUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        prompt: p, 
+        history: sanitizedHistory,
+        action, 
+        language: resolvedLang,
+        kbContext: verifiedKb || undefined,
+        profileContext: profileContext || undefined
+      })
+    });
+
+    let chatSource: 'gemini' | 'local_fallback' = 'gemini';
+    let textResult = '';
+    let responseModel = 'gemini-2.5-flash';
+
+    if (response.ok) {
+      const data = await response.json().catch(() => ({}));
+      if (data && data.success && data.text && !data.fallbackRequired) {
+        chatSource = 'gemini';
+        textResult = data.text;
+        responseModel = data.model || 'gemini-2.5-flash';
+        console.log(`⚡ [MIRA CHAT] source=gemini model=${responseModel}`);
+      } else {
+        chatSource = 'local_fallback';
+        console.warn(`⚠️ [MIRA CHAT] source=local_fallback (Gemini fallback flag: ${data?.errorType || data?.error || 'unspecified'})`);
+        textResult = getMiraLocalResponse(p, resolvedLang);
+      }
+    } else {
+      chatSource = 'local_fallback';
+      console.warn(`⚠️ [MIRA CHAT] source=local_fallback (HTTP ${response.status})`);
+      textResult = getMiraLocalResponse(p, resolvedLang);
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 💾 Guardar na session cache
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (action === 'chat' && textResult) {
+      const intentType = detectIntentType(p);
+      const ctxHash = buildContextHash(
+        profileContext?.completedStations || [],
+        profileContext?.district || '',
+        resolvedLang
+      );
+      const coveredTopics = p.toLowerCase().split(/\s+/).filter(w => w.length > 3).slice(0, 5);
+      const sourceTopics = verifiedKb ? [verifiedKb.substring(0, 30)] : [];
+
+      cacheSet(p, textResult, ctxHash, _currentKbVersion, intentType, coveredTopics, sourceTopics);
+    }
+
+    return { 
+      text: textResult, 
+      source: chatSource,
+      success: true, 
+      version: chatSource === 'gemini' ? responseModel : 'LOCAL_FALLBACK', 
+      hydration: 0, 
+      perf: '0ms' 
+    };
+
+  } catch (err: any) {
+    console.error('🚨 [MIRA CHAT] Service exception:', err.message);
+
+    const resolvedLang = resolveConversationLanguage(prompt, undefined, language);
+    const localAnswer = getMiraLocalResponse(prompt, resolvedLang);
+    console.log('🧠 [MIRA CHAT] source=local_fallback (exception fallback)');
+    return { 
+      text: localAnswer, 
+      source: 'local_fallback' as const,
+      success: true, 
+      version: 'LOCAL_FALLBACK', 
+      hydration: 1, 
+      perf: '0ms' 
+    };
+  }
 };
 
 const normalizePromptKey = (str: string) => {
@@ -370,166 +675,7 @@ const safeBtoa = (str: string) => {
   }
 };
 
-export interface SafeProfileContext {
-  language?: string;
-  firstName?: string;
-  district?: string;
-  nationalityGroup?: string;
-  completedStations?: string[];
-  activeGoal?: string;
-}
 
-const getGreetingResponse = (prompt: string, language: string = 'PT'): string | null => {
-  const p = prompt.toLowerCase();
-  const lang = (language || 'PT').toUpperCase();
-  const kb = lang === 'EN' ? MIRA_LOCAL_KB_EN :
-             lang === 'ES' ? MIRA_LOCAL_KB_ES :
-             lang === 'FR' ? MIRA_LOCAL_KB_FR : MIRA_LOCAL_KB;
-  for (const [key, response] of Object.entries(kb)) {
-    if (key !== 'default' && p.includes(key)) return response;
-  }
-  return kb['olá'] || kb['hello'] || kb['bonjour'] || kb['hola'] || null;
-};
-
-export const generateAssistantResponseV45 = async (
-  prompt: string, 
-  history: any[] = [], 
-  language: string = 'PT', 
-  action: string = 'chat',
-  profileContext?: SafeProfileContext
-) => {
-  try {
-    if (!prompt || !prompt.trim()) return { text: "", success: true };
-
-    const lang = (language || 'PT').toUpperCase();
-    const p = prompt.trim();
-    const pLower = p.toLowerCase();
-
-    // ⚡ Telemetria
-    try { analytics.track('ai_query', 'system', 'chat', { promptLength: p.length }); } catch (e) {}
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🟢 E20 — SHORTCIRCUIT: SAUDAÇÕES → SEM GEMINI
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    if (action === 'chat') {
-      const isGreeting = GREETING_PATTERNS.some(g =>
-        pLower === g || pLower.startsWith(g + ' ') || pLower.startsWith(g + '!')
-      );
-      if (isGreeting) {
-        const localResp = getGreetingResponse(p, language);
-        if (localResp) {
-          console.log('⚡ [MIRA CACHE] Saudação resolvida sem Gemini (E20).');
-          return { text: localResp, success: true, version: 'SHORTCIRCUIT_GREETING', hydration: 0, perf: '0ms' };
-        }
-      }
-    }
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🧠 PIPE-3: SABER IA (ai_knowledge) → kbContext selectivo
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    const verifiedKb = action === 'chat' ? await getVerifiedKbKnowledge(p, language) : null;
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🔵 E15/E16/E21 — SESSION CACHE: reutilizar se válido
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    if (action === 'chat') {
-      const ctxHash = buildContextHash(
-        profileContext?.completedStations || [],
-        profileContext?.district || '',
-        lang
-      );
-      const cached = cacheGet(p, ctxHash, _currentKbVersion);
-      if (cached) {
-        console.log(`⚡ [MIRA CACHE] Cache hit (${cached.intentType}) — sem chamada Gemini (E15).`);
-        return { text: cached.response, success: true, version: 'SESSION_CACHE_HIT', hydration: 0, perf: '0ms' };
-      }
-    }
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🗜️ E22 — HISTÓRICO COMPACTO (máx. 8 turnos selectivos)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    const rawHistory = (history || [])
-      .filter(h => (h.content || h.text || h.message))
-      .map(h => ({
-        role: (h.role === 'assistant' || h.role === 'model') ? 'model' : 'user',
-        content: (h.content || h.text || h.message || '').trim()
-      }));
-
-    const sanitizedHistory = compactHistory(rawHistory); // máx. 8 turnos
-    console.log(`🧠 [MIRA AGENT] Histórico compacto: ${sanitizedHistory.length}/${rawHistory.length} turnos. SABER IA: ${verifiedKb ? verifiedKb.length + ' chars' : 'sem resultado'}`);
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🤖 GEMINI — apenas quando necessário
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
-    const response = await fetch(`${apiUrl}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        prompt: p, 
-        history: sanitizedHistory,
-        action, 
-        language,
-        kbContext: verifiedKb || undefined,
-        profileContext: profileContext || undefined
-      })
-    });
-
-    if (!response.ok) throw new Error(`API Error: ${response.status}`);
-    const data = await response.json();
-
-    const textFallback = language === 'EN' ? "We are working on some improvements to the chat to offer you a better experience. We will be right back!" :
-                         language === 'ES' ? "Estamos trabajando en algunas mejoras en el chat para ofrecerte una mejor experiencia. ¡Volvemos pronto!" :
-                         language === 'FR' ? "Nous travaillons sur quelques améliorations du chat pour vous offrir une meilleure expérience. Nous revenons très vite !" :
-                         "Estamos a trabalhar em algumas melhorias no chat para te oferecer uma melhor experiência. Voltamos já!";
-
-    const text = data?.text || textFallback;
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 💾 Guardar na session cache (E15/E16/E21)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    if (action === 'chat' && data?.text) {
-      const intentType = detectIntentType(p);
-      const ctxHash = buildContextHash(
-        profileContext?.completedStations || [],
-        profileContext?.district || '',
-        lang
-      );
-      // Extrair tópicos cobertos (keywords do prompt) para E16/E21
-      const coveredTopics = p.toLowerCase().split(/\s+/).filter(w => w.length > 3).slice(0, 5);
-      const sourceTopics = verifiedKb ? [verifiedKb.substring(0, 30)] : [];
-
-      cacheSet(p, text, ctxHash, _currentKbVersion, intentType, coveredTopics, sourceTopics);
-    }
-
-    return { 
-      text, 
-      success: true, 
-      version: data?.model || 'V2026_AGENTIC_AI', 
-      hydration: data?.h || 0,
-      perf: data?.p || '0ms'
-    };
-
-  } catch (err: any) {
-    console.error('🚨 MIRA SERVICE ERROR:', err.message);
-
-    // 🛡️ LOCAL KB FALLBACK — apenas quando a API falha (Fase D preservada)
-    if (action === 'chat') {
-      const localAnswer = getMiraLocalResponse(prompt, language);
-      if (localAnswer) {
-        console.log('🧠 [MIRA LOCAL KB] Fallback para a base de conhecimento local (servidor offline/erro)');
-        return { text: localAnswer, success: true, version: 'V3.1M_LOCAL_FALLBACK', hydration: 1, perf: '0ms' };
-      }
-    }
-
-    const textFallback = language === 'EN' ? "We are working on some improvements to the chat to offer you a better experience. We will be right back!" :
-                         language === 'ES' ? "Estamos trabajando en algunas mejoras en el chat para ofrecerte una mejor experiencia. ¡Volvemos pronto!" :
-                         language === 'FR' ? "Nous travaillons sur quelques améliorations du chat pour vous offrir une meilleure expérience. Nous revenons très vite !" :
-                         "Estamos a trabalhar em algumas melhorias no chat para te oferecer uma melhor experiência. Voltamos já!";
-
-    return { text: textFallback, success: false };
-  }
-};
 
 /**
  * TRADUTOR SNIPER (ECONOMIA DE TOKENS + CACHE LOCAL + FALLBACK TRIPLO BULLETPROOF)

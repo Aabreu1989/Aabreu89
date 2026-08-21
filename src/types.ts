@@ -342,11 +342,24 @@ export interface MapAlert {
   schedule?: string;
 }
 
+export type ChatResponseSource = 'gemini' | 'local_fallback';
+
+export interface ChatResult {
+  text: string;
+  source: ChatResponseSource;
+  success: boolean;
+  version?: string;
+  hydration?: number;
+  perf?: string;
+  error?: string;
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   text: string;
   timestamp: Date;
+  source?: ChatResponseSource;
   relatedArticles?: any[];
 }
 
