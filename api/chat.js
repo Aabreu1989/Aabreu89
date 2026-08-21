@@ -396,7 +396,7 @@ ${userProfileBlock}
         ? `Professional Translation: Translate the following text to ${lang}. Output ONLY the translated text, no comments or greetings.`
         : (SYSTEM_PROMPTS[lang] || SYSTEM_PROMPTS['PT']);
 
-    const modelId = isTranslate ? 'gemini-2.5-flash' : 'gemini-2.5-flash';
+    const modelId = 'gemini-2.0-flash';
     
     // 🧬 3. SMART HISTORY MERGER (V1.7M - Amanda Abreu Standards)
     let processedHistory = [];
