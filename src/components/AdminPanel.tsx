@@ -601,9 +601,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         <p className="text-[8px] font-bold text-indigo-300/60 mt-1.5 uppercase tracking-wider">Cálculo Ponderado (IA/Docs/Sims)</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-emerald-900/30 to-transparent border border-emerald-500/20 rounded-3xl">
-                                        <p className="text-[9px] font-black text-emerald-200/50 uppercase tracking-widest mb-2">Processos Ajudados</p>
+                                        <p className="text-[9px] font-black text-emerald-200/50 uppercase tracking-widest mb-2">Apoios Burocráticos Prestados</p>
                                         <p className="text-2xl font-black text-white">{(counts.processosAjudados ?? 0).toLocaleString()}</p>
-                                        <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Docs + Simulações DB</p>
+                                        <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Minutas + Simulações DB</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
                                         <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Taxa de Retenção</p>

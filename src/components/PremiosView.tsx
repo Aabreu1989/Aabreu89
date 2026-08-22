@@ -205,7 +205,7 @@ export default function PremiosView({ language: initialLanguage, onBack }: Premi
   }[lang];
 
   const formAnswers = {
-    impact: `O MIRA gerou um impacto social mensurável significativo em 2026: poupou um total de ${metrics?.tempo_poupado_horas.toLocaleString()} horas de atrito burocrático aos cidadãos migrantes, auxiliou na triagem de ${metrics?.processos_ajudados.toLocaleString()} processos legais e manteve o índice de transparência em ${metrics?.indice_transparencia}%. Contamos com ${metrics?.usuarios_ativos_mensais.toLocaleString()} utilizadores ativos e uma taxa de sucesso na resolução de trâmites de imigração de ${metrics?.taxa_resolucao_sucesso}%.`,
+    impact: `O MIRA gerou um impacto social mensurável significativo em 2026: poupou um total de ${metrics?.tempo_poupado_horas.toLocaleString()} horas de atrito burocrático aos cidadãos migrantes, prestou apoio em ${metrics?.processos_ajudados.toLocaleString()} operações burocráticas (minutas geradas e simulações fiscais/laborais) e manteve o índice de transparência em ${metrics?.indice_transparencia}%. Contamos com ${metrics?.usuarios_ativos_mensais.toLocaleString()} utilizadores ativos e uma taxa de sucesso na orientação de trâmites de ${metrics?.taxa_resolucao_sucesso}%.`,
     innovation: "O MIRA introduziu uma abordagem inovadora e descentralizada, combinando inteligência artificial de ponta contextualizada com a legislação europeia de imigração e soberania digital para o imigrante, eliminando intermediários desnecessários e reduzindo o congestionamento nos balcões públicos físicos.",
     scalability: `Altamente escalável: o rácio de utilizadores por suporte é extremamente eficiente, alcançando ${metrics?.usuarios_ativos_mensais.toLocaleString()} utilizadores ativos mensais com custos de servidores infraestruturais mínimos e expansível de forma modular para qualquer estado-membro da UE.`,
     sustainability: "Modelo de sustentabilidade híbrido baseado na prestação de métricas auditadas anónimas a observatórios de políticas públicas, integração B2B com entidades de acolhimento e investimento institucional em inovação social."
@@ -276,7 +276,7 @@ export default function PremiosView({ language: initialLanguage, onBack }: Premi
         <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {[
             { label: 'Horas Poupadas', value: `${metrics.tempo_poupado_horas.toLocaleString()}h`, sub: 'Burocracia evitada', icon: Clock, color: 'text-indigo-400' },
-            { label: 'Processos Assistidos', value: metrics.processos_ajudados.toLocaleString(), sub: 'Triagem legal concluída', icon: CheckCircle, color: 'text-emerald-400' },
+            { label: 'Apoios Burocráticos', value: metrics.processos_ajudados.toLocaleString(), sub: 'Minutas + Simulações', icon: CheckCircle, color: 'text-emerald-400' },
             { label: 'Utilizadores Ativos', value: metrics.usuarios_ativos_mensais.toLocaleString(), sub: 'MAU em crescimento', icon: Users, color: 'text-blue-400' },
             { label: 'Taxa de Resolução', value: `${metrics.taxa_resolucao_sucesso}%`, sub: 'Casos com sucesso', icon: TrendingUp, color: 'text-rose-400' },
             { label: 'Transparência', value: `${metrics.indice_transparencia}%`, sub: 'Mapeamento público', icon: Shield, color: 'text-amber-400' },
@@ -417,8 +417,8 @@ export default function PremiosView({ language: initialLanguage, onBack }: Premi
                   <p>Soma de utilizadores registados na base de dados Supabase com atividade verificada nos últimos 30 dias.</p>
                 </div>
                 <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-                  <span className="font-black text-emerald-400 uppercase block text-[10px]">Processos Legais Assistidos</span>
-                  <p>Soma de regularizações, emissões de NIF, NISS, número de utente SNS e minutas contratuais concluídas com auxílio do MIRA.</p>
+                  <span className="font-black text-emerald-400 uppercase block text-[10px]">Apoios Burocráticos Prestados</span>
+                  <p>Soma de minutas contratuais geradas, simulações fiscais/laborais (IRS, salário líquido) e wizards de orientação documental (NISS, SNS, NIF, CPLP) concluídos.</p>
                 </div>
                 <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
                   <span className="font-black text-indigo-400 uppercase block text-[10px]">Horas Poupadas (INE 2024)</span>
