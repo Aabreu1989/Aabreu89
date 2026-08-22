@@ -30,6 +30,57 @@ interface AdminPanelProps {
     onViewChange?: (view: any, params?: any) => void;
 }
 
+const getInitialDashboardCounts = () => {
+    try {
+        if (typeof window !== 'undefined') {
+            const stored = sessionStorage.getItem('mira_admin_dashboard_counts');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && typeof parsed === 'object' && parsed.users !== undefined) {
+                    return parsed;
+                }
+            }
+        }
+    } catch (_) {}
+    return { 
+        courses: { db: 0, prot: 0 }, 
+        services: { db: 0, prot: 0 }, 
+        users: 0, 
+        usersToday: 0, 
+        jobs: { db: 0, prot: 0 }, 
+        reports: 0, 
+        suggestions: 0, 
+        posts: 0, 
+        comments: 0, 
+        retentionRate: 0, 
+        returningUsers: 0, 
+        pwaMobileDownloads: 0, 
+        pwaComputerDownloads: 0, 
+        horasPoupadas: 0, 
+        processosAjudados: 0, 
+        aiQueries: 0, 
+        simulations: 0, 
+        downloads: 0, 
+        appAccesses: 0, 
+        totalInteractions: 0, 
+        totalLikes: 0 
+    };
+};
+
+const getInitialPeriodCounts = () => {
+    try {
+        if (typeof window !== 'undefined') {
+            const stored = sessionStorage.getItem('mira_admin_period_counts_24');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && typeof parsed === 'object' && parsed.newUsers !== undefined) {
+                    return parsed;
+                }
+            }
+        }
+    } catch (_) {}
+    return { newUsers: 0, newPosts: 0, newComments: 0, newJobs: 0, docDownloads: 0, appAccesses: 0, articleViews: 0, newAiQueries: 0 };
+};
 
 const confirmAction = (msg: string) => {
     return window.confirm(msg);
@@ -121,56 +172,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const [loadingGamification, setLoadingGamification] = useState(false);
     const fetchingTabsRef = useRef<Set<string>>(new Set());
     const realtimeDebounceTimerRef = useRef<any>(null);
-    const [counts, setCounts] = useState<{
-        courses: { db: number; prot: number };
-        services: { db: number; prot: number };
-        users: number;
-        usersToday: number;
-        jobs: { db: number; prot: number };
-        reports: number;
-        suggestions: number;
-        posts: number;
-        comments: number;
-        retentionRate: number;
-        returningUsers: number;
-        pwaMobileDownloads?: number;
-        pwaComputerDownloads?: number;
-        horasPoupadas?: number;
-        processosAjudados?: number;
-        aiQueries?: number;
-        simulations?: number;
-        downloads?: number;
-        appAccesses?: number;
-        totalInteractions?: number;
-        totalLikes?: number;
-    }>({ 
-        courses: { db: 0, prot: 0 }, 
-        services: { db: 0, prot: 0 }, 
-        users: 0, 
-        usersToday: 0,
-        jobs: { db: 0, prot: 0 }, 
-        reports: 0,
-        suggestions: 0,
-        posts: 0,
-        comments: 0,
-        retentionRate: 0,
-        returningUsers: 0,
-        pwaMobileDownloads: 0,
-        pwaComputerDownloads: 0,
-        horasPoupadas: 0,
-        processosAjudados: 0,
-        aiQueries: 0,
-        simulations: 0,
-        downloads: 0,
-        appAccesses: 0,
-        totalInteractions: 0,
-        totalLikes: 0
-    });
+    const [counts, setCounts] = useState(getInitialDashboardCounts);
     const [userSearchTerm, setUserSearchTerm] = useState('');
     const [knowledgeSearch, setKnowledgeSearch] = useState('');
     const [isSyncing, setIsSyncing] = useState(false);
     const [dashboardPeriod, setDashboardPeriod] = useState<24 | 168 | 720>(24);
-    const [periodCounts, setPeriodCounts] = useState<{ newUsers: number; newPosts: number; newComments: number; newJobs: number; docDownloads: number; appAccesses: number; articleViews: number; newAiQueries: number }>({ newUsers: 0, newPosts: 0, newComments: 0, newJobs: 0, docDownloads: 0, appAccesses: 0, articleViews: 0, newAiQueries: 0 });
+    const [periodCounts, setPeriodCounts] = useState(getInitialPeriodCounts);
     const [userSortBy, setUserSortBy] = useState<'name' | 'created' | 'status'>('created');
     const [userFilterStatus, setUserFilterStatus] = useState<'all' | 'active' | 'blocked' | 'verified'>('all');
 
@@ -196,7 +203,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const [userFilterCounts, setUserFilterCounts] = useState<{ total: number; active: number; blocked: number; verified: number }>({ total: 0, active: 0, blocked: 0, verified: 0 });
     const { showToast } = useToast();
 
-    // 🛡️ SNIPER CACHE & PROGRESSIVE TARGETED LOADER (PATCH 4E)
+    // 🛡️ SNIPER CACHE & PROGRESSIVE TARGETED LOADER (PATCH 4E.1)
     const loadData = useCallback(async (force = false, targetTab?: string) => {
         const tab = targetTab || activeTab;
         const now = Date.now();
@@ -233,17 +240,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             } else if (tab === 'dashboard') {
                 setLoadingDashboard(true);
-                // 1. Dados rápidos de utilizadores e IA primeiro
-                const fastTasks = [
-                    adminService.fetchUsers(0, 5).then(res => setUsers(res.users || [])),
-                    adminService.fetchAIKnowledge(5, true).then(kb => setAIKnowledge(kb)),
-                    adminService.fetchSyncStatusForPeriod(dashboardPeriod).then(p => {
-                        if (p) setPeriodCounts(p);
-                    })
-                ];
-                await Promise.allSettled(fastTasks);
+                
+                // 🚀 DASHBOARD PROGRESSIVO PARALELO:
+                // 1. Dados rápidos disparam imediatamente sem bloquear
+                adminService.fetchUsers(0, 5).then(res => {
+                    if (res?.users) setUsers(res.users);
+                });
+                adminService.fetchAIKnowledge(5, true).then(kb => {
+                    if (kb) setAIKnowledge(kb);
+                });
+                adminService.fetchSyncStatusForPeriod(dashboardPeriod).then(p => {
+                    if (p) {
+                        setPeriodCounts(p);
+                        try {
+                            sessionStorage.setItem(`mira_admin_period_counts_${dashboardPeriod}`, JSON.stringify(p));
+                        } catch (_) {}
+                    }
+                });
 
-                // 2. Dados pesados de sync-status em segundo plano
+                // 2. Métricas pesadas de sync-status correm em paralelo no background e atualizam o estado assim que prontas
                 adminService.fetchSyncStatus().then(status => {
                     if (status) {
                         const newCounts = { 
@@ -270,6 +285,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             aiQueries: status.aiQueries || 0
                         };
                         setCounts(newCounts);
+                        try {
+                            sessionStorage.setItem('mira_admin_dashboard_counts', JSON.stringify(newCounts));
+                        } catch (_) {}
                         setDataCache(prev => ({ ...prev, dashboard: { timestamp: Date.now(), data: newCounts } }));
                     }
                 }).finally(() => {
@@ -324,7 +342,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             }
         }, 15000);
         return () => clearInterval(interval);
-    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, loadData]);
+    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod, loadData]);
 
     // 🛡️ MIRA REAL-TIME: Escuta eventos locais e Postgres com debounce seguro de 500ms
     useEffect(() => {
@@ -358,14 +376,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             supabase.removeChannel(channel);
         };
     }, [loadData]);
-
-    useEffect(() => {
-        if (activeTab === 'dashboard') {
-            adminService.fetchSyncStatusForPeriod(dashboardPeriod).then(p => {
-                if (p) setPeriodCounts(p);
-            });
-        }
-    }, [dashboardPeriod, activeTab]);
 
     const handleAction = async (action: () => Promise<void>, actionId?: string, optimisticUpdate?: () => void) => {
         if (processing) return;
