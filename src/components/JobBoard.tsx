@@ -231,7 +231,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState(t('jobs_all_districts', language));
   const [selectedWorkTopic, setSelectedWorkTopic] = useState('Todos');
-  const [selectedSource, setSelectedSource] = useState(t('jobs_all_sources', language));
   const [selectedDateRange, setSelectedDateRange] = useState('all');
   const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(initialQuickFilter || (initialTab === 'pcd' ? 'pcd' : null));
   // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms) - Strictly <= 90 days
@@ -392,7 +391,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     searchQuery.trim() ||
     selectedCity !== t('jobs_all_districts', language) ||
     selectedWorkTopic !== 'Todos' ||
-    selectedSource !== t('jobs_all_sources', language) ||
     selectedDateRange !== 'all' ||
     selectedQuickFilter
   );
@@ -444,13 +442,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         query = query.eq('work_topic', selectedWorkTopic);
       }
 
-      if (selectedSource && selectedSource !== t('jobs_all_sources', language)) {
-        query = query.eq('source_name', selectedSource);
-      }
-
       if (searchQuery.trim()) {
         const q = searchQuery.trim();
-        query = query.or(`title.ilike.%${q}%,source_name.ilike.%${q}%,location.ilike.%${q}%`);
+        query = query.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
       }
 
       if (selectedDateRange === '24h') {
@@ -522,21 +516,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
   useEffect(() => {
     fetchJobs();
-  }, [searchQuery, selectedCity, selectedWorkTopic, selectedSource, selectedDateRange, selectedQuickFilter, currentPage]);
-
-  const sources = [
-    t('jobs_all_sources', language),
-    'Net-Empregos',
-    'Randstad Portugal',
-    'Foundever Portugal',
-    'RemoteOK',
-    'We Work Remotely',
-    'EDP (Carreiras)',
-    'Leroy Merlin',
-    'Michael Page Portugal',
-    'TAP Air Portugal',
-    'Teleperformance Portugal'
-  ];
+  }, [searchQuery, selectedCity, selectedWorkTopic, selectedDateRange, selectedQuickFilter, currentPage]);
 
   const totalEffectiveCount = filteredTotalCount !== null ? filteredTotalCount : (totalPlatformJobs || 0);
   const totalPages = Math.max(1, Math.ceil(totalEffectiveCount / JOBS_PER_PAGE));
@@ -570,7 +550,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     setSearchQuery('');
     setSelectedCity(t('jobs_all_districts', language));
     setSelectedWorkTopic('Todos');
-    setSelectedSource(t('jobs_all_sources', language));
     setSelectedDateRange('all');
     setSelectedQuickFilter(null);
     setCurrentPage(1);
@@ -585,27 +564,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       return true;
     });
   }, []);
-
-  const availableSources = React.useMemo(() => {
-    const defaultSources = [
-      'Net-Empregos',
-      'Michael Page',
-      'beBee Jobs Portugal',
-      'Expresso Emprego',
-      'Plataforma Portuguesa das ONGD',
-      'IEFP',
-      'BEP - Bolsa de Emprego Público',
-      'Randstad Portugal',
-      'Landing.jobs',
-      'IT Jobs',
-      'Carga de Trabalhos',
-      'We Work Remotely',
-      'RemoteOK'
-    ];
-    const presentSources = jobs.map(j => j.sourceName).filter(Boolean);
-    const combined = Array.from(new Set([...defaultSources, ...presentSources]));
-    return combined.sort();
-  }, [jobs]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-sans">
@@ -822,8 +780,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               </div>
             )}
 
-            {/* Advanced Filters Grid ( responsive 3-column grid with Area, Location and Protected Source dropdowns ) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-4 rounded-[2rem] border border-slate-100 shadow-sm">
+            {/* Advanced Filters Grid ( responsive 2-column grid with Area and Location dropdowns ) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-4 rounded-[2rem] border border-slate-100 shadow-sm">
               {/* Category Select */}
               <div className="relative space-y-2 group cursor-pointer">
                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-1.5">
@@ -864,24 +822,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                     ))}
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-mira-orange transition-colors" size={14} />
-                </div>
-              </div>
-
-              {/* Source Select */}
-              <div className="relative space-y-2 group cursor-pointer">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-1.5"><Building2 size={12} className="text-indigo-500" /> {language === 'EN' ? 'Protected Source' : language === 'ES' ? 'Fuente Protegida' : language === 'FR' ? 'Source Protégée' : 'Fonte Protegida'}</label>
-                <div className="relative">
-                  <select
-                    value={selectedSource}
-                    onChange={(e) => setSelectedSource(e.target.value)}
-                    className="w-full pl-4 pr-10 py-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest appearance-none outline-none focus:ring-2 focus:ring-indigo-500/20 border border-transparent focus:border-indigo-500/30 text-slate-700 transition-all cursor-pointer"
-                  >
-                    <option value={t('jobs_all_sources', language)}>🏛️ {t('jobs_all_sources', language)}</option>
-                    {availableSources.map(source => (
-                      <option key={source} value={source}>{source}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-indigo-500 transition-colors" size={14} />
                 </div>
               </div>
             </div>
