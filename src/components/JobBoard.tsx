@@ -283,6 +283,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           const { count } = await supabase
             .from('job_posts')
             .select('id', { count: 'exact', head: true })
+            .eq('is_active', true)
             .eq('work_topic', topic);
           return [topic, count || 0];
         })
@@ -409,9 +410,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         { count: recentCount },
         { count: prevCount }
       ] = await Promise.all([
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }),
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo),
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).gte('created_at', fourteenDaysAgo).lt('created_at', sevenDaysAgo)
+        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', sevenDaysAgo),
+        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', fourteenDaysAgo).lt('created_at', sevenDaysAgo)
       ]);
 
       if (totalCount !== null && totalCount !== undefined) {
@@ -428,7 +429,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
       let query = supabase
         .from('job_posts')
-        .select('id, title, location, source_name, source_url, created_at, category, work_topic', { count: 'exact' });
+        .select('id, title, location, source_name, source_url, created_at, category, work_topic', { count: 'exact' })
+        .eq('is_active', true);
 
       if (selectedCity && selectedCity !== t('jobs_all_districts', language)) {
         if (selectedCity.toLowerCase() === 'remoto') {

@@ -113,11 +113,55 @@ export const TOTAL_CATALOGED_SOURCES = 60;
 export const DIRECT_PORTAL_SOURCES_COUNT = 32;
 export const RESTRICTED_PORTAL_SOURCES_COUNT = 20;
 
-// ─── PARSERS SERVER-SIDE ──────────────────────────────────────────────────────
+// ─── GUARDS & CLASSIFICADOR PORTUGAL-FIRST (FASE A) ──────────────────────────
 
-// ─── PARSERS SERVER-SIDE EM CASCATA ──────────────────────────────────────────
+export const GENERIC_URL_PATTERNS = [
+  /\/careers\/?$/i,
+  /\/jobs\/?$/i,
+  /\/job-search\/?$/i,
+  /\/search\/?$/i,
+  /\/ofertas\/?$/i,
+  /\/ofertas-emprego\/?$/i,
+  /\/recrutamento\/?$/i,
+  /\/carreiras\/?$/i,
+  /\/vagas\/?$/i,
+  /\/feed\/?$/i,
+  /\/rss/i,
+  /\/pt\/jobs\/?$/i,
+  /\/oportunidades\/?$/i,
+  /\/oportunidades-de-emprego-e-voluntariado\/?$/i
+];
 
-const PT_DISTRICTS_REGEX = [
+export const GENERIC_TITLES_REGEX = /^(?:ofertas?\s+de\s+emprego|careers?|carreiras?|trabalhe\s+connosco|trabalhe\s+conosco|ver\s+vagas?|oportunidades?\s+de\s+emprego|job\s+search|vagas?|recrutamento|send\s+you\s+cv.*|link\s+para\s+ocde|junte-se\s+a\s+n[oó]s|candidaturas?|bolsa\s+de\s+emprego|portal\s+de\s+emprego|empregos?)$/i;
+
+export const FOREIGN_PATTERNS = [
+  /\b(berlin|munich|frankfurt|hamburg|cologne|germany|deutschland|alemanha)\b/i,
+  /\b(madrid|barcelona|valencia|seville|malaga|málaga|bilbao|spain|españa|espanha)\b/i,
+  /\b(paris|lyon|marseille|toulouse|bordeaux|france|frança|francophone)\b/i,
+  /\b(london|manchester|birmingham|hounslow|uk only|uk remote|united kingdom|reino unido|england|scotland)\b/i,
+  /\b(cairo|luxor|egypt|egito)\b/i,
+  /\b(bogota|bogotá|medellin|cali|colombia|colômbia)\b/i,
+  /\b(quezon|pasig|manila|philippines|filipinas)\b/i,
+  /\b(istanbul|ankara|turkey|turquia)\b/i,
+  /\b(budapest|hungary|hungria)\b/i,
+  /\b(warsaw|krakow|poland|polónia|polonia)\b/i,
+  /\b(sumter|south carolina|carlsbad|new york|california|texas|florida|usa|us only|us time zones|united states|estados unidos)\b/i,
+  /\b(são paulo|sao paulo|rio de janeiro|curitiba|belo horizonte|brasil|brazil)\b/i,
+  /\b(toronto|vancouver|montreal|new brunswick|canada only|canada|canadá)\b/i,
+  /\b(milan|rome|italy|itália|italia)\b/i,
+  /\b(amsterdam|rotterdam|netherlands|holanda)\b/i,
+  /\b(dublin|cork|ireland|irlanda)\b/i,
+  /\b(geneva|zurich|switzerland|suíça|suica)\b/i,
+  /\b(sofia|varna|bulgaria|búlgaria)\b/i,
+  /\b(perth|bendigo|sydney|melbourne|australia|austrália|anz)\b/i,
+  /\b(hamilton city|auckland|new zealand|nova zelândia)\b/i,
+  /\b(paramaribo|suriname)\b/i,
+  /\b(antananarivo|madagascar)\b/i,
+  /\b(us|uk|ca|de|es|fr|it|nl|eg|ph|co|tr|hu|pl|br|mg|au|nz)\s*only\b/i,
+  /[,\s(](?:EG|US|PH|HU|TR|CO|GB|DE|ES|FR|CA|BR|MG|AU|NZ|SR|BG)[,\s)]/i
+];
+
+export const PT_DISTRICTS_REGEX = [
   { name: 'Lisboa', patterns: [/\blisboa\b/i, /\blisbon\b/i, /\bcais do sodr/i, /\bsintra\b/i, /\bcascais\b/i, /\bloures\b/i, /\bamadora\b/i, /\boeiras\b/i, /\bmafra\b/i, /\bvila franca de xira\b/i, /\btorres vedras\b/i] },
   { name: 'Porto', patterns: [/\bporto\b/i, /\boporto\b/i, /\bgaia\b/i, /\bmatosinhos\b/i, /\bmaia\b/i, /\bgondomar\b/i, /\bvalongo\b/i, /\bpovoa de varzim\b/i, /\bvila do conde\b/i] },
   { name: 'Braga', patterns: [/\bbraga\b/i, /\bguimar[aã]es\b/i, /\bfamalicao\b/i, /\bfamalic[aã]o\b/i, /\bbarcelos\b/i, /\besposende\b/i] },
@@ -137,16 +181,100 @@ const PT_DISTRICTS_REGEX = [
   { name: 'Bragança', patterns: [/\bbragan[cç]a\b/i, /\bmirandela\b/i] },
   { name: 'Portalegre', patterns: [/\bportalegre\b/i, /\belvas\b/i] },
   { name: 'Madeira', patterns: [/\bfunchal\b/i, /\bmadeira\b/i] },
-  { name: 'Açores', patterns: [/\bponta delgada\b/i, /\ba[cç]ores\b/i, /\bazores\b/i] },
-  { name: 'Remoto', patterns: [/\bremoto\b/i, /\bremote\b/i, /\bteletrabalho\b/i, /\bwork from home\b/i, /\b100% remoto\b/i] }
+  { name: 'Açores', patterns: [/\bponta delgada\b/i, /\ba[cç]ores\b/i, /\bazores\b/i] }
 ];
 
-function extractCity(title, rawLoc) {
+export function extractCity(title, rawLoc) {
   const combined = `${rawLoc || ''} ${title || ''}`;
   for (const d of PT_DISTRICTS_REGEX) {
     if (d.patterns.some(p => p.test(combined))) return d.name;
   }
-  return (rawLoc && rawLoc !== 'Portugal' && rawLoc.length > 2) ? rawLoc : 'Portugal';
+  return (rawLoc && rawLoc.length > 2) ? rawLoc : '';
+}
+
+export function validateAndClassifyJob(job) {
+  const title = (job.title || '').trim();
+  const url = (job.source_url || '').trim();
+  const rawLoc = (job.location || '').trim();
+  const desc = (job.description || '').trim();
+  const sourceName = (job.source_name || '').trim();
+
+  // 1. Validar Título
+  if (!title || title.length < 3) {
+    return { isValid: false, classification: 'MISSING_JOB_TITLE', reason: 'Título ausente ou muito curto' };
+  }
+  if (GENERIC_TITLES_REGEX.test(title)) {
+    return { isValid: false, classification: 'GENERIC_PAGE', reason: `Título de página genérica: "${title}"` };
+  }
+
+  // 2. Validar URL
+  if (!url || url === '#' || !url.startsWith('http')) {
+    return { isValid: false, classification: 'GENERIC_PAGE', reason: 'URL inválida ou ausente' };
+  }
+  try {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname.toLowerCase().replace(/\/+$/, '');
+    if (GENERIC_URL_PATTERNS.some(p => p.test(pathname)) || pathname === '' || pathname === '/') {
+      return { isValid: false, classification: 'GENERIC_PAGE', reason: `URL genérica de listagem: ${pathname}` };
+    }
+  } catch {
+    return { isValid: false, classification: 'GENERIC_PAGE', reason: 'URL malformada' };
+  }
+
+  // 3. Avaliar Localização (Texto combinado para análise)
+  const fullText = `${title} ${desc} ${url}`.toLowerCase();
+  const rawLocLower = rawLoc.toLowerCase();
+
+  // A. Verificar se tem restrição estrangeira explícita (no título, descrição, URL ou rawLoc)
+  const isExplicitForeign = FOREIGN_PATTERNS.some(p => p.test(fullText) || p.test(rawLocLower));
+  
+  // B. Verificar se tem localização portuguesa comprovada no texto específico
+  let ptDistrict = null;
+  for (const d of PT_DISTRICTS_REGEX) {
+    if (d.patterns.some(p => p.test(fullText) || d.patterns.some(p2 => p2.test(rawLocLower)))) {
+      ptDistrict = d.name;
+      break;
+    }
+  }
+
+  // Se tem marcação estrangeira e NÃO tem um distrito português explícito (ex: Lisboa, Porto):
+  if (isExplicitForeign && !ptDistrict) {
+    return { isValid: false, classification: 'FOREIGN_JOB', location: rawLoc || 'Estrangeiro', reason: 'Vaga localizada fora de Portugal' };
+  }
+
+  // C. Avaliar Trabalho Remoto PRIMEIRO (para não classificar Remote como On-site)
+  const isRemoteWord = /\b(remoto|remote|teletrabalho|work from home|100% remoto)\b/i.test(fullText) || /\b(remoto|remote)\b/i.test(rawLocLower);
+  if (isRemoteWord) {
+    if (isExplicitForeign) {
+      return { isValid: false, classification: 'FOREIGN_JOB', location: 'Remoto (Estrangeiro)', reason: 'Vaga remota restrita a outro país' };
+    }
+    if (ptDistrict || /\b(portugal|lisboa|porto)\b/i.test(fullText) || /[,\s(]PT[,\s)]/i.test(fullText) || rawLocLower.includes('portugal')) {
+      return { isValid: true, classification: 'VALID_REMOTE_PT', location: ptDistrict ? `Remoto (${ptDistrict})` : 'Remoto (Portugal)' };
+    }
+    if (/\b(eu|europe|europa|emea)\b/i.test(fullText) && !/\b(us|uk|canada)\s*only\b/i.test(fullText)) {
+      return { isValid: true, classification: 'VALID_REMOTE_EU', location: 'Remoto (UE/Europa)' };
+    }
+    if (/\b(worldwide|global|anywhere)\b/i.test(fullText) && !/\b(us|uk|canada)\s*only\b/i.test(fullText)) {
+      return { isValid: true, classification: 'VALID_REMOTE_GLOBAL', location: 'Remoto (Global)' };
+    }
+    // Remoto genérico sem elegibilidade comprovada
+    return { isValid: false, classification: 'UNKNOWN_LOCATION', location: 'Remoto (Indeterminado)', reason: 'Vaga remota sem elegibilidade comprovada para Portugal' };
+  }
+
+  // D. Vagas Presenciais / Híbridas em Portugal
+  const isNativePortuguesePortal = ['Net-Empregos', 'BEP - Bolsa de Emprego Público', 'IEFP', 'Carga de Trabalhos', 'Emprego Estágios', 'Feed Empregos'].includes(sourceName);
+  const hasExplicitPortugal = /\b(portugal|lisboa|porto|portuguesa|portugues)\b/i.test(fullText) || /\(PT\)/i.test(fullText) || rawLocLower === 'portugal';
+
+  if (ptDistrict) {
+    return { isValid: true, classification: 'VALID_PT_JOB', location: ptDistrict };
+  }
+
+  if ((hasExplicitPortugal || isNativePortuguesePortal) && !isExplicitForeign) {
+    return { isValid: true, classification: 'VALID_PT_JOB', location: 'Portugal' };
+  }
+
+  // E. Localização indeterminada (NUNCA ASSUMIR PORTUGAL)
+  return { isValid: false, classification: 'UNKNOWN_LOCATION', location: rawLoc || 'Indeterminado', reason: 'Localização de Portugal não comprovada' };
 }
 
 function classifyTopic(title) {
@@ -208,7 +336,7 @@ function parseRssXml(xml, sourceName) {
         title,
         source_url: link,
         source_name: sourceName,
-        location: extractCity(title, 'Portugal'),
+        location: extractCity(title, rawDesc || ''),
         category: 'Trabalho & Carreira',
         work_topic: classifyTopic(title),
         description: cleanText(rawDesc).substring(0, 300),
@@ -234,10 +362,10 @@ function parseJsonLd(html, baseUrl, sourceName) {
         if (entry && (entry['@type'] === 'JobPosting' || entry['@type']?.includes('JobPosting'))) {
           const title = entry.title || entry.name;
           const url = entry.url || baseUrl;
-          let location = 'Portugal';
+          let location = '';
           if (entry.jobLocation) {
             const locObj = Array.isArray(entry.jobLocation) ? entry.jobLocation[0] : entry.jobLocation;
-            location = locObj?.address?.addressLocality || locObj?.address?.addressRegion || locObj?.name || 'Portugal';
+            location = locObj?.address?.addressLocality || locObj?.address?.addressRegion || locObj?.name || '';
           }
           if (title && title.length >= 3 && url) {
             const fullUrl = url.startsWith('http') ? url : new URL(url, baseUrl).href;
@@ -295,7 +423,7 @@ function parseHtmlJobLinks(html, baseUrl, sourceName) {
             title: linkTitle,
             source_url: fullUrl,
             source_name: sourceName,
-            location: 'Portugal',
+            location: extractCity(linkTitle, ''),
             category: 'Trabalho & Carreira',
             work_topic: 'Outros',
             description: linkTitle,
@@ -401,7 +529,7 @@ async function fetchJsonApi(source) {
             title: `${item.position} (${item.company || 'Remote'})`,
             source_url: item.url,
             source_name: source.name,
-            location: item.location || 'Remoto',
+            location: cleanText(item.location || ''),
             category: 'Trabalho & Carreira',
             work_topic: 'Tecnologia, Dados & IA',
             description: cleanText(item.description).substring(0, 300),
@@ -499,18 +627,46 @@ export default async function handler(req, res) {
   const allNewJobs = [];
   const detailedBreakdown = [];
   const localSeenUrls = new Set();
+  const globalStats = {
+    VALID_PT_JOB: 0,
+    VALID_REMOTE_PT: 0,
+    VALID_REMOTE_EU: 0,
+    VALID_REMOTE_GLOBAL: 0,
+    FOREIGN_JOB: 0,
+    GENERIC_PAGE: 0,
+    UNKNOWN_LOCATION: 0
+  };
 
   sourceResults.forEach(res => {
     const rawCount = res.items ? res.items.length : 0;
     let validCount = 0;
     let duplicateCount = 0;
+    let foreignCount = 0;
+    let genericCount = 0;
+    let unknownCount = 0;
 
     if (res.success) {
       successfulSources++;
       totalCollected += rawCount;
       res.items.forEach(job => {
         const canonical = canonicalizeUrl(job.source_url);
-        if (!canonical || canonical === '#' || !job.title || job.title.length < 3) return;
+        const classificationResult = validateAndClassifyJob({
+          ...job,
+          source_url: canonical
+        });
+
+        // Contabilizar estatísticas
+        const cls = classificationResult.classification;
+        if (globalStats[cls] !== undefined) {
+          globalStats[cls]++;
+        }
+
+        if (!classificationResult.isValid) {
+          if (cls === 'FOREIGN_JOB') foreignCount++;
+          else if (cls === 'GENERIC_PAGE' || cls === 'MISSING_JOB_TITLE') genericCount++;
+          else unknownCount++;
+          return;
+        }
 
         const urlKey = canonical.toLowerCase();
         if (!localSeenUrls.has(urlKey)) {
@@ -518,7 +674,7 @@ export default async function handler(req, res) {
           allNewJobs.push({
             ...job,
             title: cleanTextEncoding(job.title),
-            location: cleanTextEncoding(job.location || 'Portugal'),
+            location: cleanTextEncoding(classificationResult.location),
             source_url: canonical,
             created_at: job.created_at || new Date().toISOString()
           });
@@ -527,13 +683,20 @@ export default async function handler(req, res) {
           duplicateCount++;
         }
       });
+
+      const totalDiscarded = duplicateCount + foreignCount + genericCount + unknownCount;
       detailedBreakdown.push({
         source: res.source,
         method: res.method || 'auto',
         found: rawCount,
         validNew: validCount,
-        discarded: duplicateCount,
-        discardReason: duplicateCount > 0 ? 'Duplicado na mesma coleta' : 'Nenhum',
+        discarded: totalDiscarded,
+        discardBreakdown: {
+          duplicates: duplicateCount,
+          foreign: foreignCount,
+          genericPages: genericCount,
+          unknownLocation: unknownCount
+        },
         status: 'OK'
       });
     } else {
@@ -561,6 +724,7 @@ export default async function handler(req, res) {
       totals: {
         totalCollected,
         totalNewCandidates: allNewJobs.length,
+        classificationStats: globalStats,
         successfulSources,
         failedSourcesCount: failedSources.length
       }
