@@ -44,7 +44,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         art90a: [
             {
                 docName: "💰 Prova de Rendimentos Médios (Nómada Digital)",
-                accepted: "Extratos bancários carimbados dos últimos 3 meses e declarações de rendimentos fiscais provando rendimento mensal médio superior a 4 salários mínimos (aprox. €3.500+ a €3.800+).",
+                accepted: "Extratos bancários carimbados dos últimos 3 meses e declarações fiscais provando rendimento mensal médio superior a 4 salários mínimos (4 x 920€ = €3.680/mês).",
                 where: "Bancos (extratos originais) e Autoridade Fiscal do seu país de origem.",
                 hack: "O rendimento deve vir de fora de Portugal. A AIMA exige prova de vínculo laboral (contrato de trabalho remoto ou de prestação com entidades estrangeiras)."
             },
@@ -58,15 +58,15 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         visa_d7: [
             {
                 docName: "📈 Comprovativo de Rendimentos Passivos (Pensões ou outros)",
-                accepted: "Declaração oficial da entidade de pensões (INSS ou equivalente), contratos de arrendamento registados com comprovativos de recebimento, dividendos ou aplicações financeiras de valor estável superior ao salário mínimo líquido anual português.",
+                accepted: "Declaração oficial da entidade de pensões (INSS ou equivalente), contratos de arrendamento registados com comprovativos de recebimento, dividendos ou aplicações financeiras de valor estável superior ao salário mínimo líquido anual português (920€/mês ou 11.040€/ano).",
                 where: "Segurança Social ou Instituto de Pensões do país de origem, bancos ou registo predial.",
-                hack: "A lei portuguesa exige um mínimo de rendimento passivo mensal garantido equivalente ao salário mínimo nacional (SMN). Para o cônjuge, adicione 50%, e para cada filho, 30%. Certifique-se de apostilar/legalizar e traduzir oficialmente todas as declarações estrangeiras."
+                hack: "A lei portuguesa exige um mínimo de rendimento passivo mensal garantido equivalente ao salário mínimo nacional (920€). Para o cônjuge, adicione 50% (460€), e para cada filho, 30% (276€). Certifique-se de apostilar/legalizar e traduzir oficialmente todas as declarações estrangeiras."
             },
             {
                 docName: "🇵🇹 NIF e Conta Bancária em Portugal com Fundos",
                 accepted: "Documento oficial do NIF português (com morada atualizada ou representação fiscal) e extrato oficial da conta bancária em Portugal com os saldos demonstrativos.",
                 where: "Autoridade Tributária (Finanças) e qualquer instituição bancária sediada em Portugal.",
-                hack: "Abra a sua conta bancária portuguesa de forma 100% remota através de bancos digitais nacionais ou nomeando um procurador legal (advogado). Transfira o montante total equivalente a pelo menos 1 ano de rendimentos (mínimo de €10.500 a €15.000+ por pessoa) para a conta portuguesa antes de submeter o visto no consulado: este saldo líquido depositado em Portugal é o principal segredo de aprovação do visto D7!"
+                hack: "Abra a sua conta bancária portuguesa de forma 100% remota através de bancos digitais nacionais ou nomeando um procurador legal (advogado). Transfira o montante total equivalente a pelo menos 1 ano de rendimentos (mínimo de €11.040 a €15.000+ por pessoa) para a conta portuguesa antes de submeter o visto no consulado: este saldo líquido depositado em Portugal é o principal segredo de aprovação do visto D7!"
             },
             {
                 docName: "🏠 Comprovativo de Alojamento de Longa Duração",
@@ -86,7 +86,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "🎓 Matrícula ou Carta de Aceitação",
                 accepted: "Documento oficial de aceitação emitido por universidade, politécnico ou escola secundária em Portugal.",
                 where: "Secretaria da instituição de ensino portuguesa.",
-                hack: "Verifique se a instituição de ensino superior é reconhecida pela DGES. Para vistos de longa duração, o curso tem de conferir grau académico ou ser equivalente."
+                hack: "Verifique se a instituição de ensino superior é reconhecida pela DGES. Para vistos de longa duração, o curso tem de conferir grau académico ou ser equivalente. O estudante tem direito legal de trabalhar a contrato ou recibos verdes (Art. 97.º da Lei 23/2007)."
             },
             {
                 docName: "💰 Prova de Meios de Subsistência",
@@ -104,7 +104,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
             },
             {
                 docName: "💰 Meios de Subsistência Mínimos",
-                accepted: "Extrato bancário pessoal mostrando o equivalente a pelo menos 3 vezes o salário mínimo nacional líquido (aprox. €2.600+).",
+                accepted: "Extrato bancário pessoal mostrando o equivalente a pelo menos 3 vezes o salário mínimo nacional líquido (3 x 920€ = €2.760).",
                 where: "Extratos bancários oficiais carimbados pelo seu banco.",
                 hack: "Este valor em conta pode ser 100% dispensado se um cidadão português ou estrangeiro residente legal em Portugal assine um Termo de Responsabilidade oficial garantindo o seu sustento e alojamento."
             }
@@ -115,6 +115,68 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Certidão de Casamento, Certidão de Nascimento dos filhos ou declaração oficial de união de facto.",
                 where: "Registo Civil do país de origem (obrigatoriamente Apostiladas ou legalizadas pelo Consulado Português).",
                 hack: "Qualquer documento emitido em língua estrangeira tem de ser traduzido para português e a tradução deve ser certificada (por notário, advogado português ou Consulado) para ser aceite pela AIMA."
+            }
+        ],
+        family: [
+            {
+                docName: "👨‍👩‍👧 Certidões Civis e Vínculo de Parentesco",
+                accepted: "Certidão de Casamento, Certidão de Nascimento dos filhos ou Certidão de União de Facto comprovada oficialmente.",
+                where: "Registo Civil do país de origem (obrigatoriamente Apostiladas de Haia ou autenticadas pelo Consulado de Portugal).",
+                hack: "Todas as certidões estrangeiras devem ter sido emitidas recentemente (idealmente há menos de 6 meses), estar devidamente apostiladas de Haia no país de origem e acompanhadas de tradução juramentada/certificada para português."
+            },
+            {
+                docName: "💰 Prova de Meios de Subsistência Familiares",
+                accepted: "Recibos de vencimento dos últimos 3 meses, Declaração de IRS com Nota de Liquidação, ou extrato bancário com saldo anual familiar (Portaria 1563/2007: 100% titular 920€/mês + 50% cônjuge 460€/mês + 30% por filho 276€/mês).",
+                where: "Entidade empregadora em Portugal, Autoridade Tributária (Portal das Finanças) ou Banco em Portugal.",
+                hack: "O cálculo de subsistência é anual. Para reagrupar cônjuge e 1 filho menor, deve comprovar rendimento mensal estável de pelo menos €1.656 (ou saldo acumulado anual correspondente a €19.872)."
+            },
+            {
+                docName: "🏠 Comprovativo de Alojamento Condigno",
+                accepted: "Contrato de Arrendamento registado nas Finanças (AT) com os respetivos recibos eletrónicos de renda, Escritura / Caderneta Predial Urbana atualizada, ou Atestado da Junta de Freguesia com o agregado.",
+                where: "Portal das Finanças (senhorio), Conservatória do Registo Predial ou Junta de Freguesia da área de residência.",
+                hack: "A AIMA exige que o alojamento tenha capacidade adequada para a dimensão do agregado familiar reagrupado. Certifique-se de que o contrato de arrendamento está ativo e registado nas Finanças."
+            },
+            {
+                docName: "🏛️ Título de Residência do Chamador & Registo Criminal",
+                accepted: "Autorização de Residência válida do requerente em Portugal e Certificado de Registo Criminal do país de origem de todos os familiares maiores de 16 anos.",
+                where: "AIMA (Título do residente) e Ministério da Justiça / Polícia do país de origem dos dependentes (Apostilado de Haia).",
+                hack: "Se os familiares estiverem fora de Portugal, após deferimento ou para entrada, o pedido de Visto de Residência D6 de Reagrupamento Familiar é instruído no Posto Consular de Portugal."
+            }
+        ],
+        via_verde: [
+            {
+                docName: "💼 Promessa ou Contrato de Trabalho da Empresa",
+                accepted: "Contrato de trabalho formal ou Promessa de Trabalho vinculativa com empresa sediada em Portugal ou empresa com certificação Tech Visa.",
+                where: "Entidade empregadora em Portugal.",
+                hack: "A empresa deve emitir o Termo de Responsabilidade empresarial oficial e registar a oferta no IEFP ou possuir certificação IAPMEI (Tech Visa)."
+            },
+            {
+                docName: "📄 Termo de Responsabilidade Empresarial",
+                accepted: "Termo de responsabilidade assinado pela empresa para alojamento e despesas de subsistência e repatriamento se necessário.",
+                where: "Assinado pela gerência/RH da empresa empregadora.",
+                hack: "O Termo de Responsabilidade emitido por entidade empresarial substitui a exigência de fundos pessoais elevados na conta do trabalhador no consulado."
+            }
+        ],
+        asylum: [
+            {
+                docName: "🛡️ Pedido de Proteção Internacional (Asilo)",
+                accepted: "Declaração formal de pedido de asilo apresentada à Polícia de Segurança Pública (PSP), GNR ou diretamente à AIMA / CPR.",
+                where: "Posto de fronteira, esquadra da PSP/GNR ou Conselho Português para os Refugiados (CPR).",
+                hack: "A apresentação do pedido de asilo suspende de imediato qualquer procedimento de afastamento ou expulsão e confere direito a Declaração de Pedido de Asilo e apoio do CPR."
+            },
+            {
+                docName: "📄 Declaração de Residência e Apoio Social",
+                accepted: "Comprovativo de morada ou declaração de acolhimento emitida por centro de acolhimento humanitário (CPR/Cruz Vermelha/SCML).",
+                where: "Entidades de acolhimento social ou Junta de Freguesia.",
+                hack: "Requerentes de asilo têm direito a apoio médico no SNS e a Autorização de Residência Provisória após admissão do processo pela AIMA."
+            }
+        ],
+        voluntary_return: [
+            {
+                docName: "✈️ Requerimento do Programa ARVoRe (OIM / AIMA)",
+                accepted: "Inscrição oficial no Programa de Apoio ao Retorno Voluntário e à Reintegração gerido pela Organização Internacional para as Migrações (OIM).",
+                where: "Gabinete da OIM Portugal (retornovoluntario.pt) ou balcão da AIMA.",
+                hack: "O programa cobre o custo integral da viagem de regresso ao país de origem, apoio logístico no aeroporto e subsídio de reinstalação para projetos produtivos."
             }
         ]
     },
@@ -156,7 +218,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         art90a: [
             {
                 docName: "💰 Proof of Average Income (Digital Nomad)",
-                accepted: "Stamped bank statements of the last 3 months and tax returns proving an average monthly income higher than 4 minimum wages (approx. €3,500+ to €3,800+).",
+                accepted: "Stamped bank statements of the last 3 months and tax returns proving an average monthly income higher than 4 minimum wages (4 x €920 = €3,680/mo).",
                 where: "Banks (original statements) and the Tax Authority of your country of origin.",
                 hack: "The income must originate from outside Portugal. AIMA requires proof of employment relationship (remote contract or active service contract with foreign entities)."
             },
@@ -170,15 +232,15 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         visa_d7: [
             {
                 docName: "📈 Proof of Passive Income (Pensions or others)",
-                accepted: "Official pension statement (Social Security or equivalent), registered lease agreements with proof of rent receipt, dividends, or stable financial investments exceeding the annual net Portuguese minimum wage.",
+                accepted: "Official pension statement (Social Security or equivalent), registered lease agreements with proof of rent receipt, dividends, or stable financial investments exceeding the annual net Portuguese minimum wage (€920/mo or €11,040/year).",
                 where: "Pension institution of the country of origin, banks, or land registry.",
-                hack: "Portuguese law requires a minimum guaranteed monthly passive income equivalent to the national minimum wage. Add 50% for a spouse, and 30% for each dependent child. Ensure you apostille/legalize and officially translate all foreign statements."
+                hack: "Portuguese law requires a minimum guaranteed monthly passive income equivalent to the national minimum wage (€920). Add 50% (€460) for a spouse, and 30% (€276) for each dependent child. Ensure you apostille/legalize and officially translate all foreign statements."
             },
             {
                 docName: "🇵🇹 NIF and Portuguese Bank Account with Funds",
                 accepted: "Official Portuguese NIF document (with updated address or fiscal representation) and official bank statement from a bank in Portugal showing the deposited balance.",
                 where: "Tax Authority (Finanças) and any banking institution based in Portugal.",
-                hack: "Open your Portuguese bank account 100% remotely via national digital banks or by appointing a legal representative (lawyer). Transfer the total amount equivalent to at least 1 year of income (minimum €10,500 to €15,000+ per person) to the Portuguese account before applying: this liquid balance deposited in Portugal is the main secret to D7 visa approval!"
+                hack: "Open your Portuguese bank account 100% remotely via national digital banks or by appointing a legal representative (lawyer). Transfer the total amount equivalent to at least 1 year of income (minimum €11,040 to €15,000+ per person) to the Portuguese account before applying: this liquid balance deposited in Portugal is the main secret to D7 visa approval!"
             },
             {
                 docName: "🏠 Proof of Long-term Accommodation",
@@ -198,7 +260,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "🎓 Enrolment or Acceptance Letter",
                 accepted: "Official acceptance document issued by a university, polytechnic, or secondary school in Portugal.",
                 where: "Registrar office of the Portuguese educational institution.",
-                hack: "Check if the higher education institution is recognized by DGES. For long-term visas, the course must award an academic degree or be equivalent."
+                hack: "Check if the higher education institution is recognized by DGES. For long-term visas, the course must award an academic degree or be equivalent. Students are legally entitled to work under employment contract or as freelancers (Article 97 of Law 23/2007)."
             },
             {
                 docName: "💰 Proof of Subsistence Means",
@@ -216,7 +278,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
             },
             {
                 docName: "💰 Minimum Subsistence Means",
-                accepted: "Personal bank statement showing the equivalent of at least 3 times the net national minimum wage (approx. €2,600+).",
+                accepted: "Personal bank statement showing the equivalent of at least 3 times the net national minimum wage (3 x €920 = €2,760).",
                 where: "Official bank statements stamped by your bank.",
                 hack: "This bank balance requirement can be 100% waived if a Portuguese citizen or a legal resident foreigner in Portugal signs an official Statement of Responsibility guaranteeing your support and lodging."
             }
@@ -227,6 +289,68 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Marriage Certificate, birth certificates of children, or official declaration of stable civil union.",
                 where: "Civil Registry of the country of origin (must be Apostilled or legalized by the Portuguese Consulate).",
                 hack: "Any document issued in a foreign language must be translated into Portuguese, and the translation must be certified (by a notary, a Portuguese lawyer, or Consulate) to be accepted by AIMA."
+            }
+        ],
+        family: [
+            {
+                docName: "👨‍👩‍👧 Civil Certificates & Family Ties",
+                accepted: "Marriage Certificate, birth certificates of children, or official declaration of civil partnership.",
+                where: "Civil Registry of the country of origin (must be Hague Apostilled or legalized by the Portuguese Consulate).",
+                hack: "All foreign certificates must be recently issued (ideally less than 6 months), properly Hague apostilled in the country of origin, and accompanied by a certified Portuguese translation."
+            },
+            {
+                docName: "💰 Proof of Family Subsistence Means",
+                accepted: "Pay slips of the last 3 months, IRS Tax Return with Assessment Note, or bank statement showing annual family funds (Order 1563/2007: 100% sponsor €920/mo + 50% spouse €460/mo + 30% per child €276/mo).",
+                where: "Employer in Portugal, Tax Authority (Finanças), or Portuguese bank account.",
+                hack: "Subsistence is calculated annually. To reunite a spouse and 1 minor child, you must prove stable monthly income of at least €1,656 (or annual equivalent balance of €19,872)."
+            },
+            {
+                docName: "🏠 Proof of Adequate Accommodation",
+                accepted: "Lease agreement registered with Finanças (AT) with electronic rent receipts, property deed / updated tax register (Caderneta Predial), or Parish Council certificate (Junta de Freguesia).",
+                where: "Tax Authority portal (landlord), Land Registry, or local Parish Council.",
+                hack: "AIMA requires that the accommodation has adequate capacity for the size of the reunited household. Ensure the lease contract is active and in your name."
+            },
+            {
+                docName: "🏛️ Sponsor's Residence Permit & Criminal Records",
+                accepted: "Valid Portuguese Residence Permit of the sponsor and Criminal Record certificates from the country of origin for all family members aged 16+.",
+                where: "AIMA (Sponsor's title) and Ministry of Justice / Police of the dependents' home country (Hague Apostilled).",
+                hack: "If family members are outside Portugal, after approval or for travel, the D6 Family Reunification Residence Visa must be processed at the Portuguese Consulate."
+            }
+        ],
+        via_verde: [
+            {
+                docName: "💼 Company Promise or Employment Contract",
+                accepted: "Formal employment contract or binding Promise of Contract with a company based in Portugal or a Tech Visa certified entity.",
+                where: "Employer company in Portugal.",
+                hack: "The company must issue the official corporate Statement of Responsibility and register the offer with IEFP or hold IAPMEI certification (Tech Visa)."
+            },
+            {
+                docName: "📄 Corporate Statement of Responsibility",
+                accepted: "Statement of responsibility signed by the company covering lodging, subsistence, and repatriation if needed.",
+                where: "Signed by company management/HR in Portugal.",
+                hack: "The corporate Statement of Responsibility waives the requirement for large personal bank balances at the consulate."
+            }
+        ],
+        asylum: [
+            {
+                docName: "🛡️ International Protection (Asylum) Application",
+                accepted: "Formal asylum application declaration submitted to the Public Security Police (PSP), GNR, or directly to AIMA / CPR.",
+                where: "Border post, police station, or Portuguese Refugee Council (CPR).",
+                hack: "Filing an asylum request immediately suspends any deportation procedure and grants an Asylum Application Certificate and CPR legal aid."
+            },
+            {
+                docName: "📄 Proof of Address and Social Support",
+                accepted: "Proof of address or reception certificate issued by a humanitarian reception center (CPR / Red Cross / SCML).",
+                where: "Social reception institutions or local Parish Council.",
+                hack: "Asylum seekers have full right to SNS medical healthcare and a Provisional Residence Permit once the application is admitted by AIMA."
+            }
+        ],
+        voluntary_return: [
+            {
+                docName: "✈️ ARVoRe Program Application (IOM / AIMA)",
+                accepted: "Official registration in the Assisted Voluntary Return and Reintegration Program managed by the International Organization for Migration (IOM).",
+                where: "IOM Portugal office (retornovoluntario.pt) or AIMA branch.",
+                hack: "The program covers 100% of flight travel costs to the home country, airport assistance, and reintegration grants for productive projects."
             }
         ]
     },
@@ -268,7 +392,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         art90a: [
             {
                 docName: "💰 Prueba de Ingresos Medios (Nómada Digital)",
-                accepted: "Extractos bancarios sellados de los últimos 3 meses y declaraciones de impuestos que demuestren un ingreso mensual promedio superior a 4 salarios mínimos (aprox. €3.500+ a €3.800+).",
+                accepted: "Extractos bancarios sellados de los últimos 3 meses y declaraciones fiscales que demuestren un ingreso mensual promedio superior a 4 salarios mínimos (4 x 920€ = €3.680/mes).",
                 where: "Bancos (extractos originales) y la Autoridad Fiscal de su país de origen.",
                 hack: "Los ingresos deben provenir de fuera de Portugal. AIMA requiere prueba de relación laboral (contrato remoto o contrato de servicios activo con entidades extranjeras)."
             },
@@ -282,15 +406,15 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         visa_d7: [
             {
                 docName: "📈 Comprobante de Ingresos Pasivos (Pensiones u otros)",
-                accepted: "Declaración oficial de la entidad de pensiones (Seguridad Social o equivalente), contratos de alquiler registrados con recibos, dividendos o inversiones financieras estables que superen el salario mínimo líquido anual portugués.",
+                accepted: "Declaración oficial de la entidad de pensiones (Seguridad Social o equivalente), contratos de alquiler registrados con recibos, dividendos o inversiones financieras estables que superen el salario mínimo líquido anual portugués (920€/mes o 11.040€/año).",
                 where: "Institución de pensiones del país de origen, bancos o registro de la propiedad.",
-                hack: "La ley portuguesa exige un ingreso pasivo mensual mínimo garantizado equivalente al salario mínimo nacional. Sume un 50% para el cónyuge y un 30% por cada hijo. Asegúrese de apostillar/legalizar y traducir oficialmente todas las declaraciones extranjeras."
+                hack: "La ley portuguesa exige un ingreso pasivo mensual mínimo garantizado equivalente al salario mínimo nacional (920€). Sume un 50% (460€) para el cónyuge y un 30% (276€) por cada hijo. Asegúrese de apostillar/legalizar y traducir oficialmente todas las declaraciones extranjeras."
             },
             {
                 docName: "🇵🇹 NIF y Cuenta Bancaria en Portugal con Fondos",
                 accepted: "Documento oficial del NIF portugués y extracto oficial de la cuenta bancaria en Portugal con saldos demostrativos.",
                 where: "Autoridad Tributaria (Finanças) y cualquier institución bancaria con sede en Portugal.",
-                hack: "Abra su cuenta bancaria portuguesa de forma 100% remota a través de bancos digitales nacionales o nombrando a un representante legal. Transfiera el monto total equivalente a al menos 1 año de ingresos (mínimo de €10.500 a €15.000+ por persona) a la cuenta portuguesa antes de solicitar la visa: ¡este saldo es el principal secreto de aprobación!"
+                hack: "Abra su cuenta bancaria portuguesa de forma 100% remota a través de bancos digitales nacionales o nombrando a un representante legal. Transfiera el monto total equivalente a al menos 1 año de ingresos (mínimo de €11.040 a €15.000+ por persona) a la cuenta portuguesa antes de solicitar la visa: ¡este saldo es el principal secreto de aprobación!"
             },
             {
                 docName: "🏠 Comprobante de Alojamiento de Larga Duración",
@@ -310,7 +434,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "🎓 Matrícula o Carta de Aceptación",
                 accepted: "Documento oficial de aceptación emitido por una universidad, politécnico o escuela secundaria en Portugal.",
                 where: "Oficina de registro de la institución educativa portuguesa.",
-                hack: "Verifique si la institución de educación superior está reconocida por la DGES. Para visas de larga duración, el curso debe otorgar un título académico o ser equivalente."
+                hack: "Verifique si la institución de educación superior está reconocida por la DGES. Para visas de larga duración, el curso debe otorgar un título académico o ser equivalente. Los estudiantes tienen derecho legal a trabajar por cuenta ajena o propia (Art. 97 de la Ley 23/2007)."
             },
             {
                 docName: "💰 Prueba de Medios de Subsistencia",
@@ -328,7 +452,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
             },
             {
                 docName: "💰 Medios Mínimos de Subsistencia",
-                accepted: "Extracto bancario personal que demuestre el equivalente a al menos 3 veces el salario mínimo nacional neto (aprox. €2.600+).",
+                accepted: "Extracto bancario personal que demuestre el equivalente a al menos 3 veces el salario mínimo nacional neto (3 x 920€ = €2.760).",
                 where: "Extractos bancarios oficiales sellados por su banco.",
                 hack: "Este requisito de saldo bancario puede eximirse al 100% si un ciudadano portugués o un extranjero residente legal en Portugal firma una Declaración de Responsabilidad oficial garantizando su manutención y alojamiento."
             }
@@ -339,6 +463,68 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Certificado de Matrimonio, certificados de nacimiento de los hijos o declaración oficial de unión de hecho estable.",
                 where: "Registro Civil del país de origen (deben estar Apostillados o legalizados por el Consulado Portugués).",
                 hack: "Cualquier documento expedido en un idioma extranjero debe traducirse al portugués y la traducción debe ser certificada (por notario, abogado portugués o Consulado) para ser aceptada por AIMA."
+            }
+        ],
+        family: [
+            {
+                docName: "👨‍👩‍👧 Certificados Civiles y Parentesco",
+                accepted: "Certificado de Matrimonio, certificados de nacimiento de los hijos o documento de unión de hecho formalizada.",
+                where: "Registro Civil del país de origen (obligatoriamente Apostillados de La Haya o legalizados por el Consulado de Portugal).",
+                hack: "Todos los certificados extranjeros deben ser de emisión reciente (idealmente menos de 6 meses), estar apostillados de La Haya en el país de origen y acompañados de traducción jurada al portugués."
+            },
+            {
+                docName: "💰 Prueba de Medios de Subsistencia Familiares",
+                accepted: "Nóminas de los últimos 3 meses, Declaración de la Renta (IRS) o extracto bancario con saldo anual familiar (Orden 1563/2007: 100% titular 920€/mes + 50% cónyuge 460€/mes + 30% por hijo 276€/mes).",
+                where: "Empresa empleadora en Portugal, Hacienda (Finanças) o banco en Portugal.",
+                hack: "La subsistencia se calcula anualmente. Para reagrupar al cónyuge y 1 hijo menor, debe acreditar ingresos mensuales estables de al menos €1.656 (o saldo equivalente anual de €19.872)."
+            },
+            {
+                docName: "🏠 Comprobante de Alojamiento Adecuado",
+                accepted: "Contrato de alquiler registrado en Hacienda (AT) con recibos electrónicos de renta, escritura pública o certificado de la Junta de Freguesia.",
+                where: "Portal das Finanças (arrendador), Registro de la Propiedad o Junta de Freguesia.",
+                hack: "AIMA exige que la vivienda tenga capacidad suficiente para el tamaño de la familia reagrupada. Asegúrese de que el contrato esté activo y a su nombre."
+            },
+            {
+                docName: "🏛️ Título de Residencia del Titular y Antecedentes Penales",
+                accepted: "Autorización de Residencia válida del solicitante en Portugal y Certificado de Antecedentes Penales de los familiares mayores de 16 años.",
+                where: "AIMA (Título del residente) e Ministerio de Justicia / Policía del país de origen (Apostillado de La Haya).",
+                hack: "Si los familiares están fuera de Portugal, tras la aprobación o para viajar, se tramita el Visado D6 de Reagrupación Familiar en el Consulado de Portugal."
+            }
+        ],
+        via_verde: [
+            {
+                docName: "💼 Promesa o Contrato de Trabajo de la Empresa",
+                accepted: "Contrato de trabajo formal o Promesa vinculante con empresa radicada en Portugal o empresa con certificación Tech Visa.",
+                where: "Empresa empleadora en Portugal.",
+                hack: "La empresa debe emitir la Declaración de Responsabilidad corporativa y registrar la vacante en el IEFP o contar con Tech Visa (IAPMEI)."
+            },
+            {
+                docName: "📄 Declaración de Responsabilidad Empresarial",
+                accepted: "Declaración de responsabilidad firmada por la empresa cubriendo alojamiento, gastos de manutención y repatriación si fuere necesario.",
+                where: "Firmada por gerencia/RRHH de la empresa en Portugal.",
+                hack: "La Declaración de Responsabilidad empresarial exime de la necesidad de saldos personales elevados en el consulado."
+            }
+        ],
+        asylum: [
+            {
+                docName: "🛡️ Solicitud de Protección Internacional (Asilo)",
+                accepted: "Declaración formal de solicitud de asilo presentada ante la Policía (PSP), GNR o directamente ante AIMA / CPR.",
+                where: "Puesto fronterizo, comisaría de policía o Consejo Portugués para los Refugiados (CPR).",
+                hack: "La solicitud de asilo suspende de inmediato cualquier proceso de expulsión y otorga derecho a la Declaración de Asilo y asistencia jurídica gratuita."
+            },
+            {
+                docName: "📄 Comprobante de Residencia y Apoyo Social",
+                accepted: "Comprobante de domicilio o certificado de acogida emitido por centro de acogida humanitaria (CPR/Cruz Roja/SCML).",
+                where: "Entidades de acogida o Junta de Freguesia.",
+                hack: "Los solicitantes de asilo tienen derecho completo a la sanidad pública (SNS) y a la Autorización de Residencia Provisional."
+            }
+        ],
+        voluntary_return: [
+            {
+                docName: "✈️ Solicitud del Programa ARVoRe (OIM / AIMA)",
+                accepted: "Inscripción oficial en el Programa de Apoyo al Retorno Voluntario y la Reintegración gestionado por la OIM.",
+                where: "Oficina de la OIM Portugal (retornovoluntario.pt) o delegación de AIMA.",
+                hack: "El programa cubre el 100% del billete de avión, asistencia en el aeropuerto y subsidio de reinstalación para proyectos productivos."
             }
         ]
     },
@@ -380,9 +566,9 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         art90a: [
             {
                 docName: "💰 Preuve de Revenus Moyens (Nomade Digital)",
-                accepted: "Relevés bancaires tamponnés des 3 derniers mois et déclarations d'impôts prouvant un revenu mensuel moyen supérieur à 4 salaires minimums (environ €3.500+ à €3.800+).",
+                accepted: "Relevés bancaires tamponnés des 3 derniers mois et déclarations fiscales prouvant un revenu mensuel moyen supérieur à 4 salaires minimums (4 x 920€ = €3.680/mois).",
                 where: "Banques (relevés originaux) et l'Administration Fiscale de votre pays d'origine.",
-                hack: "Les revenus doivent pourvoir de l'extérieur du Portugal. L'AIMA exige une preuve de relation de travail (contrat à distance ou contrat de prestation actif avec des entités étrangères)."
+                hack: "Les revenus doivent provenir de l'extérieur du Portugal. L'AIMA exige une preuve de relation de travail (contrat à distance ou contrat de prestation actif avec des entités étrangères)."
             },
             {
                 docName: "🇵🇹 NIF et Compte Bancaire Portugais",
@@ -394,21 +580,21 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         visa_d7: [
             {
                 docName: "📈 Preuve de Revenus Passifs (Retraite ou autres)",
-                accepted: "Déclaration officielle de l'organisme de retraite (Sécurité Sociale ou équivalent), contrats de bail enregistrés avec justificatifs de loyer, dividendes ou investissements financiers stables dépassant le salaire minimum net portugais.",
+                accepted: "Déclaration officielle de l'organisme de retraite (Sécurité Sociale ou équivalent), contrats de bail enregistrés avec justificatifs de loyer, dividendes ou investissements financiers stables dépassant le salaire minimum net portugais (920€/mois ou 11.040€/an).",
                 where: "Caisse de retraite du pays d'origine, banques ou registre foncier.",
-                hack: "La loi portugaise exige un revenu passif mensuel minimum garanti équivalent au salaire minimum national. Ajoutez 50 % pour le conjoint et 30 % par enfant à charge. Veillez à faire apostiller/légaliser et traduire officiellement toutes les déclarations étrangères."
+                hack: "La loi portugaise exige un revenu passif mensuel minimum garanti équivalent au salaire minimum national (920€). Ajoutez 50 % (460€) pour le conjoint et 30 % (276€) par enfant à charge. Veillez à faire apostiller/légaliser et traduire officiellement toutes les déclarations étrangères."
             },
             {
                 docName: "🇵🇹 NIF et Compte Bancaire au Portugal avec Fonds",
                 accepted: "Document officiel du NIF portugais et relevé de compte officiel d'une banque basée au Portugal montrant les fonds déposés.",
                 where: "Autorité fiscale (Finanças) et toute institution bancaire basée au Portugal.",
-                hack: "Ouvrez votre compte bancaire portugais 100 % à distance via des banques en ligne nationales ou par procuration à un avocat. Transférez le montant équivalent à au moins 1 an de revenus (minimum 10 500 € à 15 000 €+ par personne) sur le compte portugais avant le dépôt du visa : ce solde est le secret d'approbation principal !"
+                hack: "Ouvrez votre compte bancaire portugais 100 % à distance via des banques en ligne nationales ou par procuration à un avocat. Transférez le montant équivalent à au moins 1 an de revenus (minimum 11.040 € à 15.000 €+ par personne) sur le compte portugais avant le dépôt du visa : ce solde est le secret d'approbation principal !"
             },
             {
                 docName: "🏠 Justificatif d'Hébergement Longue Durée",
                 accepted: "Contrat de location signé pour une durée d'un an ou plus (enregistré auprès du fisc portugais), acte d'achat de propriété au Portugal, ou attestation de prise en charge/hébergement signée par un citoyen ou résident légal.",
                 where: "Propriétaire du bien (bailleur) ou proche/ami résident légal au Portugal.",
-                hack: "Évitez les réservations d'hôtel temporaires de courte durée (comme 15 ou 30 dias), le consulat les rejetant souvent. Si vous n'avez pas encore de contrat de bail, demandez à un résident légal de signer une attestation d'hébergement accompagnée du titre de propriété."
+                hack: "Évitez les réservations d'hôtel temporaires de courte durée (comme 15 ou 30 jours), le consulat les rejetant souvent. Si vous n'avez pas encore de contrat de bail, demandez à un résident légal de signer une attestation d'hébergement accompagnée du titre de propriété."
             },
             {
                 docName: "🏥 Assurance Santé Internationale ou Accord PB4",
@@ -422,7 +608,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "🎓 Inscription ou Lettre d'Acceptation",
                 accepted: "Document officiel d'acceptation délivré par une université, un institut polytechnique ou une école secondaire au Portugal.",
                 where: "Bureau d'inscription de l'établissement d'enseignement portugais.",
-                hack: "Vérifiez si l'établissement d'enseignement supérieur est reconnu par la DGES. Pour les visas de longue durée, le cours doit délivrer un diplôme académique ou être équivalent."
+                hack: "Vérifiez si l'établissement d'enseignement supérieur est reconnu par la DGES. Pour les visas de longue durée, le cours doit délivrer un diplôme académique ou être équivalent. Les étudiants ont le droit légal de travailler sous contrat ou comme indépendants (Art. 97 de la Loi 23/2007)."
             },
             {
                 docName: "💰 Preuve de Moyens de Subsistance",
@@ -436,11 +622,11 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "📋 Déclaration d'Enregistrement auprès de l'IEFP",
                 accepted: "Preuve officielle en PDF d'enregistrement de recherche d'emploi avec un code QR valide.",
                 where: "Portail en ligne de l'IEFP (Institut de l'Emploi et de la Formation Professionnelle).",
-                hack: "Vous devez vous inscrire en ligne AVANT de vous rendre au Consulat pour demander le visa. C'est gratuit et le PDF est généré instantanément dans le profil après avoir rempli les détails.",
+                hack: "Vous devez vous inscrire en ligne AVANT de vous rendre au Consulat pour demander le visa. C'est gratuit et le PDF est généré instantanément dans le profil après avoir rempli les détails."
             },
             {
                 docName: "💰 Moyens de Subsistance Minimaux",
-                accepted: "Relevé bancaire personnel indiquant l'équivalent d'au moins 3 fois le salaire minimum national net (environ €2.600+).",
+                accepted: "Relevé bancaire personnel indiquant l'équivalent d'au moins 3 fois le salaire minimum national net (3 x 920€ = €2.760).",
                 where: "Relevés bancaires officiels tamponnés par votre banque.",
                 hack: "Cette exigence de solde bancaire peut être annulée à 100% si un citoyen portugais ou un étranger résident légal au Portugal signe une Déclaration de Prise en Charge officielle garantissant votre subsistance et votre logement."
             }
@@ -451,6 +637,68 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Acte de Mariage, actes de naissance des enfants ou déclaration officielle d'union stable de fait.",
                 where: "Registre d'état civil du pays d'origine (doivent obligatoirement être Apostillés ou légalisés par le Consulat Portugais).",
                 hack: "Tout document rédigé dans une langue étrangère doit être traduit en portugais, et la traduction doit être certifiée (par un notaire, un avocat portugais ou le Consulat) pour être acceptée par l'AIMA."
+            }
+        ],
+        family: [
+            {
+                docName: "👨‍👩‍👧 Actes d'État Civil & Lien de Parenté",
+                accepted: "Acte de Mariage, actes de naissance des enfants ou certificat d'union de fait officiellement reconnue.",
+                where: "Registre d'état civil du pays d'origine (obligatoirement Apostillés de La Haye ou légalisés par le Consulat Portugais).",
+                hack: "Tous les actes étrangers doivent être de délivrance récente (idéalement moins de 6 mois), apostillés de La Haye dans le pays d'origine et accompagnés d'une traduction certifiée en portugais."
+            },
+            {
+                docName: "💰 Preuve de Moyens de Subsistance Familiaux",
+                accepted: "Bulletins de salaire des 3 derniers mois, Déclaration d'Impôt (IRS) ou relevé bancaire avec solde annuel familial (Arrêté 1563/2007 : 100% demandeur 920€/mois + 50% conjoint 460€/mois + 30% par enfant 276€/mois).",
+                where: "Employeur au Portugal, Administration Fiscale (Finanças) ou banque au Portugal.",
+                hack: "La subsistance est calculée annuellement. Pour regrouper un conjoint et 1 enfant mineur, vous devez justifier d'un revenu mensuel stable d'au moins €1.656 (ou un solde annuel cumulé de €19.872)."
+            },
+            {
+                docName: "🏠 Preuve de Logement Décent",
+                accepted: "Contrat de bail enregistré aux Finances (AT) avec quittances électroniques de loyer, acte de propriété ou certificat de la Junta de Freguesia.",
+                where: "Portail des Finances (propriétaire), Conservation Foncière ou Junta de Freguesia.",
+                hack: "L'AIMA exige que le logement ait une capacité suffisante pour la taille du foyer regroupé. Assurez-vous que le contrat de bail est actif et à votre nom."
+            },
+            {
+                docName: "🏛️ Titre de Séjour du Demandeur & Casier Judiciaire",
+                accepted: "Titre de séjour valide du demandeur au Portugal et Casier Judiciaire du pays d'origine de tous les membres de la famille âgés de 16 ans et plus.",
+                where: "AIMA (Titre du résident) et Ministère de la Justice / Police du pays d'origine (Apostillé de La Haye).",
+                hack: "Si les proches sont hors du Portugal, après approbation ou pour voyager, le Visa D6 de Regroupement Familial doit être demandé au Consulat du Portugal."
+            }
+        ],
+        via_verde: [
+            {
+                docName: "💼 Promesse ou Contrat de Travail de l'Entreprise",
+                accepted: "Contrat de travail formel ou Promesse d'embauche avec une entreprise basée au Portugal ou certifiée Tech Visa.",
+                where: "Entreprise employeur au Portugal.",
+                hack: "L'entreprise doit émettre la Déclaration de Responsabilité et enregistrer l'offre auprès de l'IEFP ou disposer de la certification Tech Visa (IAPMEI)."
+            },
+            {
+                docName: "📄 Déclaration de Responsabilité d'Entreprise",
+                accepted: "Déclaration de responsabilité signée par l'entreprise couvrant le logement, les frais de subsistance et le rapatriement si nécessaire.",
+                where: "Signée par la direction / RH de l'entreprise au Portugal.",
+                hack: "La Déclaration de Responsabilité d'entreprise remplace l'obligation de justifier de soldes bancaires personnels élevés au consulat."
+            }
+        ],
+        asylum: [
+            {
+                docName: "🛡️ Demande de Protection Internationale (Asile)",
+                accepted: "Déclaration formelle de demande d'asile présentée à la Police (PSP), GNR ou directement à l'AIMA / CPR.",
+                where: "Poste frontière, commissariat de police ou Conseil Portugais pour les Réfugiés (CPR).",
+                hack: "Le dépôt de la demande d'asile suspend immédiatement toute procédure d'expulsion et donne droit à l'Attestation de Demande d'Asile et à l'assistance du CPR."
+            },
+            {
+                docName: "📄 Justificatif de Domicile et Soutien Social",
+                accepted: "Preuve d'adresse ou attestation d'hébergement délivrée par un centre d'accueil humanitaire (CPR / Croix-Rouge / SCML).",
+                where: "Organismes d'accueil social ou Junta de Freguesia.",
+                hack: "Les demandeurs d'asile ont un accès complet aux soins médicaux du SNS et reçoivent un Titre de Séjour Provisoire après admission."
+            }
+        ],
+        voluntary_return: [
+            {
+                docName: "✈️ Demande du Programme ARVoRe (OIM / AIMA)",
+                accepted: "Inscription officielle au Programme d'Aide au Retour Volontaire et à la Réintégration géré par l'OIM.",
+                where: "Bureau de l'OIM Portugal (retornovoluntario.pt) ou guichet de l'AIMA.",
+                hack: "Le programme prend en charge 100% du billet d'avion, l'assistance à l'aéroport et une allocation de réinstallation pour projets productifs."
             }
         ]
     }

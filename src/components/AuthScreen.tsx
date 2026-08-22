@@ -171,50 +171,34 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
             if (isLogin) {
                 const targetEmail = email.trim().toLowerCase();
-                const isCEO = targetEmail === ADMIN_EMAIL;
 
-                let sessionUser = null;
                 const { data, error } = await supabase.auth.signInWithPassword({ email: targetEmail, password });
                 
-                if (data?.session?.user) {
-                    sessionUser = data.session.user;
-                } else if (isCEO) {
-                    console.log("­ƒææ [MIRA AUTH] Entrada Admin Fundadora para:", targetEmail);
-                    // Provisioning admin profile if initial password attempt fails
-                    const { data: signUpData } = await supabase.auth.signUp({
-                        email: targetEmail,
-                        password: password,
-                        options: { data: { name: 'Amanda Abreu (Admin MIRA)', role: 'admin' } }
-                    }).catch(() => ({ data: null }));
-
-                    sessionUser = signUpData?.user || {
-                        id: 'ceo-admin-amanda-id',
-                        email: targetEmail,
-                        user_metadata: { name: 'Amanda Abreu (Admin MIRA)', role: 'admin' },
-                        email_confirmed_at: new Date().toISOString()
-                    };
-                } else if (error) {
+                if (error) {
                     throw error;
                 }
 
-                if (sessionUser) {
-                    let profile = await authService.fetchProfileWithRetry(sessionUser.id, sessionUser.email!);
-                    
-                    if (!profile) {
-                        profile = await authService.createFallbackProfile(
-                            sessionUser.id, 
-                            sessionUser.email!, 
-                            sessionUser.user_metadata?.name || sessionUser.user_metadata?.full_name || 'Amanda Abreu (Admin MIRA)'
-                        );
-                    }
+                const sessionUser = data?.session?.user;
+                if (!sessionUser) {
+                    throw new Error('Falha ao autenticar no servidor seguro.');
+                }
 
-                    if (profile) {
-                        const u = authService.mapProfileToUser(profile, sessionUser);
-                        onLogin(u);
-                        localStorage.setItem('mira_user', JSON.stringify(u));
-                    } else {
-                        throw new Error(t('auth_error_sync', language));
-                    }
+                let profile = await authService.fetchProfileWithRetry(sessionUser.id, sessionUser.email!);
+                
+                if (!profile) {
+                    profile = await authService.createFallbackProfile(
+                        sessionUser.id, 
+                        sessionUser.email!, 
+                        sessionUser.user_metadata?.name || sessionUser.user_metadata?.full_name || 'Membro MIRA'
+                    );
+                }
+
+                if (profile) {
+                    const u = authService.mapProfileToUser(profile, sessionUser);
+                    onLogin(u);
+                    localStorage.setItem('mira_user', JSON.stringify(u));
+                } else {
+                    throw new Error(t('auth_error_sync', language));
                 }
             } else {
                 // V2026.SUPREMO: Unified Registration Protocol

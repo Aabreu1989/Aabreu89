@@ -64,6 +64,24 @@ const STATS_CACHE_THRESHOLD = 1000; // 1 segundo (Real-time V2026.GOLD)
 let cachedAiQueryCategorization: any = null;
 let lastAiQueryCategorizationTime: number = 0;
 
+async function ensureAdminSession(): Promise<boolean> {
+    try {
+        let { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) {
+            const { data: refreshData } = await supabase.auth.refreshSession();
+            session = refreshData?.session;
+        }
+        if (!session?.user) {
+            console.warn("🛑 [MIRA ADMIN] Tentativa de consulta administrativa sem sessão Supabase JWT ativa.");
+            return false;
+        }
+        return true;
+    } catch (e) {
+        console.warn("🛑 [MIRA ADMIN] Erro ao validar sessão Supabase:", e);
+        return false;
+    }
+}
+
 export const adminService: AdminService = {
     async fetchUsers(
         page: number = 0, 
@@ -71,6 +89,12 @@ export const adminService: AdminService = {
         searchTerm: string = '', 
         statusFilter: 'all' | 'active' | 'blocked' | 'verified' = 'all'
     ): Promise<{ users: User[], total: number }> {
+        const hasSession = await ensureAdminSession();
+        if (!hasSession) {
+            console.error("🛑 [MIRA ADMIN] Acesso negado em fetchUsers: Sessão Supabase inexistente ou inválida.");
+            return { users: [], total: 0 };
+        }
+
         const from = page * pageSize;
         const to = from + pageSize - 1;
 
@@ -89,6 +113,11 @@ export const adminService: AdminService = {
             }
 
             const queryRes = await query.order('created_at', { ascending: false }).range(from, to);
+
+            if (queryRes.error) {
+                console.error("🛑 [MIRA ADMIN] Erro na query profiles:", queryRes.error);
+                return { users: [], total: 0 };
+            }
 
             const data = queryRes.data || [];
             const count = queryRes.count !== null && queryRes.count !== undefined ? queryRes.count : data.length;
@@ -124,6 +153,11 @@ export const adminService: AdminService = {
     },
 
     async fetchUserFilterCounts(): Promise<{ total: number; active: number; blocked: number; verified: number }> {
+        const hasSession = await ensureAdminSession();
+        if (!hasSession) {
+            return { total: 0, active: 0, blocked: 0, verified: 0 };
+        }
+
         try {
             const [totalRes, blockedRes, verifiedRes] = await Promise.all([
                 supabase.from('profiles').select('id', { count: 'exact', head: true }),

@@ -182,7 +182,8 @@ const AppContent: React.FC = () => {
     const [docDrafts, setDocDrafts] = useState<any[]>([]);
     const [targetProfileUser, setTargetProfileUser] = useState<User | null>(null);
     const [docHistory, setDocHistory] = useState<GeneratedDocument[]>([]);
-    const isSystemAdmin = isUserAdmin(user);
+    const [hasSupabaseSession, setHasSupabaseSession] = useState<boolean>(false);
+    const isSystemAdmin = isUserAdmin(user) && hasSupabaseSession;
     // Helper functions for bulletproof interaction persistence across user sessions
     const loadSavedLikes = (): Set<string> => {
         try {
@@ -643,17 +644,18 @@ const AppContent: React.FC = () => {
         }
 
         // 🛡️ MIRA V2026.GOLD: Sovereign Admin Guard (Administração & Concursos)
-        const isAdmin = isUserAdmin(user);
+        // O acesso administrativo exige cumulativamente o papel de admin e uma sessão Supabase JWT real
+        const isAdmin = isUserAdmin(user) && hasSupabaseSession;
 
         if ((currentView === ViewType.ADMIN || currentView === ViewType.PREMIOS) && user && !isAdmin) {
-            console.warn(`🚨 ACESSO NEGADO A ${currentView}: Redirecionando utilizador comum via Guardião Soberano.`);
+            console.warn(`🚨 ACESSO NEGADO A ${currentView}: Sem sessão Supabase válida de Administrador.`);
             setCurrentView(ViewType.DASHBOARD);
         }
 
         // 🛡️ MIRA: LOCAL BYPASS (No Cloud Required)
         console.log("MIRA_DEBUG: URL Search is", window.location.search);
         // Logic moved above for early exit
-    }, [isInitializing, currentView, user?.email]);
+    }, [isInitializing, currentView, user?.email, hasSupabaseSession]);
 
     // Main Auth Init & Persistence
     useEffect(() => {
@@ -688,8 +690,10 @@ const AppContent: React.FC = () => {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user && mounted) {
                     console.log('✅ [MIRA AUTH] Existing session found:', session.user.email);
+                    setHasSupabaseSession(true);
                     await handleSessionUser(session.user, mounted);
                 } else if (mounted) {
+                    setHasSupabaseSession(false);
                     const localUserStr = localStorage.getItem('mira_user');
                     if (localUserStr) {
                         try {
@@ -712,6 +716,7 @@ const AppContent: React.FC = () => {
 
         const handleSessionUser = async (authUser: any, mounted: boolean) => {
             if (!mounted) return;
+            setHasSupabaseSession(true);
             let profile = await authService.fetchProfileWithRetry(
                 authUser.id,
                 authUser.email || '',
@@ -725,6 +730,7 @@ const AppContent: React.FC = () => {
                 );
             }
             if (profile && mounted) {
+                setHasSupabaseSession(true);
                 const u = authService.mapProfileToUser(profile, authUser);
                 setUser(u);
                 localStorage.setItem('mira_user', JSON.stringify(u));
@@ -749,6 +755,7 @@ const AppContent: React.FC = () => {
             const authEvents = ['SIGNED_IN', 'INITIAL_SESSION', 'TOKEN_REFRESHED', 'USER_UPDATED'];
             if (authEvents.includes(event)) {
                 if (session?.user && mounted) {
+                    setHasSupabaseSession(true);
                     // VERIFICAÇÃO DE SEGURANÇA: Bloqueio de sessão sem confirmação de email (V2026.GOLD)
                     // V11000: Permissivo em isRecoveryMode, Provedores OAuth (Google) ou Admin Amanda
                     const isOAuth = session.user.app_metadata.provider !== 'email';
@@ -756,6 +763,7 @@ const AppContent: React.FC = () => {
                     if (!session.user.email_confirmed_at && !isRecoveryMode && !isOAuth && !isAdmin) {
                         console.warn("MIRA Security: Sessão ativa mas email não confirmado. Bloqueando acesso.");
                         await supabase.auth.signOut();
+                        setHasSupabaseSession(false);
                         setUser(null);
                         localStorage.removeItem('mira_user');
                         return;
@@ -783,6 +791,7 @@ const AppContent: React.FC = () => {
                         }
 
                         const u = authService.mapProfileToUser(profile, session.user);
+                        setHasSupabaseSession(true);
                         setUser(u);
                         localStorage.setItem('mira_user', JSON.stringify(u));
                         setShowSplash(false);
@@ -812,6 +821,7 @@ const AppContent: React.FC = () => {
 
                         if (fallbackProfile && mounted) {
                            const u = authService.mapProfileToUser(fallbackProfile, session.user);
+                           setHasSupabaseSession(true);
                            setUser(u);
                            localStorage.setItem('mira_user', JSON.stringify(u));
                            setShowSplash(false);
@@ -819,6 +829,7 @@ const AppContent: React.FC = () => {
                         } else if (mounted) {
                             console.warn("🚨 [MIRA SECURITY] Falha crítica na criação de perfil! Purgação de sessão em curso.");
                             await supabase.auth.signOut();
+                            setHasSupabaseSession(false);
                             setUser(null);
                             localStorage.removeItem('mira_user');
                             setIsInitializing(false);
@@ -827,6 +838,7 @@ const AppContent: React.FC = () => {
                     }
                 }
             } else if (event === 'SIGNED_OUT') {
+                setHasSupabaseSession(false);
                 // MIRA V2026.GOLD: Prevent view reset on refresh "flicker"
                 // Only clear if we are NOT initializing (which means it's an explicit logout or session loss)
                 if (!isInitializing) {
@@ -1152,6 +1164,7 @@ const AppContent: React.FC = () => {
     }, []);
 
     const handleLogout = async () => {
+        setHasSupabaseSession(false);
         try {
             // Non-blocking sign out
             await Promise.race([
@@ -1164,6 +1177,7 @@ const AppContent: React.FC = () => {
 
         // Force clear all local states immediately
         setUser(null);
+        setHasSupabaseSession(false);
         localStorage.clear();
         sessionStorage.clear();
         
@@ -1393,7 +1407,7 @@ const AppContent: React.FC = () => {
              case ViewType.DASHBOARD: return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} />;
              case ViewType.ADMIN: 
                  // 💎 SOBERANIA MÁXIMA V2026.GOLD: Render fallback only, logic is in useEffect Guard
-                 if (!isUserAdmin(user)) {
+                 if (!isUserAdmin(user) || !hasSupabaseSession) {
                      return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} />;
                  }
                 return <AdminPanel 
@@ -1587,6 +1601,7 @@ const AppContent: React.FC = () => {
                 ) : (
                     <AuthScreen 
                         onLogin={(u) => { 
+                            setHasSupabaseSession(true);
                             setUser(u); 
                             analytics.track('app_launch', u.id, 'Authentication');
                             handleViewChange(ViewType.HOME); 

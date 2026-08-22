@@ -284,6 +284,9 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.steps = [t("wiz_family_step1", language), t("wiz_family_step2", language), t("wiz_family_step3", language)];
             result.docs = ["aima_dec_responsabilidade", "aima_dec_alojamento", "aima_dec_sustento", "certidao_civil_req", "nif_req"];
             result.needsAIMAAppointment = true;
+            result.infoNote = language.toLowerCase() === 'pt'
+                ? "💡 REAGRUPAMENTO FAMILIAR (Art. 98.º a 108.º Lei 23/2007): O titular de residência válida pode chamar cônjuge, filhos menores/estudantes e ascendentes a cargo. Meios de subsistência calculados com base no SMN de 920€ (100% titular + 50% cônjuge + 30% por filho). Familiares fora de Portugal instruem o Visto D6 no Consulado de Portugal."
+                : "💡 FAMILY REUNIFICATION (Art. 98 to 108): Legal residence holders can reunite spouse, minor/student children, and dependent parents. Subsistence means based on €920 minimum wage (100% sponsor + 50% spouse + 30% per child). Relatives abroad apply for D6 Visa at the Portuguese Consulate.";
         } else if (purpose === "humanitarian" || sit === "asylum") {
             result.title = t("wiz_sit_asylum", language);
             result.desc = t("wiz_purp_humanitarian_desc", language);
@@ -308,11 +311,11 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
 
         // 📝 MIRA LEGISLATIVO: Telemetria de acompanhamento parlamentar em tempo real
         const warningsList: string[] = [];
-        if (sit === "family" || purpose === "art122") {
+        if (purpose === "art122") {
             warningsList.push(
                 language.toLowerCase() === 'pt' 
-                    ? "AVISO LEGISLATIVO: Existem propostas em apreciação parlamentar sobre a regularização por filho menor (Artigo 122). Este procedimento encontra-se pendente de alteração regulamentar." 
-                    : "LEGISLATIVE NOTICE: Proposals are currently under parliamentary review regarding regularization via minor children (Article 122). This pathway is pending legislative amendment."
+                    ? "AVISO LEGISLATIVO: Existem propostas em apreciação parlamentar sobre a regularização por filho menor (Artigo 122.º). Este procedimento de exceção encontra-se pendente de alteração regulamentar." 
+                    : "LEGISLATIVE NOTICE: Proposals are currently under parliamentary review regarding regularization via minor children (Article 122). This exceptional pathway is pending legislative amendment."
             );
         }
         if (sit === "student" || purpose === "visa_d4") {
@@ -434,7 +437,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                 { id: 'legal',         label: t("wiz_sit_legal", language),         icon: <UserCheck size={18} className="text-emerald-500" />, badge: t('badge_valid_visa', language) },
                                 { id: 'irregular',     label: t("wiz_sit_irregular", language),     icon: <UserX size={18} className="text-red-500" />,         badge: t('badge_no_visa', language) },
                                 { id: 'contract',      label: t("wiz_sit_contract", language),      icon: <Briefcase size={18} className="text-blue-500" />,    badge: t('badge_work_contract', language) },
-                                { id: 'student',       label: t("wiz_sit_student", language),       icon: <GraduationCap size={18} className="text-red-500 animate-pulse" />, badge: t('badge_study_research', language), isRevoked: true },
+                                { id: 'student',       label: t("wiz_sit_student", language),       icon: <GraduationCap size={18} className="text-blue-500" />, badge: t('badge_study_research', language) },
                                 { id: 'family',        label: t("wiz_sit_family", language),        icon: <Users size={18} className="text-indigo-500" />,        badge: t('badge_reunification', language) },
                                 { id: 'asylum',        label: t("wiz_sit_asylum", language),        icon: <ShieldCheck size={18} className="text-purple-500" />, badge: t('badge_asylum_refugee', language) },
                                 { id: 'retirement',    label: t("wiz_sit_retirement", language),    icon: <Landmark size={18} className="text-amber-500" />, badge: t('badge_retirement', language) },
@@ -447,7 +450,6 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                     badgeText={opt.badge}
                                     onClick={() => handleAnswer('situation', opt.id)}
                                     idx={idx}
-                                    isRevoked={opt.isRevoked}
                                 />
                             ))}
                         </div>
@@ -482,7 +484,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                     { id: 'art88',           label: t("wiz_purp_art88_consular", language),  icon: <Briefcase size={18} className="text-emerald-500" />,  badge: t('badge_dependent_work_consular', language) },
                                     { id: 'art90a',          label: t("wiz_purp_art90a", language),          icon: <Globe size={18} className="text-purple-500" />,       badge: t('badge_digital_nomad', language) },
                                     { id: 'visa_d7',         label: t("wiz_purp_visa_d7", language),         icon: <Landmark size={18} className="text-amber-500" />,     badge: t('badge_visa_d7', language) },
-                                    { id: 'visa_d4',         label: t("wiz_purp_visa_d4", language),         icon: <GraduationCap size={18} className="text-red-500 animate-pulse" />, badge: t('badge_visa_d4', language), isRevoked: true },
+                                    { id: 'visa_d4',         label: t("wiz_purp_visa_d4", language),         icon: <GraduationCap size={18} className="text-blue-500" />, badge: t('badge_visa_d4', language) },
                                     { id: 'art89',           label: t("wiz_purp_art89", language),           icon: <Sparkles size={18} className="text-blue-500" />,       badge: t('badge_independent_work', language) }
                                   ]
                                 : [
@@ -490,7 +492,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                     { id: 'art89',           label: t("wiz_purp_art89", language),           icon: <Sparkles size={18} className="text-blue-500" />,       badge: t('badge_independent_work', language) },
                                     { id: 'art90a',          label: t("wiz_purp_art90a", language),          icon: <Globe size={18} className="text-purple-500" />,       badge: t('badge_digital_nomad', language) },
                                     { id: 'visa_d7',         label: t("wiz_purp_visa_d7", language),         icon: <Landmark size={18} className="text-amber-500" />,     badge: t('badge_visa_d7', language) },
-                                    { id: 'visa_d4',         label: t("wiz_purp_visa_d4", language),         icon: <GraduationCap size={18} className="text-red-500 animate-pulse" />, badge: t('badge_visa_d4', language), isRevoked: true },
+                                    { id: 'visa_d4',         label: t("wiz_purp_visa_d4", language),         icon: <GraduationCap size={18} className="text-blue-500" />, badge: t('badge_visa_d4', language) },
                                     { id: 'visa_job_search', label: t("wiz_purp_visa_job_search", language), icon: <Briefcase size={18} className="text-teal-500" />,  badge: t('badge_visa_job_search', language) },
                                     { id: 'art122',          label: t("wiz_purp_art122", language),          icon: <Users size={18} className="text-red-500 animate-pulse" />,           badge: t('badge_reunification_others', language), isRevoked: true },
                                     { id: 'humanitarian',    label: t("wiz_purp_humanitarian", language),    icon: <ShieldCheck size={18} className="text-slate-500" />,   badge: t('badge_humanitarian_reasons', language) }
