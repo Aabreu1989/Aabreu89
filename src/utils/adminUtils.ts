@@ -9,6 +9,7 @@ export const ADMIN_EMAILS = [
 ];
 
 export const ADMIN_USER_IDS = [
+    '00000000-0000-0000-0000-000000000001',
     '775fb10a-78cd-4753-938d-dea75fddd77a',
     'bc16353e-67ae-4ff5-a6aa-bc4d8f62af08',
     'dea69de1-0ed4-44dc-9699-0544e6f39ed8',
