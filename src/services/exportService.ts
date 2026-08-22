@@ -180,66 +180,119 @@ function groupByYear(monthly: MonthlyDataPoint[]) {
   return byYear;
 }
 
-// ─── HELPER: Adicionar cabeçalho MIRA ao PDF ─────────────────────────────────
-function addMiraHeader(doc: jsPDF, title: string, subtitle: string) {
+// ─── HELPER: Carregar Logo MIRA em Base64 (Cache em Memória) ─────────────────
+let cachedLogoBase64: string | null = null;
+
+async function getLogoBase64(): Promise<string | null> {
+  if (cachedLogoBase64) return cachedLogoBase64;
+  if (typeof window === 'undefined') return null;
+  try {
+    const response = await fetch('/logo.png');
+    if (response.ok) {
+      const blob = await response.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          cachedLogoBase64 = reader.result as string;
+          resolve(cachedLogoBase64);
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+      });
+    }
+  } catch (err) {
+    console.warn('MIRA PDF: Carregamento do logo via fetch falhou:', err);
+  }
+  return null;
+}
+
+// ─── HELPER: Adicionar cabeçalho MIRA ao PDF (Com Logo Oficial e Sem Colisões) ─
+async function addMiraHeader(doc: jsPDF, title: string, subtitle: string): Promise<number> {
   const pageW = doc.internal.pageSize.getWidth();
+  const logoData = await getLogoBase64();
 
-  // Fundo do cabeçalho
-  doc.setFillColor(15, 23, 42); // #0f172a
-  doc.rect(0, 0, pageW, 52, 'F');
+  // Fundo do cabeçalho superior
+  doc.setFillColor(15, 23, 42); // #0f172a (Dark Slate)
+  doc.rect(0, 0, pageW, 46, 'F');
 
-  // Quadrado laranja com "M"
-  doc.setFillColor(255, 140, 0); // #FF8C00
-  doc.roundedRect(14, 10, 30, 30, 4, 4, 'F');
-  doc.setTextColor(255, 255, 255);
+  // Logo MIRA Oficial
+  if (logoData) {
+    try {
+      doc.addImage(logoData, 'PNG', 14, 8, 30, 30);
+    } catch {
+      // Fallback estético caso a imagem falhe
+      doc.setFillColor(255, 140, 0); // #FF8C00
+      doc.roundedRect(14, 8, 30, 30, 4, 4, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('MIRA', 29, 25, { align: 'center' });
+    }
+  } else {
+    // Quadrado laranja elegante com marca MIRA
+    doc.setFillColor(255, 140, 0); // #FF8C00
+    doc.roundedRect(14, 8, 30, 30, 4, 4, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MIRA', 29, 25, { align: 'center' });
+  }
+
+  // Nome da aplicação
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.text('M', 29, 31, { align: 'center' });
-
-  // Nome do app
-  doc.setFontSize(20);
-  doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
-  doc.text('MIRA Imigrante', 50, 22);
+  doc.text('MIRA Imigrante', 48, 20);
 
-  // URL
-  doc.setFontSize(9);
+  // URL e Portal Oficial
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(255, 140, 0);
-  doc.text(APP_URL, 50, 30);
+  doc.text(APP_URL, 48, 28);
 
-  // Badge auditável
-  doc.setFillColor(5, 150, 105, 30);
-  doc.setTextColor(52, 211, 153);
-  doc.setFontSize(7);
+  // Badge Auditável (Top Right)
+  doc.setFillColor(16, 185, 129); // Emerald-500
+  doc.roundedRect(pageW - 46, 12, 32, 9, 2, 2, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(6.5);
   doc.setFont('helvetica', 'bold');
-  doc.text('✓ 100% AUDITÁVEL', pageW - 50, 22);
+  doc.text('✓ 100% AUDITÁVEL', pageW - 30, 18, { align: 'center' });
 
-  // Linha separadora laranja
+  // Linha separadora laranja MIRA
   doc.setDrawColor(255, 140, 0);
-  doc.setLineWidth(0.8);
-  doc.line(0, 52, pageW, 52);
+  doc.setLineWidth(1);
+  doc.line(0, 46, pageW, 46);
 
-  // Título do relatório
+  // Faixa de Título e Metadados
   doc.setFillColor(248, 250, 252);
-  doc.rect(0, 52, pageW, 32, 'F');
-  doc.setFontSize(16);
+  doc.rect(0, 46, pageW, 36, 'F');
+
+  // Linha 1: Título principal
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text(title, 14, 68);
+  doc.text(title, 14, 57);
 
-  doc.setFontSize(9);
+  // Linha 2: Subtítulo em linha inteira sem sobreposições
+  doc.setFontSize(7.5);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 116, 139);
-  doc.text(subtitle, 14, 78);
+  doc.setTextColor(71, 85, 105);
+  const splitSub = doc.splitTextToSize(subtitle, pageW - 28);
+  doc.text(splitSub, 14, 65);
 
-  // Data de geração
+  // Linha 3: Data de geração posicionada em linha dedicada
   const now = new Date().toLocaleString('pt-PT', { dateStyle: 'full', timeStyle: 'short' });
-  doc.setFontSize(8);
-  doc.setTextColor(100, 116, 139);
-  doc.text(`Gerado em: ${now}`, pageW - 14, 78, { align: 'right' });
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'italic');
+  doc.setTextColor(148, 163, 184);
+  doc.text(`📅 Documento oficial gerado em: ${now}`, 14, 75);
 
-  return 92; // Y inicial após o cabeçalho
+  // Linha separadora sutil
+  doc.setDrawColor(226, 232, 240);
+  doc.setLineWidth(0.5);
+  doc.line(14, 79, pageW - 14, 79);
+
+  return 85; // Y inicial seguro para as seções seguintes
 }
 
 // ─── HELPER: Adicionar rodapé a todas as páginas ──────────────────────────────
@@ -303,7 +356,7 @@ export async function generateAdminHubPDF(data: AuditPlatformData): Promise<void
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageW = doc.internal.pageSize.getWidth();
 
-  let y = addMiraHeader(
+  let y = await addMiraHeader(
     doc,
     'Relatório de Métricas — Admin Hub',
     'Painel de Gestão Administrativa · Dados em tempo real · Base Supabase'
@@ -394,7 +447,7 @@ export async function generateImpactReportPDF(data: AuditPlatformData, auditData
   // ═══════════════════════════════════════════════════════════════════════════
   // PÁGINA 1: 📊 VISÃO GERAL & KPIs AUDITADOS DA PLATAFORMA
   // ═══════════════════════════════════════════════════════════════════════════
-  let y = addMiraHeader(
+  let y = await addMiraHeader(
     doc,
     'Relatório de Impacto Social & Métricas — MIRA Imigrante',
     'Dossiê Estratégico Multimodular · Elegibilidade para Fundos FAMI · EUSIC · PT2030 · IEFP · PRR'
@@ -621,7 +674,7 @@ export async function generateImpactReportPDF(data: AuditPlatformData, auditData
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text('4. Habitação & Serviços Públicos Locais Mapeados', 14, y);
+  doc.text('4. Habitação, Serviços Públicos & Dossiê de Fundos', 14, y);
   y += 6;
 
   // Habitação
@@ -684,20 +737,29 @@ export async function generateImpactReportPDF(data: AuditPlatformData, auditData
 
   y = (doc as any).lastAutoTable.finalY + 8;
 
-  // Dossiê Estratégico de Fundos
-  doc.setFillColor(238, 242, 255);
-  doc.setDrawColor(99, 102, 241);
-  doc.roundedRect(14, y, pageW - 28, 48, 2, 2, 'FD');
-  doc.setFontSize(9);
+  // Dossiê Estratégico de Fundos (Card Elegante e Espaçado)
+  const boxHeight = 52;
+  doc.setFillColor(238, 242, 255); // Indigo-50
+  doc.setDrawColor(99, 102, 241); // Indigo-500
+  doc.roundedRect(14, y, pageW - 28, boxHeight, 2, 2, 'FD');
+
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(67, 56, 202);
-  doc.text('🏆 DOSSIÊ ESTRATÉGICO DE ELEGIBILIDADE PARA FUNDOS (FAMI · EUSIC · PT2030 · PRR)', 18, y + 8);
+  doc.text('🏆 DOSSIÊ ESTRATÉGICO DE ELEGIBILIDADE PARA FINANCIAMENTO & FUNDOS (FAMI · EUSIC · PT2030 · PRR)', 18, y + 7);
+
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7.5);
+  doc.setFontSize(7.2);
   doc.setTextColor(15, 23, 42);
-  const grantText = `A plataforma MIRA Imigrante comprova perante entidades avaliadoras nacionais e europeias uma solução digital plenamente operacional com:\n• Base de Utilizadores Ativos: ${data.users.toLocaleString('pt-PT')} contas com ${data.retentionRate}% de taxa de retenção recorrente.\n• Eficiência no Serviço Público: ${data.horasPoupadas.toLocaleString('pt-PT')} horas burocráticas poupadas aos cidadãos e serviços do Estado.\n• Catálogo Oficial de Formação: ${(data.courses?.db ?? 168).toLocaleString('pt-PT')} cursos reconhecidos (DGES + IEFP) para integração no mercado.\n• Rede Mapeada: ${(data.services?.db ?? 127).toLocaleString('pt-PT')} serviços públicos e ${(data.jobs?.db ?? 11414).toLocaleString('pt-PT')} vagas de emprego ativas.\n• Conformidade dos Dados: Registos 100% auditáveis via PostgreSQL Supabase com timestamps UTC e log de auditoria.`;
+  const grantText = `A plataforma MIRA Imigrante comprova perante entidades avaliadoras nacionais e europeias uma solução digital plenamente operacional com:\n• Base de Utilizadores Ativos: ${data.users.toLocaleString('pt-PT')} contas com ${data.retentionRate}% de taxa de retenção recorrente.\n• Eficiência no Serviço Público: ${data.horasPoupadas.toLocaleString('pt-PT')} horas burocráticas poupadas aos cidadãos e serviços do Estado.\n• Catálogo Oficial de Formação: ${(data.courses?.db ?? 168).toLocaleString('pt-PT')} cursos reconhecidos (DGES + IEFP) para integração no mercado.\n• Rede Mapeada: ${(data.services?.db ?? 127).toLocaleString('pt-PT')} serviços públicos e ${(data.jobs?.db ?? 11414).toLocaleString('pt-PT')} vagas de emprego ativas.\n• Conformidade dos Dados: Registos 100% auditáveis via PostgreSQL Supabase com timestamps UTC e rastreabilidade total.`;
   const splitGrant = doc.splitTextToSize(grantText, pageW - 36);
-  doc.text(splitGrant, 18, y + 15);
+  doc.text(splitGrant, 18, y + 14);
+
+  // Carimbo de Certificação Final
+  doc.setFontSize(6.5);
+  doc.setFont('helvetica', 'italic');
+  doc.setTextColor(100, 116, 139);
+  doc.text('Emissão Certificada MIRA Imigrante · Plataforma Cidadania Digital Portugal · Registo Auditável', 18, y + boxHeight - 3);
 
   addFooters(doc);
   const ts = new Date().toISOString().slice(0, 10);
@@ -710,7 +772,7 @@ export async function generateImpactReportPDF(data: AuditPlatformData, auditData
 export async function generateAuditChatPDF(auditData: AuditCategoryData): Promise<void> {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-  let y = addMiraHeader(
+  let y = await addMiraHeader(
     doc,
     'Auditoria de Consultas — MIRA Chat IA',
     'Categorização Sistemática de Perguntas dos Utilizadores · Dados Auditáveis'
