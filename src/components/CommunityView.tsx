@@ -110,31 +110,10 @@ const CommunityViewComponent = ({
     if (user?.id) {
       followService.getFollowingSet(user.id).then(set => setFollowedUserIds(set));
       
-      // 🛡️ REVALIDAÇÃO REAL DOS POSTS E CONTADORES GLOBAIS AO ENTRAR NO MIRA HUB
+      // 🛡️ REVALIDAÇÃO REAL SOBERANA DOS POSTS DO SUPABASE
       communityService.fetchPosts(user.id).then(fetched => {
         if (fetched && fetched.length > 0) {
-          setMasterPosts(prev => {
-            const fetchedMap = new Map(fetched.map(p => [p.id, p]));
-            // Atualizar posts existentes com os contadores globais frescos do backend
-            const updated = prev.map(p => {
-              const remote = fetchedMap.get(p.id);
-              if (!remote) return p;
-              return {
-                ...p,
-                likes: remote.likes ?? 0,
-                usefulVotes: remote.usefulVotes ?? 0,
-                fakeVotes: remote.fakeVotes ?? 0,
-                comments: (remote.comments && remote.comments.length > 0) ? remote.comments : p.comments
-              };
-            });
-            // Adicionar novos posts remotos que ainda não constem localmente
-            fetched.forEach(f => {
-              if (!updated.some(u => u.id === f.id)) {
-                updated.push(f);
-              }
-            });
-            return updated;
-          });
+          setMasterPosts(fetched);
         }
       }).catch(err => console.warn("MIRA: Revalidação de posts em background:", err));
     }
