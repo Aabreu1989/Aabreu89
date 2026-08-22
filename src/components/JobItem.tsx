@@ -121,9 +121,8 @@ const JobItem: React.FC<JobItemProps> = ({ job, language }) => {
                                 {formatJobTitle(job.title)}
                             </h4>
                             <div className="flex items-center gap-2 mt-1">
-                                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100/60 flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    Vaga Verificada
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-100/80 px-2 py-0.5 rounded-md border border-slate-200/30">
+                                    {job.sourceName || 'MIRA'}
                                 </span>
                             </div>
                         </div>
