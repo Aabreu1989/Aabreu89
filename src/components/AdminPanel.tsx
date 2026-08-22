@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import AdminSaberIA from './AdminSaberIA';
 import { MiraImpactReport } from './MiraImpactReport';
 import PremiosView from './PremiosView';
@@ -115,7 +115,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const [aiKnowledge, setAIKnowledge] = useState<any[]>([]);
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [selectedKnowledgeIds, setSelectedKnowledgeIds] = useState<Set<string>>(new Set());
-    const [loading, setLoading] = useState(false);
+    const [loadingUsers, setLoadingUsers] = useState(false);
+    const [loadingDashboard, setLoadingDashboard] = useState(false);
+    const [loadingKnowledge, setLoadingKnowledge] = useState(false);
+    const [loadingGamification, setLoadingGamification] = useState(false);
+    const fetchingTabsRef = useRef<Set<string>>(new Set());
+    const realtimeDebounceTimerRef = useRef<any>(null);
     const [counts, setCounts] = useState<{
         courses: { db: number; prot: number };
         services: { db: number; prot: number };
@@ -191,119 +196,168 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const [userFilterCounts, setUserFilterCounts] = useState<{ total: number; active: number; blocked: number; verified: number }>({ total: 0, active: 0, blocked: 0, verified: 0 });
     const { showToast } = useToast();
 
-    useEffect(() => {
-        loadData(true);
-        // 🚀 MIRA: Polling de alta frequência a cada 3 segundos (Real-time live stats)
-        const interval = setInterval(() => loadData(true), 3000);
-        return () => clearInterval(interval);
-    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus]);
-
-    // 🛡️ MIRA REAL-TIME: Escuta eventos locais e Postgres Realtime para atualizar o Dashboard instantaneamente
-    useEffect(() => {
-        const handleLocalTelemetryUpdate = () => loadData(true);
-        window.addEventListener('mira-telemetry-update', handleLocalTelemetryUpdate);
-        window.addEventListener('mira-access-recorded', handleLocalTelemetryUpdate);
-
-        const channel = supabase
-            .channel('admin_sovereign_sync')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => loadData(true))
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => loadData(true))
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'job_posts' }, () => loadData(true))
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, () => loadData(true))
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => loadData(true))
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, () => loadData(true))
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => loadData(true))
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_suggestions' }, () => loadData(true))
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_logs' }, () => loadData(true))
-            .subscribe();
-
-        return () => {
-            window.removeEventListener('mira-telemetry-update', handleLocalTelemetryUpdate);
-            window.removeEventListener('mira-access-recorded', handleLocalTelemetryUpdate);
-            supabase.removeChannel(channel);
-        };
-    }, []);
-
-    // 🛡️ SNIPER CACHE: Optimized loadData to prevent layout thrashing
-    const loadData = useCallback(async (force = false) => {
+    // 🛡️ SNIPER CACHE & PROGRESSIVE TARGETED LOADER (PATCH 4E)
+    const loadData = useCallback(async (force = false, targetTab?: string) => {
+        const tab = targetTab || activeTab;
         const now = Date.now();
-        const cached = dataCache[activeTab];
-        const threshold = document.visibilityState === 'visible' ? 30000 : 180000;
+        const cached = dataCache[tab];
+        const threshold = typeof document !== 'undefined' && document.visibilityState === 'visible' ? 30000 : 180000;
         
         if (!force && cached && (now - cached.timestamp < threshold)) {
             return;
         }
 
-        // MIRA V2026.GOLD: Silent background refresh - keep UI cards visible at all times
-        const hasData = !!cached;
-        try {
-            const tasks = [];
-            
-            // Dashboard counts
-            tasks.push(adminService.fetchSyncStatus().then(status => {
-                if (status) {
-                    const newCounts = { 
-                        courses: status.courses || { db: 0, prot: 0 }, 
-                        services: status.services || { db: 0, prot: 0 }, 
-                        // ✅ 100% valores reais da BD + Baselines Auditadas
-                        users: status.users || 0, 
-                        usersToday: status.usersToday || 0,
-                        appAccesses: status.appAccesses || 0,
-                        totalInteractions: (status as any).totalInteractions || 0,
-                        jobs: status.jobs || { db: 0, prot: 0 }, 
-                        reports: status.reports || 0,
-                        suggestions: status.suggestions || 0,
-                        posts: status.posts || 0,
-                        comments: status.comments || 0,
-                        downloads: status.downloads || 0,
-                        simulations: status.simulations || 0,
-                        totalLikes: status.totalLikes || 0,
-                        retentionRate: status.retentionRate || 0,
-                        returningUsers: status.returningUsers || 0,
-                        pwaMobileDownloads: status.pwaMobileDownloads || 0,
-                        pwaComputerDownloads: status.pwaComputerDownloads || 0,
-                        horasPoupadas: status.horasPoupadas || 0,
-                        processosAjudados: status.processosAjudados || 0,
-                        aiQueries: status.aiQueries || 0
-                    };
-                    setCounts(newCounts);
-                    setDataCache(prev => ({ ...prev, dashboard: { timestamp: now, data: newCounts } }));
-                }
-            }).finally(() => {
-                if (!hasData) setLoading(false);
-            }));
+        // 🛡️ INFLIGHT MUTEX PER TAB: Impede requisições sobrepostas na MESMA aba sem bloquear abas diferentes
+        if (fetchingTabsRef.current.has(tab)) {
+            return;
+        }
+        fetchingTabsRef.current.add(tab);
 
-            if (activeTab === 'dashboard') {
-                tasks.push(adminService.fetchUsers(0, 5).then(res => setUsers(res.users || [])));
-                tasks.push(adminService.fetchAIKnowledge(5, true).then(kb => setAIKnowledge(kb)));
-                tasks.push(adminService.fetchSyncStatusForPeriod(dashboardPeriod).then(p => setPeriodCounts(p)));
-            }
-            
-            if (activeTab === 'users') {
-                tasks.push(adminService.fetchUsers(usersPage, 20, userSearchTerm, userFilterStatus).then(result => {
+        try {
+            if (tab === 'users') {
+                setLoadingUsers(true);
+                const [result, filterCounts] = await Promise.all([
+                    adminService.fetchUsers(usersPage, 20, userSearchTerm, userFilterStatus),
+                    adminService.fetchUserFilterCounts()
+                ]);
+                
+                if (result) {
                     setUsers(result.users || []);
                     setTotalUsers(result.total || 0);
-                }));
-                tasks.push(adminService.fetchUserFilterCounts().then(fc => {
-                    if (fc) setUserFilterCounts(fc);
-                }));
-            } else if (activeTab === 'knowledge') {
-                tasks.push(adminService.fetchAIKnowledgePaginated(knowledgePage, 20).then(kbRes => {
+                }
+                if (filterCounts) {
+                    setUserFilterCounts(filterCounts);
+                }
+                setDataCache(prev => ({ ...prev, users: { timestamp: now, data: { result, filterCounts } } }));
+                setLoadingUsers(false);
+
+            } else if (tab === 'dashboard') {
+                setLoadingDashboard(true);
+                // 1. Dados rápidos de utilizadores e IA primeiro
+                const fastTasks = [
+                    adminService.fetchUsers(0, 5).then(res => setUsers(res.users || [])),
+                    adminService.fetchAIKnowledge(5, true).then(kb => setAIKnowledge(kb)),
+                    adminService.fetchSyncStatusForPeriod(dashboardPeriod).then(p => {
+                        if (p) setPeriodCounts(p);
+                    })
+                ];
+                await Promise.allSettled(fastTasks);
+
+                // 2. Dados pesados de sync-status em segundo plano
+                adminService.fetchSyncStatus().then(status => {
+                    if (status) {
+                        const newCounts = { 
+                            courses: status.courses || { db: 0, prot: 0 }, 
+                            services: status.services || { db: 0, prot: 0 }, 
+                            users: status.users || 0, 
+                            usersToday: status.usersToday || 0,
+                            appAccesses: status.appAccesses || 0,
+                            totalInteractions: (status as any).totalInteractions || 0,
+                            jobs: status.jobs || { db: 0, prot: 0 }, 
+                            reports: status.reports || 0,
+                            suggestions: status.suggestions || 0,
+                            posts: status.posts || 0,
+                            comments: status.comments || 0,
+                            downloads: status.downloads || 0,
+                            simulations: status.simulations || 0,
+                            totalLikes: status.totalLikes || 0,
+                            retentionRate: status.retentionRate || 0,
+                            returningUsers: status.returningUsers || 0,
+                            pwaMobileDownloads: status.pwaMobileDownloads || 0,
+                            pwaComputerDownloads: status.pwaComputerDownloads || 0,
+                            horasPoupadas: status.horasPoupadas || 0,
+                            processosAjudados: status.processosAjudados || 0,
+                            aiQueries: status.aiQueries || 0
+                        };
+                        setCounts(newCounts);
+                        setDataCache(prev => ({ ...prev, dashboard: { timestamp: Date.now(), data: newCounts } }));
+                    }
+                }).finally(() => {
+                    setLoadingDashboard(false);
+                });
+
+            } else if (tab === 'knowledge') {
+                setLoadingKnowledge(true);
+                const kbRes = await adminService.fetchAIKnowledgePaginated(knowledgePage, 20);
+                if (kbRes) {
                     setAIKnowledge(kbRes.items || []);
                     setTotalKnowledge(kbRes.total || 0);
-                }));
-            } else if (activeTab === 'gamification') {
-                const { gamificationService } = await import('../services/gamificationService');
-                tasks.push(gamificationService.fetchAllBadges().then(res => setAllBadges(res || [])));
-            }
+                }
+                setDataCache(prev => ({ ...prev, knowledge: { timestamp: now, data: kbRes } }));
+                setLoadingKnowledge(false);
 
-            await Promise.allSettled(tasks);
+            } else if (tab === 'gamification') {
+                setLoadingGamification(true);
+                const { gamificationService } = await import('../services/gamificationService');
+                const res = await gamificationService.fetchAllBadges();
+                if (res) setAllBadges(res || []);
+                setDataCache(prev => ({ ...prev, gamification: { timestamp: now, data: res } }));
+                setLoadingGamification(false);
+
+            } else if (tab === 'broadcast' || tab === 'impact') {
+                if (!counts.users) {
+                    adminService.fetchSyncStatus().then(status => {
+                        if (status) {
+                            setCounts(prev => ({ ...prev, users: status.users || prev.users }));
+                        }
+                    });
+                }
+            }
         } catch (e) {
             console.error("MIRA Admin Hub Error:", e);
         } finally {
-            setLoading(false);
+            fetchingTabsRef.current.delete(tab);
+            setLoadingUsers(false);
+            setLoadingKnowledge(false);
+            setLoadingGamification(false);
         }
-    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod]);
+    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod, counts.users, dataCache]);
+
+    useEffect(() => {
+        // Carga inicial suave respeitando cache
+        loadData(false);
+
+        // 🚀 MIRA GENTLE POLLING: Intervalo de 15s que não força concorrência e só roda quando a aba está visível
+        const interval = setInterval(() => {
+            if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+                loadData(false);
+            }
+        }, 15000);
+        return () => clearInterval(interval);
+    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, loadData]);
+
+    // 🛡️ MIRA REAL-TIME: Escuta eventos locais e Postgres com debounce seguro de 500ms
+    useEffect(() => {
+        const handleDebouncedUpdate = () => {
+            if (realtimeDebounceTimerRef.current) clearTimeout(realtimeDebounceTimerRef.current);
+            realtimeDebounceTimerRef.current = setTimeout(() => {
+                loadData(true);
+            }, 500);
+        };
+
+        window.addEventListener('mira-telemetry-update', handleDebouncedUpdate);
+        window.addEventListener('mira-access-recorded', handleDebouncedUpdate);
+
+        const channel = supabase
+            .channel('admin_sovereign_sync')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'job_posts' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_suggestions' }, handleDebouncedUpdate)
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_logs' }, handleDebouncedUpdate)
+            .subscribe();
+
+        return () => {
+            if (realtimeDebounceTimerRef.current) clearTimeout(realtimeDebounceTimerRef.current);
+            window.removeEventListener('mira-telemetry-update', handleDebouncedUpdate);
+            window.removeEventListener('mira-access-recorded', handleDebouncedUpdate);
+            supabase.removeChannel(channel);
+        };
+    }, [loadData]);
 
     useEffect(() => {
         if (activeTab === 'dashboard') {
@@ -494,11 +548,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
 
             <div className="p-4 sm:p-8">
-                {loading ? (
-                    <div className="flex justify-center p-20"><Loader2 className="animate-spin" size={40} /></div>
-                ) : (
-                    <div className="space-y-8">
-                        {activeTab === 'dashboard' && (
+                <div className="space-y-8">
+                    {activeTab === 'dashboard' && (
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
                                 {/* === CUMULATIVE TOTALS (ALL TIME) === */}
@@ -845,7 +896,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                                 {/* Mobile cards */}
                                 <div className="grid grid-cols-1 gap-3 lg:hidden">
-                                    {users.length === 0 && !loading && (
+                                    {users.length === 0 && !loadingUsers && (
                                         <div className="p-8 text-center text-white/40 text-xs font-bold uppercase tracking-widest bg-white/5 rounded-3xl border border-white/10">
                                             Nenhum utilizador encontrado
                                         </div>
@@ -1092,7 +1143,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             <span>Atribuir Selos Retroativos</span>
                                         </button>
                                         <button onClick={() => loadData(true)} className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
-                                            <RefreshCcw size={18} className={loading ? 'animate-spin' : ''} />
+                                            <RefreshCcw size={18} className={loadingGamification ? 'animate-spin' : ''} />
                                         </button>
                                     </div>
                                 </div>
@@ -1256,7 +1307,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         )}
 
                     </div>
-                )}
             </div>
 
             {/* 🏅 MODAL DE ATRIBUIÇÃO DE MEDALHAS */}
