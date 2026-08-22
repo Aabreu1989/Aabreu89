@@ -832,11 +832,32 @@ export const generateAssistantResponseV45 = async (
         textResult = data.text;
         responseModel = data.model || 'gemini-2.5-flash';
         console.log(`⚡ [MIRA CHAT] source=gemini model=${responseModel}`);
+      } else if (action === 'translate') {
+        // 🛡️ NUNCA usar base de triagem jurídica para tradução
+        console.warn(`⚠️ [MIRA TRANSLATE] API não retornou tradução válida: ${data?.errorType || data?.error || 'unspecified'}`);
+        return {
+          text: '',
+          source: 'local_fallback',
+          success: false,
+          version: 'TRANSLATE_FAILED',
+          hydration: 0,
+          perf: '0ms'
+        };
       } else {
         chatSource = 'local_fallback';
         console.warn(`⚠️ [MIRA CHAT] source=local_fallback (Gemini fallback flag: ${data?.errorType || data?.error || 'unspecified'})`);
         textResult = getMiraLocalResponse(p, resolvedLang);
       }
+    } else if (action === 'translate') {
+      console.warn(`⚠️ [MIRA TRANSLATE] HTTP ${response.status} na tradução`);
+      return {
+        text: '',
+        source: 'local_fallback',
+        success: false,
+        version: 'TRANSLATE_FAILED',
+        hydration: 0,
+        perf: '0ms'
+      };
     } else {
       chatSource = 'local_fallback';
       console.warn(`⚠️ [MIRA CHAT] source=local_fallback (HTTP ${response.status})`);
@@ -870,6 +891,17 @@ export const generateAssistantResponseV45 = async (
 
   } catch (err: any) {
     console.error('🚨 [MIRA CHAT] Service exception:', err.message);
+
+    if (action === 'translate') {
+      return { 
+        text: '', 
+        source: 'local_fallback' as const,
+        success: false, 
+        version: 'TRANSLATE_ERROR', 
+        hydration: 1, 
+        perf: '0ms' 
+      };
+    }
 
     const resolvedLang = resolveConversationLanguage(prompt, undefined, language);
     const localAnswer = getMiraLocalResponse(prompt, resolvedLang);
@@ -938,8 +970,6 @@ const safeBtoa = (str: string) => {
   }
 };
 
-
-
 /**
  * TRADUTOR SNIPER (ECONOMIA DE TOKENS + CACHE LOCAL + FALLBACK TRIPLO BULLETPROOF)
  */
@@ -948,16 +978,44 @@ export const autoTranslateText = async (text: string, targetLang: string) => {
   
   const normLang = (targetLang || 'PT').toUpperCase().split('-')[0];
   const cacheKey = `mira_trans_${safeBtoa(text.substring(0, 100))}_${normLang}`;
-  const cached = sessionStorage.getItem(cacheKey);
-  if (cached) return cached;
+  
+  // Sanitização de cache corrompido
+  try {
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      const isCorrupted = cached.includes("could not confidently") || 
+                          cached.includes("não consegui identificar") || 
+                          cached.includes("no pude identificar") || 
+                          cached.includes("n'ai pas pu identifier") ||
+                          cached.includes("Explore MIRA") ||
+                          cached.includes("Explorar Módulos");
+      if (isCorrupted) {
+        sessionStorage.removeItem(cacheKey);
+      } else {
+        return cached;
+      }
+    }
+  } catch (_) {}
+
+  // Helper de validação para garantir que não aceitamos texto de assistente conversacional
+  const isValidTranslation = (candidate: string): boolean => {
+    if (!candidate || !candidate.trim() || candidate.trim() === text.trim()) return false;
+    const lower = candidate.toLowerCase();
+    return !lower.includes("could not") && 
+           !lower.includes("consegui identificar") && 
+           !lower.includes("pude identificar") && 
+           !lower.includes("pas pu identifier") &&
+           !lower.includes("estamos a trabalhar em algumas melhorias") &&
+           !lower.includes("explore mira") &&
+           !lower.includes("explorar módulos");
+  };
 
   // 1. Tentar primeiro via Assistente MIRA (/api/chat)
   try {
-    const translationPrompt = `Translate the following community post text to ${normLang}. Return ONLY the direct translated text without any quotation marks, explanations, or preambles. Text: ${text}`;
+    const translationPrompt = `Translate the following text to ${normLang}. Return ONLY the direct translated text without any quotation marks, explanations, or preambles. Text: ${text}`;
     const res = await generateAssistantResponseV45(translationPrompt, [], normLang, 'translate');
-    const fallbackMsg = "Estamos a trabalhar em algumas melhorias no chat";
     
-    if (res.success && res.text && !res.text.includes(fallbackMsg) && res.text.trim() !== text.trim()) {
+    if (res.success && res.source === 'gemini' && isValidTranslation(res.text)) {
       sessionStorage.setItem(cacheKey, res.text.trim());
       return res.text.trim();
     }
@@ -974,7 +1032,7 @@ export const autoTranslateText = async (text: string, targetLang: string) => {
         language: normLang 
       }
     });
-    if (data && data.text && data.text.trim() !== text.trim()) {
+    if (data && isValidTranslation(data.text)) {
       sessionStorage.setItem(cacheKey, data.text.trim());
       return data.text.trim();
     }
@@ -991,7 +1049,7 @@ export const autoTranslateText = async (text: string, targetLang: string) => {
       const data = await response.json();
       if (data && data[0] && Array.isArray(data[0])) {
         const translatedSegments = data[0].map((segment: any) => segment[0]).filter(Boolean).join('');
-        if (translatedSegments && translatedSegments.trim()) {
+        if (isValidTranslation(translatedSegments)) {
           sessionStorage.setItem(cacheKey, translatedSegments.trim());
           return translatedSegments.trim();
         }
