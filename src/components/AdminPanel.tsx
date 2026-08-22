@@ -452,7 +452,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-black text-white no-scrollbar">
+        <div className="flex flex-col flex-1 min-h-0 bg-black text-white no-scrollbar pb-24 sm:pb-8">
             {/* 💎 MIRA TOPBAR OVERRIDE (ADMIN VERSION) */}
             <div className="p-6 pb-2 flex items-center justify-between sticky top-0 z-[100] bg-black/80 backdrop-blur-3xl border-b border-white/5">
                 <div className="flex items-center gap-4">
@@ -467,7 +467,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <button onClick={onBack} className="p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"><X size={20}/></button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:flex lg:flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-white/5 mx-3 sm:mx-8 mt-4 sm:mt-6 rounded-2xl border border-white/10 sticky top-[70px] sm:top-[80px] z-[90] backdrop-blur-md">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:flex lg:flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-white/5 mx-3 sm:mx-8 mt-4 sm:mt-6 rounded-2xl border border-white/10 static sm:sticky sm:top-[80px] z-[90] backdrop-blur-md">
                 {[
                     { id: 'dashboard', label: 'DASHBOARD', icon: Activity },
                     { id: 'impact', label: 'RELATÓRIO IMPACTO', icon: BarChart3 },
@@ -845,6 +845,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                                 {/* Mobile cards */}
                                 <div className="grid grid-cols-1 gap-3 lg:hidden">
+                                    {users.length === 0 && !loading && (
+                                        <div className="p-8 text-center text-white/40 text-xs font-bold uppercase tracking-widest bg-white/5 rounded-3xl border border-white/10">
+                                            Nenhum utilizador encontrado
+                                        </div>
+                                    )}
                                     {users.map(u => (
                                         <div key={u.id} className="p-4 bg-white/5 border border-white/10 rounded-3xl space-y-3">
                                             <div 
