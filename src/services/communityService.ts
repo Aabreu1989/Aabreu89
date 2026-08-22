@@ -142,75 +142,36 @@ export const communityService = {
   },
 
   /**
-   * 🔍 BUSCA DE POST POR ID
+   * 🔍 BUSCA DE POST POR ID (Via RPC Soberana get_sovereign_community_post_by_id_v25)
    */
   fetchPostById: async (postId: string, _userId?: string): Promise<Post | null> => {
     try {
-      const { data: rawPost, error: rawError } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('id', postId)
-        .single();
+      const { data: rpcData, error: rpcError } = await supabase.rpc(
+        'get_sovereign_community_post_by_id_v25',
+        {
+          p_post_id: postId,
+          p_user_id: null
+        }
+      );
 
-      if (rawError || !rawPost) return null;
-
-      const { data: authorProfile } = rawPost.author_id 
-        ? await supabase.from('profiles').select('id, full_name, username, avatar_url, is_verified, bio, role').eq('id', rawPost.author_id).maybeSingle()
-        : { data: null };
-
-      const { data: commentsData } = await supabase.from('comments').select('id, post_id, author_id, content, created_at, likes_count, parent_id').eq('post_id', postId);
-      
-      const commentAuthorIds = Array.from(new Set((commentsData || []).map((c: any) => c.author_id).filter(Boolean)));
-      const { data: commentProfiles } = commentAuthorIds.length > 0
-        ? await supabase.from('profiles').select('id, full_name, username, avatar_url').in('id', commentAuthorIds)
-        : { data: [] };
-      const commentProfileMap = new Map((commentProfiles || []).map((pr: any) => [pr.id, pr]));
-
-      const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id;
-      let userVoteVal: 'like' | 'true' | 'fake' | null = null;
-      let isSavedVal = false;
-      let aggVote = { trueCount: 0, falseCount: 0, likeCount: 0 };
-
-      const promises: Promise<any>[] = [
-        callCommunityGateway('get_aggregated_votes', { postIds: [postId] }, activeUserId).catch(() => ({ aggregatedVotes: {} }))
-      ];
-
-      if (activeUserId) {
-        promises.push(
-          Promise.resolve(supabase.from('post_votes').select('vote_type').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle()),
-          Promise.resolve(supabase.from('saved_posts').select('post_id').eq('post_id', postId).eq('user_id', activeUserId).maybeSingle())
+      if (rpcError) {
+        console.warn(
+          `⚠️ [MIRA Community] Aviso ao buscar post ${postId} via RPC:`,
+          rpcError.message
         );
+        return null;
       }
 
-      const [aggRes, voteRes, saveRes] = await Promise.all(promises);
-
-      if (aggRes?.aggregatedVotes?.[postId]) {
-        aggVote = aggRes.aggregatedVotes[postId];
+      if (Array.isArray(rpcData) && rpcData.length > 0) {
+        return communityService.mapRowToPost(rpcData[0]);
       }
 
-      if (voteRes?.data && (voteRes.data.vote_type === 'like' || voteRes.data.vote_type === 'true' || voteRes.data.vote_type === 'fake')) {
-        userVoteVal = voteRes.data.vote_type;
-      }
-      if (saveRes?.data) isSavedVal = true;
-
-      const fullPostData = {
-        ...rawPost,
-        likes: aggVote.likeCount || rawPost.likes || rawPost.likes_count || 0,
-        useful_votes: aggVote.trueCount,
-        fake_votes: aggVote.falseCount,
-        profiles: authorProfile || null,
-        comments: (commentsData || []).map((c: any) => ({
-          ...c,
-          profiles: commentProfileMap.get(c.author_id) || null
-        })),
-        user_vote: userVoteVal,
-        is_liked_by_user: userVoteVal === 'like',
-        is_saved_by_user: isSavedVal
-      };
-
-      return communityService.mapRowToPost(fullPostData);
+      return null;
     } catch (err: any) {
-      console.error(`🚨 [MIRA Erro ao buscar post ${postId}]:`, err?.message || err);
+      console.error(
+        `🚨 [MIRA Erro ao buscar post ${postId}]:`,
+        err?.message || err
+      );
       return null;
     }
   },
@@ -327,7 +288,7 @@ export const communityService = {
   },
 
   /**
-   * 🎯 TRADUÇÃO COM CACHE
+   * 🎯 TRADUÇÃO VIA GATEWAY SOBERANO (/api/chat)
    */
   translatePost: async (post: Post, targetLang: string) => {
     try {
@@ -336,17 +297,52 @@ export const communityService = {
         return post.translations[langUpper];
       }
 
-      const { data, error } = await supabase.functions.invoke('mira-sovereign-v2026', {
-        body: { action: 'translate', prompt: post.content, language: langUpper }
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'translate',
+          prompt: post.content,
+          language: langUpper
+        })
       });
 
-      if (error) throw error;
-      const translatedText = data.text;
-      await communityService.updateTranslation(post.id, 'post', targetLang, translatedText);
-      return translatedText;
-    } catch (err) {
-      console.error("🚨 Falha na Tradução:", err);
+      const data = await res.json().catch(() => ({}));
+      if (data && data.text && data.text.trim()) {
+        const translatedText = data.text.trim();
+        await communityService.updateTranslation(post.id, 'post', targetLang, translatedText);
+        return translatedText;
+      }
+
       return post.content;
+    } catch (err) {
+      console.error("🚨 Falha na Tradução via /api/chat:", err);
+      return post.content;
+    }
+  },
+
+  translateComment: async (commentId: string, targetLang: string, content: string) => {
+    try {
+      const langUpper = targetLang.toUpperCase();
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'translate',
+          prompt: content,
+          language: langUpper
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (data && data.text && data.text.trim()) {
+        return data.text.trim();
+      }
+
+      return content;
+    } catch (err) {
+      console.error("🚨 Falha na Tradução de comentário via /api/chat:", err);
+      return content;
     }
   },
 

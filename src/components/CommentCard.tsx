@@ -105,36 +105,42 @@ const CommentCard: React.FC<CommentCardProps> = ({
                             {comment.content}
                         </div>
                         
-                        <div className="flex flex-wrap items-center gap-5 mt-3 ml-1">
-                            <span className="text-[9px] text-slate-300 font-black uppercase tracking-widest">{timeAgo(comment.timestamp)}</span>
+                        <div className="flex items-center justify-between mt-2.5 px-1">
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{timeAgo(comment.timestamp)}</span>
                             
-                            <button 
-                                onClick={() => onLikeComment(post.id, comment.id)} 
-                                className={`flex items-center gap-2 transition-all active:scale-125 ${(comment.isLikedByUser || likedComments?.has(comment.id)) ? 'text-mira-blue font-black' : 'text-slate-400 font-bold'}`}
-                            >
-                                <Handshake size={15} className={(comment.isLikedByUser || likedComments?.has(comment.id)) ? 'fill-mira-blue text-mira-blue' : ''} />
-                                <span className="text-[10px]">{comment.likes > 0 ? comment.likes : ''}</span>
-                            </button>
-
-                            <button 
-                                onClick={() => onReplyComment(post.id, comment.authorName || 'Membro', comment.id)} 
-                                className="p-3 bg-white text-slate-300 rounded-2xl shadow-sm border border-slate-50 hover:text-mira-blue active:scale-95 transition-all"
-                                title={t('comm_reply_btn', language)}
-                            >
-                                <Reply size={15} />
-                            </button>
-
-                            {/* MIRA: Tradução de comentário removida por ordem da CEO */}
-
-                            {(isAdmin || comment.authorId === currentUserId || post.authorId === currentUserId) && onDeleteComment && (
+                            <div className="flex items-center gap-1.5 sm:gap-2">
                                 <button 
-                                    onClick={() => onDeleteComment(post.id, comment.id)}
-                                    className="p-2.5 bg-red-50 text-red-500 rounded-2xl shadow-sm border border-red-100 hover:bg-red-500 hover:text-white transition-all active:scale-95"
-                                    title="ELIMINAR"
+                                    onClick={() => onLikeComment(post.id, comment.id)} 
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all active:scale-95 text-xs font-bold ${
+                                        (comment.isLikedByUser || likedComments?.has(comment.id)) 
+                                        ? 'bg-blue-50 text-mira-blue border-blue-200/60 font-black shadow-sm' 
+                                        : 'bg-slate-50 text-slate-500 border-slate-100 hover:bg-slate-100'
+                                    }`}
+                                    title="Apoiar"
                                 >
-                                    <Trash2 size={14} />
+                                    <Handshake size={14} className={(comment.isLikedByUser || likedComments?.has(comment.id)) ? 'fill-mira-blue text-mira-blue' : 'text-slate-400'} />
+                                    <span>{comment.likes > 0 ? comment.likes : 0}</span>
                                 </button>
-                            )}
+
+                                <button 
+                                    onClick={() => onReplyComment(post.id, comment.authorName || 'Membro', comment.id)} 
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-500 rounded-xl border border-slate-100 hover:bg-slate-100 hover:text-mira-blue active:scale-95 transition-all text-xs font-bold"
+                                    title={t('comm_reply_btn', language)}
+                                >
+                                    <Reply size={14} />
+                                    <span className="hidden sm:inline text-[10px] uppercase font-bold">{t('comm_reply_btn', language)}</span>
+                                </button>
+
+                                {(isAdmin || comment.authorId === currentUserId || post.authorId === currentUserId) && onDeleteComment && (
+                                    <button 
+                                        onClick={() => onDeleteComment(post.id, comment.id)}
+                                        className="flex items-center justify-center w-8 h-8 bg-red-50 text-red-500 rounded-xl border border-red-100 hover:bg-red-500 hover:text-white transition-all active:scale-95 shadow-sm shrink-0"
+                                        title="ELIMINAR"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
