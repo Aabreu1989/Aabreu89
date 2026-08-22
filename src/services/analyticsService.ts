@@ -1,11 +1,14 @@
 import { AppActivityLog } from '../types';
 import { supabase } from '../lib/supabase';
+import { isInternalOrAdmin } from '../utils/adminUtils';
 
 // ╔══════════════════════════════════════════════════════════════╗
 // ║   MIRA TELEMETRIA SOBERANA v2026.GOLD                       ║
 // ║   Canal: RPC mira_track_event (SECURITY DEFINER)            ║
 // ║   Garantia: Todos os eventos chegam ao Supabase             ║
 // ║             independentemente de RLS ou autenticação         ║
+// ║   🛡️ GUARDA SOBERANA: Bloqueio estrito de contas de Admin    ║
+// ║      e testes para evitar poluição das métricas públicas    ║
 // ╚══════════════════════════════════════════════════════════════╝
 
 class AnalyticsService {
@@ -56,6 +59,11 @@ class AnalyticsService {
     category?: string,
     metadata?: any
   ) {
+    // 🛡️ GUARDA SOBERANA: Ignorar telemetria de contas de Admin ou Teste
+    if (isInternalOrAdmin(userId) || isInternalOrAdmin(metadata?.email) || isInternalOrAdmin(metadata?.user_email)) {
+      return;
+    }
+
     // 1. Registo imediato em memória local (nunca falha)
     const log: AppActivityLog = {
       id: Math.random().toString(36).substr(2, 9),
@@ -68,7 +76,6 @@ class AnalyticsService {
     this.logs.push(log);
 
     // 2. Enviar para Supabase via RPC SECURITY DEFINER (bypass RLS total)
-    //    Esta função foi criada com GRANT EXECUTE para anon e authenticated
     this.sendToSupabase(action, userId, category, metadata);
   }
 
@@ -78,6 +85,11 @@ class AnalyticsService {
     category?: string,
     metadata?: any
   ) {
+    // 🛡️ GUARDA SOBERANA DUPLA: Bloqueio contra poluição
+    if (isInternalOrAdmin(userId) || isInternalOrAdmin(metadata?.email) || isInternalOrAdmin(metadata?.user_email)) {
+      return;
+    }
+
     const isValidUuid =
       typeof userId === 'string' &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);

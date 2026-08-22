@@ -7,6 +7,7 @@ import {
     CANONICAL_INTERACTION_ACTIONS, 
     TELEMETRY_CUTOFF_DATE 
 } from '../config/telemetryBaselines';
+import { ADMIN_USER_IDS } from '../utils/adminUtils';
 
 export interface AdminService {
 
@@ -633,9 +634,17 @@ export const adminService: AdminService = {
                 }
             };
 
-            const getCount = (table: string) => safeQuery(() => supabase.from(table).select('id', { count: 'exact', head: true }));
+            const getCount = (table: string) => {
+                let q = supabase.from(table).select('id', { count: 'exact', head: true });
+                if (table === 'job_posts') q = q.eq('is_active', true);
+                if (table === 'profiles') q = q.not('id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
+                return safeQuery(() => q);
+            };
             const getPostCutoffCount = (table: string, actionName?: string | readonly string[]) => {
                 let q = supabase.from(table).select('id', { count: 'exact', head: true }).gte('created_at', TELEMETRY_CUTOFF_DATE);
+                if (table === 'activity_logs' || table === 'user_documents') {
+                    q = q.not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
+                }
                 if (actionName) {
                     if (Array.isArray(actionName)) q = q.in('action', actionName as string[]);
                     else q = q.eq('action', actionName as string);
@@ -667,7 +676,7 @@ export const adminService: AdminService = {
                 articleViewsCount
             ] = await Promise.all([
                 getCount('profiles'),
-                safeQuery(() => supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString())),
+                safeQuery(() => supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString()).not('id', 'in', `(${ADMIN_USER_IDS.join(',')})`)),
                 getCount('services'),
                 getCount('job_posts'),
                 getCount('courses'),
@@ -677,8 +686,8 @@ export const adminService: AdminService = {
                 getCount('comments'),
                 getPostCutoffCount('user_documents'),
                 getPostCutoffCount('activity_logs', ['doc_generated', 'generate_document', 'document_generation_completed']),
-                safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'true')),
-                safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'fake')),
+                safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'true').not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)),
+                safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'fake').not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)),
                 getPostCutoffCount('activity_logs', ['ai_query', 'chat_with_mira']),
                 getPostCutoffCount('activity_logs', 'app_access'),
                 getPostCutoffCount('activity_logs', CANONICAL_INTERACTION_ACTIONS),
@@ -693,7 +702,8 @@ export const adminService: AdminService = {
                     .from('activity_logs')
                     .select('metadata')
                     .eq('action', 'pwa_install')
-                    .gte('created_at', TELEMETRY_CUTOFF_DATE);
+                    .gte('created_at', TELEMETRY_CUTOFF_DATE)
+                    .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
                 if (pwaLogs) {
                     pwaLogs.forEach((log: any) => {
                         const isDesktop = log.metadata?.platform === 'desktop' || log.metadata?.device === 'desktop';
