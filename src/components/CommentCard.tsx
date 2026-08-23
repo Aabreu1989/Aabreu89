@@ -62,6 +62,11 @@ const CommentCard: React.FC<CommentCardProps> = ({
 }) => {
     const { showToast } = useToast();
     const [isReporting, setIsReporting] = useState(false);
+    
+    // 🛡️ MIRA SOBERANIA: Derivação dinâmica do autor pai a partir da relação canónica parent_id
+    const parentComment = comment.parentId ? (post.comments || []).find(c => c.id === comment.parentId) : null;
+    const parentAuthorName = parentComment?.authorName;
+
     return (
         <div className={`space-y-4 ${depth > 0 ? 'mt-4 ml-2 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-white/10' : ''}`}>
             <div id={`comment-${comment.id}`} className="flex gap-3 items-start group/comment">
@@ -80,6 +85,12 @@ const CommentCard: React.FC<CommentCardProps> = ({
                 />
                 <div className="flex-1 min-w-0">
                     <div className="flex flex-col gap-1">
+                        {parentAuthorName && (
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-mira-blue mb-1 animate-in fade-in">
+                                <Reply size={12} className="rotate-180 text-mira-blue" />
+                                <span className="text-slate-500">Em resposta a <strong className="text-slate-900 font-extrabold">@{parentAuthorName}</strong></span>
+                            </div>
+                        )}
                         <div className="flex items-center justify-between mb-1">
                             <span 
                                 className="font-black text-[13px] uppercase tracking-tight cursor-pointer hover:text-mira-orange transition-colors"

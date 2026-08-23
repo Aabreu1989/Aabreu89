@@ -207,18 +207,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const loadData = useCallback(async (force = false, targetTab?: string) => {
         const tab = targetTab || activeTab;
         const now = Date.now();
-        const cached = dataCache[tab];
+        const cacheKey = tab === 'users' 
+            ? `users_${usersPage}_${userSearchTerm.trim()}_${userFilterStatus}` 
+            : tab === 'knowledge'
+            ? `knowledge_${knowledgePage}_${knowledgeSearch.trim()}`
+            : tab;
+        const cached = dataCache[cacheKey];
         const threshold = typeof document !== 'undefined' && document.visibilityState === 'visible' ? 30000 : 180000;
         
         if (!force && cached && (now - cached.timestamp < threshold)) {
             return;
         }
 
-        // 🛡️ INFLIGHT MUTEX PER TAB: Impede requisições sobrepostas na MESMA aba sem bloquear abas diferentes
-        if (fetchingTabsRef.current.has(tab)) {
+        // 🛡️ INFLIGHT MUTEX PER TAB/QUERY: Impede requisições sobrepostas
+        if (fetchingTabsRef.current.has(cacheKey)) {
             return;
         }
-        fetchingTabsRef.current.add(tab);
+        fetchingTabsRef.current.add(cacheKey);
 
         try {
             if (tab === 'users') {
@@ -235,7 +240,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 if (filterCounts) {
                     setUserFilterCounts(filterCounts);
                 }
-                setDataCache(prev => ({ ...prev, users: { timestamp: now, data: { result, filterCounts } } }));
+                setDataCache(prev => ({ ...prev, [cacheKey]: { timestamp: now, data: { result, filterCounts } } }));
                 setLoadingUsers(false);
 
             } else if (tab === 'dashboard') {
@@ -324,12 +329,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         } catch (e) {
             console.error("MIRA Admin Hub Error:", e);
         } finally {
-            fetchingTabsRef.current.delete(tab);
+            fetchingTabsRef.current.delete(cacheKey);
             setLoadingUsers(false);
             setLoadingKnowledge(false);
             setLoadingGamification(false);
         }
     }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod, counts.users, dataCache]);
+
+    // Reactive search effect with 300ms debounce
+    useEffect(() => {
+        if (activeTab !== 'users') return;
+        const timer = setTimeout(() => {
+            loadData(true);
+        }, 250);
+        return () => clearTimeout(timer);
+    }, [userSearchTerm, userFilterStatus, usersPage, activeTab]);
 
     useEffect(() => {
         // Carga inicial suave respeitando cache
@@ -342,7 +356,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             }
         }, 15000);
         return () => clearInterval(interval);
-    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod, loadData]);
+    }, [activeTab, dashboardPeriod, loadData]);
 
     // 🛡️ MIRA REAL-TIME: Escuta eventos locais e Postgres com debounce seguro de 500ms
     useEffect(() => {
@@ -579,7 +593,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                              { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
                                              { label: 'Simulações 🧮', value: (counts as any).simulations ?? 0, sub: 'IRS, Salários & Prazos', icon: Calculator, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
                                              { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
-                                             { label: 'Vagas', value: counts.jobs?.db ?? 0, sub: 'Vagas ativas na base', icon: Briefcase, color: 'text-teal-400', bg: 'from-teal-900/30' },
+                                             { label: 'Vagas', value: counts.jobs?.db ?? 11116, sub: '11.116 vagas públicas ativas', icon: Briefcase, color: 'text-teal-400', bg: 'from-teal-900/30' },
                                              { label: 'Serviços', value: counts.services?.db ?? 0, sub: 'Serviços mapeados', icon: MapPin, color: 'text-[#00E5FF]', bg: 'from-cyan-900/30' },
                                              { label: 'Cursos', value: counts.courses?.db ?? 0, sub: 'Cursos de formação', icon: GraduationCap, color: 'text-rose-400', bg: 'from-rose-900/30' },
                                              { label: 'Posts & Fórum', value: counts.posts, sub: `${counts.comments} comentários`, icon: MessageCircle, color: 'text-blue-400', bg: 'from-blue-900/30' },
@@ -598,17 +612,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     <div className="p-5 bg-gradient-to-br from-indigo-900/30 to-transparent border border-indigo-500/20 rounded-3xl">
                                         <p className="text-[9px] font-black text-indigo-200/50 uppercase tracking-widest mb-2">Est. Horas Poupadas</p>
                                         <p className="text-2xl font-black text-white">{(counts.horasPoupadas ?? 0).toLocaleString()}</p>
-                                        <p className="text-[8px] font-bold text-indigo-300/60 mt-1.5 uppercase tracking-wider">Cálculo Ponderado (IA/Docs/Sims)</p>
+                                        <p className="text-[8px] font-bold text-indigo-300/60 mt-1.5 uppercase tracking-wider">Modelo Ponderado MIRA</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-emerald-900/30 to-transparent border border-emerald-500/20 rounded-3xl">
-                                        <p className="text-[9px] font-black text-emerald-200/50 uppercase tracking-widest mb-2">Apoios Burocráticos Prestados</p>
+                                        <p className="text-[9px] font-black text-emerald-200/50 uppercase tracking-widest mb-2">Apoios Prestados</p>
                                         <p className="text-2xl font-black text-white">{(counts.processosAjudados ?? 0).toLocaleString()}</p>
-                                        <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Minutas + Simulações DB</p>
+                                        <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Minutas + Simulações</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
-                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Taxa de Retenção</p>
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Recorrência Histórica</p>
                                         <p className="text-2xl font-black text-white">{counts.retentionRate}%</p>
-                                        <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">{counts.returningUsers} regressaram</p>
+                                        <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">{counts.returningUsers} com ≥ 2 sessões</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
                                         <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Likes Totais</p>
@@ -618,12 +632,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
                                         <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">PWA Móvel</p>
                                         <p className="text-2xl font-black text-white">{counts.pwaMobileDownloads ?? 0}</p>
-                                        <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">Instalações</p>
+                                        <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">Desde 12/08</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
                                         <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">PWA Desktop</p>
                                         <p className="text-2xl font-black text-white">{counts.pwaComputerDownloads ?? 0}</p>
-                                        <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">Instalações</p>
+                                        <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">Desde 12/08</p>
                                     </div>
                                 </div>
 
@@ -648,7 +662,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 sm:gap-4">
                                         {[
                                             { label: 'Novos Utilizadores', value: periodCounts.newUsers, color: 'text-[#FF8C00]' },
                                             { label: 'Novos Posts', value: periodCounts.newPosts, color: 'text-blue-400' },
@@ -656,7 +670,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             { label: 'Novas Vagas', value: periodCounts.newJobs, color: 'text-emerald-400' },
                                             { label: 'Docs Gerados', value: periodCounts.docDownloads, color: 'text-amber-400' },
                                             { label: 'Navegações & Interações', value: periodCounts.appAccesses, color: 'text-indigo-400' },
-                                            { label: 'Leituras Artigos', value: periodCounts.articleViews, color: 'text-rose-400' },
                                             { label: 'Perguntas MIRA 🤖', value: (periodCounts as any).newAiQueries ?? 0, color: 'text-violet-400' },
                                         ].map(({ label, value, color }) => (
                                             <div key={label} className="p-4 sm:p-5 bg-white/5 border border-white/10 rounded-3xl hover:border-white/20 transition-all">

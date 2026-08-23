@@ -170,14 +170,33 @@ export const authService = {
     },
 
     async createFallbackProfile(userId: string, email: string, name?: string): Promise<any> {
+        if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+            console.warn("MIRA Security: Tentativa de fallback profile rejeitada (userId inválido).");
+            return null;
+        }
+
+        const cleanEmail = (email || '').trim().toLowerCase();
+        if (!cleanEmail || !cleanEmail.includes('@') || cleanEmail.length < 5) {
+            console.warn("MIRA Security: Tentativa de fallback profile rejeitada (email inválido/inexistente).");
+            return null;
+        }
+
         try {
-            const isAdmin = email.toLowerCase().trim() === ADMIN_EMAIL;
-            const defaultName = name || (isAdmin ? 'Amanda Abreu (Admin MIRA)' : 'Usuário Comunidade');
+            // Verificar se o utilizador possui sessão ativa e confirmada no Supabase Auth com o mesmo ID
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user || session.user.id !== userId) {
+                console.warn("MIRA Security: Tentativa de fallback profile rejeitada (sem sessão Auth correspondente).");
+                return null;
+            }
+
+            const effectiveEmail = session.user.email ? session.user.email.trim().toLowerCase() : cleanEmail;
+            const isAdmin = effectiveEmail === ADMIN_EMAIL;
+            const defaultName = name?.trim() || session.user.user_metadata?.name || session.user.user_metadata?.full_name || (isAdmin ? 'Amanda Abreu (Admin MIRA)' : effectiveEmail.split('@')[0] || 'Membro');
 
             const profileInsert = {
                 id: userId,
                 name: defaultName,
-                email: email,
+                email: effectiveEmail,
                 role: isAdmin ? 'admin' : 'member',
                 reputation: isAdmin ? 10458 : 0,
                 trust_level: isAdmin ? 'Elite' : 'Observador',
@@ -188,21 +207,15 @@ export const authService = {
             const { data, error } = await supabase.from('profiles').insert([profileInsert]).select().single();
 
             if (error) {
-                console.warn("MIRA: Fallback profile creation collision handled.");
+                console.warn("MIRA: Fallback profile insertion collision/error handled:", error.message);
+                const { data: existing } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+                return existing || null;
             }
 
-            return data || profileInsert;
+            return data;
         } catch (e) {
-            return {
-                id: userId,
-                name: name || 'Usu├írio',
-                email: email,
-                role: 'member',
-                reputation: 0,
-                trust_level: 'Observador',
-                is_verified: false,
-                updated_at: new Date().toISOString()
-            };
+            console.error("MIRA: Erro ao criar perfil de fallback:", e);
+            return null;
         }
     },
 

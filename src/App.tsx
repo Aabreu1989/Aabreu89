@@ -716,16 +716,21 @@ const AppContent: React.FC = () => {
 
         const handleSessionUser = async (authUser: any, mounted: boolean) => {
             if (!mounted) return;
+            if (!authUser?.id || !authUser?.email || !authUser.email.includes('@')) {
+                setShowSplash(false);
+                setIsInitializing(false);
+                return;
+            }
             setHasSupabaseSession(true);
             let profile = await authService.fetchProfileWithRetry(
                 authUser.id,
-                authUser.email || '',
+                authUser.email,
                 authUser.user_metadata?.name || authUser.user_metadata?.full_name
             );
-            if (!profile) {
+            if (!profile && authUser.email && authUser.email.includes('@')) {
                 profile = await authService.createFallbackProfile(
                     authUser.id,
-                    authUser.email || '',
+                    authUser.email,
                     authUser.user_metadata?.name || authUser.user_metadata?.full_name
                 );
             }
@@ -738,6 +743,9 @@ const AppContent: React.FC = () => {
                 setIsInitializing(false);
                 sessionStorage.setItem('mira_splash_shown', 'true');
                 triggerConsentModalIfNeeded();
+            } else if (mounted) {
+                setShowSplash(false);
+                setIsInitializing(false);
             }
         };
 
@@ -769,17 +777,24 @@ const AppContent: React.FC = () => {
                         return;
                     }
 
+                    if (!session.user.email || !session.user.email.includes('@')) {
+                        console.warn("MIRA Security: Sessão sem email válido identificada. Abortando criação de perfil.");
+                        setShowSplash(false);
+                        setIsInitializing(false);
+                        return;
+                    }
+
                     let profile = await authService.fetchProfileWithRetry(
                         session.user.id, 
-                        session.user.email || '', 
+                        session.user.email, 
                         session.user.user_metadata?.name || session.user.user_metadata?.full_name
                     );
 
-                    if (!profile) {
-                        console.warn("MIRA Security: Perfil de OAuth não encontrado. Criando perfil automaticamente.");
+                    if (!profile && session.user.email && session.user.email.includes('@')) {
+                        console.warn("MIRA Security: Perfil de utilizador não encontrado após retry. Criando perfil de fallback com email validado.");
                         profile = await authService.createFallbackProfile(
                             session.user.id, 
-                            session.user.email || '', 
+                            session.user.email, 
                             session.user.user_metadata?.name || session.user.user_metadata?.full_name
                         );
                     }
@@ -1020,18 +1035,36 @@ const AppContent: React.FC = () => {
             (newComment) => {
                 setMasterPosts(prev => (prev || []).map(p => {
                     if (p.id === newComment.post_id) {
-                        const exists = (p.comments || []).some(c => c.id === newComment.id);
-                        if (exists) return p;
+                        const localTempMatch = (p.comments || []).find(c => 
+                            c.id && c.id.startsWith('local-comment-') && 
+                            c.authorId === newComment.author_id && 
+                            c.content === newComment.content
+                        );
+
+                        if (localTempMatch) {
+                            // Reconciliação imediata: substitui o ID local pelo UUID oficial preservando o perfil local
+                            return {
+                                ...p,
+                                comments: (p.comments || []).map(c => c.id === localTempMatch.id ? { ...c, id: newComment.id } : c)
+                            };
+                        }
+
+                        const alreadyExists = (p.comments || []).some(c => c.id === newComment.id);
+                        if (alreadyExists) return p;
+
+                        const authorName = (newComment.author_id === user.id) ? (user.name || 'Membro') : (newComment.author_name || 'Membro');
+                        const authorAvatar = (newComment.author_id === user.id) ? (user.avatar || '') : (newComment.author_avatar || '');
+
                         return {
                             ...p,
                             comments: [...(p.comments || []), {
                                 id: newComment.id,
                                 authorId: newComment.author_id,
-                                authorName: 'Membro',
-                                authorAvatar: '',
+                                authorName: authorName,
+                                authorAvatar: authorAvatar,
                                 content: newComment.content,
                                 timestamp: newComment.created_at || new Date().toISOString(),
-                                likes: 0,
+                                likes: newComment.likes_count || 0,
                                 parentId: newComment.parent_id || null,
                                 translations: {}
                             }]

@@ -19,6 +19,7 @@ import { analytics } from '../services/analyticsService';
 import { getCompletedStations } from '../utils/journeyTracker';
 import ChatInput from './ChatInput';
 import { SuggestionModal } from './SuggestionModal';
+import { resolveChatNavigation } from '../utils/chatNavigationResolver';
 
 interface AssistantViewProps {
   language: string;
@@ -311,7 +312,7 @@ const MiraChatMessage = React.memo(({
   
   const cleanText = msg.text
     .replace(/\[(job|course)-card:([a-f0-9-]+|[0-9]+)\]/g, '')
-    .replace(/\[view:([A-Z_]+):(.+?)\]/g, '')
+    .replace(/\[view:([A-Z_]+)(?::([^:\]]+))?:(.+?)\]/g, '')
     .replace(/\[BUTTON\|(.+?)\|(.+?)\]/g, '')
     .trim();
 
@@ -363,7 +364,7 @@ const MiraChatMessage = React.memo(({
                   }
 
                   // 🎯 Deteção contextual automática de valores no texto para preenchimento de simuladores
-                  if (rawTarget === 'SIMULATORS' && !extraParams.bruto) {
+                  if (rawTarget?.toUpperCase() === 'SIMULATORS' && !extraParams.bruto) {
                     const salaryFound = msg.text.match(/(\d{3,5}(?:[.,]\d{2})?)\s*€?/);
                     if (salaryFound && salaryFound[1]) {
                       const parsedNum = salaryFound[1].replace('.', '').replace(',', '.');
@@ -373,15 +374,14 @@ const MiraChatMessage = React.memo(({
                     }
                   }
 
+                  // 🧭 CANONICAL CHAT NAVIGATION RESOLVER
+                  const resolved = resolveChatNavigation(rawTarget, subTab, extraParams);
+
                   const handleClick = () => {
-                    if (rawTarget === 'SIMULATORS' && label?.toLowerCase().includes('irs')) {
-                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs', ...extraParams });
-                    } else if (rawTarget === 'IRS' || subTab === 'irs') {
-                      onViewChange(ViewType.DOCUMENTS, { tab: 'irs', ...extraParams });
-                    } else if (subTab) {
-                      onViewChange(rawTarget as ViewType, { tab: subTab, ...extraParams });
+                    if (resolved.isValid && resolved.view) {
+                      onViewChange(resolved.view, resolved.params);
                     } else {
-                      onViewChange(rawTarget as ViewType, extraParams);
+                      console.warn(`[MIRA AssistantView] Botão de navegação ignorado (destino não mapeado):`, resolved.error);
                     }
                   };
 
@@ -389,7 +389,7 @@ const MiraChatMessage = React.memo(({
                     <button
                       key={`view-${i}`}
                       onClick={handleClick}
-                      className="w-full py-3.5 px-5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-[1.5rem] flex items-center justify-between group transition-all active:scale-95 shadow-lg backdrop-blur-sm"
+                      className="w-full py-3.5 px-5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-[1.5rem] flex items-center justify-between group transition-all active:scale-95 shadow-lg backdrop-blur-sm cursor-pointer"
                     >
                       <span className="text-[11px] font-black uppercase tracking-widest text-white">{label}</span>
                       <ArrowRight size={16} className="text-orange-400 group-hover:translate-x-1 transition-transform" />
@@ -402,7 +402,7 @@ const MiraChatMessage = React.memo(({
                   <button
                     key={`btn-${i}`}
                     onClick={() => window.open(match[2], '_blank', 'noopener,noreferrer')}
-                    className="w-full py-3.5 px-5 bg-[#FF8C00] hover:bg-[#FF8C00]/90 border border-white/20 rounded-[1.5rem] flex items-center justify-between group transition-all active:scale-95 shadow-lg shadow-orange-500/20"
+                    className="w-full py-3.5 px-5 bg-[#FF8C00] hover:bg-[#FF8C00]/90 border border-white/20 rounded-[1.5rem] flex items-center justify-between group transition-all active:scale-95 shadow-lg shadow-orange-500/20 cursor-pointer"
                   >
                     <span className="text-[11px] font-black uppercase tracking-widest text-white">{match[1]}</span>
                     <Globe size={16} className="text-white group-hover:scale-110 transition-transform" />
@@ -456,7 +456,7 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
   const T = getUIText(lang, userName);
   const dynamicSuggestions = getContextualSuggestions(messages, lang, user);
 
-useEffect(() => {
+  useEffect(() => {
     const loadHistory = async () => {
       try {
         const history = await persistence.get('mira_chat_history');

@@ -10,6 +10,7 @@ import { t } from '../utils/translations';
 import { MIRA_LOGO } from '../constants';
 import { authService } from '../services/authService';
 import { useToast } from './Toast';
+import { analytics } from '../services/analyticsService';
 import { pwaService } from '../utils/pwa';
 import { ADMIN_EMAIL } from '../utils/adminUtils';
 
@@ -54,6 +55,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     }, []);
 
     const handleInstallApp = async () => {
+        try {
+            analytics.track('pwa_install', 'guest', 'pwa', {
+                platform: isMobile ? 'mobile' : 'desktop',
+                source: 'auth_screen_button'
+            });
+        } catch (e) {
+            console.warn('[PWA] Falha ao registar analytics:', e);
+        }
+
         pwaService.downloadShortcut();
         const result = await pwaService.install();
         if (result === 'ios_instructions') {

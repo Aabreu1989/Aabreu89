@@ -66,9 +66,9 @@ const translations: Record<string, Record<string, string>> = {
     irs_jovem_active: 'Aplicar Benefício IRS Jovem (18-35 Anos)',
     irs_jovem_year: 'Ano do Benefício',
     year_1: '1.º Ano (100% Isenção)',
-    year_2: '2.º Ano (75% Isenção)',
-    years_3_4: '3.º ao 4.º Ano (50% Isenção)',
-    years_5_10: '5.º ao 10.º Ano (25% Isenção)',
+    years_2_4: '2.º ao 4.º Ano (75% Isenção)',
+    years_5_7: '5.º ao 7.º Ano (50% Isenção)',
+    years_8_10: '8.º ao 10.º Ano (25% Isenção)',
     meal_allowance: 'Subsídio de Alimentação (Diário)',
     meal_type: 'Método de Pagamento',
     cash: 'Dinheiro / Transferência (Teto Isento 6,00€)',
@@ -178,9 +178,9 @@ const translations: Record<string, Record<string, string>> = {
     irs_jovem_active: 'Apply IRS Jovem Benefit (Ages 18-35)',
     irs_jovem_year: 'Benefit Year',
     year_1: '1st Year (100% Exemption)',
-    year_2: '2nd Year (75% Exemption)',
-    years_3_4: '3rd to 4th Year (50% Exemption)',
-    years_5_10: '5th to 10th Year (25% Exemption)',
+    years_2_4: '2nd to 4th Year (75% Exemption)',
+    years_5_7: '5th to 7th Year (50% Exemption)',
+    years_8_10: '8th to 10th Year (25% Exemption)',
     meal_allowance: 'Meal Allowance (Daily)',
     meal_type: 'Payment Method',
     cash: 'Cash / Transfer (€6.00 Tax-Free Cap)',
@@ -290,9 +290,9 @@ const translations: Record<string, Record<string, string>> = {
     irs_jovem_active: 'Aplicar Beneficio IRS Jovem (18-35 Años)',
     irs_jovem_year: 'Año del Beneficio',
     year_1: '1.er Año (100% Exención)',
-    year_2: '2.º Año (75% Exención)',
-    years_3_4: '3.er a 4.º Año (50% Exención)',
-    years_5_10: '5.º a 10.º Año (25% Exención)',
+    years_2_4: '2.º a 4.º Año (75% Exención)',
+    years_5_7: '5.º a 7.º Año (50% Exención)',
+    years_8_10: '8.º a 10.º Año (25% Exención)',
     meal_allowance: 'Subsidio de Alimentación (Diario)',
     meal_type: 'Método de Pago',
     cash: 'Efectivo / Transferencia (Tope Exento 6,00€)',
@@ -401,9 +401,9 @@ const translations: Record<string, Record<string, string>> = {
     irs_jovem_active: 'Appliquer le Bénéfice IRS Jovem (18-35 Ans)',
     irs_jovem_year: 'Année du Bénéfice',
     year_1: '1ère Année (100% Exonération)',
-    year_2: '2ème Année (75% Exonération)',
-    years_3_4: '3ème à 4ème Année (50% Exonération)',
-    years_5_10: '5ème à 10ème Année (25% Exonération)',
+    years_2_4: '2ème à 4ème Année (75% Exonération)',
+    years_5_7: '5ème à 7ème Année (50% Exonération)',
+    years_8_10: '8ème à 10ème Année (25% Exonération)',
     meal_allowance: 'Indemnité Repas (Journalière)',
     meal_type: 'Mode de Paiement',
     cash: 'Espèces / Virement (Plafond Exonéré 6,00€)',
@@ -1095,15 +1095,15 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         </div>
                         <div className="p-2 bg-white/70 rounded-xl">
                           <span className="block text-sm font-black text-amber-600">75%</span>
-                          <span>2.º Ano</span>
+                          <span>2.º–4.º Anos</span>
                         </div>
                         <div className="p-2 bg-white/70 rounded-xl">
                           <span className="block text-sm font-black text-amber-600">50%</span>
-                          <span>3.º–4.º Anos</span>
+                          <span>5.º–7.º Anos</span>
                         </div>
                         <div className="p-2 bg-white/70 rounded-xl">
                           <span className="block text-sm font-black text-amber-600">25%</span>
-                          <span>5.º–10.º Anos</span>
+                          <span>8.º–10.º Anos</span>
                         </div>
                       </div>
 
@@ -1116,10 +1116,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           onChange={(e) => setIrsJovemYear(Number(e.target.value))}
                           className="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none"
                         >
-                          <option value={1}>{tLocal('year_1')} — 100% Isenção</option>
-                          <option value={2}>{tLocal('year_2')} — 75% Isenção</option>
-                          <option value={3}>{tLocal('years_3_4')} — 50% Isenção</option>
-                          <option value={5}>{tLocal('years_5_10')} — 25% Isenção</option>
+                          <option value={1}>{tLocal('year_1')}</option>
+                          <option value={2}>{tLocal('years_2_4')}</option>
+                          <option value={5}>{tLocal('years_5_7')}</option>
+                          <option value={8}>{tLocal('years_8_10')}</option>
                         </select>
                       </div>
                     </div>
@@ -1374,9 +1374,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         className="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none"
                       >
                         <option value={1}>{tLocal('year_1')} — 100% Isenção</option>
-                        <option value={2}>{tLocal('year_2')} — 75% Isenção</option>
-                        <option value={3}>{tLocal('years_3_4')} — 50% Isenção</option>
-                        <option value={5}>{tLocal('years_5_10')} — 25% Isenção</option>
+                        <option value={2}>{tLocal('years_2_4')} — 75% Isenção</option>
+                        <option value={3}>{tLocal('years_5_7')} — 50% Isenção</option>
+                        <option value={5}>{tLocal('years_8_10')} — 25% Isenção</option>
                       </select>
                     </div>
                   )}

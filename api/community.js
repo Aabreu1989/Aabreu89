@@ -278,7 +278,55 @@ export default async function handler(req, res) {
       let pointsEarned = 0;
       let newReputation = null;
 
-      if (voteActionResult !== 'removed' && (normalizedVoteType === 'true' || normalizedVoteType === 'fake')) {
+      if (voteActionResult === 'added' && normalizedVoteType === 'like') {
+        try {
+          const givenKey = `like_given:post:${postId}:user:${authenticatedUserId}`;
+          const { data: existingGivenLog } = await supabaseAdmin
+            .from('reputation_logs')
+            .select('id')
+            .eq('reason', givenKey)
+            .maybeSingle();
+
+          if (!existingGivenLog) {
+            const { data: rep } = await supabaseAdmin.rpc('increment_reputation', {
+              target_user_id: authenticatedUserId,
+              amount: 1
+            });
+            await supabaseAdmin.from('reputation_logs').insert([{
+              user_id: authenticatedUserId,
+              amount: 1,
+              reason: givenKey
+            }]);
+            pointsEarned = 1;
+            newReputation = rep;
+          }
+
+          // Reconhecimento ao Autor do Post (+2 pts)
+          const { data: targetPost } = await supabaseAdmin.from('posts').select('author_id').eq('id', postId).maybeSingle();
+          if (targetPost && targetPost.author_id && targetPost.author_id !== authenticatedUserId) {
+            const receivedKey = `like_received:post:${postId}:from:${authenticatedUserId}`;
+            const { data: existingRecLog } = await supabaseAdmin
+              .from('reputation_logs')
+              .select('id')
+              .eq('reason', receivedKey)
+              .maybeSingle();
+
+            if (!existingRecLog) {
+              await supabaseAdmin.rpc('increment_reputation', {
+                target_user_id: targetPost.author_id,
+                amount: 2
+              });
+              await supabaseAdmin.from('reputation_logs').insert([{
+                user_id: targetPost.author_id,
+                amount: 2,
+                reason: receivedKey
+              }]);
+            }
+          }
+        } catch (e) {
+          console.warn('⚠️ [MIRA API Community] Erro na gamificação de post_like:', e);
+        }
+      } else if (voteActionResult !== 'removed' && (normalizedVoteType === 'true' || normalizedVoteType === 'fake')) {
         const actionKey = normalizedVoteType === 'true' ? 'vote_true' : 'vote_fake';
 
         // Invocação transacional atómica via RPC executada como service_role
@@ -387,13 +435,74 @@ export default async function handler(req, res) {
         })
         .select(`
           *,
-          profiles!comments_author_id_fkey ( id, full_name, username, avatar_url )
+          profiles!comments_author_id_fkey ( id, name, avatar_url, role, is_verified )
         `)
         .single();
 
       if (commentErr) return res.status(500).json({ error: commentErr.message });
 
-      return res.status(200).json({ success: true, comment: newComment });
+      const prof = newComment.profiles || {};
+      const enrichedComment = {
+        ...newComment,
+        author_name: prof.name || 'Membro',
+        author_avatar: prof.avatar_url || ''
+      };
+
+      // 🔔 DOMÍNIO 11: DISPARO DE NOTIFICAÇÃO SOCIAL SOBERANA (EFEITO SECUNDÁRIO TOLERANTE A FALHAS)
+      try {
+        let targetRecipientId = null;
+        let notifTitle = '';
+        let notifMessage = '';
+        const rawText = content.trim();
+        const contentSnippet = rawText.length > 60 ? rawText.substring(0, 57) + '...' : rawText;
+        const authorDisplayName = prof.name || 'Membro da Comunidade';
+
+        if (parentId) {
+          // Cenário B: Resposta a Comentário Existente
+          const { data: parentComment } = await supabaseAdmin
+            .from('comments')
+            .select('author_id')
+            .eq('id', parentId)
+            .maybeSingle();
+
+          if (parentComment && parentComment.author_id) {
+            targetRecipientId = parentComment.author_id;
+            notifTitle = '💬 Nova Resposta ao teu Comentário';
+            notifMessage = `${authorDisplayName} respondeu: "${contentSnippet}"`;
+          }
+        } else {
+          // Cenário A: Comentário Direto em Publicação
+          const { data: targetPost } = await supabaseAdmin
+            .from('posts')
+            .select('author_id')
+            .eq('id', postId)
+            .maybeSingle();
+
+          if (targetPost && targetPost.author_id) {
+            targetRecipientId = targetPost.author_id;
+            notifTitle = '💬 Novo Comentário no teu Post';
+            notifMessage = `${authorDisplayName} comentou: "${contentSnippet}"`;
+          }
+        }
+
+        // Trava de Auto-Spam: Não notificar o próprio autor da ação
+        if (targetRecipientId && targetRecipientId !== authenticatedUserId) {
+          await supabaseAdmin.from('notifications').insert([{
+            user_id: targetRecipientId,
+            type: 'social',
+            title: notifTitle,
+            message: notifMessage,
+            link: `/community?post=${postId}&comment=${newComment.id}`,
+            is_read: false,
+            created_at: new Date().toISOString()
+          }]);
+          console.log(`🔔 [MIRA Notifications] Notificação social enviada para ${targetRecipientId}`);
+        }
+      } catch (notifErr) {
+        console.warn('⚠️ [MIRA Notifications] Aviso ao gerar notificação social:', notifErr);
+      }
+
+      return res.status(200).json({ success: true, comment: enrichedComment });
     }
 
     // 6. TOGGLE COMMENT LIKE (COMMENT_LIKES)
@@ -428,6 +537,55 @@ export default async function handler(req, res) {
         .from('comments')
         .update({ likes_count: currentLikesCount || 0 })
         .eq('id', commentId);
+
+      // 🛡️ GAMIFICAÇÃO SOBERANA & IDEMPOTENTE PARA LIKES DE COMENTÁRIO
+      if (likeAction === 'added' && authenticatedUserId) {
+        try {
+          const givenKey = `like_given:comment:${commentId}:user:${authenticatedUserId}`;
+          const { data: existingGivenLog } = await supabaseAdmin
+            .from('reputation_logs')
+            .select('id')
+            .eq('reason', givenKey)
+            .maybeSingle();
+
+          if (!existingGivenLog) {
+            await supabaseAdmin.rpc('increment_reputation', {
+              target_user_id: authenticatedUserId,
+              amount: 1
+            });
+            await supabaseAdmin.from('reputation_logs').insert([{
+              user_id: authenticatedUserId,
+              amount: 1,
+              reason: givenKey
+            }]);
+          }
+
+          // Reconhecimento ao Autor do Comentário (+2 pts)
+          const { data: targetComment } = await supabaseAdmin.from('comments').select('author_id').eq('id', commentId).maybeSingle();
+          if (targetComment && targetComment.author_id && targetComment.author_id !== authenticatedUserId) {
+            const receivedKey = `like_received:comment:${commentId}:from:${authenticatedUserId}`;
+            const { data: existingRecLog } = await supabaseAdmin
+              .from('reputation_logs')
+              .select('id')
+              .eq('reason', receivedKey)
+              .maybeSingle();
+
+            if (!existingRecLog) {
+              await supabaseAdmin.rpc('increment_reputation', {
+                target_user_id: targetComment.author_id,
+                amount: 2
+              });
+              await supabaseAdmin.from('reputation_logs').insert([{
+                user_id: targetComment.author_id,
+                amount: 2,
+                reason: receivedKey
+              }]);
+            }
+          }
+        } catch (e) {
+          console.warn('⚠️ [MIRA API Community] Erro na gamificação de comment_like:', e);
+        }
+      }
 
       return res.status(200).json({ success: true, action: likeAction, likesCount: currentLikesCount || 0 });
     }

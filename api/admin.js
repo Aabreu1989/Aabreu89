@@ -117,13 +117,30 @@ export default async function handler(req, res) {
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['doc_generated', 'generate_document', 'document_generation_completed']).gte('created_at', TELEMETRY_CUTOFF_DATE),
         supabaseAdmin.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'true'),
         supabaseAdmin.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'fake'),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['ai_query', 'chat_with_mira']).gte('created_at', TELEMETRY_CUTOFF_DATE),
+        (async () => {
+          try {
+            const { data } = await supabaseAdmin
+              .from('activity_logs')
+              .select('metadata')
+              .in('action', ['ai_query', 'chat_with_mira'])
+              .gte('created_at', TELEMETRY_CUTOFF_DATE);
+            if (!data) return { count: 0 };
+            const humanCount = data.filter((d) => {
+              const promptText = d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt;
+              const isSystem = d.metadata?.guest_id === 'system';
+              return !isSystem && typeof promptText === 'string' && promptText.trim().length > 0;
+            }).length;
+            return { count: humanCount };
+          } catch {
+            return { count: 0 };
+          }
+        })(),
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'app_access').gte('created_at', TELEMETRY_CUTOFF_DATE),
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', CANONICAL_INTERACTION_ACTIONS).gte('created_at', TELEMETRY_CUTOFF_DATE),
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['use_simulator', 'simulation_completed']).gte('created_at', TELEMETRY_CUTOFF_DATE),
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)').gte('created_at', TELEMETRY_CUTOFF_DATE),
         supabaseAdmin.from('activity_logs').select('metadata').eq('action', 'pwa_install').gte('created_at', TELEMETRY_CUTOFF_DATE),
-        supabaseAdmin.from('posts').select('likes, likes_count'),
+        supabaseAdmin.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'like'),
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).gte('created_at', TELEMETRY_CUTOFF_DATE).not('user_id', 'is', null)
       ]);
 
@@ -137,10 +154,7 @@ export default async function handler(req, res) {
         });
       }
 
-      let totalLikesSum = 0;
-      if (postsLikesRes.data) {
-        totalLikesSum = postsLikesRes.data.reduce((sum, p) => sum + (p.likes || 0) + (p.likes_count || 0), 0);
-      }
+      const totalLikesSum = postsLikesRes?.count || 0;
 
       const docDownloadsCount = Math.max(userDocsRes.count || 0, docActivityRes.count || 0);
 
@@ -242,8 +256,25 @@ export default async function handler(req, res) {
         getCount('job_posts'),
         getCount('user_documents'),
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).in('action', ['app_access', 'app_launch', 'view_changed']).gte('created_at', since),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)').gte('created_at', since),
-        supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'ai_query').gte('created_at', since)
+        (async () => {
+          try {
+            const { data } = await supabaseAdmin
+              .from('activity_logs')
+              .select('metadata')
+              .eq('action', 'ai_query')
+              .gte('created_at', since);
+            if (!data) return { count: 0 };
+            return {
+              count: data.filter((d) => {
+                const promptText = d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt;
+                const isSystem = d.metadata?.guest_id === 'system';
+                return !isSystem && typeof promptText === 'string' && promptText.trim().length > 0;
+              }).length
+            };
+          } catch {
+            return { count: 0 };
+          }
+        })()
       ]);
 
       return res.status(200).json({

@@ -1,6 +1,7 @@
 import { AppActivityLog } from '../types';
 import { supabase } from '../lib/supabase';
 import { isInternalOrAdmin } from '../utils/adminUtils';
+import { normalizeCategory } from '../utils/categoryUtils';
 
 // ╔══════════════════════════════════════════════════════════════╗
 // ║   MIRA TELEMETRIA SOBERANA v2026.GOLD                       ║
@@ -64,19 +65,41 @@ class AnalyticsService {
       return;
     }
 
+    // 🛡️ BARREIRA DE SEGURANÇA E GOVERNANÇA PARA AI_QUERY:
+    // ai_query é estritamente reservado para consultas humanas reais.
+    let finalAction = action;
+    let finalCategory = category;
+
+    if (action === 'ai_query') {
+      const isSystem = userId === 'system' || metadata?.guest_id === 'system' || metadata?.is_benchmark === true;
+      const promptText = metadata?.prompt || metadata?.query || '';
+      const hasValidPrompt = typeof promptText === 'string' && promptText.trim().length > 0;
+
+      if (isSystem || !hasValidPrompt) {
+        console.warn('[MIRA Analytics] Rejeitado registo de ai_query inválido ou de sistema (convertido para system_benchmark).');
+        finalAction = 'system_benchmark';
+      } else {
+        // Normalização canónica obrigatória para toda consulta humana
+        finalCategory = normalizeCategory(category, promptText);
+        if (metadata) {
+          metadata.category = finalCategory;
+        }
+      }
+    }
+
     // 1. Registo imediato em memória local (nunca falha)
     const log: AppActivityLog = {
       id: Math.random().toString(36).substr(2, 9),
       userId: userId || 'guest',
-      action,
-      category,
+      action: finalAction,
+      category: finalCategory,
       timestamp: new Date().toISOString(),
       metadata
     };
     this.logs.push(log);
 
     // 2. Enviar para Supabase via RPC SECURITY DEFINER (bypass RLS total)
-    this.sendToSupabase(action, userId, category, metadata);
+    this.sendToSupabase(finalAction, userId, finalCategory, metadata);
   }
 
   private async sendToSupabase(

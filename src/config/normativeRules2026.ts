@@ -52,14 +52,14 @@ export const NORMATIVE_2026 = {
     ANOS_BENEFICIO: 10,
     TETO_ISENCAO_IAS: 55, // 55 × IAS anuais
     ISENCOES_POR_ANO: {
-      1: 1.00, // 1.º Ano: 100% de isenção
-      2: 0.75, // 2.º Ano: 75% de isenção
-      3: 0.50, // 3.º Ano: 50% de isenção
-      4: 0.50, // 4.º Ano: 50% de isenção
-      5: 0.25, // 5.º a 10.º Ano: 25% de isenção
-      6: 0.25,
-      7: 0.25,
-      8: 0.25,
+      1: 1.00,  // 1.º Ano: 100% de isenção (Art. 12.º-B, n.º 1, al. a) CIRS)
+      2: 0.75,  // 2.º ao 4.º Ano: 75% de isenção (Art. 12.º-B, n.º 1, al. b) CIRS)
+      3: 0.75,
+      4: 0.75,
+      5: 0.50,  // 5.º ao 7.º Ano: 50% de isenção (Art. 12.º-B, n.º 1, al. c) CIRS)
+      6: 0.50,
+      7: 0.50,
+      8: 0.25,  // 8.º ao 10.º Ano: 25% de isenção (Art. 12.º-B, n.º 1, al. d) CIRS)
       9: 0.25,
       10: 0.25,
     } as Record<number, number>,

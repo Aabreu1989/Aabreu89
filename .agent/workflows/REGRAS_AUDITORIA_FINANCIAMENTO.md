@@ -138,5 +138,18 @@ Sempre usar edições cirúrgicas: `replace_file_content` ou `multi_replace_file
 
 ---
 
-*Documento criado a pedido da proprietária da plataforma MIRA em 2026-08-05.*
+## 🏆 STANDARD OFICIAL DE RELATÓRIOS (HOMOLOGADO EM 22/08/2026)
+- **Data Oficial de Lançamento:** **`09/04/2026`**
+- **Arquitetura do PDF:** 4 Páginas densas sem espaços vazios (`PDF_TYPO`: `headerTitle: 13pt`, `sectionTitle: 11.5pt`, `subSectionTitle: 10.5pt`, `tableHead: 7.2pt`, `tableBody: 6.8pt`, `boxTitle: 7.5pt`, `boxBody: 6.6pt`).
+- **Espaçamento:** `8mm` entre tabelas, `5mm` após títulos, margens de `14mm`.
+- **Blindagem:** `splitTextToSize` obrigatório em caixas de texto com cálculo dinâmico de altura.
+- **Distribuição:**
+  - Pág 1: Header + Justificação + 8 KPIs + Tabela 1 (Infraestrutura)
+  - Pág 2: Tabela 2 (Categorias) + Tabela 2.1 (Top Buscas) + Tabela 3 (Vagas/Setor) + Tabela 3.1 (Geografia)
+  - Pág 3: Tabela 4 (Habitação) + Tabela 4.1 (Balcões) + Tabela 5 (Simuladores) + Tabela 5.1 (Minutas)
+  - Pág 4: Tabela 6 (Fontes Oficiais) + Declaração de Dados + Aviso Legal de Isenção
+
+---
+
+*Documento atualizado e homologado pela proprietária da plataforma MIRA em 22/08/2026.*
 *Este documento é protegido e não pode ser alterado sem autorização explícita da proprietária.*

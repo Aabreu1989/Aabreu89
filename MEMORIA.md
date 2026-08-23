@@ -577,6 +577,7 @@ HOMOLOGAÇÃO
 5. **Download de Atalho `.url` Separado:** O ficheiro `MIRA IMIGRANTE.url` é um recurso auxiliar gerado exclusivamente por `pwaService.downloadShortcut()`. É proibido tratar a descarga de um `.url` como equivalente a instalar uma PWA nativa.
 6. **Zero Lógica PWA nos Componentes:** NENHUM componente da interface pode inspecionar diretamente `isIOS()`, `isInstallable()` ou capturar o evento `beforeinstallprompt`. Toda a inteligência reside em `src/utils/pwa.ts`.
 7. **Salvaguarda de Ficheiros Núcleo PWA:** Os 4 ficheiros (`src/utils/pwa.ts`, `src/components/AuthScreen.tsx`, `src/components/HomeView.tsx`, `src/App.tsx`) constituem a arquitetura oficial de PWA.
+8. **Telemetria Realtime com Baseline Zero:** Como a funcionalidade e os botões PWA foram criados e disponibilizados em **12/08/2026**, o baseline histórico cumulativo de PWA é rigorosamente **0**. A métrica de downloads/instalações é 100% realtime a partir da tabela `public.activity_logs` (`action = 'pwa_install'`).
 
 ---
 
@@ -619,6 +620,58 @@ HOMOLOGAÇÃO
 > - **Contadores Unificados:** JobBoard, Admin Hub e Dashboard leem estritamente do Supabase, sem baselines, fallbacks fixos (5326, 5280) ou fusões estáticas em tempo de execução.
 > - **Canonicalização:** Todas as novas vagas passam por `canonicalizeUrl` (remoção de tags UTM, tracking e barras finais) antes da verificação e inserção.
 > - **Idempotência Homologada:** Duas sincronizações consecutivas mantêm a base matematicamente estável, sem gerar duplicações.
+
+---
+
+## 📌 22. REGRA PERMANENTE & INVIOLÁVEL: STANDARD OFICIAL DE GERAÇÃO DE RELATÓRIOS (PDF & EXCEL)
+
+> 🏆 **HOMOLOGAÇÃO GOLD DEFINITIVA (EM 22/08/2026) — APROVADO PELA PROPRIETÁRIA:**
+> Este é o **STANDARD ÚNICO E OFICIAL** para a arquitetura, diagramação, tipografia, espaçamentos e distribuição de tabelas em todos os relatórios da plataforma MIRA.
+
+### 🏛️ 1. Cronologia Oficial & Período Operacional
+- **Data Oficial de Lançamento:** **`09/04/2026`** (9 de Abril de 2026).
+- **Cabeçalho Oficial do PDF:**
+  `Período dos Dados: 09 de Abril de 2026 a [Data Atual] (Histórico Operacional em Tempo Real)`
+- **Série Temporal do Excel:** Início estrito em `04/2026` (Abril de 2026) até o mês atual corrente.
+
+### 📐 2. Sistema Tipográfico Oficial (`PDF_TYPO`)
+- `headerTitle`: **13.0pt** (Negrito, `#0f172a`, título principal institucional)
+- `headerSubtitle`: **7.5pt** (Cor secundária `#475569`, dossiê de financiamento)
+- `headerTimestamp`: **6.8pt** (Itálico `#94a3b8`, data e hora ao segundo)
+- `sectionTitle`: **11.5pt** (Negrito `#0f172a`, títulos principais numerados: `1.`, `2.`, `3.`, `4.`, `5.`, `6.`)
+- `subSectionTitle`: **10.5pt** (Negrito `#0f172a`, subtítulos numerados: `2.1.`, `3.1.`, `4.1.`, `5.1.`)
+- `tableHead`: **7.2pt** (Negrito, texto branco, `cellPadding: 1.6`)
+- `tableBody`: **6.8pt** (Regular, texto escuro `#0f172a`, `cellPadding: 1.3`)
+- `cardLabel`: **5.8pt** | `cardValue`: **10.5pt** (Negrito) | `cardNote`: **5.2pt**
+- `boxTitle`: **7.5pt** (Negrito) | `boxBody`: **6.6pt** (Regular)
+- `footer`: **7.0pt** (`#64748B`, rodapé com `Página X de Y` dinâmico)
+
+### 📏 3. Espaçamentos, Margens & Quebra de Texto
+- **Margens:** Esquerda `14mm`, Direita `14mm`, Topo `16mm`, Fundo `16mm` (`pageW = 210mm`, `pageH = 297mm`).
+- **Espaço entre Tabelas:** `8mm` entre o final de uma tabela (`lastAutoTable.finalY`) e o próximo título.
+- **Espaço Título ➡️ Tabela:** `5mm` entre o título e o início do `autoTable`.
+- **Blindagem de Caixas de Texto:** **É ESTRITAMENTE OBRIGATÓRIO** usar `splitTextToSize(text, pageW - 36)` e cálculo dinâmico de altura (`boxHeight = 8 + (splitText.length * 3.8)`) para que nenhum texto transborde das caixas.
+
+### 📑 4. Diagramação Compacta em 4 Páginas (Densidade Máxima Sem Espaços Vazios)
+- **Página 1 (Visão Executiva & Infraestrutura):**
+  1. Cabeçalho MIRA com Logo Oficial Base64 embutido e metadados.
+  2. Caixa de Justificação de Impacto Social para fundos (FAMI, EUSIC, PT2030, IEFP, PRR).
+  3. 8 Cartões KPI em 2 linhas (Utilizadores, Vagas, Consultas IA, Horas Poupadas, Acessos, Interações, Retenção, PWA).
+  4. `1. Indicadores Auditados de Infraestrutura e Atividade` (12 linhas de infraestrutura).
+- **Página 2 (Consultas IA & Mercado de Trabalho — 4 Tabelas):**
+  1. `2. Volume de Consultas pelas 10 Áreas Temáticas MIRA` (10 linhas).
+  2. `2.1. Termos de Busca Mais Pesquisados na Plataforma` (8 linhas / Top Pain Points).
+  3. `3. Métricas de Vagas por Setor Profissional (117 Portais Ativos)` (7 setores).
+  4. `3.1. Distribuição de Vagas por Regime de Trabalho e Geografia` (4 regimes/regiões).
+- **Página 3 (Habitação, Serviços Públicos, Simuladores & Minutas — 4 Tabelas):**
+  1. `4. Preço Médio de Referência e Procura por Tipologia Habitacional` (5 tipologias).
+  2. `4.1. Balcões Públicos & Associações Mapeadas (127 Locais Ativos)` (7 balcões prioritários).
+  3. `5. Simuladores & Ferramentas de Cálculo Financeiro (5.063 Simulações)` (5 simuladores).
+  4. `5.1. Minutas & Documentos Jurídicos Descarregados (3.454 Downloads)` (5 minutas).
+- **Página 4 (Fontes Regulatórias & Salvaguarda Legal):**
+  1. `6. Fontes Oficiais, Entidades Governamentais & Bases Mapeadas` (14 fontes governamentais).
+  2. Caixa de Declaração de Integração de Dados Oficiais.
+  3. Caixa de Aviso Legal, Conformidade RGPD & Isenção de Responsabilidade.
 
 ---
 

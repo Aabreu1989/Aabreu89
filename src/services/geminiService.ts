@@ -737,8 +737,8 @@ export const generateAssistantResponseV45 = async (
     const pLower = p.toLowerCase();
     const resolvedLang = resolveConversationLanguage(p, undefined, language);
 
-    // ⚡ Telemetria
-    try { analytics.track('ai_query', 'system', 'chat', { promptLength: p.length }); } catch (e) {}
+    // ⚡ Telemetria técnica interna (namespace próprio - nunca ai_query)
+    try { analytics.track('system_benchmark', 'system', 'chat', { promptLength: p.length }); } catch (e) {}
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 🟢 SHORTCIRCUIT: SAUDAÇÕES → SEM GEMINI (E20)

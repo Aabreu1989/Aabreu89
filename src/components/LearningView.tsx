@@ -424,7 +424,6 @@ Notre Assistant est entraîné sur les textes officiels en temps réel pour rép
 };
 
 export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateToChat, onEarnPoints, onNavigateToContact, language, initialArticleId }) => {
-  const [activeTab, setActiveTab] = useState<'articles' | 'courses'>('courses');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Todos');
@@ -464,72 +463,6 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
       readTime: '15',
       image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&q=80&fm=webp',
       isNews: true
-    },
-    {
-      id: 410,
-      isManual: true,
-      sourceId: 'aima',
-      date: '25 Abr 2026',
-      created_at: '2026-04-25T00:00:00Z',
-      category: CATEGORIES.RIGHTS,
-      readTime: '12',
-      image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80&fm=webp',
-      isNews: false
-    },
-    {
-      id: 411,
-      isManual: true,
-      sourceId: 'at',
-      date: '25 Abr 2026',
-      created_at: '2026-04-25T00:00:00Z',
-      category: CATEGORIES.FINANCE,
-      readTime: '10',
-      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80&fm=webp',
-      isNews: false
-    },
-    {
-      id: 406,
-      isManual: true,
-      sourceId: 'aima/cpr',
-      date: '28 Mar 2026',
-      created_at: '2026-03-28T00:00:00Z',
-      category: CATEGORIES.HUMANITARIAN,
-      readTime: '7',
-      image: 'https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?w=800&q=80&fm=webp',
-      isNews: false
-    },
-    {
-      id: 404,
-      isManual: true,
-      sourceId: 'aima',
-      date: '25 Mar 2026',
-      created_at: '2026-03-25T00:00:00Z',
-      category: CATEGORIES.RIGHTS,
-      readTime: '5',
-      image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80&fm=webp',
-      isNews: false
-    },
-    {
-      id: 403,
-      isManual: true,
-      sourceId: 'aima',
-      date: '05 Mar 2026',
-      created_at: '2026-03-05T00:00:00Z',
-      category: CATEGORIES.RIGHTS,
-      readTime: '6',
-      image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80&fm=webp',
-      isNews: false
-    },
-    {
-      id: 401,
-      isManual: true,
-      sourceId: 'aima',
-      date: '10 Jan 2026',
-      created_at: '2026-01-10T00:00:00Z',
-      category: CATEGORIES.EDUCATION,
-      readTime: '5',
-      image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&q=80&fm=webp',
-      isNews: false
     }
   ], [language]);
 
@@ -567,65 +500,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
   }, [selectedArticle, sortedArticles]);
 
   useEffect(() => {
-    const fetchKnowledgeBase = async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('ai_knowledge')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (data) {
-          const mapped = data
-            .filter((item: any) => item.topic || item.information) // Skip completely empty rows
-            .map((item: any) => {
-              let rawTitle = item.topic || '';
-              let rawContent = item.information || '';
-
-              // If title is massively long, it's actually the content
-              if (rawTitle.length > 150) {
-                 rawContent = rawTitle + (rawContent ? '\n\n' + rawContent : '');
-                 rawTitle = rawContent.substring(0, 50) + '...';
-              }
-              
-              // If title is empty but we have content
-              if (!rawTitle && rawContent) {
-                 rawTitle = rawContent.substring(0, 50) + '...';
-              }
-
-              // Clean asterisks for the preview UI
-              const cleanTitle = rawTitle.replace(/\*/g, '').trim();
-              const cleanSummary = rawContent.replace(/\*/g, '').substring(0, 150) + '...';
-
-              return {
-                id: item.id,
-                title: cleanTitle || 'Documentação MIRA',
-                summary: cleanSummary,
-                content: rawContent,
-                sourceId: 'aima',
-                date: new Date(item.created_at).toLocaleDateString(
-                  language === 'EN' ? 'en-US' : 
-                  language === 'ES' ? 'es-ES' : 
-                  language === 'FR' ? 'fr-FR' : 'pt-PT'
-                ),
-                category: item.category || CATEGORIES.RIGHTS,
-                readTime: '5',
-                image: item.image_url || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&q=80&fm=webp',
-                isNews: false
-              };
-          });
-          setDbArticles(mapped);
-        }
-      } catch (e) {
-        console.error("Error fetching knowledge base:", e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchKnowledgeBase();
+    setIsLoading(false);
     
     // Dynamic load of massive databases
     Promise.all([
@@ -646,7 +521,6 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
           console.log('Navigated to article ID:', artId);
           lastOpenedArticleIdRef.current = artId;
           setSelectedArticle(target);
-          setActiveTab('articles');
           const newUrl = window.location.pathname + window.location.search.replace(/[?&]article=\d+/, '');
           window.history.replaceState({}, '', newUrl || '/');
         }
@@ -712,7 +586,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, categoryFilter, typeFilter, activeTab]);
+  }, [searchQuery, categoryFilter, typeFilter]);
 
   const ITEMS_PER_PAGE = 20;
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
@@ -832,31 +706,8 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
           <div>
             <h2 className="mira-module-title text-slate-900">
-              {t('learning_title', language)}
+              {t('learning_courses', language) || t('learning_title', language)}
             </h2>
-          </div>
-          
-          <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 shadow-inner w-full sm:w-auto self-end sm:self-center">
-            <button 
-              onClick={() => setActiveTab('courses')} 
-              className={`flex-1 px-5 sm:px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 whitespace-nowrap ${
-                activeTab === 'courses' 
-                ? 'bg-slate-900 text-white shadow-md scale-[1.02] transform' 
-                : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'
-              }`}
-            >
-              {t('learning_courses', language)}
-            </button>
-            <button 
-              onClick={() => setActiveTab('articles')} 
-              className={`flex-1 px-5 sm:px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 whitespace-nowrap ${
-                activeTab === 'articles' 
-                ? 'bg-slate-900 text-white shadow-md scale-[1.02] transform' 
-                : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'
-              }`}
-            >
-              {t('learning_articles', language)}
-            </button>
           </div>
         </div>
 
@@ -864,140 +715,58 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-all duration-300" size={20} />
           <input
             type="text"
-            placeholder={activeTab === 'courses' ? t('learning_search_courses', language) : t('learning_search_articles', language)}
+            placeholder={t('learning_search_courses', language)}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white border border-slate-200 py-5 pl-16 pr-6 rounded-[2rem] text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-mira-orange/10 focus:border-mira-orange/30 transition-all placeholder:text-slate-300 relative z-10 font-medium shadow-sm"
           />
         </div>
 
-        {activeTab === 'courses' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto w-full animate-in fade-in slide-in-from-top-2 duration-500">
-            <div className="relative space-y-1.5 flex-1">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                {t('learning_course_category', language)}
-              </label>
-              <div className="relative group">
-                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-colors pointer-events-none" size={16} />
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 outline-none focus:bg-white focus:border-mira-orange/40 focus:ring-4 focus:ring-mira-orange/5 transition-all shadow-sm appearance-none cursor-pointer"
-                >
-                  <option value="Todos">{t('map_all_areas', language)}</option>
-                  {availableCategories.map(cat => (
-                    <option key={cat} value={cat}>{t(getCategoryKey(cat), language)}</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" size={14} />
-              </div>
-            </div>
-
-            <div className="relative space-y-1.5 flex-1">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                {t('learning_cert_source', language)}
-              </label>
-              <div className="relative group">
-                <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-colors pointer-events-none" size={16} />
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 outline-none focus:bg-white focus:border-mira-orange/40 focus:ring-4 focus:ring-mira-orange/5 transition-all shadow-sm appearance-none cursor-pointer"
-                >
-                  <option value="Todos">{t('learning_all_sources', language)}</option>
-                  <option value="DGES">DGES — {allCourses.filter(c => c.isDgesRecognized).length} Cursos</option>
-                  <option value="IEFP">IEFP — {allCourses.filter(c => c.isIefpSynced).length} Cursos</option>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto w-full animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="relative space-y-1.5 flex-1">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              {t('learning_course_category', language)}
+            </label>
+            <div className="relative group">
+              <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-colors pointer-events-none" size={16} />
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 outline-none focus:bg-white focus:border-mira-orange/40 focus:ring-4 focus:ring-mira-orange/5 transition-all shadow-sm appearance-none cursor-pointer"
+              >
+                <option value="Todos">{t('map_all_areas', language)}</option>
+                {availableCategories.map(cat => (
+                  <option key={cat} value={cat}>{t(getCategoryKey(cat), language)}</option>
+                ))}
               </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" size={14} />
             </div>
+          </div>
+
+          <div className="relative space-y-1.5 flex-1">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              {t('learning_cert_source', language)}
+            </label>
+            <div className="relative group">
+              <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-colors pointer-events-none" size={16} />
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 outline-none focus:bg-white focus:border-mira-orange/40 focus:ring-4 focus:ring-mira-orange/5 transition-all shadow-sm appearance-none cursor-pointer"
+              >
+                <option value="Todos">{t('learning_all_sources', language)}</option>
+                <option value="DGES">DGES — {allCourses.filter(c => c.isDgesRecognized).length} Cursos</option>
+                <option value="IEFP">IEFP — {allCourses.filter(c => c.isIefpSynced).length} Cursos</option>
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
           </div>
         </div>
-      )}
+      </div>
     </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-10 no-scrollbar pb-32">
-        {activeTab === 'articles' ? (
-          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-            {latestNews && !searchQuery && (
-              <div className="relative">
-                <div className="flex items-center gap-4 mb-5">
-                  <div className="px-4 py-1.5 bg-red-600/90 rounded-full text-white text-[9px] font-black uppercase tracking-[0.25em] shadow-lg">{t('newsroom', language)}</div>
-                  <div className="h-px flex-1 bg-slate-200"></div>
-                </div>
-
-                <div
-                  onClick={() => setSelectedArticle(latestNews)}
-                  className="relative h-[28rem] w-full rounded-[3.5rem] overflow-hidden shadow-2xl cursor-pointer group hover:shadow-mira-orange/10 transition-all duration-700 border border-slate-100"
-                >
-                  <img 
-                    src={getImageUrl(latestNews.image) || '/mira-icon.png'} 
-                    alt="" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms]" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
-                  
-                  <div className="absolute top-8 right-8 w-14 h-14 bg-white/20 backdrop-blur-xl rounded-3xl border border-white/20 flex items-center justify-center text-white group-hover:text-mira-orange group-hover:bg-white group-hover:border-mira-orange/30 transition-all duration-500 shadow-2xl">
-                    <Sparkles size={28} className="animate-pulse" />
-                  </div>
-
-                  <div className="absolute bottom-0 left-0 p-10 space-y-3 w-full">
-                    <div className="flex items-center gap-4">
-                      <span className="text-[10px] font-black bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full uppercase tracking-[0.2em] border border-white/20">
-                        {t(getCategoryKey(latestNews.category), language)}
-                      </span>
-                      <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">{latestNews.date}</span>
-                    </div>
-                    <h3 className="text-3xl font-black text-white uppercase tracking-tighter leading-tight line-clamp-2 drop-shadow-xl">
-                      {(latestNews as any).title}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
-              {filteredArticles.filter(a => searchQuery || !latestNews || a.id !== latestNews.id).map(article => (
-                <div 
-                  key={article.id} 
-                  onClick={() => setSelectedArticle(article)} 
-                  className={`group bg-white hover:bg-slate-50 p-4 rounded-[2.5rem] border border-slate-100 transition-all duration-500 cursor-pointer flex gap-5 items-stretch relative overflow-hidden shadow-sm hover:shadow-md`}
-                >
-                  <div className="w-28 sm:w-36 h-auto rounded-3xl overflow-hidden flex-shrink-0 shadow-lg border border-slate-100">
-                    <img 
-                      src={getImageUrl(article.image) || '/mira-icon.png'} 
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
-                    />
-                  </div>
-                  
-                  <div className="flex flex-col justify-between py-2 flex-1 relative z-10">
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[8px] font-black bg-slate-100 text-slate-400 px-3 py-1.5 rounded-full uppercase tracking-widest border border-slate-200">{t(getCategoryKey(article.category), language)}</span>
-                        <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">{article.date}</span>
-                      </div>
-                      <h4 className="font-black text-slate-900 text-base leading-[1.2] group-hover:text-mira-orange transition-all uppercase tracking-tight line-clamp-2 mb-2">
-                        <TranslatedText text={(article as any).title} language={language} shouldTranslate={language !== 'PT'} />
-                      </h4>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-[9px] font-black text-mira-orange uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-1 duration-500">
-                      {t('learning_read_more', language)} <ArrowRight size={10} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {isLoading && (
-               <div className="flex flex-col items-center justify-center py-10 gap-4">
-                  <Activity className="animate-spin text-mira-orange" size={30} />
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('learning_syncing', language)} {t('learning_articles', language)}...</p>
-               </div>
-            )}
-          </div>
-        ) : (
-          <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+    <div className="flex-1 overflow-y-auto p-6 space-y-10 no-scrollbar pb-32">
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
               {paginatedCourses.map((course) => (
               <div 
                 key={course.id} 
@@ -1135,8 +904,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
               </button>
             </div>
           )}
-          </div>
-        )}
+        </div>
       </div>
 
       {/* DGES Detailed Modal */}

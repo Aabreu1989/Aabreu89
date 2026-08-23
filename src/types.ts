@@ -366,7 +366,7 @@ export interface Message {
 export interface AppActivityLog {
   id: string;
   userId: string;
-  action: 'post_created' | 'post_deleted' | 'comment_created' | 'ai_query' | 'ai_feedback' | 'view_changed' | 'fraud_report' | 'doc_generated' | 'generate_document' | 'vote_cast' | 'job_click' | 'course_view' | 'read_article' | 'service_review' | 'chat_with_mira' | 'admin_delete' | 'admin_include' | 'admin_topic_suggestion' | 'admin_job_sync' | 'admin_course_sync' | 'admin_delete_all_posts' | 'admin_delete_all_comments' | 'admin_delete_all_users' | 'europass_click' | 'saved_post_toggled' | 'user_followed' | 'points_earned' | 'content_reported' | 'suggestion_submitted' | 'home_module_click' | 'app_launch' | 'app_access' | 'manual_opened_from_community' | 'badge_awarded' | 'post_like' | 'post_fact_vote' | 'pwa_install' | 'use_simulator' | 'like_post' | 'click_service';
+  action: 'post_created' | 'post_deleted' | 'comment_created' | 'ai_query' | 'ai_feedback' | 'system_benchmark' | 'view_changed' | 'fraud_report' | 'doc_generated' | 'generate_document' | 'vote_cast' | 'job_click' | 'course_view' | 'read_article' | 'service_review' | 'chat_with_mira' | 'admin_delete' | 'admin_include' | 'admin_topic_suggestion' | 'admin_job_sync' | 'admin_course_sync' | 'admin_delete_all_posts' | 'admin_delete_all_comments' | 'admin_delete_all_users' | 'europass_click' | 'saved_post_toggled' | 'user_followed' | 'points_earned' | 'content_reported' | 'suggestion_submitted' | 'home_module_click' | 'app_launch' | 'app_access' | 'manual_opened_from_community' | 'badge_awarded' | 'post_like' | 'post_fact_vote' | 'pwa_install' | 'use_simulator' | 'like_post' | 'click_service';
   category?: string;
   timestamp: string;
   metadata?: any;

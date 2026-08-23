@@ -451,7 +451,7 @@ const handleDeletePost = async (postId: string) => {
     }
   };
 
-  // 🧬 4. INTERAÇÕES SOBERANAS (LIKE, VERDADEIRO, FALSO)
+  // 🧬 4. INTERAÇÕES SOBERANAS (LIKE, VERDADEIRO, FALSO, DENÚNCIAS)
   const handleReportPost = async (postId: string, targetAuthorId?: string, content?: string) => {
     try {
       await communityService.report({
@@ -461,10 +461,25 @@ const handleDeletePost = async (postId: string) => {
         reason: 'Denúncia de Publicação',
         reportedContentText: content
       });
-      showToast(t('toast_report_sent', language) || 'Denúncia enviada para a moderação MIRA.', 'success');
+      
+      const subject = encodeURIComponent(`[DENÚNCIA MIRA] Publicação #${postId}`);
+      const body = encodeURIComponent(
+        `DENÚNCIA DE PUBLICAÇÃO — MIRA 2026.GOLD\n` +
+        `----------------------------------------\n` +
+        `• ID da Publicação: ${postId}\n` +
+        `• ID do Autor: ${targetAuthorId || 'N/D'}\n` +
+        `• ID do Denunciante: ${user.id} (${(user as any).email || user.name || 'Utilizador'})\n` +
+        `• Data/Hora: ${new Date().toISOString()}\n\n` +
+        `CONTEÚDO DENUNCIADO:\n${content || '(Sem texto)'}\n\n` +
+        `----------------------------------------\n` +
+        `Por favor, descreva abaixo detalhes adicionais sobre a infração:\n`
+      );
+
+      window.location.href = `mailto:MIRA.APP@HOTMAIL.COM?subject=${subject}&body=${body}`;
+      showToast("Denúncia registada e e-mail aberto para confirmação.", "info");
     } catch (e: any) {
       console.error("MIRA: Erro ao registar denúncia:", e);
-      showToast(e?.message || 'Falha ao enviar denúncia. Tenta novamente.', 'error');
+      showToast(e?.message || 'Falha ao processar denúncia.', 'error');
     }
   };
 
@@ -478,10 +493,26 @@ const handleDeletePost = async (postId: string) => {
         reason: 'Denúncia de Comentário',
         reportedContentText: content
       });
-      showToast(t('toast_report_sent', language) || 'Denúncia enviada para a moderação MIRA.', 'success');
+
+      const subject = encodeURIComponent(`[DENÚNCIA MIRA] Comentário #${commentId}`);
+      const body = encodeURIComponent(
+        `DENÚNCIA DE COMENTÁRIO — MIRA 2026.GOLD\n` +
+        `----------------------------------------\n` +
+        `• ID do Comentário: ${commentId}\n` +
+        `• ID da Publicação: ${postId}\n` +
+        `• ID do Autor: ${targetAuthorId || 'N/D'}\n` +
+        `• ID do Denunciante: ${user.id} (${(user as any).email || user.name || 'Utilizador'})\n` +
+        `• Data/Hora: ${new Date().toISOString()}\n\n` +
+        `COMENTÁRIO DENUNCIADO:\n${content || '(Sem texto)'}\n\n` +
+        `----------------------------------------\n` +
+        `Por favor, descreva abaixo detalhes adicionais sobre a infração:\n`
+      );
+
+      window.location.href = `mailto:MIRA.APP@HOTMAIL.COM?subject=${subject}&body=${body}`;
+      showToast("Denúncia registada e e-mail aberto para confirmação.", "info");
     } catch (e: any) {
       console.error("MIRA: Erro ao registar denúncia:", e);
-      showToast(e?.message || 'Falha ao enviar denúncia. Tenta novamente.', 'error');
+      showToast(e?.message || 'Falha ao processar denúncia.', 'error');
     }
   };
 
@@ -671,15 +702,63 @@ const handleDeletePost = async (postId: string) => {
   };
 
   const handleLikeComment = async (postId: string, commentId: string) => {
-    // Note: communityService doesn't have a direct voteComment yet, 
-    // but we can add it or just handle it optimistically if needed.
-    // For now, let's just toast and set local state if we want to follow the pattern.
+    const isCurrentlyLiked = likedComments.has(commentId);
+    const isRemoving = isCurrentlyLiked;
+
+    // 1. Atualização Otimista Instantânea (<50ms)
     setLikedComments(prev => {
       const next = new Set(prev);
-      if (next.has(commentId)) next.delete(commentId);
+      if (isRemoving) next.delete(commentId);
       else next.add(commentId);
       return next;
     });
+
+    setMasterPosts(prev => prev.map(p => {
+      if (p.id === postId) {
+        return {
+          ...p,
+          comments: (p.comments || []).map(c => {
+            if (c.id === commentId) {
+              return { ...c, likes: Math.max(0, (c.likes || 0) + (isRemoving ? -1 : 1)) };
+            }
+            return c;
+          })
+        };
+      }
+      return p;
+    }));
+
+    // 2. Persistência Soberana no PostgreSQL via Gateway
+    try {
+      await communityService.toggleCommentLike(commentId, user?.id, isRemoving);
+      if (!isRemoving) {
+        showToast(t('toast_liked', language) || 'Apoio registado!', 'success');
+      }
+    } catch (err) {
+      console.error("🚨 [MIRA Community] Erro ao persistir like de comentário:", err);
+      // Rollback de Segurança
+      setLikedComments(prev => {
+        const next = new Set(prev);
+        if (isRemoving) next.add(commentId);
+        else next.delete(commentId);
+        return next;
+      });
+      setMasterPosts(prev => prev.map(p => {
+        if (p.id === postId) {
+          return {
+            ...p,
+            comments: (p.comments || []).map(c => {
+              if (c.id === commentId) {
+                return { ...c, likes: Math.max(0, (c.likes || 0) + (isRemoving ? 1 : -1)) };
+              }
+              return c;
+            })
+          };
+        }
+        return p;
+      }));
+      showToast("Falha ao registar apoio. Tenta novamente.", "error");
+    }
   };
 
   const handleDeleteComment = async (postId: string, commentId: string) => {

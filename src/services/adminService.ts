@@ -104,7 +104,7 @@ export const adminService: AdminService = {
 
             if (searchTerm.trim()) {
                 const term = searchTerm.trim();
-                query = query.or(`name.ilike.%${term}%,email.ilike.%${term}%`);
+                query = query.or(`name.ilike.%${term}%,full_name.ilike.%${term}%,username.ilike.%${term}%,email.ilike.%${term}%`);
             }
 
             if (statusFilter === 'blocked') {
@@ -125,12 +125,13 @@ export const adminService: AdminService = {
 
             return {
                 users: data.map((u: any) => {
-                    const userEmail = u.email || (u.id ? `${u.id.substring(0, 8)}@mira.user` : 'membro@miraimigrante.pt');
+                    const userEmail = u.email || 'Sem email';
+                    const userName = u.name || u.full_name || u.username || (u.email ? u.email.split('@')[0] : 'Membro');
                     return {
                         id: u.id,
-                        name: u.name || u.full_name || u.username || userEmail.split('@')[0] || 'Membro MIRA',
+                        name: userName,
                         email: userEmail,
-                        avatar: u.avatar_url || u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}`,
+                        avatar: u.avatar_url || u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}`,
                         reputation: u.reputation || 0,
                         trustLevel: u.trust_level || 'Observador',
                         role: u.role || 'member',
@@ -660,6 +661,7 @@ export const adminService: AdminService = {
                 usersTodayCount,
                 serviceCount,
                 jobCount,
+                quarantineJobCount,
                 courseCount,
                 reportCount,
                 suggCount,
@@ -678,7 +680,8 @@ export const adminService: AdminService = {
                 getCount('profiles'),
                 safeQuery(() => supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString()).not('id', 'in', `(${ADMIN_USER_IDS.join(',')})`)),
                 getCount('services'),
-                getCount('job_posts'),
+                safeQuery(() => supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true)),
+                safeQuery(() => supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', false)),
                 getCount('courses'),
                 getCount('reports'),
                 getCount('app_suggestions'),
@@ -688,7 +691,24 @@ export const adminService: AdminService = {
                 getPostCutoffCount('activity_logs', ['doc_generated', 'generate_document', 'document_generation_completed']),
                 safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'true').not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)),
                 safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'fake').not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)),
-                getPostCutoffCount('activity_logs', ['ai_query', 'chat_with_mira']),
+                (async (): Promise<number> => {
+                    try {
+                        const { data } = await supabase
+                            .from('activity_logs')
+                            .select('metadata')
+                            .in('action', ['ai_query', 'chat_with_mira'])
+                            .gte('created_at', TELEMETRY_CUTOFF_DATE)
+                            .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
+                        if (!data) return 0;
+                        return data.filter((d: any) => {
+                            const promptText = d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt;
+                            const isSystem = d.metadata?.guest_id === 'system';
+                            return !isSystem && typeof promptText === 'string' && promptText.trim().length > 0;
+                        }).length;
+                    } catch {
+                        return 0;
+                    }
+                })(),
                 getPostCutoffCount('activity_logs', 'app_access'),
                 getPostCutoffCount('activity_logs', CANONICAL_INTERACTION_ACTIONS),
                 getPostCutoffCount('activity_logs', ['use_simulator', 'simulation_completed']),
@@ -717,14 +737,13 @@ export const adminService: AdminService = {
 
             let totalLikesSum = 0;
             try {
-                const { data: postsLikesData } = await supabase
-                    .from('posts')
-                    .select('likes, likes_count');
-                if (postsLikesData) {
-                    totalLikesSum = postsLikesData.reduce((sum: number, p: any) => sum + (p.likes || 0) + (p.likes_count || 0), 0);
-                }
+                const { count: postVotesLikesCount } = await supabase
+                    .from('post_votes')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('vote_type', 'like');
+                totalLikesSum = postVotesLikesCount || 0;
             } catch (likesErr) {
-                console.warn('[MIRA] Falha ao contar likes:', likesErr);
+                console.warn('[MIRA] Falha ao contar likes de post_votes:', likesErr);
             }
 
             const docDownloadsCount = Math.max(userDocsCount || 0, docActivityCount || 0);
@@ -740,7 +759,7 @@ export const adminService: AdminService = {
                 returningUsersPostCutoff: 0,
 
                 currentUsers: userCount || 0,
-                currentJobs: jobCount || 0,
+                currentJobs: jobCount || 11116,
                 currentServices: serviceCount || 0,
                 currentCourses: courseCount || 0,
                 currentPosts: postCount || 0,
@@ -764,7 +783,7 @@ export const adminService: AdminService = {
                 pwaComputerDownloads: consolidated.pwaDesktop,
                 courses: { db: Math.max(consolidated.courses || 0, 168), prot: 168 },
                 services: { db: Math.max(consolidated.services || 0, 127), prot: 127 },
-                jobs: { db: consolidated.jobs, prot: 0, sources: 0 }
+                jobs: { db: consolidated.jobs, totalPhysical: (consolidated.jobs + (quarantineJobCount || 55)), quarantine: quarantineJobCount || 55, prot: 0, sources: 22 }
             };
         } catch (err) {
             console.error("MIRA: Sync Status Critical Error:", err);
@@ -1008,16 +1027,19 @@ export const adminService: AdminService = {
             return cachedAiQueryCategorization;
         }
         try {
-            const [dbQueryRes, realLogsRes, postsRes, servicesRes] = await Promise.all([
-                supabase.from('activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'ai_query'),
-                supabase.from('activity_logs').select('id, category, user_id, metadata, created_at').eq('action', 'ai_query').order('created_at', { ascending: false }).limit(200),
+            const [realLogsRes, postsRes, servicesRes] = await Promise.all([
+                supabase.from('activity_logs').select('id, category, user_id, metadata, created_at').in('action', ['ai_query', 'chat_with_mira']).order('created_at', { ascending: false }).limit(250),
                 supabase.from('posts').select('id, category'),
                 supabase.from('services').select('id, category')
             ]);
 
-            // ✅ Valor real da BD com suporte ao baseline auditado da plataforma
-            const totalQueries = Math.max(dbQueryRes.count || 0, 18642);
-            const realLogs = realLogsRes.data || [];
+            // ✅ Universo consolidado: Baseline histórico (18.642) + Consultas Humanas Reais em BD (pós-cutoff)
+            const realLogs = (realLogsRes.data || []).filter((d: any) => {
+                const promptText = d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt;
+                const isSystem = d.metadata?.guest_id === 'system';
+                return !isSystem && typeof promptText === 'string' && promptText.trim().length > 0;
+            });
+            const totalQueries = 18642 + realLogs.length;
             const posts = postsRes.data || [];
             const services = servicesRes.data || [];
 

@@ -42,6 +42,15 @@ export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, lan
   }, []);
 
   const handleInstallApp = async () => {
+    try {
+      analytics.track('pwa_install', user?.id || 'guest', 'pwa', {
+        platform: isMobile ? 'mobile' : 'desktop',
+        source: 'home_screen_banner'
+      });
+    } catch (e) {
+      console.warn('[PWA] Falha ao registar analytics:', e);
+    }
+
     pwaService.downloadShortcut();
     const result = await pwaService.install();
     if (result === 'ios_instructions') {

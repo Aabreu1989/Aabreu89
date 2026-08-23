@@ -274,6 +274,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const JOBS_PER_PAGE = 15;
   const [currentPage, setCurrentPage] = useState(1);
   const jobListTopRef = React.useRef<HTMLDivElement>(null);
+  const scannedJobIdsRef = React.useRef<Set<string>>(new Set());
 
   // 📊 SOBERANIA MIRA: Carregar distribuição real de vagas por setor direto do Supabase
   const loadTopicCounts = React.useCallback(async () => {
@@ -461,7 +462,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       }
 
       if (selectedQuickFilter === 'pcd') {
-        query = query.or('title.ilike.%pcd%,title.ilike.%inclus%,title.ilike.%defici%');
+        query = query.or('title.ilike.%pcd%,title.ilike.%inclusiv%,title.ilike.%inclusão%,title.ilike.%inclusion%,title.ilike.%defici%');
       }
 
       const from = (currentPage - 1) * JOBS_PER_PAGE;
@@ -504,9 +505,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       setJobs(formatted);
 
       if (formatted.length > 0) {
-        setTimeout(() => {
-          jobAlertService.processJobMatching(formatted, user?.id);
-        }, 50);
+        const unscanned = formatted.filter(j => !scannedJobIdsRef.current.has(j.id));
+        if (unscanned.length > 0) {
+          unscanned.forEach(j => scannedJobIdsRef.current.add(j.id));
+          setTimeout(() => {
+            jobAlertService.processJobMatching(unscanned, user?.id);
+          }, 50);
+        }
       }
     } catch (err: any) {
       console.error('MIRA JobBoard error:', err);

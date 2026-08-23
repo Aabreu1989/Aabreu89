@@ -233,7 +233,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
         const articleViews = counts.articleViews || filteredLogs.filter(l => l.action === 'course_view' || l.action === 'read_article').length;
         const aiTalksCount = filteredLogs.filter(l => l.action === 'ai_query').length;
         const totalComments = counts.comments || masterPosts.reduce((acc, p) => acc + (p.comments?.length || 0), 0);
-        const totalLikes = counts.totalLikes || masterPosts.reduce((acc, p) => acc + (p.likes || 0), 0);
+        const totalLikes = counts.totalLikes ?? masterPosts.reduce((acc, p) => acc + (p.likes || 0), 0);
         
         // V2026.PRO: Sovereignty Metrics
         const verifiedCount = masterPosts.filter(p => p.isVerified).length;
@@ -504,13 +504,13 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                             <div className="bg-gradient-to-br from-indigo-900/80 to-slate-900/80 p-5 rounded-[2.2rem] border border-indigo-500/30 shadow-xl relative overflow-hidden">
                                 <Users size={18} className="text-indigo-400 mb-3" />
-                                <p className="text-[9px] font-black uppercase text-indigo-300 tracking-wider mb-1">Utilizadores Totais</p>
+                                <p className="text-[9px] font-black uppercase text-indigo-300 tracking-wider mb-1">Perfis Registados</p>
                                 <h3 className="text-3xl font-black text-white">{counts.users}</h3>
                             </div>
 
                             <div className="bg-gradient-to-br from-emerald-900/80 to-slate-900/80 p-5 rounded-[2.2rem] border border-emerald-500/30 shadow-xl relative overflow-hidden">
                                 <TrendingUp size={18} className="text-emerald-400 mb-3" />
-                                <p className="text-[9px] font-black uppercase text-emerald-300 tracking-wider mb-1">Taxa de Retenção</p>
+                                <p className="text-[9px] font-black uppercase text-emerald-300 tracking-wider mb-1">Recorrência Histórica</p>
                                 <h3 className="text-3xl font-black text-emerald-400">{counts.retentionRate}%</h3>
                             </div>
 
@@ -536,7 +536,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                             <div className="bg-white/5 p-5 rounded-[2rem] border border-white/10 shadow-xl">
                                 <FileText size={16} className="text-[#FF8C00] mb-3" />
-                                <p className="text-[8px] font-black uppercase text-white/40 mb-1">Vagas Activas</p>
+                                <p className="text-[8px] font-black uppercase text-white/40 mb-1">Vagas Públicas Ativas</p>
                                 <h3 className="text-2xl font-black text-white">{counts.jobs}</h3>
                             </div>
                             <div className="bg-white/5 p-5 rounded-[2rem] border border-white/10 shadow-xl">
@@ -558,11 +558,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                                 <ShieldCheck size={16} className="text-emerald-400 mb-3" />
                                 <p className="text-[8px] font-black uppercase text-white/40 mb-1">Posts Verificados</p>
                                 <h3 className="text-2xl font-black text-white">{counts.verifiedPosts}</h3>
-                            </div>
-                            <div className="bg-white/5 p-5 rounded-[2rem] border border-white/10 shadow-xl">
-                                <BookOpen size={16} className="text-[#FFD700] mb-3" />
-                                <p className="text-[8px] font-black uppercase text-white/40 mb-1">Leituras Artigos</p>
-                                <h3 className="text-2xl font-black text-white">{counts.articleViews}</h3>
                             </div>
                             <div className="bg-white/5 p-5 rounded-[2rem] border border-white/10 shadow-xl">
                                 <MessageCircle size={16} className="text-purple-400 mb-3" />

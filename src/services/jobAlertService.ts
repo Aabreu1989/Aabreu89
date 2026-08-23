@@ -126,20 +126,60 @@ export const jobAlertService = {
     const clientId = this.getClientId();
     const alertId = `alert-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
     
+    const normalize = (s?: string) => (s || '').trim().toLowerCase();
+    const existing = this.getAlerts();
+
+    // 🔒 Deduplicação Semântica: Identificar se já existe alerta equivalente
+    const targetTopic = alertData.workTopic || 'Todos';
+    const targetLoc = alertData.location || 'Todos os Distritos';
+    const targetKeywords = alertData.keywords?.trim() || '';
+
+    const duplicateIndex = existing.findIndex(a =>
+      (userId ? a.user_id === userId : a.clientId === clientId) &&
+      normalize(a.workTopic) === normalize(targetTopic) &&
+      normalize(a.location) === normalize(targetLoc) &&
+      normalize(a.keywords) === normalize(targetKeywords)
+    );
+
+    if (duplicateIndex !== -1) {
+      // Alerta equivalente já existe: atualizar frequência e reativar sem duplicar
+      const existingAlert = existing[duplicateIndex];
+      existingAlert.frequency = alertData.frequency || existingAlert.frequency || 'instant';
+      existingAlert.isActive = true;
+      existing[duplicateIndex] = existingAlert;
+      localStorage.setItem(LOCAL_ALERTS_KEY, JSON.stringify(existing));
+
+      if (userId && !existingAlert.id.startsWith('alert-')) {
+        try {
+          await supabase
+            .from('user_job_alerts')
+            .update({
+              frequency: existingAlert.frequency,
+              is_active: true
+            })
+            .eq('id', existingAlert.id)
+            .eq('user_id', userId);
+        } catch (e) {
+          console.warn('MIRA JobAlert: Supabase deduplication update warning:', e);
+        }
+      }
+
+      return existingAlert;
+    }
+
     const newAlert: JobAlert = {
       id: alertId,
       user_id: userId,
       clientId: clientId,
-      workTopic: alertData.workTopic || 'Todos',
-      location: alertData.location || 'Todos os Distritos',
-      keywords: alertData.keywords?.trim() || '',
+      workTopic: targetTopic,
+      location: targetLoc,
+      keywords: targetKeywords,
       isActive: true,
       frequency: alertData.frequency || 'instant',
       createdAt: new Date().toISOString()
     };
 
     // Salvar localmente primeiro (resiliência imediata)
-    const existing = this.getAlerts();
     const updated = [newAlert, ...existing];
     localStorage.setItem(LOCAL_ALERTS_KEY, JSON.stringify(updated));
 
