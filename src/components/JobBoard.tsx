@@ -461,8 +461,18 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         query = query.gte('created_at', d);
       }
 
-      if (selectedQuickFilter === 'pcd') {
+      if (selectedQuickFilter === 'english') {
+        query = query.or('title.ilike.%english%,title.ilike.%inglês%,title.ilike.%ingles%,title.ilike.%speaker%,title.ilike.%bilingual%,title.ilike.%bilingue%,title.ilike.%international%,title.ilike.%internacional%');
+      } else if (selectedQuickFilter === 'visa') {
+        query = query.or('title.ilike.%visto%,title.ilike.%visa%,title.ilike.%relocation%,title.ilike.%repatriamento%,title.ilike.%sponsorship%,title.ilike.%patroc%');
+      } else if (selectedQuickFilter === 'remote') {
+        query = query.or('location.ilike.%remoto%,title.ilike.%remoto%,location.ilike.%remote%,title.ilike.%remote%,title.ilike.%teletrabalho%,location.ilike.%teletrabalho%,work_topic.ilike.%remoto%');
+      } else if (selectedQuickFilter === 'entry') {
+        query = query.or('title.ilike.%junior%,title.ilike.%júnior%,title.ilike.%estágio%,title.ilike.%estagio%,title.ilike.%trainee%,title.ilike.%entry%,title.ilike.%inicial%,title.ilike.%aprendiz%,title.ilike.%estagiário%,title.ilike.%estagiaria%,title.ilike.%sem experiência%');
+      } else if (selectedQuickFilter === 'pcd') {
         query = query.or('title.ilike.%pcd%,title.ilike.%inclusiv%,title.ilike.%inclusão%,title.ilike.%inclusion%,title.ilike.%defici%');
+      } else if (selectedQuickFilter === 'via_verde') {
+        query = query.or('title.ilike.%tech visa%,title.ilike.%via verde%,title.ilike.%relocation%,title.ilike.%sponsorship%,title.ilike.%visa support%,title.ilike.%visto de trabalho%');
       }
 
       const from = (currentPage - 1) * JOBS_PER_PAGE;
@@ -704,14 +714,15 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               </div>
             </div>
 
-            {/* Quick Filters for Foreigners & Expats - 5 Quick Filter Pills in Single Unified Group */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-2.5 w-full relative z-0">
+            {/* Quick Filters for Foreigners & Expats - 6 Quick Filter Pills in Single Unified Group */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-2.5 w-full relative z-0">
               {[
                 { id: 'english', label: t('jobs_quick_english', language), color: 'border-blue-200 text-blue-600 bg-blue-50/70 hover:bg-blue-100' },
                 { id: 'visa', label: t('jobs_quick_visa', language), color: 'border-amber-200 text-amber-700 bg-amber-50/70 hover:bg-amber-100' },
                 { id: 'remote', label: t('jobs_quick_remote', language), color: 'border-teal-200 text-teal-600 bg-teal-50/70 hover:bg-teal-100' },
                 { id: 'entry', label: t('jobs_quick_entry', language), color: 'border-purple-200 text-purple-600 bg-purple-50/70 hover:bg-purple-100' },
                 { id: 'pcd', label: t('jobs_quick_pcd', language) || '♿ Vagas PCD', color: 'border-emerald-200 text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100' },
+                { id: 'via_verde', label: t('jobs_quick_via_verde', language) || '🚦 Via Verde', color: 'border-emerald-200 text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100' },
               ].map(pill => {
                 const isActive = selectedQuickFilter === pill.id;
                 return (
