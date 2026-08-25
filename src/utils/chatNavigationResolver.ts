@@ -65,17 +65,7 @@ export function resolveChatNavigation(
     }
 
     case 'LOCAL_SERVICES':
-    case 'SERVICES': {
-      if (subTab) {
-        params.tab = subTab;
-      }
-      return {
-        view: ViewType.SERVICES,
-        params,
-        isValid: true
-      };
-    }
-
+    case 'SERVICES':
     case 'MAP': {
       if (subTab) {
         params.tab = subTab;

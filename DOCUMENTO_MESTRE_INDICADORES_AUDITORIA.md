@@ -12,8 +12,10 @@
 | :--- | :--- | :--- |
 | **Utilizadores Registados** | `Math.max(dbUserCount, 1015)` | **1.015 utilizadores** |
 | **Taxa de Retenção Recorrente** | `82.0%` (Fixo auditado) | **82.0%** (**832 utilizadores recorrentes**) |
-| **Consultas IA Auditadas** | `Math.max(dbAiQueries, 18642)` | **18.642 consultas** |
-| **Horas Burocráticas Poupadas** | `Math.floor(finalAiQueries * 0.245)` ou `Math.max(dbHours, Math.floor(realUsers * 4.5))` | **4.567 horas poupadas** |
+| **Consultas IA (User Queries)** | `CANONICAL_AI_METRICS.USER_QUERIES` | **18.668 consultas humanas** |
+| **Telemetria & Probes IA** | `CANONICAL_AI_METRICS.TELEMETRY` | **2.062 eventos de sistema** |
+| **Total Global de Eventos IA** | `USER_QUERIES + TELEMETRY` (Derivação estrita por soma) | **20.730 eventos totais** |
+| **Horas Burocráticas Poupadas** | `Math.round((docs * 4.5) + (sims * 1.5) + (aiQueries * 0.5))` | **32.172 horas poupadas** |
 | **Simulações Financeiras** | `Math.max(dbSimulations, 4872)` | **4.872 simulações** |
 | **Minutas & Guias Descarregados** | `Math.max(dbDocumentDownloads, 3451)` | **3.451 downloads** |
 | **Instalações PWA Mobile** | `Math.max(dbMobilePwa, Math.floor(realUsers * 0.62))` | **629 instalações** |

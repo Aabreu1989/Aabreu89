@@ -4,13 +4,13 @@ import { MiraImpactReport } from './MiraImpactReport';
 import PremiosView from './PremiosView';
 import { adminService } from '../services/adminService';
 import { generateAdminHubPDF, generateAuditExcel } from '../services/exportService';
-import { User, Post } from '../types';
+import { User, Post, ViewType } from '../types';
 import {
     ShieldCheck, Users, ShieldAlert, Trash2, Ban,
     Search, CheckCircle2, RefreshCcw, Database, 
     Activity, ChevronDown, Loader2, GraduationCap, MapPin, Lightbulb, Bell,
     User as UserIcon, CheckCircle, Bot, Star, X, MessageCircle, AlertCircle, Briefcase, ChevronRight, MailX, Sparkles, Globe, Award, FileText, Smartphone, Trophy,
-    BarChart3, TrendingUp, Calculator, Download, Eye
+    BarChart3, TrendingUp, Calculator, Download, Eye, FileSignature, Terminal
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useToast } from './Toast';
@@ -191,6 +191,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const [processing, setProcessing] = useState<string | null>(null);
     const [deniedEmails, setDeniedEmails] = useState<string[]>([]);
     const [dataCache, setDataCache] = useState<Record<string, { timestamp: number, data: any }>>({});
+    const dataCacheRef = useRef<Record<string, { timestamp: number, data: any }>>({});
+    const inFlightRequestsRef = useRef<Map<string, Promise<any>>>(new Map());
+    const isInitialUserTabRef = useRef<boolean>(true);
     const [usersPage, setUsersPage] = useState(0);
     const [totalUsers, setTotalUsers] = useState(0);
     const [knowledgePage, setKnowledgePage] = useState(0);
@@ -212,20 +215,36 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             : tab === 'knowledge'
             ? `knowledge_${knowledgePage}_${knowledgeSearch.trim()}`
             : tab;
-        const cached = dataCache[cacheKey];
+        const cached = dataCacheRef.current[cacheKey];
         const threshold = typeof document !== 'undefined' && document.visibilityState === 'visible' ? 30000 : 180000;
         
         if (!force && cached && (now - cached.timestamp < threshold)) {
+            if (tab === 'users' && cached.data?.result) {
+                setUsers(cached.data.result.users || []);
+                setTotalUsers(cached.data.result.total || 0);
+                if (cached.data.filterCounts) {
+                    setUserFilterCounts(cached.data.filterCounts);
+                }
+            } else if (tab === 'knowledge' && cached.data) {
+                setAIKnowledge(cached.data.items || []);
+                setTotalKnowledge(cached.data.total || 0);
+            } else if (tab === 'gamification' && cached.data) {
+                setAllBadges(cached.data || []);
+            } else if (tab === 'dashboard' && cached.data) {
+                setCounts(cached.data);
+            }
             return;
         }
 
-        // 🛡️ INFLIGHT MUTEX PER TAB/QUERY: Impede requisições sobrepostas
-        if (fetchingTabsRef.current.has(cacheKey)) {
+        // 🛡️ IN-FLIGHT MUTEX COALESCING: Se já existe requisição em voo para esta chave, aguarda-a sem descartar
+        if (inFlightRequestsRef.current.has(cacheKey)) {
+            try {
+                await inFlightRequestsRef.current.get(cacheKey);
+            } catch (_) {}
             return;
         }
-        fetchingTabsRef.current.add(cacheKey);
 
-        try {
+        const taskPromise = (async () => {
             if (tab === 'users') {
                 setLoadingUsers(true);
                 const [result, filterCounts] = await Promise.all([
@@ -240,17 +259,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 if (filterCounts) {
                     setUserFilterCounts(filterCounts);
                 }
-                setDataCache(prev => ({ ...prev, [cacheKey]: { timestamp: now, data: { result, filterCounts } } }));
+                const cachePayload = { timestamp: Date.now(), data: { result, filterCounts } };
+                dataCacheRef.current[cacheKey] = cachePayload;
+                setDataCache(prev => ({ ...prev, [cacheKey]: cachePayload }));
                 setLoadingUsers(false);
 
             } else if (tab === 'dashboard') {
                 setLoadingDashboard(true);
                 
                 // 🚀 DASHBOARD PROGRESSIVO PARALELO:
-                // 1. Dados rápidos disparam imediatamente sem bloquear
-                adminService.fetchUsers(0, 5).then(res => {
-                    if (res?.users) setUsers(res.users);
-                });
                 adminService.fetchAIKnowledge(5, true).then(kb => {
                     if (kb) setAIKnowledge(kb);
                 });
@@ -263,7 +280,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     }
                 });
 
-                // 2. Métricas pesadas de sync-status correm em paralelo no background e atualizam o estado assim que prontas
                 adminService.fetchSyncStatus().then(status => {
                     if (status) {
                         const newCounts = { 
@@ -293,7 +309,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         try {
                             sessionStorage.setItem('mira_admin_dashboard_counts', JSON.stringify(newCounts));
                         } catch (_) {}
-                        setDataCache(prev => ({ ...prev, dashboard: { timestamp: Date.now(), data: newCounts } }));
+                        const cachePayload = { timestamp: Date.now(), data: newCounts };
+                        dataCacheRef.current['dashboard'] = cachePayload;
+                        setDataCache(prev => ({ ...prev, dashboard: cachePayload }));
                     }
                 }).finally(() => {
                     setLoadingDashboard(false);
@@ -306,7 +324,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     setAIKnowledge(kbRes.items || []);
                     setTotalKnowledge(kbRes.total || 0);
                 }
-                setDataCache(prev => ({ ...prev, knowledge: { timestamp: now, data: kbRes } }));
+                const cachePayload = { timestamp: Date.now(), data: kbRes };
+                dataCacheRef.current['knowledge'] = cachePayload;
+                setDataCache(prev => ({ ...prev, knowledge: cachePayload }));
                 setLoadingKnowledge(false);
 
             } else if (tab === 'gamification') {
@@ -314,7 +334,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 const { gamificationService } = await import('../services/gamificationService');
                 const res = await gamificationService.fetchAllBadges();
                 if (res) setAllBadges(res || []);
-                setDataCache(prev => ({ ...prev, gamification: { timestamp: now, data: res } }));
+                const cachePayload = { timestamp: Date.now(), data: res };
+                dataCacheRef.current['gamification'] = cachePayload;
+                setDataCache(prev => ({ ...prev, gamification: cachePayload }));
                 setLoadingGamification(false);
 
             } else if (tab === 'broadcast' || tab === 'impact') {
@@ -326,24 +348,37 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     });
                 }
             }
+        })();
+
+        inFlightRequestsRef.current.set(cacheKey, taskPromise);
+
+        try {
+            await taskPromise;
         } catch (e) {
             console.error("MIRA Admin Hub Error:", e);
         } finally {
-            fetchingTabsRef.current.delete(cacheKey);
+            inFlightRequestsRef.current.delete(cacheKey);
             setLoadingUsers(false);
             setLoadingKnowledge(false);
             setLoadingGamification(false);
         }
-    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod, counts.users, dataCache]);
+    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod, counts.users]);
 
-    // Reactive search effect with 300ms debounce
+    // Reactive search effect with debounce (não dispara concorrente na troca inicial de aba)
     useEffect(() => {
-        if (activeTab !== 'users') return;
+        if (activeTab !== 'users') {
+            isInitialUserTabRef.current = true;
+            return;
+        }
+        if (isInitialUserTabRef.current) {
+            isInitialUserTabRef.current = false;
+            return;
+        }
         const timer = setTimeout(() => {
             loadData(true);
         }, 250);
         return () => clearTimeout(timer);
-    }, [userSearchTerm, userFilterStatus, usersPage, activeTab]);
+    }, [userSearchTerm, userFilterStatus, usersPage, activeTab, loadData]);
 
     useEffect(() => {
         // Carga inicial suave respeitando cache
@@ -542,7 +577,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <p className="mira-module-subtitle !text-white/40">Gestão Administrativa</p>
                     </div>
                 </div>
-                <button onClick={onBack} className="p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"><X size={20}/></button>
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <button 
+                        onClick={() => onViewChange ? onViewChange(ViewType.DASHBOARD) : (window as any).miraNavigate?.(ViewType.DASHBOARD)}
+                        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all shadow-md active:scale-95 group"
+                        title="Aceder ao Console de Administração (Live Telemetry & Sync)"
+                    >
+                        <Terminal size={14} className="group-hover:rotate-12 transition-transform" />
+                        <span className="hidden sm:inline">CONSOLE DE ADMINISTRAÇÃO</span>
+                        <span className="sm:hidden">CONSOLE</span>
+                    </button>
+                    <button onClick={onBack} className="p-3 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"><X size={20}/></button>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:flex lg:flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-white/5 mx-3 sm:mx-8 mt-4 sm:mt-6 rounded-2xl border border-white/10 static sm:sticky sm:top-[80px] z-[90] backdrop-blur-md">
@@ -585,14 +631,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </div>
                                         <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-3 py-1.5 rounded-full border border-emerald-500/20 animate-pulse">🔴 LIVE</span>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-10 gap-3 sm:gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-11 gap-3 sm:gap-4">
                                          {[
                                              { label: 'Utilizadores', value: counts.users, sub: `+${counts.usersToday} hoje`, icon: Users, color: 'text-[#FF8C00]', bg: 'from-orange-900/30' },
                                              { label: 'Acessos App 🚀', value: (counts as any).appAccesses ?? 0, sub: 'Entradas na Plataforma (Tempo Real)', icon: Eye, color: 'text-sky-400', bg: 'from-sky-900/30' },
                                              { label: 'Navegações & Interações 📊', value: (counts as any).totalInteractions ?? 0, sub: 'Páginas Vistas + Ações (Acumulado)', icon: Activity, color: 'text-indigo-400', bg: 'from-indigo-900/30' },
                                              { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
                                              { label: 'Simulações 🧮', value: (counts as any).simulations ?? 0, sub: 'IRS, Salários & Prazos', icon: Calculator, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
-                                             { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
+                                             { label: 'Minutas & Guias 📑', value: templates.length + serviceGuides.length, sub: `${templates.length} minutas + ${serviceGuides.length} guias`, icon: FileSignature, color: 'text-amber-300', bg: 'from-amber-950/40' },
+                                             { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas gerados', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
                                              { label: 'Vagas', value: counts.jobs?.db ?? 11116, sub: '11.116 vagas públicas ativas', icon: Briefcase, color: 'text-teal-400', bg: 'from-teal-900/30' },
                                              { label: 'Serviços', value: counts.services?.db ?? 0, sub: 'Serviços mapeados', icon: MapPin, color: 'text-[#00E5FF]', bg: 'from-cyan-900/30' },
                                              { label: 'Cursos', value: counts.courses?.db ?? 0, sub: 'Cursos de formação', icon: GraduationCap, color: 'text-rose-400', bg: 'from-rose-900/30' },
@@ -838,7 +885,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-white/5">
-                                            {users.map(u => (
+                                            {loadingUsers && users.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={5} className="px-6 py-12 text-center text-white/50">
+                                                        <div className="flex items-center justify-center gap-3">
+                                                            <Loader2 size={20} className="animate-spin text-[#FF8C00]" />
+                                                            <span className="text-xs font-bold uppercase tracking-wider">A carregar utilizadores...</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ) : users.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={5} className="px-6 py-12 text-center text-white/30 text-xs font-bold uppercase tracking-wider">
+                                                        Nenhum utilizador encontrado
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                users.map(u => (
                                                 <tr key={u.id} className="hover:bg-white/4 transition-colors">
                                                     <td className="px-6 py-4">
                                                         <div 
@@ -912,7 +975,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            ))}
+                                            )))}
                                         </tbody>
                                     </table>
                                 </div>

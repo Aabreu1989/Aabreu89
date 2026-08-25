@@ -440,7 +440,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                 {language.toLowerCase() === 'pt' ? 'Todas as Localidades' 
                                  : language.toLowerCase() === 'es' ? 'Todas las Localidades' 
                                  : language.toLowerCase() === 'fr' ? 'Toutes les Localités' 
-                                 : 'All Locations'} ({services.filter(s => (s.city || '').trim().toLowerCase() !== 'portugal' && (s.city || '').trim() !== '').length})
+                                 : 'All Locations'} ({services.length})
                             </option>
                             {availableLocations.map(loc => {
                                 const count = services.filter(s => (s.city || '').trim().toLowerCase() === loc.toLowerCase()).length;

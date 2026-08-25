@@ -1,15 +1,15 @@
 import { supabase } from '../lib/supabase';
 import { User } from '../types';
 import { t } from '../utils/translations';
-import { ADMIN_EMAIL } from '../utils/adminUtils';
+import { ADMIN_EMAIL, isUserAdmin } from '../utils/adminUtils';
 
 /**
- * ­ƒææ MIRA AUTH SERVICE V2026.SUPREME (DIAMOND MASTER)
+ * 🛡️ MIRA AUTH SERVICE V2026.SUPREME (DIAMOND MASTER)
  * PROTOCOLO: RESEND API + SUPABASE AUTH + PROFILE SYNC
  */
 export const authService = {
     async fetchProfileWithRetry(userId: string, email: string, name?: string, retries = 3, delay = 500): Promise<any> {
-        const isCEO = (email || '').toLowerCase().trim() === ADMIN_EMAIL;
+        const isCEO = isUserAdmin({ id: userId, email });
 
         for (let i = 0; i < retries; i++) {
             try {
@@ -93,6 +93,10 @@ export const authService = {
 
             if (profileError || !profile) return null;
 
+            // Obter contexto da sessão ativa para resolução de identidade sem alterar public.profiles
+            const { data: { session } } = await supabase.auth.getSession();
+            const sessionUser = session?.user?.id === userId ? session.user : null;
+
             // 🛡️ SOBERANIA MIRA: Busca atómica de medalhas na tabela central
             let { data: badgesData } = await supabase
                 .from('user_badges')
@@ -116,7 +120,7 @@ export const authService = {
                 }
             }
 
-            const user = this.mapProfileToUser(profile, null);
+            const user = this.mapProfileToUser(profile, sessionUser);
             user.badges = (badgesData || []).map(b => ({
                 badge_id: b.badge_id,
                 awarded_at: b.awarded_at
@@ -130,41 +134,42 @@ export const authService = {
     },
 
     mapProfileToUser(profile: any, sessionUser: any): User {
-        const userEmail = (sessionUser?.email || profile.email || '').toLowerCase().trim();
-        const isCEO = userEmail === ADMIN_EMAIL;
+        const userEmail = (sessionUser?.email || profile?.email || '').toLowerCase().trim();
+        const effectiveId = profile?.id || sessionUser?.id;
+        const isCEO = isUserAdmin({ id: effectiveId, email: userEmail, role: profile?.role }) || profile?.role === 'admin' || profile?.role === 'ceo' || sessionUser?.role === 'admin';
 
-        const savedAvatar = typeof localStorage !== 'undefined' && profile.id ? localStorage.getItem(`mira_avatar_${profile.id}`) : null;
+        const savedAvatar = typeof localStorage !== 'undefined' && profile?.id ? localStorage.getItem(`mira_avatar_${profile.id}`) : null;
         return {
-            id: profile.id,
-            email: sessionUser?.email || profile.email || '',
-            name: profile.name || sessionUser?.user_metadata?.name || sessionUser?.user_metadata?.full_name || (isCEO ? 'Amanda Abreu (Admin MIRA)' : 'Usuário Novo'),
-            avatar: profile.avatar_url || profile.avatar || savedAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}`,
-            bio: profile.bio || (isCEO ? 'Fundadora & Administradora MIRA Imigrante' : ''),
-            nationality: profile.nationality || 'Não especificada',
-            ageRange: profile.age_range || profile.ageRange || '',
-            location: profile.location || '',
-            mainChallenge: profile.main_challenge || profile.mainChallenge || '',
-            reputation: isCEO ? Math.max(profile.reputation || 0, 10458) : (profile.reputation || 0),
-            trustLevel: (isCEO ? 'Elite' : (profile.trust_level || profile.trustLevel || 'Observador')) as any,
-            isVerified: isCEO ? true : (profile.is_verified || profile.isVerified || false),
-            role: (isCEO ? 'admin' : (profile.role || 'member')) as 'admin' | 'member' | 'mentor',
+            id: effectiveId || '00000000-0000-0000-0000-000000000001',
+            email: sessionUser?.email || profile?.email || '',
+            name: profile?.name || sessionUser?.user_metadata?.name || sessionUser?.user_metadata?.full_name || (isCEO ? 'Amanda Abreu (Admin MIRA)' : 'Usuário Novo'),
+            avatar: profile?.avatar_url || profile?.avatar || savedAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}`,
+            bio: profile?.bio || (isCEO ? 'Fundadora & Administradora MIRA Imigrante' : ''),
+            nationality: profile?.nationality || 'Não especificada',
+            ageRange: profile?.age_range || profile?.ageRange || '',
+            location: profile?.location || '',
+            mainChallenge: profile?.main_challenge || profile?.mainChallenge || '',
+            reputation: isCEO ? Math.max(profile?.reputation || 0, 10458) : (profile?.reputation || 0),
+            trustLevel: (isCEO ? 'Elite' : (profile?.trust_level || profile?.trustLevel || 'Observador')) as any,
+            isVerified: isCEO ? true : (profile?.is_verified || profile?.isVerified || false),
+            role: (isCEO ? 'admin' : (profile?.role || 'member')) as 'admin' | 'member' | 'mentor',
             isMuted: false,
-            followersCount: profile.followers_count || profile.followersCount || 0,
-            followingCount: profile.following_count || profile.followingCount || 0,
-            registrationDate: profile.created_at || profile.updated_at || profile.registrationDate || new Date().toISOString(),
-            verifiedPostsCount: profile.verified_posts_count || profile.verifiedPostsCount || 0,
-            totalLikesReceived: profile.total_likes_received || profile.totalLikesReceived || 0,
-            reportsConfirmedCount: profile.reports_confirmed_count || 0,
-            scamReportsConfirmed: profile.scam_reports_confirmed || 0,
-            documentDownloads: profile.document_downloads || 0,
-            completedCoursesCount: profile.completed_courses_count || 0,
-            serviceReviewsCount: profile.service_reviews_count || 0,
-            invitesConfirmedCount: profile.invites_confirmed_count || 0,
-            saberIaHits: profile.saber_ia_hits || 0,
-            lynxEyeCount: profile.lynx_eye_count || 0,
-            communityValidationsCount: profile.community_validations_count || 0,
-            likesGivenCount: profile.likes_given_count || 0,
-            badges: Array.isArray(profile.badges) ? profile.badges : [],
+            followersCount: profile?.followers_count || profile?.followersCount || 0,
+            followingCount: profile?.following_count || profile?.followingCount || 0,
+            registrationDate: profile?.created_at || profile?.updated_at || profile?.registrationDate || new Date().toISOString(),
+            verifiedPostsCount: profile?.verified_posts_count || profile?.verifiedPostsCount || 0,
+            totalLikesReceived: profile?.total_likes_received || profile?.totalLikesReceived || 0,
+            reportsConfirmedCount: profile?.reports_confirmed_count || 0,
+            scamReportsConfirmed: profile?.scam_reports_confirmed || 0,
+            documentDownloads: profile?.document_downloads || 0,
+            completedCoursesCount: profile?.completed_courses_count || 0,
+            serviceReviewsCount: profile?.service_reviews_count || 0,
+            invitesConfirmedCount: profile?.invites_confirmed_count || 0,
+            saberIaHits: profile?.saber_ia_hits || 0,
+            lynxEyeCount: profile?.lynx_eye_count || 0,
+            communityValidationsCount: profile?.community_validations_count || 0,
+            likesGivenCount: profile?.likes_given_count || 0,
+            badges: Array.isArray(profile?.badges) ? profile.badges : [],
             email_confirmed_at: sessionUser?.email_confirmed_at || new Date().toISOString()
         };
     },
@@ -190,7 +195,7 @@ export const authService = {
             }
 
             const effectiveEmail = session.user.email ? session.user.email.trim().toLowerCase() : cleanEmail;
-            const isAdmin = effectiveEmail === ADMIN_EMAIL;
+            const isAdmin = isUserAdmin({ id: userId, email: effectiveEmail });
             const defaultName = name?.trim() || session.user.user_metadata?.name || session.user.user_metadata?.full_name || (isAdmin ? 'Amanda Abreu (Admin MIRA)' : effectiveEmail.split('@')[0] || 'Membro');
 
             const profileInsert = {

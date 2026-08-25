@@ -214,6 +214,10 @@ export default async function handler(req, res) {
       const { postId, voteType } = req.body || {};
       if (!postId || !voteType) return res.status(400).json({ error: 'postId e voteType são obrigatórios.' });
 
+      if (!authenticatedUserId) {
+        return res.status(401).json({ error: 'Autenticação necessária para registrar voto/like.' });
+      }
+
       const normalizedVoteType = voteType === 'useful' ? 'true' : voteType;
       if (!['like', 'true', 'fake'].includes(normalizedVoteType)) {
         return res.status(400).json({ error: 'voteType inválido. Permitidos: like, true, fake.' });
@@ -222,7 +226,7 @@ export default async function handler(req, res) {
       let voteActionResult = 'added';
 
       if (normalizedVoteType === 'like') {
-        const { data: existingLike } = await supabaseAdmin
+        const { data: existingLike, error: fetchLikeErr } = await supabaseAdmin
           .from('post_votes')
           .select('id, vote_type')
           .eq('post_id', postId)
@@ -230,25 +234,69 @@ export default async function handler(req, res) {
           .eq('vote_type', 'like')
           .maybeSingle();
 
+        if (fetchLikeErr) {
+          console.error("🚨 [MIRA API Community] Erro ao consultar like existente:", fetchLikeErr.message);
+          return res.status(500).json({ error: fetchLikeErr.message });
+        }
+
         if (existingLike) {
-          await supabaseAdmin.from('post_votes').delete().eq('id', existingLike.id);
+          const { error: delErr } = await supabaseAdmin
+            .from('post_votes')
+            .delete()
+            .eq('id', existingLike.id);
+
+          if (delErr) {
+            console.error("🚨 [MIRA API Community] Erro ao remover like:", delErr.message);
+            return res.status(500).json({ error: delErr.message });
+          }
           voteActionResult = 'removed';
         } else {
-          await supabaseAdmin.from('post_votes').insert({
-            post_id: postId,
-            user_id: authenticatedUserId,
-            vote_type: 'like'
-          });
-          voteActionResult = 'added';
+          const { error: insertErr } = await supabaseAdmin
+            .from('post_votes')
+            .insert({
+              post_id: postId,
+              user_id: authenticatedUserId,
+              vote_type: 'like'
+            });
+
+          if (insertErr) {
+            if (insertErr.code === '23505' || insertErr.message?.includes('unique')) {
+              // 🛡️ TRATAMENTO DE CONCORRÊNCIA: Reavaliar estado real antes de qualquer ação
+              const { data: recheckLike } = await supabaseAdmin
+                .from('post_votes')
+                .select('id')
+                .eq('post_id', postId)
+                .eq('user_id', authenticatedUserId)
+                .eq('vote_type', 'like')
+                .maybeSingle();
+
+              if (recheckLike) {
+                await supabaseAdmin.from('post_votes').delete().eq('id', recheckLike.id);
+                voteActionResult = 'removed';
+              } else {
+                return res.status(500).json({ error: insertErr.message });
+              }
+            } else {
+              console.error("🚨 [MIRA API Community] Erro ao gravar post_vote like:", insertErr.message);
+              return res.status(500).json({ error: insertErr.message });
+            }
+          } else {
+            voteActionResult = 'added';
+          }
         }
       } else {
         // Fact-check votes ('true' ou 'fake')
-        const { data: existingFactVotes } = await supabaseAdmin
+        const { data: existingFactVotes, error: fetchFactErr } = await supabaseAdmin
           .from('post_votes')
           .select('id, vote_type')
           .eq('post_id', postId)
           .eq('user_id', authenticatedUserId)
           .in('vote_type', ['true', 'fake', 'useful']);
+
+        if (fetchFactErr) {
+          console.error("🚨 [MIRA API Community] Erro ao consultar voto de facto existente:", fetchFactErr.message);
+          return res.status(500).json({ error: fetchFactErr.message });
+        }
 
         const existingFactVote = existingFactVotes && existingFactVotes.length > 0 ? existingFactVotes[0] : null;
 
@@ -256,21 +304,63 @@ export default async function handler(req, res) {
           const currentType = existingFactVote.vote_type === 'useful' ? 'true' : existingFactVote.vote_type;
           if (currentType === normalizedVoteType) {
             // Clicou no mesmo: remover voto
-            await supabaseAdmin.from('post_votes').delete().eq('id', existingFactVote.id);
+            const { error: delFactErr } = await supabaseAdmin
+              .from('post_votes')
+              .delete()
+              .eq('id', existingFactVote.id);
+
+            if (delFactErr) {
+              console.error("🚨 [MIRA API Community] Erro ao remover voto de facto:", delFactErr.message);
+              return res.status(500).json({ error: delFactErr.message });
+            }
             voteActionResult = 'removed';
           } else {
             // Clicou no oposto (ex: TRUE -> FAKE): alternar voto
-            await supabaseAdmin.from('post_votes').update({ vote_type: normalizedVoteType }).eq('id', existingFactVote.id);
+            const { error: updateFactErr } = await supabaseAdmin
+              .from('post_votes')
+              .update({ vote_type: normalizedVoteType })
+              .eq('id', existingFactVote.id);
+
+            if (updateFactErr) {
+              console.error("🚨 [MIRA API Community] Erro ao alternar voto de facto:", updateFactErr.message);
+              return res.status(500).json({ error: updateFactErr.message });
+            }
             voteActionResult = 'switched';
           }
         } else {
           // Novo voto
-          await supabaseAdmin.from('post_votes').insert({
-            post_id: postId,
-            user_id: authenticatedUserId,
-            vote_type: normalizedVoteType
-          });
-          voteActionResult = 'added';
+          const { error: insertFactErr } = await supabaseAdmin
+            .from('post_votes')
+            .insert({
+              post_id: postId,
+              user_id: authenticatedUserId,
+              vote_type: normalizedVoteType
+            });
+
+          if (insertFactErr) {
+            if (insertFactErr.code === '23505' || insertFactErr.message?.includes('unique')) {
+              // 🛡️ Concorrência: Reavaliar estado real
+              const { data: recheckFact } = await supabaseAdmin
+                .from('post_votes')
+                .select('id, vote_type')
+                .eq('post_id', postId)
+                .eq('user_id', authenticatedUserId)
+                .in('vote_type', ['true', 'fake', 'useful'])
+                .maybeSingle();
+
+              if (recheckFact && recheckFact.vote_type === normalizedVoteType) {
+                await supabaseAdmin.from('post_votes').delete().eq('id', recheckFact.id);
+                voteActionResult = 'removed';
+              } else {
+                return res.status(500).json({ error: insertFactErr.message });
+              }
+            } else {
+              console.error("🚨 [MIRA API Community] Erro ao gravar post_vote fact:", insertFactErr.message);
+              return res.status(500).json({ error: insertFactErr.message });
+            }
+          } else {
+            voteActionResult = 'added';
+          }
         }
       }
 
@@ -623,22 +713,40 @@ export default async function handler(req, res) {
       const { targetUserId } = req.body || {};
       if (!targetUserId) return res.status(400).json({ error: 'targetUserId é obrigatório.' });
 
+      if (!authenticatedUserId) {
+        return res.status(401).json({ error: 'Autenticação necessária para seguir/deixar de seguir.' });
+      }
+
+      if (targetUserId === authenticatedUserId) {
+        return res.status(400).json({ error: 'Não é permitido seguir o seu próprio perfil.' });
+      }
+
       if (action === 'unfollow') {
-        const { error } = await supabaseAdmin.from('user_follows').delete().eq('follower_id', authenticatedUserId).eq('following_id', targetUserId);
-        if (error && error.code === 'PGRST205') {
-          return res.status(400).json({ error: 'Tabela user_follows pendente de migration.' });
+        const { error: delErr } = await supabaseAdmin
+          .from('user_follows')
+          .delete()
+          .eq('follower_id', authenticatedUserId)
+          .eq('following_id', targetUserId);
+
+        if (delErr) {
+          console.error("🚨 [MIRA API Community] Erro ao remover follow:", delErr.message);
+          return res.status(500).json({ error: delErr.message });
         }
         return res.status(200).json({ success: true, action: 'unfollowed' });
       } else {
-        const { error } = await supabaseAdmin.from('user_follows').insert({
-          follower_id: authenticatedUserId,
-          following_id: targetUserId
-        });
-        if (error && (error.code === '23505' || error.message?.includes('duplicate') || error.message?.includes('unique'))) {
-          return res.status(200).json({ success: true, action: 'already_followed' });
-        }
-        if (error && error.code === 'PGRST205') {
-          return res.status(400).json({ error: 'Tabela user_follows pendente de migration.' });
+        const { error: insertErr } = await supabaseAdmin
+          .from('user_follows')
+          .insert({
+            follower_id: authenticatedUserId,
+            following_id: targetUserId
+          });
+
+        if (insertErr) {
+          if (insertErr.code === '23505' || insertErr.message?.includes('duplicate') || insertErr.message?.includes('unique')) {
+            return res.status(200).json({ success: true, action: 'already_followed' });
+          }
+          console.error("🚨 [MIRA API Community] Erro ao gravar follow:", insertErr.message);
+          return res.status(500).json({ error: insertErr.message });
         }
         return res.status(200).json({ success: true, action: 'followed' });
       }

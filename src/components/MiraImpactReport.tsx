@@ -24,6 +24,9 @@ interface PlatformCounts {
   usersToday: number;
   downloads?: number;
   aiQueries?: number;
+  aiUserQueries?: number;
+  aiTelemetry?: number;
+  totalAiEvents?: number;
   jobs?: { db: number; prot: number };
   courses?: { db: number; prot: number };
   services?: { db: number; prot: number };
@@ -186,7 +189,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
       percentage: tp.percentage || 0
     })) : [];
 
-    const totalAi = auditData?.totalQueries || (platformCounts?.aiQueries === 20730 ? 18668 : platformCounts?.aiQueries) || 18668;
+    const totalAi = platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668;
     const totalJobs = (platformCounts?.jobs as any)?.db || platformCounts?.jobs || 11414;
     const totalServices = (platformCounts?.services as any)?.db || (typeof platformCounts?.services === 'number' ? platformCounts?.services : 0) || 127;
     const totalJobsCount = Math.max(Number(totalJobs) || 0, 11414);
@@ -369,7 +372,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               { label: 'Apoios Prestados', value: (counts?.processosAjudados ?? 0).toLocaleString(), sub: 'Minutas + Simulações', color: 'text-emerald-400', icon: CheckCircle2 },
               { label: 'Horas Poupadas', value: (counts?.horasPoupadas ?? 0).toLocaleString(), sub: 'Modelo Ponderado', color: 'text-indigo-400', icon: Clock },
               { label: 'Recorrência', value: `${counts?.retentionRate ?? 0}%`, sub: `${(counts?.returningUsers ?? 0).toLocaleString()} regressaram`, color: 'text-blue-400', icon: TrendingUp },
-              { label: 'Consultas IA', value: (auditData?.totalQueries ?? (platformCounts?.aiQueries === 20730 ? 18668 : platformCounts?.aiQueries) ?? 18668).toLocaleString(), sub: 'Consultas Humanas', color: 'text-purple-400', icon: BarChart3 },
+              { label: 'Consultas IA', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668).toLocaleString(), sub: 'Consultas Humanas', color: 'text-purple-400', icon: BarChart3 },
               { label: 'PWA Installs', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString(), sub: 'Mobile + Desktop', color: 'text-rose-400', icon: Activity },
             ].map(({ label, value, sub, color, icon: Icon }) => (
               <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1 print-card">
@@ -834,8 +837,8 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                   { label: 'Perfis Registados no Ecossistema MIRA', value: `${(counts?.users ?? 0).toLocaleString()}` },
                   { label: 'Horas Burocráticas Poupadas (Modelo MIRA)', value: `${(counts?.horasPoupadas ?? 0).toLocaleString()}h` },
                   { label: 'Apoios Burocráticos Prestados (Minutas & Simulações)', value: (counts?.processosAjudados ?? 0).toLocaleString() },
-                  { label: 'Taxa de Recorrência Histórica (≥ 2 sessões)', value: `${counts?.retentionRate ?? 0}%` },
-                  { label: 'Consultas IA Auditadas e Mapeadas', value: (auditData?.totalQueries ?? (platformCounts?.aiQueries === 20730 ? 18668 : platformCounts?.aiQueries) ?? 18668).toLocaleString() },
+                  { label: 'Taxa de Recorrência Histórica (2+ sessões)', value: `${counts?.retentionRate ?? 0}%` },
+                  { label: 'Consultas IA Auditadas e Mapeadas', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668).toLocaleString() },
                   { label: 'Instalações da Aplicação PWA (Desde 12/08)', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString() },
                 ].map(({ label, value }) => (
                   <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex justify-between items-center print-card">

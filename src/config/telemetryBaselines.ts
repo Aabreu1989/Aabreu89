@@ -6,6 +6,7 @@
 
 export {
     TELEMETRY_CUTOFF_DATE,
+    CANONICAL_AI_METRICS,
     HISTORICAL_CUMULATIVE_BASELINES,
     CANONICAL_INTERACTION_ACTIONS,
     consolidatePlatformMetrics
@@ -20,7 +21,9 @@ export interface RealDatabaseTelemetryCounts {
     docDownloadEvents: number;
     pwaMobileEvents: number;
     pwaDesktopEvents: number;
-    returningUsersPostCutoff: number;
+    // C.2 — Recorrentes pós-cutoff: number (resultado real) | null (falha de query — preservar erro)
+    // 🔒 PROIBIDO: tratar null como 0. null indica falha de integração, não ausência de recorrentes.
+    returningUsersPostCutoff: number | null;
 
     // Tipo B: Estado Corrente das Tabelas da Base de Dados (COUNT real direto)
     currentUsers: number;
@@ -37,11 +40,17 @@ export interface ConsolidatedPlatformMetrics {
     appAccesses: number;
     totalInteractions: number;
     aiQueries: number;
+    aiUserQueries: number;
+    aiTelemetry: number;
+    totalAiEvents: number;
     simulations: number;
     userDocuments: number;
     pwaMobile: number;
     pwaDesktop: number;
+    // C.1 — Referência histórica legada (832). NÃO é contagem observada.
     returningUsers: number;
+    // C.2 — Contagem real pós-cutoff. null = falha de query; não deve ser tratado como zero.
+    returningUsersPostCutoff: number | null;
 
     jobs: number;
     services: number;

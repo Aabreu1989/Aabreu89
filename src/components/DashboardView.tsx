@@ -17,7 +17,7 @@ import { adminService } from '../services/adminService';
 import { AiQueryAuditDashboard } from './AiQueryAuditDashboard';
 import { supabase } from '../lib/supabase';
 import { MIRA_LOGO, COLORS, OFFICIAL_SOURCES } from '../constants';
-import { Post, JobPost, WORK_TOPICS, UNIFIED_CATEGORIES, Course } from '../types';
+import { Post, JobPost, WORK_TOPICS, UNIFIED_CATEGORIES, Course, ViewType } from '../types';
 import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
 import { PROTECTED_JOBS } from '../utils/protectedData';
 
@@ -29,6 +29,7 @@ interface DashboardViewProps {
     onAddMultipleCourses?: (courses: Course[]) => void;
     onLogout?: () => void;
     onDeleteAllUsers?: () => void;
+    onViewChange?: (view: any, params?: any) => void;
 }
 
 const confirmAction = (msg: string) => {
@@ -36,7 +37,15 @@ const confirmAction = (msg: string) => {
     return window.confirm(msg);
 };
 
-const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePosts, totalOfficialDocs, onAddCourse, onAddMultipleCourses, onLogout, onDeleteAllUsers }) => {
+const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePosts, totalOfficialDocs, onAddCourse, onAddMultipleCourses, onLogout, onDeleteAllUsers, onViewChange }) => {
+    const handleBackToAdminHub = () => {
+        if (onViewChange) {
+            onViewChange(ViewType.ADMIN);
+        } else if (typeof window !== 'undefined' && (window as any).miraNavigate) {
+            (window as any).miraNavigate(ViewType.ADMIN);
+        }
+    };
+
     const [isGenerating, setIsGenerating] = useState(false);
     const [aiReport, setAiReport] = useState<string | null>(null);
     const [logs, setLogs] = useState(analytics.getLogs());
@@ -456,7 +465,16 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                                 <h1 className="mira-module-title tracking-tighter leading-none">Console de Administração</h1>
                             </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <button
+                                onClick={handleBackToAdminHub}
+                                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-mira-orange/20 hover:bg-mira-orange/30 text-mira-orange border border-mira-orange/40 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all shadow-md active:scale-95 group"
+                                title="Voltar ao Admin Hub (Painel Principal de Gestão)"
+                            >
+                                <ShieldCheck size={16} className="group-hover:scale-110 transition-transform text-mira-orange" />
+                                <span className="hidden sm:inline">VOLTAR AO ADMIN HUB</span>
+                                <span className="sm:hidden">ADMIN HUB</span>
+                            </button>
                             <button
                                 onClick={() => setShowSettings(true)}
                                 className="p-3 bg-slate-800/50 text-slate-400 rounded-xl border border-white/5 hover:bg-slate-800 transition-all shadow-lg"

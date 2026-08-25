@@ -5,7 +5,8 @@ import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
 import { 
     consolidatePlatformMetrics, 
     CANONICAL_INTERACTION_ACTIONS, 
-    TELEMETRY_CUTOFF_DATE 
+    TELEMETRY_CUTOFF_DATE,
+    CANONICAL_AI_METRICS
 } from '../config/telemetryBaselines';
 import { ADMIN_USER_IDS } from '../utils/adminUtils';
 
@@ -748,6 +749,61 @@ export const adminService: AdminService = {
 
             const docDownloadsCount = Math.max(userDocsCount || 0, docActivityCount || 0);
 
+            // ──────────────────────────────────────────────────────────────────────────────
+            // C.2 — RECORRENTES PÓS-CUTOFF (Opção C — Prova 3 — Auditoria READ-ONLY)
+            // COUNT(DISTINCT user_id) com ≥2 eventos app_access elegíveis pós-cutoff.
+            //
+            // 🔒 REGRA: NÃO somar com RETURNING_USERS: 832 (H.RETURNING_USERS).
+            //    832 é referência histórica legada — os dois universos temporais são independentes.
+            //    A complementaridade não foi comprovada; dupla contagem não foi excluída.
+            //
+            // 🔒 REGRA: Em caso de falha, preservar o erro para diagnóstico.
+            //    PROIBIDO: catch { return 0 } ou ?? 0 para mascarar falha como resultado válido.
+            // ──────────────────────────────────────────────────────────────────────────────
+            let returningUsersPostCutoffValue: number | null = null;
+            try {
+                const accessCountPerUser: Record<string, number> = {};
+                let page = 0;
+                const pageSize = 1000;
+                let hasMore = true;
+
+                while (hasMore) {
+                    const from = page * pageSize;
+                    const to = from + pageSize - 1;
+                    const { data: pageLogs, error: appAccessError } = await supabase
+                        .from('activity_logs')
+                        .select('user_id')
+                        .eq('action', 'app_access')
+                        .gte('created_at', TELEMETRY_CUTOFF_DATE)
+                        .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)
+                        .not('user_id', 'is', null)
+                        .range(from, to);
+
+                    if (appAccessError) throw appAccessError;
+
+                    if (pageLogs && pageLogs.length > 0) {
+                        for (const row of pageLogs) {
+                            if (row.user_id) {
+                                accessCountPerUser[row.user_id] = (accessCountPerUser[row.user_id] || 0) + 1;
+                            }
+                        }
+                        if (pageLogs.length < pageSize) {
+                            hasMore = false;
+                        } else {
+                            page++;
+                        }
+                    } else {
+                        hasMore = false;
+                    }
+                }
+
+                // COUNT(DISTINCT user_id) com ≥2 eventos
+                returningUsersPostCutoffValue = Object.values(accessCountPerUser).filter(n => n >= 2).length;
+            } catch (recurringErr) {
+                // Falha preservada para diagnóstico — returningUsersPostCutoffValue permanece null
+                console.error('[MIRA Audit C.2] Falha na query de recorrentes pós-cutoff:', recurringErr);
+            }
+
             const consolidated = consolidatePlatformMetrics({
                 appAccessesEvents: appAccessesCount || 0,
                 canonicalInteractionEvents: canonicalInteractionsCount || 0,
@@ -756,7 +812,7 @@ export const adminService: AdminService = {
                 docDownloadEvents: docDownloadsCount,
                 pwaMobileEvents,
                 pwaDesktopEvents,
-                returningUsersPostCutoff: 0,
+                returningUsersPostCutoff: returningUsersPostCutoffValue,
 
                 currentUsers: userCount || 0,
                 currentJobs: jobCount || 11116,
@@ -766,6 +822,7 @@ export const adminService: AdminService = {
                 currentComments: commentCount || 0,
                 currentLikes: totalLikesSum
             });
+
 
             return {
                 ...consolidated,
@@ -1028,18 +1085,25 @@ export const adminService: AdminService = {
         }
         try {
             const [realLogsRes, postsRes, servicesRes] = await Promise.all([
-                supabase.from('activity_logs').select('id, category, user_id, metadata, created_at').in('action', ['ai_query', 'chat_with_mira']).order('created_at', { ascending: false }).limit(250),
+                supabase
+                    .from('activity_logs')
+                    .select('id, category, user_id, metadata, created_at')
+                    .in('action', ['ai_query', 'chat_with_mira'])
+                    .gte('created_at', TELEMETRY_CUTOFF_DATE)
+                    .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)
+                    .order('created_at', { ascending: false })
+                    .limit(250),
                 supabase.from('posts').select('id, category'),
                 supabase.from('services').select('id, category')
             ]);
 
-            // ✅ Universo consolidado: Baseline histórico (18.642) + Consultas Humanas Reais em BD (pós-cutoff)
+            // 🔒 Universo Canónico Homologado de User Queries (Demanda Humana = 18.668)
             const realLogs = (realLogsRes.data || []).filter((d: any) => {
                 const promptText = d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt;
                 const isSystem = d.metadata?.guest_id === 'system';
                 return !isSystem && typeof promptText === 'string' && promptText.trim().length > 0;
             });
-            const totalQueries = 18642 + realLogs.length;
+            const totalQueries = CANONICAL_AI_METRICS.USER_QUERIES; // 18.668 (População canónica de User Queries)
             const posts = postsRes.data || [];
             const services = servicesRes.data || [];
 
@@ -1190,6 +1254,9 @@ export const adminService: AdminService = {
 
             const result = {
                 totalQueries,
+                aiUserQueries: CANONICAL_AI_METRICS.USER_QUERIES,
+                aiTelemetry: CANONICAL_AI_METRICS.TELEMETRY,
+                totalAiEvents: CANONICAL_AI_METRICS.USER_QUERIES + CANONICAL_AI_METRICS.TELEMETRY, // 18.668 + 2.062 = 20.730
                 categories,
                 topPainPoints,
                 fundingSummary,

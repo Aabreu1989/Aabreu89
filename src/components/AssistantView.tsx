@@ -185,7 +185,7 @@ const getUIText = (lang: string, name: string) => {
   let clearSuccess = 'Histórico limpo com sucesso.';
   let clearError = 'Erro ao limpar histórico.';
   let chatError = 'Erro na ligação à MIRA.';
-  let disclaimer = 'AVISO LEGAL: O MIRA É UMA FERRAMENTA DE APOIO. NÃO SUBSTITUÍMOS ACONSELHAMENTO JURÍDICO OFICIAL.';
+  let disclaimer = 'Aviso: O MIRA é uma plataforma informativa e de apoio à integração. Não presta nem cobra serviços. As informações não substituem aconselhamento jurídico ou profissional; confirme sempre informações oficiais junto das entidades competentes.';
 
   if (lang === 'EN') {
       welcome = `Hello ${name}! 👋 I'm MIRA, your guide in Portugal. Ask me anything about NIF, residency, AIMA, health or daily life!`;
@@ -194,7 +194,7 @@ const getUIText = (lang: string, name: string) => {
       clearSuccess = 'Chat history cleared.';
       clearError = 'Error clearing history.';
       chatError = 'Connection error to MIRA.';
-      disclaimer = 'DISCLAIMER: MIRA IS A SUPPORT TOOL. WE DO NOT REPLACE OFFICIAL LEGAL ADVICE.';
+      disclaimer = 'Notice: MIRA is an informational and integration support platform. It does not provide or charge for services. Information does not replace legal or professional advice; always confirm official information with competent authorities.';
   } else if (lang === 'FR') {
       welcome = `Bonjour ${name} ! 👋 Je suis MIRA, votre guide au Portugal. Posez vos questions sur le NIF, la résidence, l'AIMA, la santé ou la vie quotidienne !`;
       typing = 'MIRA écrit...';
@@ -202,7 +202,7 @@ const getUIText = (lang: string, name: string) => {
       clearSuccess = 'Historique effacé.';
       clearError = 'Erreur lors de l\'effacement.';
       chatError = 'Erreur de connexion à MIRA.';
-      disclaimer = 'AVERTISSEMENT : MIRA EST UN OUTIL D\'AIDE. NOUS NE REMPLAÇONS PAS UN CONSEIL JURIDIQUE OFFICIEL.';
+      disclaimer = 'Avis : MIRA est une plateforme d\'information et d\'aide à l\'intégration. Elle ne fournit ni ne facture de services. Les informations ne remplacent pas un conseil juridique ou professionnel ; confirmez toujours les informations officielles auprès des autorités compétentes.';
   } else if (lang === 'ES') {
       welcome = `¡Hola ${name}! 👋 Soy MIRA, tu guía en Portugal. Pregúntame lo que necesites sobre NIF, residencia, AIMA, salud o cualquier duda de la vida en Portugal.`;
       typing = 'MIRA está escribiendo...';
@@ -210,7 +210,7 @@ const getUIText = (lang: string, name: string) => {
       clearSuccess = 'Historial eliminado con éxito.';
       clearError = 'Error al eliminar el historial.';
       chatError = 'Error de conexión con MIRA.';
-      disclaimer = 'AVISO LEGAL: MIRA ES UNA HERRAMIENTA DE APOYO. NO REEMPLAZAMOS EL ASESORAMIENTO JURÍDICO OFICIAL.';
+      disclaimer = 'Aviso: MIRA es una plataforma informativa y de apoyo a la integración. No presta ni cobra servicios. La información no sustituye el asesoramiento jurídico o profesional; confirme siempre la información oficial con las entidades competentes.';
   }
   return { welcome, typing, clearConfirm, clearSuccess, clearError, chatError, disclaimer };
 };

@@ -427,6 +427,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Todos');
+  const [locationFilter, setLocationFilter] = useState('Todos');
   const [typeFilter, setTypeFilter] = useState('Todos');
   const [activeCourse, setActiveCourse] = useState<Course | null>(null);
   const [showDGESDetail, setShowDGESDetail] = useState<any | null>(null);
@@ -481,10 +482,10 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
       return a;
     }).concat(dbArticles);
 
-    return combined.map(a => ({
+    return combined.map((a: any) => ({
       ...a,
-      category: normalizeCategory(a.category)
-    })).sort((a, b) => {
+      category: normalizeCategory(a.category, a.title)
+    })).sort((a: any, b: any) => {
         if (a.isManual && !b.isManual) return -1;
         if (!a.isManual && b.isManual) return 1;
         const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
@@ -542,7 +543,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
       const isDges = Boolean(c.isDgesRecognized || c.id.startsWith('dges') || c.id.startsWith('ctesp') || c.id.startsWith('dg-') || c.id.startsWith('ts-') || (c.link && c.link.includes('dges.gov.pt')));
       map.set(c.id, {
         ...c,
-        category: normalizeCategory(c.category),
+        category: normalizeCategory(c.category, c.title),
         isDgesRecognized: isDges
       });
     });
@@ -554,7 +555,7 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
       map.set(c.id, {
         ...(existing || {}),
         ...c,
-        category: normalizeCategory(c.category),
+        category: normalizeCategory(c.category, c.title),
         isDgesRecognized: isDges
       });
     });
@@ -566,12 +567,49 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
     });
   }, [courses, extraCourses]);
 
+  const COURSE_LOCATIONS = useMemo(() => [
+    'Todos',
+    'Nacional / Online',
+    'Lisboa',
+    'Porto',
+    'Braga',
+    'Setúbal',
+    'Faro',
+    'Coimbra',
+    'Aveiro',
+    'Leiria',
+    'Santarém',
+    'Viseu',
+    'Viana do Castelo',
+    'Vila Real',
+    'Bragança',
+    'Guarda',
+    'Castelo Branco',
+    'Portalegre',
+    'Évora',
+    'Beja',
+    'Madeira',
+    'Açores'
+  ], []);
+
+  const availableCategories = useMemo(() => {
+    // Include all 10 UNIFIED_CATEGORIES guaranteed
+    const catSet = new Set<string>(UNIFIED_CATEGORIES);
+    allCourses.forEach(c => {
+      if (c.category) catSet.add(c.category);
+    });
+    return Array.from(catSet);
+  }, [allCourses]);
+
   const filteredCourses = allCourses.filter(c => {
     const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          c.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (c.description && c.description.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    const matchesCategory = categoryFilter === 'Todos' || c.category === categoryFilter;
+    const normalizedCat = normalizeCategory(c.category, c.title);
+    const matchesCategory = categoryFilter === 'Todos' || 
+                            c.category === categoryFilter || 
+                            normalizedCat === categoryFilter;
     
     const isDges = Boolean(c.isDgesRecognized || c.id?.startsWith('dges') || c.id?.startsWith('ctesp') || c.id?.startsWith('dg-') || c.id?.startsWith('ts-') || c.link?.includes('dges.gov.pt'));
     const isIefp = Boolean(c.isIefpSynced || c.link?.includes('iefp') || (!isDges));
@@ -580,23 +618,32 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
                         (typeFilter === 'DGES' && isDges) ||
                         (typeFilter === 'IEFP' && isIefp);
 
-    return matchesSearch && matchesCategory && matchesType;
+    const matchesLocation = (() => {
+      if (locationFilter === 'Todos') return true;
+      if (locationFilter === 'Nacional / Online') {
+        const typeStr = (c.type || '').toLowerCase();
+        const descStr = (c.description || '').toLowerCase();
+        return typeStr.includes('online') || typeStr.includes('remoto') || typeStr.includes('híbrido') || descStr.includes('online') || descStr.includes('e-learning') || descStr.includes('nacional');
+      }
+
+      const locTarget = locationFilter.toLowerCase();
+      const courseText = `${c.title} ${c.description || ''} ${c.category || ''} ${(c as any).location || ''} ${(c as any).city || ''}`.toLowerCase();
+      const isOnlineOrHybrid = (c.type || '').toLowerCase().includes('online') || (c.type || '').toLowerCase().includes('remoto') || (c.type || '').toLowerCase().includes('híbrido') || (c.description || '').toLowerCase().includes('online');
+
+      return courseText.includes(locTarget) || isOnlineOrHybrid;
+    })();
+
+    return matchesSearch && matchesCategory && matchesType && matchesLocation;
   });
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, categoryFilter, typeFilter]);
+  }, [searchQuery, categoryFilter, typeFilter, locationFilter]);
 
   const ITEMS_PER_PAGE = 20;
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = filteredCourses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-
-  const availableCategories = useMemo(() => {
-    const cats = Array.from(new Set(allCourses.map(c => c.category)));
-    return cats.sort();
-  }, [allCourses]);
 
   const latestNews = useMemo(() => sortedArticles.find(a => a.isManual) || sortedArticles.find(a => a.isNews), [sortedArticles]);
 
@@ -722,10 +769,10 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto w-full animate-in fade-in slide-in-from-top-2 duration-500">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-4xl mx-auto w-full animate-in fade-in slide-in-from-top-2 duration-500">
           <div className="relative space-y-1.5 flex-1">
             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">
-              {t('learning_course_category', language)}
+              {t('learning_course_category', language) || "Área / Categoria"}
             </label>
             <div className="relative group">
               <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-colors pointer-events-none" size={16} />
@@ -734,9 +781,9 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 outline-none focus:bg-white focus:border-mira-orange/40 focus:ring-4 focus:ring-mira-orange/5 transition-all shadow-sm appearance-none cursor-pointer"
               >
-                <option value="Todos">{t('map_all_areas', language)}</option>
+                <option value="Todos">{t('map_all_areas', language) || "Todas as Áreas de Apoio"}</option>
                 {availableCategories.map(cat => (
-                  <option key={cat} value={cat}>{t(getCategoryKey(cat), language)}</option>
+                  <option key={cat} value={cat}>{t(getCategoryKey(cat), language) || cat}</option>
                 ))}
               </select>
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" size={14} />
@@ -745,7 +792,28 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
 
           <div className="relative space-y-1.5 flex-1">
             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">
-              {t('learning_cert_source', language)}
+              {language === 'PT' ? 'Distrito / Cidade' : language === 'ES' ? 'Distrito / Ciudad' : language === 'FR' ? 'District / Ville' : 'District / Location'}
+            </label>
+            <div className="relative group">
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-colors pointer-events-none" size={16} />
+              <select
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+                className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 outline-none focus:bg-white focus:border-mira-orange/40 focus:ring-4 focus:ring-mira-orange/5 transition-all shadow-sm appearance-none cursor-pointer"
+              >
+                {COURSE_LOCATIONS.map(loc => (
+                  <option key={loc} value={loc}>
+                    {loc === 'Todos' ? (t('jobs_all_districts', language) || 'Todos os Distritos') : loc}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" size={14} />
+            </div>
+          </div>
+
+          <div className="relative space-y-1.5 flex-1">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              {t('learning_cert_source', language) || "Certificação"}
             </label>
             <div className="relative group">
               <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-mira-orange transition-colors pointer-events-none" size={16} />
@@ -754,15 +822,15 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
                 onChange={(e) => setTypeFilter(e.target.value)}
                 className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 outline-none focus:bg-white focus:border-mira-orange/40 focus:ring-4 focus:ring-mira-orange/5 transition-all shadow-sm appearance-none cursor-pointer"
               >
-                <option value="Todos">{t('learning_all_sources', language)}</option>
+                <option value="Todos">{t('learning_all_sources', language) || "Todas as Fontes"}</option>
                 <option value="DGES">DGES — {allCourses.filter(c => c.isDgesRecognized).length} Cursos</option>
                 <option value="IEFP">IEFP — {allCourses.filter(c => c.isIefpSynced).length} Cursos</option>
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
     <div className="flex-1 overflow-y-auto p-6 space-y-10 no-scrollbar pb-32">
       <div>

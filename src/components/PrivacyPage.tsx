@@ -92,6 +92,7 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
         </Section>
 
         {/* 🛡️ POLÍTICA DE TRANSPARÊNCIA, AGREGAÇÃO DE VAGAS E SEGURANÇA */}
+        {/* 🛡️ POLÍTICA DE TRANSPARÊNCIA, AGREGAÇÃO DE CONTEÚDOS E SEGURANÇA */}
         <Section id="jobs_policy" title={t('jobs_policy_title', language)} icon={Globe} colorClass="bg-blue-50 text-blue-600 border border-blue-100">
           <div className="space-y-5 text-xs sm:text-sm text-slate-600">
             <p className="font-bold text-slate-800 leading-relaxed">
@@ -107,6 +108,9 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
                 <li>• <strong>{t('jobs_policy_sec1_bullet1_title', language)}:</strong> {t('jobs_policy_sec1_bullet1_desc', language)}</li>
                 <li>• <strong>{t('jobs_policy_sec1_bullet2_title', language)}:</strong> {t('jobs_policy_sec1_bullet2_desc', language)}</li>
                 <li>• <strong>{t('jobs_policy_sec1_bullet3_title', language)}:</strong> {t('jobs_policy_sec1_bullet3_desc', language)}</li>
+                <li>• <strong>{t('jobs_policy_sec1_bullet4_title', language)}:</strong> {t('jobs_policy_sec1_bullet4_desc', language)}</li>
+                <li>• <strong>{t('jobs_policy_sec1_bullet5_title', language)}:</strong> {t('jobs_policy_sec1_bullet5_desc', language)}</li>
+                <li>• <strong>{t('jobs_policy_sec1_bullet6_title', language)}:</strong> {t('jobs_policy_sec1_bullet6_desc', language)}</li>
               </ul>
             </div>
 
@@ -119,6 +123,7 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
                 <li>• {t('jobs_policy_sec2_bullet1', language)}</li>
                 <li>• {t('jobs_policy_sec2_bullet2', language)}</li>
                 <li>• <strong>{t('jobs_policy_sec2_bullet3', language)}</strong></li>
+                <li>• {t('jobs_policy_sec2_bullet4', language)}</li>
               </ul>
             </div>
 
@@ -143,8 +148,19 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
               </p>
               <div className="pt-1 flex items-center gap-2 font-black text-indigo-700">
                 <MailX size={16} />
-                <span>mira.app@hotmail.com</span>
+                <a href="mailto:mira.app@hotmail.com" className="underline underline-offset-2">mira.app@hotmail.com</a>
               </div>
+            </div>
+
+            {/* Aviso importante */}
+            <div className="bg-rose-50 p-4 rounded-2xl border border-rose-200/80 space-y-1.5 mt-4">
+              <h4 className="font-black text-rose-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <AlertCircle size={14} className="text-rose-600 shrink-0" />
+                {t('jobs_policy_notice_title', language)}
+              </h4>
+              <p className="text-xs text-rose-950 font-bold leading-relaxed">
+                {t('jobs_policy_notice_desc', language)}
+              </p>
             </div>
           </div>
         </Section>
@@ -173,12 +189,14 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
               { icon: UserCheck, name: "badge2_name", desc: "privacy_s2_badge2_desc" },
               { icon: MessageCircle, name: "badge3_name", desc: "privacy_s2_badge3_desc" },
               { icon: FileText, name: "badge4_name", desc: "privacy_s2_badge4_desc" },
-
+              { icon: MapPin, name: "badge5_name", desc: "privacy_s2_badge5_desc" },
               { icon: Award, name: "badge6_name", desc: "privacy_s2_badge6_desc" },
               { icon: ShieldAlert, name: "badge7_name", desc: "privacy_s2_badge7_desc" },
               { icon: Book, name: "badge8_name", desc: "privacy_s2_badge8_desc" },
               { icon: CalendarCheck, name: "badge9_name", desc: "privacy_s2_badge9_desc" },
               { icon: Heart, name: "badge10_name", desc: "privacy_s2_badge10_desc" },
+              { icon: Zap, name: "badge11_name", desc: "privacy_s2_badge11_desc" },
+              { icon: ShieldCheckIcon, name: "badge12_name", desc: "privacy_s2_badge12_desc" },
             ].map((badge, i) => (
               <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                 <div className="w-10 h-10 bg-gradient-to-br from-mira-yellow to-yellow-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">

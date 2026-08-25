@@ -123,11 +123,18 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
 };
 
 export const MIRA_LOCAL_KB_EN: Record<string, string> = {
-  'niss': 'The NISS (Social Security Identification Number) is obtained through the Social Security Direct portal or in person. You need an employment contract or declaration of activity. It is required for contributions and benefits.',
-  'visto': 'The rules changed in 2024-2026: The Expression of Interest (Art. 88/89) was ABOLISHED. Now it is mandatory to obtain a Residence Visa (D1, D2, D7, D8, CPLP) or a Job Search Visa at the Portuguese Consulate in your country of origin before traveling.',
-  'visa': 'The rules changed in 2024-2026: The Expression of Interest (Art. 88/89) was ABOLISHED. Now it is mandatory to obtain a Residence Visa (D1, D2, D7, D8, CPLP) or a Job Search Visa at the Portuguese Consulate in your country of origin before traveling.',
-  'residencia': 'To obtain legal residence: 1. Obtain a visa at the consulate of your home country. 2. Travel to Portugal. 3. Book an appointment at AIMA to convert your visa into a Residence Permit. Regularizing as a tourist is no longer permitted by law.',
-  'residency': 'To obtain legal residence: 1. Obtain a visa at the consulate of your home country. 2. Travel to Portugal. 3. Book an appointment at AIMA to convert your visa into a Residence Permit. Regularizing as a tourist is no longer permitted by law.',
+  'nif': 'The NIF (Tax Identification Number) is your taxpayer number in Portugal. You can request it at the Tax Authority (Finanças portal or in person) for free with your passport. It is required to work, open a bank account, and sign contracts.\n[view:DOCUMENT_ASSISTANT:Generate NIF Document in PDF]',
+  'tax number': 'The NIF (Tax Identification Number) is your taxpayer number in Portugal. You can request it at the Tax Authority (Finanças portal or in person) for free with your passport. It is required to work, open a bank account, and sign contracts.\n[view:DOCUMENT_ASSISTANT:Generate NIF Document in PDF]',
+  'niss': 'The NISS (Social Security Identification Number) is obtained through the Social Security Direct portal or in person. You need an employment contract or declaration of activity. It is required for contributions and benefits.\n[view:DOCUMENT_ASSISTANT:Generate NISS Document in PDF]',
+  'social security number': 'The NISS (Social Security Identification Number) is obtained through the Social Security Direct portal or in person. You need an employment contract or declaration of activity. It is required for contributions and benefits.\n[view:DOCUMENT_ASSISTANT:Generate NISS Document in PDF]',
+  'visto': 'The rules changed in 2024-2026: The Expression of Interest (Art. 88/89) was ABOLISHED. Now it is mandatory to obtain a Residence Visa (D1, D2, D7, D8, CPLP) or a Job Search Visa at the Portuguese Consulate in your country of origin before traveling.\n[view:LOCAL_SERVICES:View AIMA Desks & Consulates]',
+  'visa': 'The rules changed in 2024-2026: The Expression of Interest (Art. 88/89) was ABOLISHED. Now it is mandatory to obtain a Residence Visa (D1, D2, D7, D8, CPLP) or a Job Search Visa at the Portuguese Consulate in your country of origin before traveling.\n[view:LOCAL_SERVICES:View AIMA Desks & Consulates]',
+  'residencia': 'To obtain legal residence: 1. Obtain a visa at the consulate of your home country. 2. Travel to Portugal. 3. Book an appointment at AIMA to convert your visa into a Residence Permit. Regularizing as a tourist is no longer permitted by law.\n[view:LOCAL_SERVICES:View AIMA Desks]',
+  'residency': 'To obtain legal residence: 1. Obtain a visa at the consulate of your home country. 2. Travel to Portugal. 3. Book an appointment at AIMA to convert your visa into a Residence Permit. Regularizing as a tourist is no longer permitted by law.\n[view:LOCAL_SERVICES:View AIMA Desks]',
+  'residence permit': 'To obtain a Residence Permit in Portugal: 1. Obtain the appropriate visa at the consulate of your home country. 2. Travel to Portugal with a valid visa. 3. Attend your appointment at AIMA to issue your Residence Permit Card.\n[view:LOCAL_SERVICES:View AIMA Desks]',
+  'morada': 'Proof of Address in Portugal (2026 Regulations): Juntas de Freguesia require proof of legal tenancy (Registered Lease Agreement at Finanças or Landlord Declaration with Land Registry Caderneta Predial). Friendly witness statements have been abolished.\n[view:DOCUMENT_ASSISTANT:Generate Accommodation Declaration]',
+  'address': 'Proof of Address in Portugal (2026 Regulations): Juntas de Freguesia require proof of legal tenancy (Registered Lease Agreement at Finanças or Landlord Declaration with Land Registry Caderneta Predial). Friendly witness statements have been abolished.\n[view:DOCUMENT_ASSISTANT:Generate Accommodation Declaration]',
+  'irs': 'IRS Tax Return in Portugal: The annual tax return is submitted between April 1 and June 30 on Portal das Finanças. Double taxation treaties apply if you have foreign income.\n[view:DOCUMENTS:irs:Open IRS Calculator & Guide]',
   'aima': 'AIMA (Agency for Integration, Migration and Asylum) manages all immigration processes. After the 2026 reforms, the focus is on legal entry with a prior visa. The official portal aima.gov.pt is where you should follow your process.',
   'sns': 'To access the SNS (National Health Service), register at the Health Center in your area with your passport and proof of address. You are entitled to a family doctor and emergency care.',
   'health': 'To access the SNS (National Health Service), register at the Health Center in your area with your passport and proof of address. You are entitled to a family doctor and emergency care.',
@@ -310,18 +317,22 @@ export const detectPromptLanguage = (prompt: string): 'PT' | 'EN' | 'ES' | 'FR' 
   return null;
 };
 
-export const resolveConversationLanguage = (prompt: string, historyLanguage?: string, uiLanguage: string = 'PT'): 'PT' | 'EN' | 'ES' | 'FR' => {
-  const detected = detectPromptLanguage(prompt);
-  if (detected) return detected;
-
-  if (historyLanguage && ['PT', 'EN', 'ES', 'FR'].includes(historyLanguage.toUpperCase())) {
-    return historyLanguage.toUpperCase() as 'PT' | 'EN' | 'ES' | 'FR';
-  }
-
+export const resolveConversationLanguage = (prompt: string, historyLanguage?: string, uiLanguage?: string): 'PT' | 'EN' | 'ES' | 'FR' => {
+  // 1. PREFERÊNCIA EXPLÍCITA DE IDIOMA DA UI (SOBERANA)
   if (uiLanguage && ['PT', 'EN', 'ES', 'FR'].includes(uiLanguage.toUpperCase())) {
     return uiLanguage.toUpperCase() as 'PT' | 'EN' | 'ES' | 'FR';
   }
 
+  // 2. DETECÇÃO AUTOMÁTICA DO PROMPT (FALLBACK)
+  const detected = detectPromptLanguage(prompt);
+  if (detected) return detected;
+
+  // 3. IDIOMA DO HISTÓRICO (FALLBACK)
+  if (historyLanguage && ['PT', 'EN', 'ES', 'FR'].includes(historyLanguage.toUpperCase())) {
+    return historyLanguage.toUpperCase() as 'PT' | 'EN' | 'ES' | 'FR';
+  }
+
+  // 4. FALLBACK CANÓNICO PADRÃO
   return 'PT';
 };
 

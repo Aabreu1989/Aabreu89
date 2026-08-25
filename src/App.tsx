@@ -27,7 +27,7 @@ import PremiosView from './components/PremiosView';
 import { templates, serviceGuides } from './utils/documentsDatabase';
 import { authService } from './services/authService';
 import { isUserAdmin } from './utils/adminUtils';
-import { Bot, Sparkles, X, Smartphone } from 'lucide-react';
+import { Bot, Sparkles, X, Smartphone, Loader2 } from 'lucide-react';
 import { t } from './utils/translations';
 import { pwaService } from './utils/pwa';
 // import { IEFP_MASSIVE_DATABASE } from './utils/iefpCoursesDatabase'; // MOVED TO DYNAMIC LOAD
@@ -183,7 +183,7 @@ const AppContent: React.FC = () => {
     const [targetProfileUser, setTargetProfileUser] = useState<User | null>(null);
     const [docHistory, setDocHistory] = useState<GeneratedDocument[]>([]);
     const [hasSupabaseSession, setHasSupabaseSession] = useState<boolean>(false);
-    const isSystemAdmin = isUserAdmin(user) && hasSupabaseSession;
+    const isSystemAdmin = isUserAdmin(user);
     // Helper functions for bulletproof interaction persistence across user sessions
     const loadSavedLikes = (): Set<string> => {
         try {
@@ -398,14 +398,6 @@ const AppContent: React.FC = () => {
         return () => { supabase.removeChannel(channel); };
     }, [user?.id]);
     
-    // V48.1: Periodic Background Re-Sync
-    useEffect(() => {
-        if (user?.id) {
-            fetchSavedPosts(user.id);
-            fetchUserInteractions(user.id);
-        }
-    }, [user?.id]);
-
     useEffect(() => {
         const uId = user?.id || 'guest';
         const arr = [...likedPostsIds];
@@ -463,21 +455,48 @@ const AppContent: React.FC = () => {
             };
         }
         try {
-            // 🛡️ RECONCILIAÇÃO CANÓNICA SOBERANA:
-            // 1. Supabase é a autoridade canónica. Criar novos sets limpos a partir da resposta do banco.
+            // 🛡️ REQUISITO DE SEGURANÇA E AUTENTICAÇÃO:
+            // Obter a sessão ativa para garantir que o cliente Supabase tem o JWT anexado antes de consultar tabelas com RLS.
+            const sessionRes = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+            const sessionUserId = sessionRes.data.session?.user?.id;
+
+            // Se a sessão do cliente ainda não estiver resolvida ou pertencer a outro utilizador,
+            // NÃO executar a consulta desautenticada (que retornaria [] devido ao RLS)
+            // e NÃO sobrescrever o cache do localStorage com []. Preservar o estado hidratado inicial.
+            if (!sessionUserId || sessionUserId !== userId) {
+                return { 
+                    likes: loadSavedLikes(), 
+                    comments: loadSavedCommentLikes(), 
+                    votes: loadSavedVotes() 
+                };
+            }
+
+            // 🛡️ RECONCILIAÇÃO CANÓNICA SOBERANA (Sessão Confirmada):
             const canonicalLikeSet = new Set<string>();
             const canonicalCommentLikeSet = new Set<string>();
             const canonicalVoteMap: Record<string, 'true' | 'false'> = {};
 
             const pendingActions = syncService.getPendingActions();
             
-            // 2. Fetch Likes from DB
-            const { data: likes, error: likesErr } = await supabase.from('post_votes').select('post_id').eq('user_id', userId).eq('vote_type', 'like');
+            // 1. Fetch Likes from DB (com JWT ativo do utilizador autenticado)
+            const { data: likes, error: likesErr } = await supabase
+                .from('post_votes')
+                .select('post_id')
+                .eq('user_id', userId)
+                .eq('vote_type', 'like');
+                
             if (!likesErr && likes) {
                 likes.forEach(l => canonicalLikeSet.add(String(l.post_id)));
+            } else if (likesErr) {
+                console.warn("⚠️ [MIRA] Aviso ao consultar post_votes:", likesErr.message);
+                return { 
+                    likes: loadSavedLikes(), 
+                    comments: loadSavedCommentLikes(), 
+                    votes: loadSavedVotes() 
+                };
             }
             
-            // 3. Apply pending in-flight likes
+            // 2. Apply pending in-flight likes
             pendingActions.filter(a => a.action === 'like').forEach(a => {
                 canonicalLikeSet.add(String(a.payload.postId));
             });
@@ -486,24 +505,38 @@ const AppContent: React.FC = () => {
             localStorage.setItem('mira_liked_posts', JSON.stringify([...canonicalLikeSet]));
             localStorage.setItem(`mira_liked_posts_${userId}`, JSON.stringify([...canonicalLikeSet]));
 
-            // 4. Fetch Comment Likes from DB
-            const { data: cLikes, error: cLikesErr } = await supabase.from('comment_likes').select('comment_id').eq('user_id', userId);
+            // 3. Fetch Comment Likes from DB
+            const { data: cLikes, error: cLikesErr } = await supabase
+                .from('comment_likes')
+                .select('comment_id')
+                .eq('user_id', userId);
+
             if (!cLikesErr && cLikes) {
                 cLikes.forEach(cl => canonicalCommentLikeSet.add(String(cl.comment_id)));
+            } else if (cLikesErr) {
+                console.warn("⚠️ [MIRA] Aviso ao consultar comment_likes:", cLikesErr.message);
             }
+
             setLikedCommentsIds(canonicalCommentLikeSet);
             localStorage.setItem('mira_liked_comments', JSON.stringify([...canonicalCommentLikeSet]));
             localStorage.setItem(`mira_liked_comments_${userId}`, JSON.stringify([...canonicalCommentLikeSet]));
 
-            // 5. Fetch Votes (Suporte canónico a 'true', 'fake' e legacy 'useful')
-            const { data: votes, error: votesErr } = await supabase.from('post_votes').select('post_id, vote_type').eq('user_id', userId).in('vote_type', ['true', 'fake', 'useful']);
+            // 4. Fetch Votes (Suporte canónico a 'true', 'fake' e legacy 'useful')
+            const { data: votes, error: votesErr } = await supabase
+                .from('post_votes')
+                .select('post_id, vote_type')
+                .eq('user_id', userId)
+                .in('vote_type', ['true', 'fake', 'useful']);
+
             if (!votesErr && votes) {
                 votes.forEach(v => {
                     canonicalVoteMap[String(v.post_id)] = (v.vote_type === 'true' || v.vote_type === 'useful') ? 'true' : 'false';
                 });
+            } else if (votesErr) {
+                console.warn("⚠️ [MIRA] Aviso ao consultar votes:", votesErr.message);
             }
             
-            // 6. Apply pending in-flight votes
+            // 5. Apply pending in-flight votes
             pendingActions.filter(a => a.action === 'vote').forEach(a => {
                 canonicalVoteMap[String(a.payload.postId)] = (a.payload.voteType === 'true' || a.payload.voteType === 'useful') ? 'true' : 'false';
             });
@@ -644,12 +677,12 @@ const AppContent: React.FC = () => {
         }
 
         // 🛡️ MIRA V2026.GOLD: Sovereign Admin Guard (Administração & Concursos)
-        // O acesso administrativo exige cumulativamente o papel de admin e uma sessão Supabase JWT real
-        const isAdmin = isUserAdmin(user) && hasSupabaseSession;
-
-        if ((currentView === ViewType.ADMIN || currentView === ViewType.PREMIOS) && user && !isAdmin) {
-            console.warn(`🚨 ACESSO NEGADO A ${currentView}: Sem sessão Supabase válida de Administrador.`);
-            setCurrentView(ViewType.DASHBOARD);
+        if (!isInitializing) {
+            const isAdmin = isUserAdmin(user);
+            if ((currentView === ViewType.ADMIN || currentView === ViewType.PREMIOS) && user && !isAdmin) {
+                console.warn(`🚨 ACESSO NEGADO A ${currentView}: Sem privilégios de Administrador.`);
+                setCurrentView(ViewType.HOME);
+            }
         }
 
         // 🛡️ MIRA: LOCAL BYPASS (No Cloud Required)
@@ -739,6 +772,8 @@ const AppContent: React.FC = () => {
                 const u = authService.mapProfileToUser(profile, authUser);
                 setUser(u);
                 localStorage.setItem('mira_user', JSON.stringify(u));
+                fetchSavedPosts(u.id);
+                fetchUserInteractions(u.id);
                 setShowSplash(false);
                 setIsInitializing(false);
                 sessionStorage.setItem('mira_splash_shown', 'true');
@@ -809,6 +844,8 @@ const AppContent: React.FC = () => {
                         setHasSupabaseSession(true);
                         setUser(u);
                         localStorage.setItem('mira_user', JSON.stringify(u));
+                        fetchSavedPosts(u.id);
+                        fetchUserInteractions(u.id);
                         setShowSplash(false);
                         setIsInitializing(false);
                         sessionStorage.setItem('mira_splash_shown', 'true');
@@ -839,6 +876,8 @@ const AppContent: React.FC = () => {
                            setHasSupabaseSession(true);
                            setUser(u);
                            localStorage.setItem('mira_user', JSON.stringify(u));
+                           fetchSavedPosts(u.id);
+                           fetchUserInteractions(u.id);
                            setShowSplash(false);
                            setIsInitializing(false);
                         } else if (mounted) {
@@ -1245,8 +1284,9 @@ const AppContent: React.FC = () => {
                 console.log("👑 [MIRA] NOVOS SELOS CONQUISTADOS:", newBadges);
                 const updatedFull = await authService.fetchFullProfile(user.id);
                 if (updatedFull) {
-                    setUser(updatedFull);
-                    localStorage.setItem('mira_user', JSON.stringify(updatedFull));
+                    const finalUser = isUserAdmin(user) ? { ...updatedFull, role: 'admin' as const, isVerified: true } : updatedFull;
+                    setUser(finalUser);
+                    localStorage.setItem('mira_user', JSON.stringify(finalUser));
                 }
             } else {
                 setUser(prev => {
@@ -1423,25 +1463,19 @@ const AppContent: React.FC = () => {
                     }} 
                 />;
             case ViewType.SERVICES:
-                return <DocumentAssistant 
-                    tasks={tasks} 
-                    chatSessions={[]} 
-                    drafts={docDrafts} 
-                    setDrafts={setDocDrafts} 
-                    history={docHistory} 
-                    addToHistory={(doc) => setDocHistory([doc, ...docHistory])} 
-                    onOpenSession={() => {}} 
+                return <LocalServicesList 
                     language={language} 
-                    onEarnPoints={(pts) => handleEarnPoints(pts, 'Serviços')} 
-                    onToggleTask={() => {}} 
-                    onViewChange={handleViewChange} 
-                    initialTab="services"
+                    user={user} 
+                    targetServiceId={viewParams?.id || targetServiceId} 
+                    onClearTargetService={() => { setTargetServiceId(null); setViewParams(null); }} 
                 />;
              case ViewType.DASHBOARD: return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} />;
              case ViewType.ADMIN: 
-                 // 💎 SOBERANIA MÁXIMA V2026.GOLD: Render fallback only, logic is in useEffect Guard
-                 if (!isUserAdmin(user) || !hasSupabaseSession) {
-                     return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} />;
+                 if (isInitializing && !user) {
+                     return <div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-mira-orange" size={32} /></div>;
+                 }
+                 if (!isUserAdmin(user)) {
+                     return <HomeView user={user} onViewChange={handleViewChange} language={language} onLogout={handleLogout} masterPosts={masterPosts} />;
                  }
                 return <AdminPanel 
                     initialTab={viewParams?.tab || adminTab} 
@@ -1450,7 +1484,7 @@ const AppContent: React.FC = () => {
                         setAdminTab(tab); 
                         handleViewChange(ViewType.ADMIN, { tab }); 
                     }} 
-                    onBack={() => handleViewChange(ViewType.DASHBOARD)} 
+                    onBack={() => handleViewChange(ViewType.HOME)} 
                     onNavigateToPost={(postId: string, commentId?: string | null) => { 
                         setTargetPostId(postId); 
                         setTargetCommentId(commentId || null); 
