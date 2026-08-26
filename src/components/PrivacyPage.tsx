@@ -257,29 +257,17 @@ export const PrivacyPage: React.FC<{ language: string; onBack?: () => void; init
         </Section>
 
         <Section id="privacy" title={t('privacy_s4_title', language)} icon={Lock} colorClass="bg-mira-green/10 text-mira-green-dark border border-mira-green/20">
-          <p>
-            {t('privacy_s4_p1', language)}
-          </p>
-          <ul className="space-y-3 my-4">
-            <li className="flex gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <div className="w-6 h-6 rounded-full bg-mira-green/10 text-mira-green flex items-center justify-center shrink-0">
-                <CheckIcon size={12} />
-              </div>
-              <span className="text-xs"><strong>{t('privacy_s4_rule1_title', language)}</strong><br />{t('privacy_s4_rule1_desc', language)}</span>
-            </li>
-            <li className="flex gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <div className="w-6 h-6 rounded-full bg-mira-green/10 text-mira-green flex items-center justify-center shrink-0">
-                <CheckIcon size={12} />
-              </div>
-              <span className="text-xs"><strong>{t('privacy_s4_rule2_title', language)}</strong><br />{t('privacy_s4_rule2_desc', language)}</span>
-            </li>
-            <li className="flex gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <div className="w-6 h-6 rounded-full bg-mira-green/10 text-mira-green flex items-center justify-center shrink-0">
-                <CheckIcon size={12} />
-              </div>
-              <span className="text-xs"><strong>{t('privacy_s4_rule3_title', language)}</strong><br />{t('privacy_s4_rule3_desc', language)}</span>
-            </li>
-          </ul>
+          <div className="space-y-4 text-xs sm:text-sm text-slate-600">
+            <p className="leading-relaxed font-bold text-slate-800">
+              {t('privacy_s4_p1', language)}
+            </p>
+            <p className="leading-relaxed border-t border-slate-100 pt-3">
+              {t('privacy_s4_p2', language)}
+            </p>
+            <p className="leading-relaxed border-t border-slate-100 pt-3">
+              {t('privacy_s4_p3', language)}
+            </p>
+          </div>
         </Section>
 
         <Section id="ai" title={t('privacy_s5_title', language)} icon={Bot} colorClass="bg-mira-blue/10 text-mira-blue border border-mira-blue/20">
