@@ -8,6 +8,7 @@ export {
     TELEMETRY_CUTOFF_DATE,
     CANONICAL_AI_METRICS,
     HISTORICAL_CUMULATIVE_BASELINES,
+    HISTORICAL_AI_CATEGORIES,
     CANONICAL_INTERACTION_ACTIONS,
     consolidatePlatformMetrics
 } from '../../lib/telemetryBaselines.js';

@@ -12,9 +12,9 @@
 | :--- | :--- | :--- |
 | **Utilizadores Registados** | `Math.max(dbUserCount, 1015)` | **1.015 utilizadores** |
 | **Taxa de Retenção Recorrente** | `82.0%` (Fixo auditado) | **82.0%** (**832 utilizadores recorrentes**) |
-| **Consultas IA (User Queries)** | `CANONICAL_AI_METRICS.USER_QUERIES` | **18.668 consultas humanas** |
-| **Telemetria & Probes IA** | `CANONICAL_AI_METRICS.TELEMETRY` | **2.062 eventos de sistema** |
-| **Total Global de Eventos IA** | `USER_QUERIES + TELEMETRY` (Derivação estrita por soma) | **20.730 eventos totais** |
+| **Consultas IA (User Queries)** | `CANONICAL_AI_METRICS.USER_QUERIES + validHumanQueries` | **18.668 (Base) + Pós-Cutoff = 18.687 consultas humanas** |
+| **Telemetria & Probes IA** | `CANONICAL_AI_METRICS.TELEMETRY` | **2.062 eventos de sistema (Observabilidade interna)** |
+| **Total Global de Eventos IA** | `USER_QUERIES + TELEMETRY` (Derivação estrita por soma) | **20.749 eventos totais (Telemetria + Demanda Humana)** |
 | **Horas Burocráticas Poupadas** | `Math.round((docs * 4.5) + (sims * 1.5) + (aiQueries * 0.5))` | **32.172 horas poupadas** |
 | **Simulações Financeiras** | `Math.max(dbSimulations, 4872)` | **4.872 simulações** |
 | **Minutas & Guias Descarregados** | `Math.max(dbDocumentDownloads, 3451)` | **3.451 downloads** |

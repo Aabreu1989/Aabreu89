@@ -972,9 +972,12 @@ export const GamificationProfile: React.FC<GamificationProfileProps> = ({
                                                     onLogout();
                                                 } else { 
                                                     setIsDeleting(false); 
-                                                    alert("Erro ao eliminar conta. O Protocolo Nuclear falhou."); 
+                                                    alert("Não foi possível eliminar a sua conta. Por favor, tente novamente ou contacte o suporte."); 
                                                 }
-                                            } catch (e) { onLogout(); }
+                                            } catch (e: any) { 
+                                                setIsDeleting(false);
+                                                alert("Erro inesperado ao processar a eliminação: " + (e?.message || "Falha de rede"));
+                                            }
                                         }
                                     }}
                                     className={`w-full flex items-center justify-center gap-3 py-5 rounded-[2rem] font-black uppercase text-[10px] tracking-widest transition-all ${isDeleting ? 'bg-slate-50 text-slate-200' : 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white shadow-lg'}`}

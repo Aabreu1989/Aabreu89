@@ -1301,16 +1301,6 @@ const AppContent: React.FC = () => {
         }
     };
 
-    const handleDeleteAccount = async () => {
-        if (!window.confirm("Ação irreversível: Eliminar conta e todos os dados?")) return;
-        try {
-            await supabase.rpc('delete_user_nuclear');
-            await handleLogout();
-        } catch {
-            await handleLogout();
-        }
-    };
-
     const handleToggleTranslate = (id: string) => {
         setTranslatedPosts(prev => {
             const next = new Set(prev);

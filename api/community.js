@@ -44,6 +44,68 @@ export default async function handler(req, res) {
 
     const { action, reqUserId, reqEmail, userId } = req.body || {};
 
+    // ──────────────────────────────────────────────────────────────────────────
+    // 🔒 AUTO-EXCLUSÃO RGPD SOBERANA: EXCLUSIVAMENTE VIA JWT VÁLIDO
+    // ──────────────────────────────────────────────────────────────────────────
+    if (action === 'delete_self') {
+      if (!token) {
+        return res.status(401).json({ error: 'Token de autorização Bearer obrigatório para auto-exclusão.' });
+      }
+
+      const { data: authData, error: authVerifyErr } = await supabaseAdmin.auth.getUser(token);
+      if (authVerifyErr || !authData?.user) {
+        return res.status(401).json({ error: 'Sessão inválida ou expirada. Não é possível validar a identidade.' });
+      }
+
+      const targetUid = authData.user.id;
+      console.log(`🔒 [MIRA RGPD] A executar auto-exclusão controlada do utilizador ${targetUid}`);
+
+      // Purgação em ordem topológica de dependências (FKs)
+      // 1. Dados privados, documentos e preferências
+      await Promise.allSettled([
+        supabaseAdmin.from('user_documents').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('user_job_alerts').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('saved_posts').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('post_votes').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('user_badges').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('reputation_logs').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('notifications').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('app_suggestions').delete().eq('user_id', targetUid),
+        supabaseAdmin.from('community_interactions').delete().eq('user_id', targetUid)
+      ]);
+
+      // 2. Relações sociais e denúncias associadas
+      await Promise.allSettled([
+        supabaseAdmin.from('user_follows').delete().eq('follower_id', targetUid),
+        supabaseAdmin.from('user_follows').delete().eq('following_id', targetUid),
+        supabaseAdmin.from('reports').delete().eq('reporter_id', targetUid),
+        supabaseAdmin.from('reports').delete().eq('target_user_id', targetUid)
+      ]);
+
+      // 3. Conteúdo publicado pelo utilizador
+      await Promise.allSettled([
+        supabaseAdmin.from('comments').delete().eq('author_id', targetUid),
+        supabaseAdmin.from('stories').delete().eq('author_id', targetUid),
+        supabaseAdmin.from('posts').delete().eq('author_id', targetUid)
+      ]);
+
+      // 4. Perfil público
+      await supabaseAdmin.from('profiles').delete().eq('id', targetUid);
+
+      // 5. Telemetria de sistema (Anonimização do user_id mantendo a contagem agregada de indicadores)
+      await supabaseAdmin.from('activity_logs').update({ user_id: null }).eq('user_id', targetUid);
+
+      // 6. Eliminação final da conta no Supabase Auth
+      const { error: authDeleteErr } = await supabaseAdmin.auth.admin.deleteUser(targetUid);
+      if (authDeleteErr) {
+        console.error(`🚨 [MIRA RGPD] Falha ao eliminar do auth.users: ${authDeleteErr.message}`);
+        return res.status(500).json({ error: `Falha ao eliminar registo de autenticação: ${authDeleteErr.message}` });
+      }
+
+      console.log(`✅ [MIRA RGPD] Auto-exclusão do utilizador ${targetUid} concluída com sucesso.`);
+      return res.status(200).json({ success: true, message: 'Conta e dados pessoais eliminados com sucesso.' });
+    }
+
     if (!authenticatedUserId && (reqUserId || userId)) {
       authenticatedUserId = reqUserId || userId;
       authenticatedUserEmail = (reqEmail || '').toLowerCase().trim();

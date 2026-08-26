@@ -6,7 +6,8 @@ import {
     consolidatePlatformMetrics, 
     CANONICAL_INTERACTION_ACTIONS, 
     TELEMETRY_CUTOFF_DATE,
-    CANONICAL_AI_METRICS
+    CANONICAL_AI_METRICS,
+    HISTORICAL_AI_CATEGORIES
 } from '../config/telemetryBaselines';
 import { ADMIN_USER_IDS } from '../utils/adminUtils';
 
@@ -701,10 +702,12 @@ export const adminService: AdminService = {
                             .gte('created_at', TELEMETRY_CUTOFF_DATE)
                             .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
                         if (!data) return 0;
+                        const validCategories = new Set((await import('../types')).UNIFIED_CATEGORIES);
                         return data.filter((d: any) => {
-                            const promptText = d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt;
-                            const isSystem = d.metadata?.guest_id === 'system';
-                            return !isSystem && typeof promptText === 'string' && promptText.trim().length > 0;
+                            const promptText = (d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt || "").trim();
+                            const isSystem = d.metadata?.guest_id === 'system' || d.metadata?.is_benchmark === true;
+                            const cat = d.metadata?.category;
+                            return !isSystem && promptText.length > 0 && cat && validCategories.has(cat);
                         }).length;
                     } catch {
                         return 0;
@@ -1087,7 +1090,7 @@ export const adminService: AdminService = {
             const [realLogsRes, postsRes, servicesRes] = await Promise.all([
                 supabase
                     .from('activity_logs')
-                    .select('id, category, user_id, metadata, created_at')
+                    .select('id, user_id, metadata, created_at')
                     .in('action', ['ai_query', 'chat_with_mira'])
                     .gte('created_at', TELEMETRY_CUTOFF_DATE)
                     .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)
@@ -1097,88 +1100,91 @@ export const adminService: AdminService = {
                 supabase.from('services').select('id, category')
             ]);
 
-            // 🔒 Universo Canónico Homologado de User Queries (Demanda Humana = 18.668)
+            // 🔒 Universo Canónico Homologado de User Queries: Baseline + Consultas Humanas Válidas
+            const validCategoriesList = (await import('../types')).UNIFIED_CATEGORIES;
+            const validCategoriesSet = new Set(validCategoriesList);
+
             const realLogs = (realLogsRes.data || []).filter((d: any) => {
-                const promptText = d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt;
-                const isSystem = d.metadata?.guest_id === 'system';
-                return !isSystem && typeof promptText === 'string' && promptText.trim().length > 0;
+                const promptText = (d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt || '').trim();
+                const isSystem = d.metadata?.guest_id === 'system' || d.metadata?.is_benchmark === true;
+                const cat = d.metadata?.category;
+                return !isSystem && promptText.length > 0 && cat && validCategoriesSet.has(cat);
             });
-            const totalQueries = CANONICAL_AI_METRICS.USER_QUERIES; // 18.668 (População canónica de User Queries)
+
+            // Contagem dos novos eventos categorizados
+            const newCategoryCounts: Record<string, number> = {};
+            realLogs.forEach((log: any) => {
+                const cat = log.metadata?.category;
+                if (cat && validCategoriesSet.has(cat)) {
+                    newCategoryCounts[cat] = (newCategoryCounts[cat] || 0) + 1;
+                }
+            });
+
+            const totalQueries = CANONICAL_AI_METRICS.USER_QUERIES + realLogs.length;
             const posts = postsRes.data || [];
             const services = servicesRes.data || [];
 
             const unifiedCategoryConfig: Record<string, {
-                percentage: number;
                 color: string;
                 icon: string;
                 description: string;
                 topSubtopics: string[];
             }> = {
                 "Residência & Vistos": {
-                    percentage: 38.5,
                     color: '#EF4444',
                     icon: 'FileText',
                     description: 'Agendamentos AIMA, fim da Manifestação de Interesse, Residência CPLP, biometria e vistos consulares (D1, D2, D3, D7, D8).',
                     topSubtopics: ['Agendamento e atrasos AIMA', 'Fim das Manifestações de Interesse (Art. 88/89)', 'Visto de Procura de Trabalho & CPLP', 'Renovação de Título de Residência']
                 },
                 "Trabalho & Carreira": {
-                    percentage: 22.4,
                     color: '#F59E0B',
                     icon: 'Briefcase',
                     description: 'Emissão de NISS, ofertas de emprego IEFP, contratos de trabalho, recibos verdes, descontos e Segurança Social.',
                     topSubtopics: ['Pedido de NISS sem contrato prévio', 'Validação de contrato de trabalho', 'Direitos e subsídio de desemprego', 'Inscrição no IEFP & Formação']
                 },
                 "Finanças & Impostos": {
-                    percentage: 14.2,
                     color: '#3B82F6',
                     icon: 'Receipt',
                     description: 'Obtenção do NIF, representante fiscal, declaração de IRS, retenção na fonte e abertura de conta bancária.',
                     topSubtopics: ['Obtenção de NIF presencial vs online', 'Necessidade de representante fiscal', 'Simulação de IRS e escalões', 'Abertura de conta bancária']
                 },
                 "Saúde & SNS": {
-                    percentage: 9.8,
                     color: '#10B981',
                     icon: 'HeartPulse',
                     description: 'Inscrição no Centro de Saúde, Número de Utente SNS, acesso a emergências e taxas moderadoras.',
                     topSubtopics: ['Inscrição no Centro de Saúde da morada', 'Emissão de Número de Utente SNS', 'Atendimento de urgência para imigrantes', 'Acesso a médico de família']
                 },
                 "Habitação & Casa": {
-                    percentage: 7.1,
                     color: '#8B5CF6',
                     icon: 'Home',
                     description: 'Contratos de arrendamento, atestado de residência na Junta de Freguesia, comprovativo de morada e rendas.',
                     topSubtopics: ['Atestado de Residência na Junta', 'Contrato registado nas Finanças (AT)', 'Subarrendamento e caução', 'Comprovativo para AIMA/NIF']
                 },
                 "Educação & Formação": {
-                    percentage: 2.8,
                     color: '#06B6D4',
                     icon: 'GraduationCap',
                     description: 'Equivalência de diplomas na DGES, vagas escolares, cursos profissionais e creches gratuitas.',
                     topSubtopics: ['Reconhecimento de diploma na DGES', 'Matrículas de menores no ensino público', 'Inscrição em creches e ação social', 'Cursos certificados IEFP']
                 },
                 "Direitos & Apoio Social": {
-                    percentage: 2.2,
                     color: '#EC4899',
                     icon: 'Award',
                     description: 'Contagem dos 7 anos de residência legal CPLP, Conservatórias (IRN), certidões, leis e apoio social.',
                     topSubtopics: ['Contagem dos 7 anos de residência legal CPLP', 'Nacionalidade por casamento / tempo', 'Isenção de teste A2 para CPLP', 'Registo criminal e emolumentos IRN']
                 },
                 "Comunidade & Histórias": {
-                    percentage: 1.5,
                     color: '#84CC16',
                     icon: 'Users',
                     description: 'Partilha de experiências de integração, testemunhos, dicas de adaptação e encontros comunitários.',
                     topSubtopics: ['Dicas de chegada em Portugal', 'Adaptação cultural e clima', 'Grupos regionais de acolhimento', 'Histórias de sucesso']
                 },
                 "Ajuda Humanitária": {
-                    percentage: 0.8,
                     color: '#F43F5E',
                     icon: 'HeartHandshake',
                     description: 'Apoio a refugiados, proteção internacional, bens alimentares e redes de emergência social.',
                     topSubtopics: ['Proteção temporária', 'Acolhimento de emergência', 'Distribuição de bens essenciais', 'Linhas de apoio psicossocial']
                 },
                 "Geral & Tecnologia": {
-                    percentage: 0.7,
                     color: '#64748B',
                     icon: 'Sparkles',
                     description: 'Dúvidas sobre o funcionamento da aplicação MIRA, funcionalidades digitais e suporte técnico.',
@@ -1186,16 +1192,18 @@ export const adminService: AdminService = {
                 }
             };
 
-            const categories = (await import('../types')).UNIFIED_CATEGORIES.map(catName => {
+            const categories = validCategoriesList.map(catName => {
                 const conf = unifiedCategoryConfig[catName] || {
-                    percentage: 1.0,
                     color: '#64748B',
                     icon: 'Sparkles',
                     description: 'Questões gerais e apoio de navegação.',
                     topSubtopics: ['Dúvidas gerais', 'Informações sobre Portugal']
                 };
 
-                const catCount = Math.round(totalQueries * (conf.percentage / 100));
+                const histCount = (HISTORICAL_AI_CATEGORIES as Record<string, number>)[catName] || 0;
+                const newCount = newCategoryCounts[catName] || 0;
+                const catCount = histCount + newCount;
+                const catPercentage = totalQueries > 0 ? parseFloat(((catCount / totalQueries) * 100).toFixed(1)) : 0;
                 const catPosts = posts.filter((p: any) => p.category === catName).length;
                 const catServices = services.filter((s: any) => s.category === catName).length;
 
@@ -1203,7 +1211,7 @@ export const adminService: AdminService = {
                     key: catName,
                     label: catName,
                     count: catCount,
-                    percentage: conf.percentage,
+                    percentage: catPercentage,
                     color: conf.color,
                     icon: conf.icon,
                     description: conf.description,
@@ -1220,7 +1228,7 @@ export const adminService: AdminService = {
             // Map recent cataloged questions from Supabase activity_logs
             const queryCatalog = realLogs.map((log: any) => ({
                 id: log.id,
-                category: log.category || 'Residência & Vistos',
+                category: log.metadata?.category || 'Residência & Vistos',
                 prompt: log.metadata?.prompt || log.metadata?.question || 'Consulta ao assistente MIRA Chat',
                 userId: log.user_id || 'Anónimo',
                 timestamp: log.created_at
@@ -1229,7 +1237,7 @@ export const adminService: AdminService = {
             // Calculate real topPainPoints from real activity_logs
             const categoryCounts: Record<string, number> = {};
             realLogs.forEach((log: any) => {
-                const cat = log.category || log.metadata?.category || 'Geral & Tecnologia';
+                const cat = log.metadata?.category || 'Geral & Tecnologia';
                 categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
             });
 
@@ -1254,9 +1262,9 @@ export const adminService: AdminService = {
 
             const result = {
                 totalQueries,
-                aiUserQueries: CANONICAL_AI_METRICS.USER_QUERIES,
+                aiUserQueries: totalQueries,
                 aiTelemetry: CANONICAL_AI_METRICS.TELEMETRY,
-                totalAiEvents: CANONICAL_AI_METRICS.USER_QUERIES + CANONICAL_AI_METRICS.TELEMETRY, // 18.668 + 2.062 = 20.730
+                totalAiEvents: totalQueries + CANONICAL_AI_METRICS.TELEMETRY,
                 categories,
                 topPainPoints,
                 fundingSummary,

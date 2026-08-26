@@ -802,6 +802,47 @@ export const generateAssistantResponseV45 = async (
       }
     }
 
+    /**
+     * Compacta o histórico para máx. 8 turnos selectivos:
+     * - Sempre inclui os últimos 4 turnos
+     * - Dos restantes, inclui apenas turnos com factos-chave não redundantes
+     */
+    const compactHistory = (history: any[]): any[] => {
+      if (!history || history.length <= 8) return history;
+
+      const recent = history.slice(-4);
+      const older = history.slice(0, -4);
+
+      const factKeywords = [
+        'enfermeira', 'enfermeiro', 'médico', 'médica', 'engenheiro', 'professor',
+        'filho', 'filhos', 'filha', 'família', 'cônjuge', 'marido', 'esposa',
+        'brasileiro', 'brasileira', 'ucraniano', 'ucraniana', 'cabo-verdiano',
+        'lisboa', 'porto', 'braga', 'coimbra', 'faro', 'aveiro',
+        'nif', 'niss', 'sns', 'aima', 'visto', 'autorização', 'residência',
+        'nurse', 'doctor', 'engineer', 'family', 'children',
+      ];
+
+      const recentContent = recent.map(h => (h.content || '')).join(' ').toLowerCase();
+
+      const relevantOlder = older.filter(h => {
+        const content = (h.content || '').toLowerCase();
+        const hasKeyFact = factKeywords.some(kw => content.includes(kw));
+        if (!hasKeyFact) return false;
+        const mainWord = factKeywords.find(kw => content.includes(kw)) || '';
+        return mainWord && !recentContent.includes(mainWord);
+      }).slice(-4);
+
+      return [...relevantOlder, ...recent];
+    };
+
+    const safeBtoa = (str: string) => {
+      try {
+        return btoa(unescape(encodeURIComponent(str)));
+      } catch (e) {
+        return encodeURIComponent(str).substring(0, 100).replace(/%/g, '_');
+      }
+    };
+
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 🗜️ HISTÓRICO COMPACTO (máx. 8 turnos selectivos)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -843,17 +884,6 @@ export const generateAssistantResponseV45 = async (
         textResult = data.text;
         responseModel = data.model || 'gemini-2.5-flash';
         console.log(`⚡ [MIRA CHAT] source=gemini model=${responseModel}`);
-      } else if (action === 'translate') {
-        // 🛡️ NUNCA usar base de triagem jurídica para tradução
-        console.warn(`⚠️ [MIRA TRANSLATE] API não retornou tradução válida: ${data?.errorType || data?.error || 'unspecified'}`);
-        return {
-          text: '',
-          source: 'local_fallback',
-          success: false,
-          version: 'TRANSLATE_FAILED',
-          hydration: 0,
-          perf: '0ms'
-        };
       } else {
         chatSource = 'local_fallback';
         console.warn(`⚠️ [MIRA CHAT] source=local_fallback (Gemini fallback flag: ${data?.errorType || data?.error || 'unspecified'})`);
@@ -928,51 +958,6 @@ export const generateAssistantResponseV45 = async (
   }
 };
 
-const normalizePromptKey = (str: string) => {
-  return str
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]/g, "");
-};
-
-/**
- * Compacta o histórico para máx. 8 turnos selectivos:
- * - Sempre inclui os últimos 4 turnos
- * - Dos restantes, inclui apenas turnos com factos-chave não redundantes
- */
-const compactHistory = (history: any[]): any[] => {
-  if (!history || history.length <= 8) return history;
-
-  const recent = history.slice(-4);           // últimos 4 sempre incluídos
-  const older = history.slice(0, -4);         // turnos mais antigos
-
-  // Palavras-chave que indicam factos relevantes para o contexto actual
-  const factKeywords = [
-    'enfermeira', 'enfermeiro', 'médico', 'médica', 'engenheiro', 'professor',
-    'filho', 'filhos', 'filha', 'família', 'cônjuge', 'marido', 'esposa',
-    'brasileiro', 'brasileira', 'ucraniano', 'ucraniana', 'cabo-verdiano',
-    'lisboa', 'porto', 'braga', 'coimbra', 'faro', 'aveiro',
-    'nif', 'niss', 'sns', 'aima', 'visto', 'autorização', 'residência',
-    'nurse', 'doctor', 'engineer', 'family', 'children',
-  ];
-
-  // Recolher tópicos já cobertos nos turnos recentes (para evitar redundância)
-  const recentContent = recent.map(h => (h.content || '')).join(' ').toLowerCase();
-
-  const relevantOlder = older.filter(h => {
-    const content = (h.content || '').toLowerCase();
-    const hasKeyFact = factKeywords.some(kw => content.includes(kw));
-    if (!hasKeyFact) return false;
-    // Excluir se o facto já está coberto nos turnos recentes
-    const mainWord = factKeywords.find(kw => content.includes(kw)) || '';
-    return mainWord && !recentContent.includes(mainWord);
-  }).slice(-4); // máx. 4 turnos antigos relevantes
-
-  return [...relevantOlder, ...recent];
-};
-
 const safeBtoa = (str: string) => {
   try {
     return btoa(unescape(encodeURIComponent(str)));
@@ -982,94 +967,112 @@ const safeBtoa = (str: string) => {
 };
 
 /**
- * TRADUTOR SNIPER (ECONOMIA DE TOKENS + CACHE LOCAL + FALLBACK TRIPLO BULLETPROOF)
+ * TRADUTOR SOBERANO MIRA (CACHE GLOBAL PERSISTENTE + GEMINI + FALLBACK GTX)
  */
 export const autoTranslateText = async (text: string, targetLang: string) => {
   if (!text || !text.trim()) return text;
   
   const normLang = (targetLang || 'PT').toUpperCase().split('-')[0];
-  const cacheKey = `mira_trans_${safeBtoa(text.substring(0, 100))}_${normLang}`;
-  
-  // Sanitização de cache corrompido
-  try {
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-      const isCorrupted = cached.includes("could not confidently") || 
-                          cached.includes("não consegui identificar") || 
-                          cached.includes("no pude identificar") || 
-                          cached.includes("n'ai pas pu identifier") ||
-                          cached.includes("Explore MIRA") ||
-                          cached.includes("Explorar Módulos");
-      if (isCorrupted) {
-        sessionStorage.removeItem(cacheKey);
-      } else {
-        return cached;
-      }
-    }
-  } catch (_) {}
+  if (normLang === 'PT') return text;
 
-  // Helper de validação para garantir que não aceitamos texto de assistente conversacional
+  const trimmedText = text.trim();
+  const cacheKey = `mira_trans_${safeBtoa(trimmedText.substring(0, 100))}_${normLang}`;
+  
+  // Helper de validação anti-corrupção
   const isValidTranslation = (candidate: string): boolean => {
-    if (!candidate || !candidate.trim() || candidate.trim() === text.trim()) return false;
+    if (!candidate || !candidate.trim() || candidate.trim() === trimmedText) return false;
     const lower = candidate.toLowerCase();
     return !lower.includes("could not") && 
            !lower.includes("consegui identificar") && 
            !lower.includes("pude identificar") && 
            !lower.includes("pas pu identifier") &&
-           !lower.includes("estamos a trabalhar em algumas melhorias") &&
+           !lower.includes("gemini api error") &&
+           !lower.includes("quota_exceeded") &&
+           !lower.includes("estamos a trabalhar") &&
            !lower.includes("explore mira") &&
-           !lower.includes("explorar módulos");
+           !lower.includes("explorar módulos") &&
+           !lower.includes("aviso legal") &&
+           !lower.includes("disclaimer");
   };
 
-  // 1. Tentar primeiro via Assistente MIRA (/api/chat)
+  // 1. Verificar cache em memória na sessão (sessionStorage)
   try {
-    const translationPrompt = `Translate the following text to ${normLang}. Return ONLY the direct translated text without any quotation marks, explanations, or preambles. Text: ${text}`;
-    const res = await generateAssistantResponseV45(translationPrompt, [], normLang, 'translate');
-    
-    if (res.success && res.source === 'gemini' && isValidTranslation(res.text)) {
-      sessionStorage.setItem(cacheKey, res.text.trim());
-      return res.text.trim();
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached && isValidTranslation(cached)) {
+      return cached;
     }
-  } catch (e) {
-    console.warn('🔄 [MIRA] Assistente principal indisponível para tradução, a tentar Edge Function...');
+  } catch (_) {}
+
+  // 2. Verificar CACHE GLOBAL no Supabase (SELECT público direto via RLS)
+  try {
+    const { data: dbRow } = await supabase
+      .from('translation_cache')
+      .select('translated_text')
+      .eq('original_text', trimmedText)
+      .eq('target_language', normLang)
+      .maybeSingle();
+
+    if (dbRow && dbRow.translated_text && isValidTranslation(dbRow.translated_text)) {
+      const result = dbRow.translated_text.trim();
+      try {
+        sessionStorage.setItem(cacheKey, result);
+      } catch (_) {}
+      return result;
+    }
+  } catch (_) {
+    // Falha silenciosa de rede no Supabase, continua para o Gateway
   }
 
-  // 2. Tentar via Supabase Edge Function
+  // 3. Solicitar tradução ao Gateway Backend (/api/chat) que traduz e persiste no Supabase
   try {
-    const { data } = await supabase.functions.invoke('mira-sovereign-v2026', {
-      body: { 
-        action: 'translate', 
-        prompt: text, 
-        language: normLang 
-      }
+    const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
+    const res = await fetch(`${apiUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'translate',
+        prompt: trimmedText,
+        language: normLang
+      })
     });
-    if (data && isValidTranslation(data.text)) {
-      sessionStorage.setItem(cacheKey, data.text.trim());
-      return data.text.trim();
+
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data && data.text && isValidTranslation(data.text)) {
+        const result = data.text.trim();
+        try {
+          sessionStorage.setItem(cacheKey, result);
+        } catch (_) {}
+        return result;
+      }
     }
   } catch (e) {
-    console.warn('🔄 [MIRA] Edge function indisponível para tradução, a tentar fallback GTX...');
+    console.warn('🔄 [MIRA] Gateway indisponível para tradução, a tentar fallback client-side...');
   }
 
-  // 3. Fallback Infalível de 3º Nível: Google GTX Public Translation Endpoint
+  // 4. Fallback Client-side de Último Recurso: Google GTX Public Translation Endpoint
   try {
     const langCode = normLang.toLowerCase() === 'br' ? 'pt' : normLang.toLowerCase();
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${langCode}&dt=t&q=${encodeURIComponent(text)}`;
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${langCode}&dt=t&q=${encodeURIComponent(trimmedText)}`;
     const response = await fetch(url);
     if (response.ok) {
       const data = await response.json();
       if (data && data[0] && Array.isArray(data[0])) {
         const translatedSegments = data[0].map((segment: any) => segment[0]).filter(Boolean).join('');
         if (isValidTranslation(translatedSegments)) {
-          sessionStorage.setItem(cacheKey, translatedSegments.trim());
-          return translatedSegments.trim();
+          const result = translatedSegments.trim();
+          try {
+            sessionStorage.setItem(cacheKey, result);
+          } catch (_) {}
+          return result;
         }
       }
     }
   } catch (err) {
-    console.error('🚨 [MIRA] Todos os 3 métodos de tradução falharam:', err);
+    console.error('🚨 [MIRA] Todos os métodos de tradução falharam:', err);
   }
 
+  // 5. Preservar texto original em caso de falha de todos os motores
   return text;
 };
 

@@ -1,3 +1,40 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+let supabaseAdmin = null;
+if (supabaseUrl && supabaseServiceKey) {
+    try {
+        supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
+            }
+        });
+    } catch (e) {
+        console.warn('⚠️ [MIRA CHAT] Failed to init supabaseAdmin:', e.message);
+    }
+}
+
+function isValidTranslation(candidate, original) {
+    if (!candidate || typeof candidate !== 'string') return false;
+    const cand = candidate.trim();
+    const orig = (original || '').trim();
+    if (!cand || cand === orig || cand.toLowerCase() === orig.toLowerCase()) return false;
+
+    const lower = cand.toLowerCase();
+    const corruptedMarkers = [
+        "could not", "não consegui", "no pude", "pas pu", "gemini api error",
+        "quota_exceeded", "resource_exhausted", "error", "exception", "unavailable",
+        "config_missing", "como modelo de linguagem", "as an ai language model",
+        "estamos a trabalhar", "explore mira", "explorar módulos", "⚠️ aviso legal",
+        "⚠️ disclaimer", "[view:local_services:"
+    ];
+
+    return !corruptedMarkers.some(m => lower.includes(m));
+}
+
 export default async function handler(req, res) {
     const allowedOrigins = ['https://miraimigrante.pt', 'https://www.miraimigrante.pt', 'http://127.0.0.1:3333', 'http://localhost:3333', 'http://localhost:5173'];
     const origin = req.headers.origin;
@@ -12,19 +49,122 @@ export default async function handler(req, res) {
 
     const { prompt, history, communityContext, language, action, kbContext, profileContext } = req.body;
     const apiKey = (process.env.GEMINI_API_KEY || "").trim();
-    if (!apiKey) {
-        console.warn('⚠️ [MIRA CHAT] GEMINI_API_KEY not configured, switching to local fallback');
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 🌐 SISTEMA SOBERANO DE TRADUÇÃO: CACHE GLOBAL + GEMINI + FALLBACK GTX
+    // ──────────────────────────────────────────────────────────────────────────
+    if (action === 'translate') {
+        const normText = (prompt || '').trim();
+        const normLang = (language || 'PT').toUpperCase().split('-')[0];
+
+        if (!normText || normLang === 'PT') {
+            return res.status(200).json({ success: true, text: normText, source: 'original' });
+        }
+
+        // 1. Verificar cache global persistido no Supabase
+        if (supabaseAdmin) {
+            try {
+                const { data: cachedRow } = await supabaseAdmin
+                    .from('translation_cache')
+                    .select('translated_text')
+                    .eq('original_text', normText)
+                    .eq('target_language', normLang)
+                    .maybeSingle();
+
+                if (cachedRow && cachedRow.translated_text && isValidTranslation(cachedRow.translated_text, normText)) {
+                    return res.status(200).json({
+                        success: true,
+                        text: cachedRow.translated_text.trim(),
+                        source: 'db_cache'
+                    });
+                }
+            } catch (dbErr) {
+                console.warn('⚠️ [MIRA TRANSLATE] DB check error:', dbErr.message);
+            }
+        }
+
+        let translatedCandidate = '';
+        let translationSource = 'gemini';
+
+        // 2. Tentar tradução via Google Gemini
+        if (apiKey) {
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+                const gemResponse = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        system_instruction: { parts: [{ text: `Professional Translation: Translate the following text to ${normLang}. Output ONLY the direct translated text without quotation marks, explanations, greetings or commentary.` }] },
+                        contents: [{ role: "user", parts: [{ text: normText }] }],
+                        generationConfig: { maxOutputTokens: 1000 }
+                    })
+                });
+
+                if (gemResponse.ok) {
+                    const gemData = await gemResponse.json();
+                    const cand = gemData.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (cand && isValidTranslation(cand, normText)) {
+                        translatedCandidate = cand.trim();
+                        translationSource = 'gemini';
+                    }
+                }
+            } catch (gemErr) {
+                console.warn('⚠️ [MIRA TRANSLATE] Gemini error, trying GTX fallback:', gemErr.message);
+            }
+        }
+
+        // 3. Fallback de Tradução: Google GTX
+        if (!translatedCandidate) {
+            try {
+                const langCode = normLang.toLowerCase() === 'br' ? 'pt' : normLang.toLowerCase();
+                const gtxUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${langCode}&dt=t&q=${encodeURIComponent(normText)}`;
+                const gtxRes = await fetch(gtxUrl);
+                if (gtxRes.ok) {
+                    const gtxData = await gtxRes.json();
+                    if (gtxData && gtxData[0] && Array.isArray(gtxData[0])) {
+                        const segments = gtxData[0].map(s => s[0]).filter(Boolean).join('');
+                        if (segments && isValidTranslation(segments, normText)) {
+                            translatedCandidate = segments.trim();
+                            translationSource = 'gtx';
+                        }
+                    }
+                }
+            } catch (gtxErr) {
+                console.warn('⚠️ [MIRA TRANSLATE] GTX fallback error:', gtxErr.message);
+            }
+        }
+
+        // 4. Se obteve tradução válida: Persistir no Supabase e retornar
+        if (translatedCandidate && isValidTranslation(translatedCandidate, normText)) {
+            if (supabaseAdmin) {
+                try {
+                    await supabaseAdmin
+                        .from('translation_cache')
+                        .upsert({
+                            original_text: normText,
+                            target_language: normLang,
+                            translated_text: translatedCandidate
+                        }, { onConflict: 'original_text,target_language' });
+                } catch (saveErr) {
+                    console.warn('⚠️ [MIRA TRANSLATE] Error upserting to translation_cache:', saveErr.message);
+                }
+            }
+
+            return res.status(200).json({
+                success: true,
+                text: translatedCandidate,
+                source: translationSource
+            });
+        }
+
+        // 5. Se todos os motores falharem: Retorna texto original (NUNCA grava no cache)
         return res.status(200).json({
             success: false,
-            fallbackRequired: true,
-            errorType: 'CONFIG_MISSING',
-            error: 'GEMINI_API_KEY not configured',
-            source: 'local_fallback'
+            text: normText,
+            source: 'original',
+            fallbackRequired: true
         });
     }
-    
-    const isTranslate = action === 'translate';
-    const lang = (language || 'PT').toUpperCase();
 
     const verifiedKbBlock = kbContext ? `\n\n[BASE DE CONHECIMENTO VERIFICADA MIRA 2026 PARA O TEMA]:\n${kbContext}\n(Utiliza esta informação verificada para fundamentar a tua resposta de forma contextualizada e personalizada.)` : '';
 

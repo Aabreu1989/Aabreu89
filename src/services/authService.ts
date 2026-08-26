@@ -252,48 +252,43 @@ export const authService = {
             console.log("🧬 [MIRA] Iniciando auto-exclusão RGPD...");
             
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error("Sessão expirada.");
-
-            // 🛡️ PROTOCOLO SOBERANO: Purgação via Edge Function ou RPC Fallback
-            let deleted = false;
-            try {
-                const { error } = await supabase.functions.invoke('mira-admin', {
-                    body: { 
-                        action: 'delete', 
-                        userId: session.user.id 
-                    }
-                });
-
-                if (error) {
-                    throw new Error(error.message || "Edge Function negou a purgação.");
-                }
-                deleted = true;
-                console.log("✅ [MIRA] Auto-exclusão sincronizada com o Auth.");
-            } catch (apiErr: any) {
-                console.warn("MIRA: Edge Function Deletion failed, using RPC Fallback.", apiErr);
-                // Fallback attempt via RPC if API fails (though API is preferred for Auth sync)
-                const { error: rpcErr } = await supabase.rpc('admin_delete_full_user_v2026', { target_uid: session.user.id });
-                if (rpcErr) {
-                    console.error("MIRA: RPC fallback deletion also failed:", rpcErr);
-                    throw rpcErr;
-                }
-                deleted = true;
-                console.log("✅ [MIRA] Auto-exclusão concluída via RPC.");
+            if (!session || !session.access_token) {
+                throw new Error("Sessão expirada ou utilizador não autenticado.");
             }
 
-            if (!deleted) {
-                return false;
-            }
-
-            // 3. Encerrar Sessão e Limpar Cache apenas após exclusão confirmada
-            await this.signOut();
-            localStorage.clear();
-            sessionStorage.clear();
-            
-            // Limpeza de Cookies
-            document.cookie.split(";").forEach((c) => {
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
+            const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
+            const response = await fetch(`${apiUrl}/api/community`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({
+                    action: 'delete_self'
+                })
             });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || `Erro HTTP ${response.status} ao processar auto-exclusão.`);
+            }
+
+            const data = await response.json().catch(() => ({}));
+            if (!data.success) {
+                throw new Error(data.error || 'Falha na resposta do servidor.');
+            }
+
+            console.log("✅ [MIRA] Auto-exclusão confirmada pelo backend.");
+
+            // Encerrar Sessão e Limpar Cache exclusivamente após confirmação real
+            await this.signOut();
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                document.cookie.split(";").forEach((c) => {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
+                });
+            } catch (_) {}
 
             return true;
         } catch (error) {

@@ -771,38 +771,78 @@ export async function generateImpactReportPDF(data?: AuditPlatformData, auditDat
   );
   y += 5;
 
+  const canonicalModulesMapPt: Record<string, string> = {
+    'Residência & Vistos': 'Assistente IA + Guias AIMA & Minutas',
+    'Trabalho & Carreira': 'Assistente IA + Bolsa de Emprego (117 Portais)',
+    'Finanças & Impostos': 'Assistente IA + Simulador Fiscal (IRS/NIF)',
+    'Saúde & SNS': 'Assistente IA + Guia SNS & Centros de Saúde',
+    'Habitação & Casa': 'Assistente IA + Observatório de Alojamento',
+    'Educação & Formação': 'Assistente IA + Cursos Oficiais (DGES/IEFP)',
+    'Direitos & Apoio Social': 'Assistente IA + Balcões Sociais & CNAIM',
+    'Comunidade & Histórias': 'Assistente IA + Fórum Comunitário MIRA',
+    'Ajuda Humanitária': 'Assistente IA + Rede Humanitária & ONGD',
+    'Geral & Tecnologia': 'Assistente IA + Suporte Digital & PWA'
+  };
+
+  const canonicalModulesMapEn: Record<string, string> = {
+    'Residência & Vistos': 'AI Assistant + AIMA Guides & Templates',
+    'Trabalho & Carreira': 'AI Assistant + Job Board (117 Portals)',
+    'Finanças & Impostos': 'AI Assistant + Tax Simulator (IRS/NIF)',
+    'Saúde & SNS': 'AI Assistant + SNS Guide & Health Centers',
+    'Habitação & Casa': 'AI Assistant + Housing Observatory',
+    'Educação & Formação': 'AI Assistant + Accredited Courses (DGES/IEFP)',
+    'Direitos & Apoio Social': 'AI Assistant + Social Desks & CNAIM',
+    'Comunidade & Histórias': 'AI Assistant + MIRA Community Forum',
+    'Ajuda Humanitária': 'AI Assistant + Humanitarian Network & NGOs',
+    'Geral & Tecnologia': 'AI Assistant + Digital Support & PWA'
+  };
+
+  const canonicalCategoriesEnName: Record<string, string> = {
+    'Residência & Vistos': 'Residency & Visas',
+    'Trabalho & Carreira': 'Work & Careers',
+    'Finanças & Impostos': 'Finance & Taxes',
+    'Saúde & SNS': 'Health & NHS (SNS)',
+    'Habitação & Casa': 'Housing & Home',
+    'Educação & Formação': 'Education & Training',
+    'Direitos & Apoio Social': 'Rights & Social Support',
+    'Comunidade & Histórias': 'Community & Stories',
+    'Ajuda Humanitária': 'Humanitarian Aid',
+    'Geral & Tecnologia': 'General & Technology'
+  };
+
+  const categoryRows = (auditData?.categories && auditData.categories.length > 0)
+    ? auditData.categories.map((c: any) => [
+        isEn ? (canonicalCategoriesEnName[c.key] || c.label || c.key) : (c.label || c.key),
+        Number(c.count || 0).toLocaleString(isEn ? 'en-US' : 'pt-PT'),
+        `${(Number(c.percentage) || 0).toFixed(1)}%`,
+        isEn ? (canonicalModulesMapEn[c.key] || 'MIRA Core') : (canonicalModulesMapPt[c.key] || 'Módulo MIRA')
+      ])
+    : [
+        [isEn ? 'Residency & Visas' : 'Residência & Vistos', (7193).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '38.5%', isEn ? canonicalModulesMapEn['Residência & Vistos'] : canonicalModulesMapPt['Residência & Vistos']],
+        [isEn ? 'Work & Careers' : 'Trabalho & Carreira', (4182).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '22.4%', isEn ? canonicalModulesMapEn['Trabalho & Carreira'] : canonicalModulesMapPt['Trabalho & Carreira']],
+        [isEn ? 'Finance & Taxes' : 'Finanças & Impostos', (2652).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '14.2%', isEn ? canonicalModulesMapEn['Finanças & Impostos'] : canonicalModulesMapPt['Finanças & Impostos']],
+        [isEn ? 'Health & NHS (SNS)' : 'Saúde & SNS', (1829).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '9.8%', isEn ? canonicalModulesMapEn['Saúde & SNS'] : canonicalModulesMapPt['Saúde & SNS']],
+        [isEn ? 'Housing & Home' : 'Habitação & Casa', (1326).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '7.1%', isEn ? canonicalModulesMapEn['Habitação & Casa'] : canonicalModulesMapPt['Habitação & Casa']],
+        [isEn ? 'Education & Training' : 'Educação & Formação', (523).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '2.8%', isEn ? canonicalModulesMapEn['Educação & Formação'] : canonicalModulesMapPt['Educação & Formação']],
+        [isEn ? 'Rights & Social Support' : 'Direitos & Apoio Social', (413).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '2.2%', isEn ? canonicalModulesMapEn['Direitos & Apoio Social'] : canonicalModulesMapPt['Direitos & Apoio Social']],
+        [isEn ? 'Community & Stories' : 'Comunidade & Histórias', (280).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '1.5%', isEn ? canonicalModulesMapEn['Comunidade & Histórias'] : canonicalModulesMapPt['Comunidade & Histórias']],
+        [isEn ? 'Humanitarian Aid' : 'Ajuda Humanitária', (149).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '0.8%', isEn ? canonicalModulesMapEn['Ajuda Humanitária'] : canonicalModulesMapPt['Ajuda Humanitária']],
+        [isEn ? 'General & Technology' : 'Geral & Tecnologia', (140).toLocaleString(isEn ? 'en-US' : 'pt-PT'), '0.7%', isEn ? canonicalModulesMapEn['Geral & Tecnologia'] : canonicalModulesMapPt['Geral & Tecnologia']],
+      ];
+
+  const totalRow = [
+    isEn ? 'TOTAL AUDITED USER QUERIES' : 'TOTAL CONSULTAS HUMANAS AUDITADAS',
+    `${aiUserQueriesVal}`,
+    '100.0%',
+    isEn ? `Thematic Human Demand (Population: ${aiUserQueriesVal})` : `Demanda Temática Humana (População: ${aiUserQueriesVal})`
+  ];
+
   autoTable(doc, {
     startY: y,
     head: isEn
       ? [['Thematic Area (10 Categories)', 'Audited Queries', '% of Queries', 'MIRA Source Module']]
       : [['Área Temática (10 Categorias)', 'Total Consultas', '% das Consultas', 'Módulo MIRA de Origem']],
-    body: isEn
-      ? [
-          ['Residency & Visas', '7.187', '38.5%', 'AI Assistant + AIMA Guides & Templates'],
-          ['Work & Careers', '4.182', '22.4%', 'AI Assistant + Job Board (117 Portals)'],
-          ['Finance & Taxes', '2.651', '14.2%', 'AI Assistant + Tax Simulator (IRS/NIF)'],
-          ['Health & NHS (SNS)', '1.829', '9.8%', 'AI Assistant + SNS Guide & Health Centers'],
-          ['Housing & Home', '1.325', '7.1%', 'AI Assistant + Housing Observatory'],
-          ['Education & Training', '523', '2.8%', 'AI Assistant + Accredited Courses (DGES/IEFP)'],
-          ['Rights & Social Support', '411', '2.2%', 'AI Assistant + Social Desks & CNAIM'],
-          ['Community & Stories', '280', '1.5%', 'AI Assistant + MIRA Community Forum'],
-          ['Humanitarian Aid', '149', '0.8%', 'AI Assistant + Humanitarian Network & NGOs'],
-          ['General & Technology', '131', '0.7%', 'AI Assistant + Digital Support & PWA'],
-          ['TOTAL AUDITED USER QUERIES', `${aiUserQueriesVal}`, '100.0%', 'Thematic Human Demand (Population: 18,668)'],
-        ]
-      : [
-          ['Residência & Vistos', '7.187', '38.5%', 'Assistente IA + Guias AIMA & Minutas'],
-          ['Trabalho & Carreira', '4.182', '22.4%', 'Assistente IA + Bolsa de Emprego (117 Portais)'],
-          ['Finanças & Impostos', '2.651', '14.2%', 'Assistente IA + Simulador Fiscal (IRS/NIF)'],
-          ['Saúde & SNS', '1.829', '9.8%', 'Assistente IA + Guia SNS & Centros de Saúde'],
-          ['Habitação & Casa', '1.325', '7.1%', 'Assistente IA + Observatório de Alojamento'],
-          ['Educação & Formação', '523', '2.8%', 'Assistente IA + Cursos Oficiais (DGES/IEFP)'],
-          ['Direitos & Apoio Social', '411', '2.2%', 'Assistente IA + Balcões Sociais & CNAIM'],
-          ['Comunidade & Histórias', '280', '1.5%', 'Assistente IA + Fórum Comunitário MIRA'],
-          ['Ajuda Humanitária', '149', '0.8%', 'Assistente IA + Rede Humanitária & ONGD'],
-          ['Geral & Tecnologia', '131', '0.7%', 'Assistente IA + Suporte Digital & PWA'],
-          ['TOTAL CONSULTAS HUMANAS AUDITADAS', `${aiUserQueriesVal}`, '100.0%', 'Demanda Temática Humana (População: 18.668)'],
-        ],
+    body: [...categoryRows, totalRow],
     headStyles: { fillColor: [255, 140, 0], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 7.4 },
     bodyStyles: { fontSize: 7.0, textColor: [15, 23, 42], cellPadding: 1.05 },
     alternateRowStyles: { fillColor: [248, 250, 252] },
