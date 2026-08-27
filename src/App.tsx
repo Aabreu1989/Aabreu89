@@ -17,7 +17,6 @@ import { normalizeCategory } from './utils/categoryUtils';
 import { syncService } from './services/syncService';
 import { LocalServicesList } from './components/LocalServicesList';
 import { PrivacyPage } from './components/PrivacyPage';
-import { CookiesPolicy } from './components/CookiesPolicy';
 import { ConsentModal } from './components/ConsentModal';
 import { AuthScreen } from './components/AuthScreen';
 import { ViewType, DocumentTask, ChatSession, GeneratedDocument, User, Course, Post } from './types';
@@ -1495,8 +1494,8 @@ const AppContent: React.FC = () => {
                     onViewChange={handleViewChange} 
                     language={language} 
                 />;
-            case ViewType.PRIVACY: return <PrivacyPage language={language} onBack={() => handleViewChange(ViewType.HOME)} initialSection={viewParams?.section} />;
-            case ViewType.COOKIES: return <CookiesPolicy language={language} onBack={() => handleViewChange(ViewType.HOME)} />;
+            case ViewType.PRIVACY: return <PrivacyPage language={language} onSetLanguage={handleSetLanguage} onBack={() => handleViewChange(ViewType.HOME)} initialSection={viewParams?.section} />;
+            case ViewType.COOKIES: return <PrivacyPage language={language} onSetLanguage={handleSetLanguage} onBack={() => handleViewChange(ViewType.HOME)} initialSection="cookies" />;
             case ViewType.PREMIOS: return <PremiosView language={language} onBack={() => handleViewChange(ViewType.HOME)} />;
             default: return <HomeView user={user} onViewChange={handleViewChange} language={language} onLogout={handleLogout} masterPosts={masterPosts} />;
         }
@@ -1652,9 +1651,9 @@ const AppContent: React.FC = () => {
             )}
             {(!user || isRecoveryMode) ? (
                 currentView === ViewType.PRIVACY ? (
-                    <PrivacyPage language={language} onBack={() => setCurrentView(ViewType.HOME)} />
+                    <PrivacyPage language={language} onSetLanguage={handleSetLanguage} onBack={() => handleViewChange(ViewType.HOME)} initialSection={viewParams?.section} />
                 ) : currentView === ViewType.COOKIES ? (
-                    <CookiesPolicy language={language} onBack={() => setCurrentView(ViewType.HOME)} />
+                    <PrivacyPage language={language} onSetLanguage={handleSetLanguage} onBack={() => handleViewChange(ViewType.HOME)} initialSection="cookies" />
                 ) : (
                     <AuthScreen 
                         onLogin={(u) => { 
@@ -1668,8 +1667,10 @@ const AppContent: React.FC = () => {
                         language={language} 
                         setLanguage={handleSetLanguage}
                         isRecoveryMode={isRecoveryMode}
-                        onOpenPrivacy={() => handleViewChange(ViewType.PRIVACY)}
-                        onOpenTerms={() => handleViewChange(ViewType.PRIVACY)}
+                        onOpenPrivacy={(section?: string) => handleViewChange(ViewType.PRIVACY, { section: section || 'privacy' })}
+                        onOpenTerms={() => handleViewChange(ViewType.PRIVACY, { section: 'terms' })}
+                        onOpenCookies={() => handleViewChange(ViewType.PRIVACY, { section: 'cookies' })}
+                        onOpenLegal={() => handleViewChange(ViewType.PRIVACY, { section: 'legal' })}
                     />
                 )
             ) : (

@@ -4,7 +4,7 @@ import { User } from '../types';
 import { 
     Shield, Lock, CheckCircle2, Mail, Key, Eye, EyeOff, AlertCircle, 
     Info, Sparkles, Globe, ChevronDown, ArrowLeft, Users, RefreshCcw,
-    Play, LogIn, X, Smartphone, Download
+    Play, LogIn, X, Smartphone, Download, Share2, PlusSquare
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { MIRA_LOGO } from '../constants';
@@ -19,8 +19,10 @@ interface AuthScreenProps {
     language: string;
     setLanguage: (lang: string) => void;
     isRecoveryMode?: boolean;
-    onOpenPrivacy?: () => void;
+    onOpenPrivacy?: (section?: string) => void;
     onOpenTerms?: () => void;
+    onOpenCookies?: () => void;
+    onOpenLegal?: () => void;
 }
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ 
@@ -29,7 +31,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     setLanguage, 
     isRecoveryMode = false,
     onOpenPrivacy,
-    onOpenTerms
+    onOpenTerms,
+    onOpenCookies,
+    onOpenLegal
 }) => {
     const [isLogin, setIsLogin] = useState(!isRecoveryMode);
     const [isForgotPassword, setIsForgotPassword] = useState(false);
@@ -271,20 +275,20 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
     return (
         <div 
-            className="min-h-[100dvh] w-full flex flex-col justify-between items-center font-sans relative select-none overflow-y-auto p-3 py-6"
+            className="min-h-[100dvh] w-full flex flex-col justify-between items-center font-sans relative select-none overflow-y-auto px-4 py-4 sm:py-6"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
         >
 
-            {/* Background ÔÇö Azul Marinho Imperial MIRA (V2026.PREMIUM) */}
+            {/* Background — Azul Marinho Imperial MIRA (V2026.PREMIUM) */}
             <div className="absolute inset-0 bg-[#020420] pointer-events-none" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,_rgba(255,140,0,0.05),_transparent_70%)] pointer-events-none" />
             
             {/* Language Selector */}
-            <div className="absolute top-3 right-3 md:top-6 md:right-6 z-[100]">
+            <div className="absolute top-3 right-3 sm:top-5 sm:right-5 z-[100]">
                     <button 
                       onClick={() => setShowLangMenu(!showLangMenu)} 
-                      className="bg-mira-orange text-white px-4 py-2 rounded-xl text-[9px] font-extrabold uppercase flex items-center gap-1.5 shadow-2xl hover:scale-110 active:scale-95 transition-all outline-none"
+                      className="bg-mira-orange text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[9px] font-extrabold uppercase flex items-center gap-1.5 shadow-2xl hover:scale-105 active:scale-95 transition-all outline-none"
                     >
                         <Globe size={12} /> {language} <ChevronDown size={12} />
                     </button>
@@ -292,7 +296,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-2xl shadow-2xl p-2 z-[101] border border-slate-100 animate-in fade-in slide-in-from-top-4">
                             {['PT', 'EN', 'ES', 'FR'].map(l => (
                                 <button key={l} onClick={() => { setLanguage(l); setShowLangMenu(false); }} className={`w-full text-left px-3 py-2 rounded-xl text-[9px] font-extrabold uppercase transition-colors ${language === l ? 'bg-mira-orange text-white' : 'hover:bg-slate-50 text-slate-900'}`}>
-                                {l}
+                                {l === 'PT' ? '🇵🇹 Português' : l === 'EN' ? '🇬🇧 English' : l === 'ES' ? '🇪🇸 Español' : '🇫🇷 Français'}
                             </button>
                         ))}
                     </div>
@@ -300,15 +304,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             </div>
 
             {/* Unified Central Layout wrapper */}
-            <div className="relative z-10 w-full max-w-sm flex flex-col items-center justify-center gap-3 my-auto py-4">
+            <div className="relative z-10 w-full max-w-sm flex flex-col items-center justify-center gap-2.5 sm:gap-3 my-auto py-2 sm:py-4">
                 
                 {/* Logo & Title */}
                 <div className="w-full text-center animate-in fade-in slide-in-from-bottom-6 duration-700 shrink-0">
-                    <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-2 bg-transparent p-0.5 flex items-center justify-center transition-transform hover:scale-110">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-1.5 sm:mb-2 bg-transparent p-0.5 flex items-center justify-center transition-transform hover:scale-105">
                         <img src="/logo-mira.png" alt="MIRA" className="w-full h-full object-contain" />
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase mb-1">MIRA</h1>
-                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/90 mt-0.5 w-full text-center px-2">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-0.5 sm:mb-1">MIRA</h1>
+                    <p className="text-[8px] sm:text-[9px] md:text-[10px] font-black uppercase tracking-[0.18em] text-white/90 mt-0.5 w-full text-center px-2">
                         {t('auth_subtitle', language)}
                     </p>
                 </div>
@@ -440,12 +444,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     )}
                 </div>
 
-                {/* Sub-Card Actions (PWA install option, Disclaimer, Footer) closely grouped below */}
-                <div className="w-full flex flex-col items-center gap-2.5 px-2 text-center mt-0.5 shrink-0">
+                {/* Sub-Card Actions (PWA install option, Legal Links, Footer) */}
+                <div className="w-full flex flex-col items-center gap-3 sm:gap-3.5 px-2 text-center mt-1 sm:mt-2 shrink-0">
                     
                     {/* PWA Install Button - ALWAYS VISIBLE on login page */}
                     {!pwaService.isStandalone() && (
-                        <div className="w-full flex justify-center mt-1 z-10 animate-in fade-in duration-300">
+                        <div className="w-full flex justify-center z-10 animate-in fade-in duration-300">
                             <button
                                 onClick={handleInstallApp}
                                 className="w-[200px] py-2 px-3 text-white font-extrabold uppercase text-[9px] tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all border border-white/10"
@@ -462,15 +466,48 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         </div>
                     )}
 
-                    {/* Educational Disclaimer */}
-                    <p className="text-[6px] text-white/30 font-bold uppercase tracking-wider leading-relaxed max-w-[260px]">
-                        {t('disclaimer_educational', language)}
-                    </p>
+                    {/* Legal & Compliance Footer Group with refined spacing */}
+                    <div className="w-full flex flex-col items-center gap-2 pt-1">
+                        {/* RGPD Legal & Compliance Links - STRICT SINGLE LINE (NO WRAP) */}
+                        <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 px-1 text-center whitespace-nowrap overflow-x-auto max-w-full no-scrollbar">
+                            <button
+                                type="button"
+                                onClick={() => onOpenPrivacy ? onOpenPrivacy('privacy') : null}
+                                className="text-[8.5px] sm:text-[9.5px] font-bold text-white/60 hover:text-mira-orange active:text-mira-orange transition-colors underline-offset-4 hover:underline py-0.5 whitespace-nowrap touch-manipulation tracking-tight sm:tracking-normal"
+                            >
+                                {language === 'PT' ? 'Privacidade' : language === 'ES' ? 'Privacidad' : language === 'FR' ? 'Confidentialité' : 'Privacy'}
+                            </button>
+                            <span className="text-[8.5px] sm:text-[9.5px] text-white/25 select-none shrink-0">·</span>
+                            <button
+                                type="button"
+                                onClick={() => onOpenTerms ? onOpenTerms() : (onOpenPrivacy ? onOpenPrivacy('terms') : null)}
+                                className="text-[8.5px] sm:text-[9.5px] font-bold text-white/60 hover:text-mira-orange active:text-mira-orange transition-colors underline-offset-4 hover:underline py-0.5 whitespace-nowrap touch-manipulation tracking-tight sm:tracking-normal"
+                            >
+                                {language === 'PT' ? 'Termos de Uso' : language === 'ES' ? 'Términos de Uso' : language === 'FR' ? 'Conditions d\'Utilisation' : 'Terms of Use'}
+                            </button>
+                            <span className="text-[8.5px] sm:text-[9.5px] text-white/25 select-none shrink-0">·</span>
+                            <button
+                                type="button"
+                                onClick={() => onOpenCookies ? onOpenCookies() : (onOpenPrivacy ? onOpenPrivacy('cookies') : null)}
+                                className="text-[8.5px] sm:text-[9.5px] font-bold text-white/60 hover:text-mira-orange active:text-mira-orange transition-colors underline-offset-4 hover:underline py-0.5 whitespace-nowrap touch-manipulation tracking-tight sm:tracking-normal"
+                            >
+                                Cookies
+                            </button>
+                            <span className="text-[8.5px] sm:text-[9.5px] text-white/25 select-none shrink-0">·</span>
+                            <button
+                                type="button"
+                                onClick={() => onOpenLegal ? onOpenLegal() : (onOpenPrivacy ? onOpenPrivacy('legal') : null)}
+                                className="text-[8.5px] sm:text-[9.5px] font-bold text-white/60 hover:text-mira-orange active:text-mira-orange transition-colors underline-offset-4 hover:underline py-0.5 whitespace-nowrap touch-manipulation tracking-tight sm:tracking-normal"
+                            >
+                                {language === 'PT' ? 'Aviso Legal' : language === 'ES' ? 'Aviso Legal' : language === 'FR' ? 'Mentions Légales' : 'Legal Notice'}
+                            </button>
+                        </div>
 
-                    {/* Footer Seal */}
-                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white/50">
-                        MIRA 2026 © - AMANDA ABREU
-                    </p>
+                        {/* Footer Seal with elegant breathing room */}
+                        <p className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-[0.25em] text-white/40 pt-1.5">
+                            MIRA 2026 © — AMANDA ABREU
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -484,8 +521,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         >
                             <X size={20} />
                         </button>
-                        <div className="w-16 h-16 rounded-3xl bg-mira-orange/10 flex items-center justify-center mx-auto text-mira-orange text-3xl">
-                            ­ƒô▓
+                        <div className="w-16 h-16 rounded-3xl bg-mira-orange/10 flex items-center justify-center mx-auto text-mira-orange">
+                            <Smartphone size={32} />
                         </div>
                         <h3 className="text-lg font-black text-white uppercase tracking-wider">
                             {language === 'PT' ? 'Instalar no seu iPhone' :
@@ -496,19 +533,19 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         <p className="text-xs text-white/70 font-medium leading-relaxed">
                             {language === 'PT' ? (
                                 <>
-                                    Para adicionar o atalho ao ecr├ú principal, toque no bot├úo de partilha <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> no Safari e selecione <strong>'Adicionar ao Ecr├ú Principal'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
+                                    Para adicionar o atalho ao ecrã principal, toque no botão de partilha <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><Share2 size={12} /></span> no Safari e selecione <strong>'Adicionar ao Ecrã Principal'</strong> <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><PlusSquare size={12} /></span>.
                                 </>
                             ) : language === 'ES' ? (
                                 <>
-                                    Para agregar el acceso directo a la pantalla de inicio, toque el bot├│n de compartir <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> en Safari y seleccione <strong>'Compartir / Agregar a pantalla de inicio'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
+                                    Para agregar el acceso directo a la pantalla de inicio, toque el botón de compartir <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><Share2 size={12} /></span> en Safari y seleccione <strong>'Compartir / Agregar a pantalla de inicio'</strong> <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><PlusSquare size={12} /></span>.
                                 </>
                             ) : language === 'FR' ? (
                                 <>
-                                    Pour ajouter le raccourci sur l'├®cran d'accueil, appuyez sur le bouton de partage <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> dans Safari e s├®lectionnez <strong>'Sur l'├®cran d'accueil'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
+                                    Pour ajouter le raccourci sur l'écran d'accueil, appuyez sur le bouton de partage <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><Share2 size={12} /></span> dans Safari et sélectionnez <strong>'Sur l'écran d'accueil'</strong> <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><PlusSquare size={12} /></span>.
                                 </>
                             ) : (
                                 <>
-                                    To add the shortcut to your home screen, tap the share button <span className="inline-block p-1 bg-white/10 rounded">­ƒôñ</span> in Safari and select <strong>'Add to Home Screen'</strong> <span className="inline-block p-1 bg-white/10 rounded">Ô×ò</span>.
+                                    To add the shortcut to your home screen, tap the share button <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><Share2 size={12} /></span> in Safari and select <strong>'Add to Home Screen'</strong> <span className="inline-flex items-center p-1 bg-white/10 rounded mx-1"><PlusSquare size={12} /></span>.
                                 </>
                             )}
                         </p>
