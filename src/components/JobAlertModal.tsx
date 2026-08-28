@@ -266,17 +266,21 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
       // Injeta imediatamente o novo alerta no estado
       setExistingAlerts(prev => [newAlert, ...prev.filter(a => a.id !== newAlert.id)]);
 
-      // 2. Feedback visual limpo (zero notificações geradas no banco na criação)
+      // 2. Feedback visual limpo (diferenciado para Guest vs Autenticado)
+      const isGuest = !user?.id;
       const freqLabel = frequency === 'daily'
         ? 'Enviaremos um resumo diário às 06:00 UTC com as novas oportunidades.'
         : frequency === 'weekly'
           ? 'Enviaremos um resumo semanal com as novas oportunidades.'
           : 'Avisaremos em tempo real assim que novas vagas compatíveis forem publicadas.';
 
+      const guestMsg = '📱 Alerta guardado neste dispositivo! Cria uma conta gratuita para receber notificações por e-mail e em todos os teus dispositivos.';
+      const authMsg = `🎉 Alerta ativado na tua conta MIRA! ${freqLabel}`;
+
       setScanFeedback({
         status: 'success',
         matchesCount: 0,
-        message: `🎉 Alerta ativado com sucesso! ${freqLabel}`
+        message: isGuest ? guestMsg : authMsg
       });
 
       setKeywords('');
@@ -447,6 +451,15 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
               </div>
 
               {/* Lista de Alertas */}
+              {!user?.id && existingAlerts.length > 0 && (
+                <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-2.5">
+                  <Info size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-[11px] font-bold text-amber-900 leading-snug">
+                    Alertas guardados localmente neste dispositivo. Inicia sessão para sincronizar na nuvem e receber notificações por e-mail.
+                  </p>
+                </div>
+              )}
+
               {existingAlerts.length > 0 ? (
                 <div className="space-y-3">
                   {existingAlerts.map(alert => (

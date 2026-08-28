@@ -162,7 +162,6 @@ export const WORK_TOPICS = [
   "Gestão de Equipas e Negócios",
   "Limpeza, Segurança & Facility Management",
   "Agricultura, Pesca & Pecuária",
-  "Artes, Design & Multimédia",
   "Apoio Social & Terceiro Setor",
   "Energia & Sustentabilidade",
   "Trabalho Remoto & Freelancing",

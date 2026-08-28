@@ -154,7 +154,6 @@ const TOPIC_DETAILS: Record<string, { emoji: string; color: string; bg: string; 
   "Gestão de Equipas e Negócios": { emoji: "📊", color: "#7c3aed", bg: "bg-purple-50/80 hover:bg-purple-100/90", text: "text-purple-600 border-purple-200", ring: "focus:ring-purple-500/20" },
   "Limpeza, Segurança & Facility Management": { emoji: "🧹", color: "#52525b", bg: "bg-zinc-50/80 hover:bg-zinc-100/90", text: "text-zinc-600 border-zinc-200", ring: "focus:ring-zinc-500/20" },
   "Agricultura, Pesca & Pecuária": { emoji: "🚜", color: "#16a34a", bg: "bg-green-50/80 hover:bg-green-100/90", text: "text-green-600 border-green-200", ring: "focus:ring-green-500/20" },
-  "Artes, Design & Multimédia": { emoji: "🎨", color: "#e11d48", bg: "bg-rose-50/80 hover:bg-rose-100/90", text: "text-rose-600 border-rose-200", ring: "focus:ring-rose-500/20" },
   "Apoio Social & Terceiro Setor": { emoji: "🤝", color: "#0891b2", bg: "bg-cyan-50/80 hover:bg-cyan-100/90", text: "text-cyan-600 border-cyan-200", ring: "focus:ring-cyan-500/20" },
   "Energia & Sustentabilidade": { emoji: "⚡", color: "#ca8a04", bg: "bg-yellow-50/80 hover:bg-yellow-100/90", text: "text-yellow-700 border-yellow-200", ring: "focus:ring-yellow-500/20" },
   "Educação, Ensino & Formação": { emoji: "📚", color: "#0284c7", bg: "bg-sky-50/80 hover:bg-sky-100/90", text: "text-sky-600 border-sky-200", ring: "focus:ring-sky-500/20" },

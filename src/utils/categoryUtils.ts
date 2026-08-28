@@ -366,6 +366,7 @@ export const getWorkTopicKey = (topic: string | undefined | null): string => {
             return "jobs_topic_consultants";
         case "Design, Marketing e Media":
         case "Marketing, Publicidade & Design":
+        case "Artes, Design & Multimédia":
             return "jobs_topic_design_media";
         case "Gestão de Equipas e Negócios":
             return "jobs_topic_management";
@@ -375,8 +376,6 @@ export const getWorkTopicKey = (topic: string | undefined | null): string => {
         case "Agricultura, Pesca & Pecuária":
         case "Agricultura, Pecuária & Pesca":
             return "jobs_topic_agriculture";
-        case "Artes, Design & Multimédia":
-            return "jobs_topic_arts";
         case "Apoio Social & Terceiro Setor":
         case "Saúde & Apoio Social":
             return "jobs_topic_social";
@@ -402,7 +401,6 @@ export const getWorkTopicKey = (topic: string | undefined | null): string => {
                 case "Gestão de Equipas e Negócios": return "jobs_topic_management";
                 case "Limpeza, Segurança & Facility Management": return "jobs_topic_services";
                 case "Agricultura, Pesca & Pecuária": return "jobs_topic_agriculture";
-                case "Artes, Design & Multimédia": return "jobs_topic_arts";
                 case "Apoio Social & Terceiro Setor": return "jobs_topic_social";
                 case "Energia & Sustentabilidade": return "jobs_topic_energy";
                 case "Trabalho Remoto & Freelancing": return "jobs_topic_remote";
