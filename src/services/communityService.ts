@@ -255,6 +255,16 @@ export const communityService = {
   },
 
   /**
+   * 🛡️ VERIFICAR POST (ADMIN ONLY - Via Gateway Soberano)
+   */
+  verifyPost: async (postId: string, isVerified: boolean, userId?: string) => {
+    console.log(`🛡️ MIRA: Atualizando verificação do post ${postId} para ${isVerified} via Gateway...`);
+    const data = await callCommunityGateway('verify_post', { postId, isVerified }, userId);
+    console.log("✅ Verificação do post atualizada com sucesso.");
+    return data;
+  },
+
+  /**
    * 📤 PUBLICAÇÃO DE NOVO POST (Via Gateway Soberano)
    */
   createPost: async (postData: Partial<Post>) => {

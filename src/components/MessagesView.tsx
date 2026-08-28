@@ -8,9 +8,10 @@ interface MessagesViewProps {
     user: User;
     language: string;
     onViewChange: (view: ViewType) => void;
+    onSelectConversation?: (conversation: any) => void;
 }
 
-export const MessagesView: React.FC<MessagesViewProps> = ({ user, language, onViewChange }) => {
+export const MessagesView: React.FC<MessagesViewProps> = ({ user, language, onViewChange, onSelectConversation }) => {
     const [conversations, setConversations] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -62,7 +63,8 @@ export const MessagesView: React.FC<MessagesViewProps> = ({ user, language, onVi
                     filteredConvs.map((conv) => (
                         <div 
                             key={conv.id}
-                            className="bg-white p-5 rounded-[2.5rem] border border-slate-100 shadow-xl hover:border-[#FF8C00]/30 transition-all cursor-pointer group flex items-center gap-4"
+                            onClick={() => onSelectConversation && onSelectConversation(conv)}
+                            className="bg-white p-5 rounded-[2.5rem] border border-slate-100 shadow-xl hover:border-[#FF8C00]/30 transition-all cursor-pointer group flex items-center gap-4 active:scale-98"
                         >
                             <div className="relative">
                                 <img 

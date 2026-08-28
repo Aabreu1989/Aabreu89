@@ -1181,14 +1181,7 @@ const handleDeletePost = async (postId: string) => {
                                onClick={async () => {
                                  try {
                                    const newStatus = !story.isVerified;
-                                   // 🛡️ [V2026.GOLD] Tenta RPC primeiro, fallback para update direto
-                                   const { error } = await supabase.rpc('verify_post', { p_post_id: story.id, p_is_verified: newStatus });
-                                   
-                                   if (error) {
-                                      console.warn("MIRA: RPC verify_post falhou, tentando update direto.");
-                                      const { error: upError } = await supabase.from('posts').update({ is_verified: newStatus }).eq('id', story.id);
-                                      if (upError) throw upError;
-                                    }
+                                   await communityService.verifyPost(story.id, newStatus, user?.id);
 
                                    showToast(newStatus ? t('toast_post_verified_success', language) : t('toast_post_unverified_success', language), "success");
                                    setMasterPosts(prev => prev.map(p => p.id === story.id ? { ...p, isVerified: newStatus } : p));

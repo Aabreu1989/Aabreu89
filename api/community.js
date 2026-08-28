@@ -271,6 +271,59 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, commentId });
     }
 
+    // 2.2 VERIFY / UNVERIFY POST (ADMIN ONLY COM VALIDAÇÃO SOBERANA)
+    if (action === 'verify_post') {
+      const { postId, isVerified } = req.body || {};
+      if (!postId) return res.status(400).json({ error: 'postId é obrigatório.' });
+
+      const adminEmails = [
+        'amandasabreu89@gmail.com',
+        'mira.app@hotmail.com',
+        'amandajhonnes@yahoo.com.br'
+      ];
+
+      const adminUserIds = [
+        '00000000-0000-0000-0000-000000000001',
+        '775fb10a-78cd-4753-938d-dea75fddd77a',
+        'bc16353e-67ae-4ff5-a6aa-bc4d8f62af08',
+        'dea69de1-0ed4-44dc-9699-0544e6f39ed8',
+        '99b0f5c9-dc81-453b-a60d-e63b6c591ee3',
+        '8efd79c9-b4f1-4ae2-adbd-3c192b309642',
+        '0d648290-0cda-4684-a32e-7f8de68e87af',
+        '70b7679d-b809-48df-b7c7-bf0906e4caf5'
+      ];
+
+      let isAdmin = false;
+      if (authenticatedUserEmail && adminEmails.includes(authenticatedUserEmail.toLowerCase().trim())) {
+        isAdmin = true;
+      }
+      if (authenticatedUserId && adminUserIds.includes(authenticatedUserId)) {
+        isAdmin = true;
+      }
+
+      if (!isAdmin && authenticatedUserId) {
+        const { data: prof } = await supabaseAdmin.from('profiles').select('role, email').eq('id', authenticatedUserId).maybeSingle();
+        if (prof?.role === 'admin' || prof?.role === 'ceo' || (prof?.email && adminEmails.includes(prof.email.toLowerCase().trim()))) {
+          isAdmin = true;
+        }
+      }
+
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Apenas administradores homologados podem verificar publicações.' });
+      }
+
+      const { data: updatedPost, error: upErr } = await supabaseAdmin
+        .from('posts')
+        .update({ is_verified: !!isVerified })
+        .eq('id', postId)
+        .select()
+        .single();
+
+      if (upErr) return res.status(500).json({ error: upErr.message });
+
+      return res.status(200).json({ success: true, post: updatedPost, isVerified: !!isVerified });
+    }
+
     // 3. VOTE (LIKE / TRUE / FAKE) ON POST_VOTES COM SEPARAÇÃO DE FACT-CHECK E LIKE
     if (action === 'vote') {
       const { postId, voteType } = req.body || {};

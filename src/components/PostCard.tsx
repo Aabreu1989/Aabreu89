@@ -264,8 +264,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({
                                         onClick={async () => {
                                             setOpenMenu(false);
                                             try {
-                                                const { error } = await supabase.rpc('verify_post', { p_post_id: post.id, p_is_verified: !post.isVerified });
-                                                if (error) throw error;
+                                                await communityService.verifyPost(post.id, !post.isVerified, user?.id);
                                                 showToast(post.isVerified ? t('toast_post_unverified', language) : t('toast_post_verified', language), "success");
                                             } catch (e) {
                                                 console.error(e);

@@ -25,6 +25,14 @@
       "destination": "/api/sync-jobs.js"
     },
     {
+      "source": "/api/community",
+      "destination": "/api/community.js"
+    },
+    {
+      "source": "/api/update-password",
+      "destination": "/api/update-password.js"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

@@ -1450,6 +1450,9 @@ const AppContent: React.FC = () => {
                     onViewChange={(view) => {
                         if (typeof view === 'string') handleViewChange(view as ViewType);
                     }} 
+                    onSelectConversation={(conv) => {
+                        setActiveChat({ id: conv.id, otherUser: conv.otherParticipant });
+                    }}
                 />;
             case ViewType.SERVICES:
                 return <LocalServicesList 
