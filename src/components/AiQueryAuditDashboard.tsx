@@ -132,7 +132,7 @@ export const AiQueryAuditDashboard: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center py-20 bg-slate-900/60 backdrop-blur-xl rounded-[2.5rem] border border-white/10 text-white">
         <Loader2 size={36} className="animate-spin text-orange-500 mb-4" />
-        <p className="text-sm font-black uppercase tracking-widest text-slate-300">A processar auditoria de 18.642+ perguntas do MIRA Chat...</p>
+        <p className="text-sm font-black uppercase tracking-widest text-slate-300">A processar auditoria de 18.668+ perguntas do MIRA Chat...</p>
       </div>
     );
   }

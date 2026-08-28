@@ -60,15 +60,18 @@ class AnalyticsService {
     category?: string,
     metadata?: any
   ) {
-    // 🛡️ GUARDA SOBERANA: Ignorar telemetria de contas de Admin ou Teste
-    if (isInternalOrAdmin(userId) || isInternalOrAdmin(metadata?.email) || isInternalOrAdmin(metadata?.user_email)) {
-      return;
-    }
+    // 🛡️ CLASSIFICAÇÃO SOBERANA DE POPULAÇÃO (REGISTAR != CONTABILIZAR NA MÉTRICA OFICIAL):
+    // Identificar inequivocamente se a origem do evento é Admin ou Teste interno
+    const isAdminActivity = isInternalOrAdmin(userId) || isInternalOrAdmin(metadata?.email) || isInternalOrAdmin(metadata?.user_email);
 
-    // 🛡️ BARREIRA DE SEGURANÇA E GOVERNANÇA PARA AI_QUERY:
-    // ai_query é estritamente reservado para consultas humanas reais.
     let finalAction = action;
     let finalCategory = category;
+
+    const enrichedMetadata = {
+      ...(metadata || {}),
+      is_admin_activity: isAdminActivity,
+      is_internal: isAdminActivity
+    };
 
     if (action === 'ai_query') {
       const isSystem = userId === 'system' || metadata?.guest_id === 'system' || metadata?.is_benchmark === true;
@@ -79,27 +82,25 @@ class AnalyticsService {
         console.warn('[MIRA Analytics] Rejeitado registo de ai_query inválido ou de sistema (convertido para system_benchmark).');
         finalAction = 'system_benchmark';
       } else {
-        // Normalização canónica obrigatória para toda consulta humana
+        // Normalização canónica obrigatória para toda consulta
         finalCategory = normalizeCategory(category, promptText);
-        if (metadata) {
-          metadata.category = finalCategory;
-        }
+        enrichedMetadata.category = finalCategory;
       }
     }
 
-    // 1. Registo imediato em memória local (nunca falha)
+    // 1. Registo imediato em memória local
     const log: AppActivityLog = {
       id: Math.random().toString(36).substr(2, 9),
       userId: userId || 'guest',
       action: finalAction,
       category: finalCategory,
       timestamp: new Date().toISOString(),
-      metadata
+      metadata: enrichedMetadata
     };
     this.logs.push(log);
 
     // 2. Enviar para Supabase via RPC SECURITY DEFINER (bypass RLS total)
-    this.sendToSupabase(finalAction, userId, finalCategory, metadata);
+    this.sendToSupabase(finalAction, userId, finalCategory, enrichedMetadata);
   }
 
   private async sendToSupabase(
@@ -108,11 +109,6 @@ class AnalyticsService {
     category?: string,
     metadata?: any
   ) {
-    // 🛡️ GUARDA SOBERANA DUPLA: Bloqueio contra poluição
-    if (isInternalOrAdmin(userId) || isInternalOrAdmin(metadata?.email) || isInternalOrAdmin(metadata?.user_email)) {
-      return;
-    }
-
     const isValidUuid =
       typeof userId === 'string' &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);

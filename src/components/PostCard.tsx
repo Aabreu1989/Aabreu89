@@ -179,12 +179,12 @@ const PostCardComponent: React.FC<PostCardProps> = ({
             )}
 
             {/* Instagram-style Header */}
-            <div className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-slate-50">
-                <div onClick={() => onOpenProfile(post)} className="flex items-center gap-3 cursor-pointer group/author active:scale-98">
+            <div className="px-3.5 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between gap-2 border-b border-slate-50">
+                <div onClick={() => onOpenProfile(post)} className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group/author active:scale-98 min-w-0 flex-1">
                     <div className="p-[2px] bg-gradient-to-tr from-[#f97316] via-[#facc15] to-[#3b82f6] rounded-full shadow-sm relative shrink-0">
                         <img 
                             src={post.authorAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.authorName)}&background=f97316&color=fff`} 
-                            className="w-10 h-10 rounded-full border-2 border-white object-cover" 
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover" 
                             alt="" 
                             referrerPolicy="no-referrer" 
                             loading="lazy" 
@@ -196,25 +196,25 @@ const PostCardComponent: React.FC<PostCardProps> = ({
                         />
                         {post.isAima && <ShieldCheck size={14} className="absolute -top-1 -right-1 text-orange-500 fill-white drop-shadow-md" />}
                     </div>
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-1">
-                            <span className="text-xs sm:text-sm font-black text-slate-900 tracking-tight flex items-center gap-1">
-                                {post.authorName}
+                    <div className="flex flex-col min-w-0 flex-1">
+                        <div className="flex items-center gap-1 min-w-0">
+                            <span className="text-xs sm:text-sm font-black text-slate-900 tracking-tight flex items-center gap-1 min-w-0">
+                                <span className="truncate">{post.authorName}</span>
                                 {post.authorIsVerified && <CheckCircle size={12} className="text-mira-blue fill-mira-blue shrink-0" />}
                             </span>
                             {post.isVerified && (
-                                <span className="bg-emerald-500 text-white p-0.5 rounded-full animate-pulse" title="Post Verificado">
+                                <span className="bg-emerald-500 text-white p-0.5 rounded-full animate-pulse shrink-0" title="Post Verificado">
                                     <ShieldCheck size={10} />
                                 </span>
                             )}
                         </div>
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mt-0.5">
+                        <span className="text-[8.5px] sm:text-[9px] font-black text-slate-400 uppercase tracking-wider sm:tracking-widest leading-tight mt-0.5 truncate block" title={t(getCategoryKey(post.category), language)}>
                             {t(getCategoryKey(post.category), language)}
                         </span>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     {!isAuthor && onFollow && (
                         <button 
                             onClick={async (e) => {
@@ -224,22 +224,22 @@ const PostCardComponent: React.FC<PostCardProps> = ({
                                     onFollow(post.authorId);
                                 }
                             }}
-                            className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 shrink-0 ${
+                            className={`flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest transition-all active:scale-95 shrink-0 whitespace-nowrap ${
                                 isFollowing 
                                 ? 'bg-slate-100 text-slate-600 border border-slate-200' 
                                 : 'bg-mira-blue/10 text-mira-blue border border-mira-blue/20 hover:bg-mira-blue/25'
                             }`}
                         >
-                            {isFollowing ? <UserMinus size={10} /> : <UserPlus size={10} />}
-                            <span>
+                            {isFollowing ? <UserMinus size={10} className="shrink-0" /> : <UserPlus size={10} className="shrink-0" />}
+                            <span className="whitespace-nowrap">
                                 {isFollowing ? (t('profile_following_status', language)) : (t('follow', language))}
                             </span>
                         </button>
                     )}
 
-                    <div className="relative">
-                        <button onClick={() => setOpenMenu(!openMenu)} className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 hover:bg-slate-100 active:scale-90 transition-all">
-                            <MoreHorizontal size={16} className="text-slate-600" />
+                    <div className="relative shrink-0">
+                        <button onClick={() => setOpenMenu(!openMenu)} className="w-7 h-7 sm:w-8 sm:h-8 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 hover:bg-slate-100 active:scale-90 transition-all shrink-0">
+                            <MoreHorizontal size={15} className="text-slate-600" />
                         </button>
                         {openMenu && (
                             <div className="absolute right-0 top-9 bg-[#1A1A1A] rounded-2xl shadow-2xl overflow-hidden z-50 min-w-[190px] border border-white/10 animate-in zoom-in-95 duration-200">

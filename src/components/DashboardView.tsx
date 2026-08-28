@@ -20,6 +20,7 @@ import { MIRA_LOGO, COLORS, OFFICIAL_SOURCES } from '../constants';
 import { Post, JobPost, WORK_TOPICS, UNIFIED_CATEGORIES, Course, ViewType } from '../types';
 import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
 import { PROTECTED_JOBS } from '../utils/protectedData';
+import { isPortugalOrRemoteJob } from '../utils/jobLocationHelper';
 
 interface DashboardViewProps {
     masterPosts: Post[];
@@ -338,9 +339,11 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                     finalUrl = `${baseDomain}${finalUrl}`;
                 }
 
-                // 1. FILTRO DE QUALIDADE (Remover links de Home Page)
+                // 1. FILTRO DE QUALIDADE & TERRITÓRIO (Apenas Portugal ou Remoto)
                 let isInvalidLink = false;
-                if (finalUrl !== '#') {
+                if (!isPortugalOrRemoteJob(job.title, job.location)) {
+                    isInvalidLink = true;
+                } else if (finalUrl !== '#') {
                     try {
                         const urlObj = new URL(finalUrl);
                         // Se o link é só o domínio principal ou um index genérico, é inútil para vagas.

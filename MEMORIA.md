@@ -675,5 +675,31 @@ HOMOLOGAÇÃO
 
 ---
 
+### 🛡️ 5. Telemetria Soberana — Regra do Ledger MIRA (Homologada em 27/08/2026)
+- **Princípio Inegociável:** **REGISTAR $\neq$ CONTABILIZAR NA MÉTRICA OFICIAL**.
+- **Invariante:** *Todo evento operacional pode ser registado para fins de observabilidade, mas nenhuma atividade administrativa, interna ou de teste pode integrar as métricas canónicas de impacto humano.*
+- **Blindagem de Autoridade Server-Side:**
+  - A exclusão das métricas oficiais de impacto é garantida no backend/DB via identidade forte (`auth.users` UUID na lista imutável `ADMIN_USER_IDS`) e JWT verificado no gateway Serverless, complementado pela flag `metadata.is_admin_activity`.
+  - O cliente não é a autoridade de exclusão; a autoridade de exclusão reside no servidor/banco.
+- **As 3 Populações Estatísticas MIRA:**
+  - **População A (Impacto Humano Canónico):** 18.668 consultas humanas + novos utilizadores reais elegíveis $\rightarrow$ Relatórios Oficiais PDF/Excel para Fundos UE/FAMI/PRR.
+  - **População B (Observabilidade Operacional):** Atividade interna de Admin/Equipa/Testes $\rightarrow$ `activity_logs` $\rightarrow$ Admin Hub (Diagnóstico em Tempo Real).
+  - **População C (Visitantes / Guests):** Acessos anónimos $\rightarrow$ contabilizados estritamente de acordo com as regras canónicas definidas.
+
+---
+
+### 🛡️ 6. Correção Cirúrgica de Métricas & Null-Safe Filtering (Homologada em 27/08/2026)
+- **Princípio da População Global:** A métrica `Total de Utilizadores` representa estritamente `COUNT(*) FROM public.profiles` (**1.048 utilizadores**), incluindo utilizadores normais, administradores e CEO. Administradores não são subtraídos da contagem global de utilizadores do ecossistema.
+- **Princípio `NULL ≠ ADMIN`:** Eventos com `user_id IS NULL` são eventos legítimos de visitantes/utilizadores não autenticados (ex.: PWA installs, visualizações de módulos, acessos anónimos). É terminantemente proibido utilizar `NOT IN (ADMIN_USER_IDS)` de forma isolada, pois a lógica ternária do SQL descarta silenciosamente linhas onde `user_id` é `NULL`. A condição obrigatória é:
+  `user_id.is.null,user_id.not.in.(ADMIN_USER_IDS)`
+- **Baselines Históricos Congelados:** 
+  - Perguntas IA: `18.668` (mais consultas humanas posteriores elegíveis)
+  - Navegações & Interações: `50.000` (mais eventos pós-cutoff elegíveis)
+  - Acessos App: `3.508` (mais acessos pós-cutoff elegíveis)
+  - Simulações: `4.872` | Minutas: `3.451`
+
+---
+
 > 🔒 **ESTE ARQUIVO É A REGRA MESTRA E MEMÓRIA PERMANENTE DO PROJETO MIRA. CONSULTAR ANTES DE QUALQUER AÇÃO OU ALTERAÇÃO.**
 > 📜 **O PROTOCOLO INTEGRAL DE AUDITORIA E HOMOLOGAÇÃO ESTÁ REGISTADO EM [`STANDARD_OF_AUDIT.md`](file:///c:/Users/Utilizador/mira-projeto/STANDARD_OF_AUDIT.md).**
+

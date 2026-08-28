@@ -371,7 +371,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               { label: 'Perfis', value: (counts?.users ?? 0).toLocaleString(), sub: 'Perfis Registados', color: 'text-[#FF8C00]', icon: Users },
               { label: 'Apoios Prestados', value: (counts?.processosAjudados ?? 0).toLocaleString(), sub: 'Minutas + Simulações', color: 'text-emerald-400', icon: CheckCircle2 },
               { label: 'Horas Poupadas', value: (counts?.horasPoupadas ?? 0).toLocaleString(), sub: 'Modelo Ponderado', color: 'text-indigo-400', icon: Clock },
-              { label: 'Recorrência', value: `${counts?.retentionRate ?? 0}%`, sub: `${(counts?.returningUsers ?? 0).toLocaleString()} regressaram`, color: 'text-blue-400', icon: TrendingUp },
+              { label: 'Recorrência', value: `${counts?.retentionRate ?? 0}%`, sub: 'Baseline histórico de retenção', color: 'text-blue-400', icon: TrendingUp },
               { label: 'Consultas IA', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668).toLocaleString(), sub: 'Consultas Humanas', color: 'text-purple-400', icon: BarChart3 },
               { label: 'PWA Installs', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString(), sub: 'Mobile + Desktop', color: 'text-rose-400', icon: Activity },
             ].map(({ label, value, sub, color, icon: Icon }) => (
@@ -828,7 +828,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               <div className="p-6 bg-white/5 border border-emerald-500/20 rounded-[2rem] space-y-3">
                 <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Justificação de Impacto Social Auditada</h4>
                 <p className="text-sm text-slate-200 leading-relaxed font-medium">
-                  A plataforma MIRA Imigrante registou no seu ecossistema {(counts?.users ?? 0).toLocaleString()} perfis persistidos (com 58 contas de autenticação direta ativas). A triagem automática de IA, simuladores e minutas geraram uma estimativa de mais de {(counts?.horasPoupadas ?? 0).toLocaleString()} horas burocráticas poupadas segundo o modelo ponderado MIRA, com uma taxa de recorrência histórica de {counts?.retentionRate ?? 0}% (≥ 2 sessões).
+                  A plataforma MIRA Imigrante registou no seu ecossistema {(counts?.users ?? 0).toLocaleString()} perfis persistidos (com 58 contas de autenticação direta ativas). A triagem automática de IA, simuladores e minutas geraram uma estimativa de mais de {(counts?.horasPoupadas ?? 0).toLocaleString()} horas burocráticas poupadas segundo o modelo ponderado MIRA, com uma taxa de recorrência histórica de {counts?.retentionRate ?? 0}% (baseline histórico documentado).
                 </p>
               </div>
 
@@ -837,7 +837,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                   { label: 'Perfis Registados no Ecossistema MIRA', value: `${(counts?.users ?? 0).toLocaleString()}` },
                   { label: 'Horas Burocráticas Poupadas (Modelo MIRA)', value: `${(counts?.horasPoupadas ?? 0).toLocaleString()}h` },
                   { label: 'Apoios Burocráticos Prestados (Minutas & Simulações)', value: (counts?.processosAjudados ?? 0).toLocaleString() },
-                  { label: 'Taxa de Recorrência Histórica (2+ sessões)', value: `${counts?.retentionRate ?? 0}%` },
+                  { label: 'Taxa de Recorrência Histórica (Baseline)', value: `${counts?.retentionRate ?? 0}%` },
                   { label: 'Consultas IA Auditadas e Mapeadas', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668).toLocaleString() },
                   { label: 'Instalações da Aplicação PWA (Desde 12/08)', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString() },
                 ].map(({ label, value }) => (

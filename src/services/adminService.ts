@@ -92,12 +92,33 @@ export const adminService: AdminService = {
         searchTerm: string = '', 
         statusFilter: 'all' | 'active' | 'blocked' | 'verified' = 'all'
     ): Promise<{ users: User[], total: number }> {
-        const hasSession = await ensureAdminSession();
-        if (!hasSession) {
-            console.error("🛑 [MIRA ADMIN] Acesso negado em fetchUsers: Sessão Supabase inexistente ou inválida.");
-            return { users: [], total: 0 };
+        // 1. Tentar via Gateway Administrativo Seguro (/api/admin?action=list-users)
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (session?.access_token) {
+                headers['Authorization'] = `Bearer ${session.access_token}`;
+            }
+
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const searchParam = encodeURIComponent(searchTerm.trim());
+            const endpoint = `${apiUrl}/api/admin?action=list-users&page=${page}&limit=${pageSize}&search=${searchParam}&status=${statusFilter}`;
+
+            const res = await fetch(endpoint, { method: 'GET', headers });
+            if (res.ok) {
+                const json = await res.json();
+                if (json && Array.isArray(json.users)) {
+                    return {
+                        users: json.users,
+                        total: typeof json.total === 'number' ? json.total : json.users.length
+                    };
+                }
+            }
+        } catch (apiErr) {
+            console.warn("MIRA Admin Gateway: Consulta direta ao endpoint /api/admin indisponível, usando fallback:", apiErr);
         }
 
+        // 2. Fallback Seguro via Supabase SDK
         const from = page * pageSize;
         const to = from + pageSize - 1;
 
@@ -157,11 +178,25 @@ export const adminService: AdminService = {
     },
 
     async fetchUserFilterCounts(): Promise<{ total: number; active: number; blocked: number; verified: number }> {
-        const hasSession = await ensureAdminSession();
-        if (!hasSession) {
-            return { total: 0, active: 0, blocked: 0, verified: 0 };
-        }
+        // 1. Tentar via Gateway Administrativo Seguro (/api/admin?action=user-filter-counts)
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (session?.access_token) {
+                headers['Authorization'] = `Bearer ${session.access_token}`;
+            }
 
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${apiUrl}/api/admin?action=user-filter-counts`, { method: 'GET', headers });
+            if (res.ok) {
+                const json = await res.json();
+                if (json && json.filterCounts) {
+                    return json.filterCounts;
+                }
+            }
+        } catch (_) {}
+
+        // 2. Fallback Seguro direto ao Supabase SDK
         try {
             const [totalRes, blockedRes, verifiedRes] = await Promise.all([
                 supabase.from('profiles').select('id', { count: 'exact', head: true }),
@@ -176,6 +211,7 @@ export const adminService: AdminService = {
 
             return { total, active, blocked, verified };
         } catch (e) {
+            console.error("fetchUserFilterCounts Critical Fallback:", e);
             return { total: 0, active: 0, blocked: 0, verified: 0 };
         }
     },
@@ -461,11 +497,13 @@ export const adminService: AdminService = {
 
     async syncJobsFromProtected() {
         const { PROTECTED_JOBS: MASSIVE_JOBS } = await import('../utils/massiveJobsDatabase');
-        console.log(`🚀 MIRA Sniper: Sincronizando ${MASSIVE_JOBS.length} vagas do banco massivo.`);
+        const { isPortugalOrRemoteJob } = await import('../utils/jobLocationHelper');
+        const portugalJobs = MASSIVE_JOBS.filter(j => isPortugalOrRemoteJob(j.title, j.location));
+        console.log(`🚀 MIRA Sniper: Sincronizando ${portugalJobs.length} vagas de Portugal/Remoto.`);
         
         const CHUNK_SIZE = 100;
-        for (let i = 0; i < MASSIVE_JOBS.length; i += CHUNK_SIZE) {
-            const chunk = MASSIVE_JOBS.slice(i, i + CHUNK_SIZE).map(j => ({ 
+        for (let i = 0; i < portugalJobs.length; i += CHUNK_SIZE) {
+            const chunk = portugalJobs.slice(i, i + CHUNK_SIZE).map(j => ({ 
                 id: j.id, 
                 title: j.title, 
                 location: j.location,
@@ -640,13 +678,12 @@ export const adminService: AdminService = {
             const getCount = (table: string) => {
                 let q = supabase.from(table).select('id', { count: 'exact', head: true });
                 if (table === 'job_posts') q = q.eq('is_active', true);
-                if (table === 'profiles') q = q.not('id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
                 return safeQuery(() => q);
             };
             const getPostCutoffCount = (table: string, actionName?: string | readonly string[]) => {
                 let q = supabase.from(table).select('id', { count: 'exact', head: true }).gte('created_at', TELEMETRY_CUTOFF_DATE);
                 if (table === 'activity_logs' || table === 'user_documents') {
-                    q = q.not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
+                    q = q.or(`user_id.is.null,user_id.not.in.(${ADMIN_USER_IDS.join(',')})`);
                 }
                 if (actionName) {
                     if (Array.isArray(actionName)) q = q.in('action', actionName as string[]);
@@ -695,19 +732,30 @@ export const adminService: AdminService = {
                 safeQuery(() => supabase.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'fake').not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)),
                 (async (): Promise<number> => {
                     try {
-                        const { data } = await supabase
-                            .from('activity_logs')
-                            .select('metadata')
-                            .in('action', ['ai_query', 'chat_with_mira'])
-                            .gte('created_at', TELEMETRY_CUTOFF_DATE)
-                            .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
-                        if (!data) return 0;
-                        const validCategories = new Set((await import('../types')).UNIFIED_CATEGORIES);
-                        return data.filter((d: any) => {
+                        let allData: any[] = [];
+                        let from = 0;
+                        const step = 1000;
+                        let hasMore = true;
+                        while (hasMore) {
+                            const { data } = await supabase
+                                .from('activity_logs')
+                                .select('metadata')
+                                .in('action', ['ai_query', 'chat_with_mira'])
+                                .gte('created_at', TELEMETRY_CUTOFF_DATE)
+                                .or(`user_id.is.null,user_id.not.in.(${ADMIN_USER_IDS.join(',')})`)
+                                .range(from, from + step - 1);
+                            if (!data || data.length === 0) {
+                                hasMore = false;
+                            } else {
+                                allData = allData.concat(data);
+                                if (data.length < step) hasMore = false;
+                                else from += step;
+                            }
+                        }
+                        return allData.filter((d: any) => {
                             const promptText = (d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt || "").trim();
-                            const isSystem = d.metadata?.guest_id === 'system' || d.metadata?.is_benchmark === true;
-                            const cat = d.metadata?.category;
-                            return !isSystem && promptText.length > 0 && cat && validCategories.has(cat);
+                            const isSystem = d.metadata?.guest_id === 'system' || d.metadata?.is_benchmark === true || d.metadata?.is_admin_activity === true || d.metadata?.is_internal === true;
+                            return !isSystem && promptText.length > 0;
                         }).length;
                     } catch {
                         return 0;
@@ -727,7 +775,7 @@ export const adminService: AdminService = {
                     .select('metadata')
                     .eq('action', 'pwa_install')
                     .gte('created_at', TELEMETRY_CUTOFF_DATE)
-                    .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`);
+                    .or(`user_id.is.null,user_id.not.in.(${ADMIN_USER_IDS.join(',')})`);
                 if (pwaLogs) {
                     pwaLogs.forEach((log: any) => {
                         const isDesktop = log.metadata?.platform === 'desktop' || log.metadata?.device === 'desktop';
@@ -1106,7 +1154,7 @@ export const adminService: AdminService = {
 
             const realLogs = (realLogsRes.data || []).filter((d: any) => {
                 const promptText = (d.metadata?.prompt || d.metadata?.query || d.metadata?.extra?.prompt || '').trim();
-                const isSystem = d.metadata?.guest_id === 'system' || d.metadata?.is_benchmark === true;
+                const isSystem = d.metadata?.guest_id === 'system' || d.metadata?.is_benchmark === true || d.metadata?.is_admin_activity === true || d.metadata?.is_internal === true;
                 const cat = d.metadata?.category;
                 return !isSystem && promptText.length > 0 && cat && validCategoriesSet.has(cat);
             });

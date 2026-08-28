@@ -11,6 +11,7 @@ import { normalizeCategory, normalizeWorkTopic, getWorkTopicKey } from '../utils
 import JobItem from './JobItem';
 import { JobAlertModal } from './JobAlertModal';
 import { jobAlertService } from '../services/jobAlertService';
+import { isPortugalOrRemoteJob } from '../utils/jobLocationHelper';
 
 export function decodeJobText(str: string | undefined | null): string {
   if (!str) return '';
@@ -229,10 +230,24 @@ function isWithin90Days(dateStr?: string): boolean {
 export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onViewChange, initialTab, initialQuickFilter }) => {
   const [activeTab, setActiveTab] = useState<'jobs' | 'trends'>(initialTab === 'trends' ? 'trends' : 'jobs');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState(t('jobs_all_districts', language));
   const [selectedWorkTopic, setSelectedWorkTopic] = useState('Todos');
   const [selectedDateRange, setSelectedDateRange] = useState('all');
   const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(initialQuickFilter || (initialTab === 'pcd' ? 'pcd' : null));
+
+  // Debounce search query to prevent rapid re-fetching and race conditions
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 250);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  // Reset to first page when search or any filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchQuery, selectedCity, selectedWorkTopic, selectedDateRange, selectedQuickFilter]);
   // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms) - Strictly <= 90 days
   const initialJobs = React.useMemo(() => {
     const nowMs = Date.now();
@@ -240,7 +255,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       .filter(pj => {
         const url = pj.source_url || pj.sourceUrl;
         const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
-        return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin90Days(dateStr);
+        return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin90Days(dateStr) && isPortugalOrRemoteJob(pj.title, pj.location);
       })
       .map((pj, idx) => {
         // Distribute protected job timestamps dynamically across recent active hours (0h - 48h)
@@ -445,9 +460,32 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         query = query.eq('work_topic', selectedWorkTopic);
       }
 
-      if (searchQuery.trim()) {
-        const q = searchQuery.trim();
-        query = query.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
+      if (debouncedSearchQuery.trim()) {
+        const q = debouncedSearchQuery.trim();
+        const tokens = q.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+        const stopWords = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'em', 'para', 'com', 'no', 'na', 'por', 'a', 'o', 'as', 'os']);
+        const significant = tokens.filter(w => !stopWords.has(w));
+
+        if (significant.length > 1) {
+          // Multi-word search (e.g. "empregado de mesa", "auxiliar de cozinha"): chain significant tokens
+          for (const token of significant) {
+            query = query.ilike('title', `%${token}%`);
+          }
+        } else if (significant.length === 1) {
+          const single = significant[0];
+          // Common cross-language job synonyms
+          if (['garçom', 'garcom', 'garçon', 'camarero', 'camarera', 'waiter', 'waitress', 'serveur', 'serveuse'].includes(single)) {
+            query = query.or('title.ilike.%mesa%,title.ilike.%bar%,title.ilike.%restaurante%,title.ilike.%garçom%,title.ilike.%garcom%,title.ilike.%camarer%');
+          } else if (['faxina', 'diarista', 'limpeza', 'cleaner', 'limpieza', 'ménage'].includes(single)) {
+            query = query.or('title.ilike.%limpeza%,title.ilike.%limp%,title.ilike.%clean%,title.ilike.%serviços gerais%');
+          } else if (['motorista', 'estafeta', 'driver', 'chofer', 'conductor', 'chauffeur'].includes(single)) {
+            query = query.or('title.ilike.%motorista%,title.ilike.%estafeta%,title.ilike.%distribuição%,title.ilike.%transport%,title.ilike.%driver%');
+          } else {
+            query = query.or(`title.ilike.%${single}%,location.ilike.%${single}%`);
+          }
+        } else {
+          query = query.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
+        }
       }
 
       if (selectedDateRange === '24h') {
@@ -462,17 +500,17 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       }
 
       if (selectedQuickFilter === 'english') {
-        query = query.or('title.ilike.%english%,title.ilike.%inglês%,title.ilike.%ingles%,title.ilike.%speaker%,title.ilike.%bilingual%,title.ilike.%bilingue%,title.ilike.%international%,title.ilike.%internacional%');
+        query = query.or('title.ilike.%english%,title.ilike.%inglês%,title.ilike.%ingles%,title.ilike.%speaker%,title.ilike.%bilingual%,title.ilike.%bilingue%,title.ilike.%international%,title.ilike.%internacional%,title.ilike.%developer%,title.ilike.%engineer%,title.ilike.%consultant%');
       } else if (selectedQuickFilter === 'visa') {
-        query = query.or('title.ilike.%visto%,title.ilike.%visa%,title.ilike.%relocation%,title.ilike.%repatriamento%,title.ilike.%sponsorship%,title.ilike.%patroc%');
+        query = query.or('title.ilike.%visto%,title.ilike.%visa%,title.ilike.%relocation%,title.ilike.%repatriamento%,title.ilike.%sponsorship%,title.ilike.%patroc%,title.ilike.%tech visa%,title.ilike.%contrato sem termo%,title.ilike.%contrato de trabalho%');
       } else if (selectedQuickFilter === 'remote') {
-        query = query.or('location.ilike.%remoto%,title.ilike.%remoto%,location.ilike.%remote%,title.ilike.%remote%,title.ilike.%teletrabalho%,location.ilike.%teletrabalho%,work_topic.ilike.%remoto%');
+        query = query.or('location.ilike.%remoto%,title.ilike.%remoto%,location.ilike.%remote%,title.ilike.%remote%,title.ilike.%teletrabalho%,location.ilike.%teletrabalho%,work_topic.ilike.%remoto%,location.ilike.%híbrido%,location.ilike.%hybrid%');
       } else if (selectedQuickFilter === 'entry') {
-        query = query.or('title.ilike.%junior%,title.ilike.%júnior%,title.ilike.%estágio%,title.ilike.%estagio%,title.ilike.%trainee%,title.ilike.%entry%,title.ilike.%inicial%,title.ilike.%aprendiz%,title.ilike.%estagiário%,title.ilike.%estagiaria%,title.ilike.%sem experiência%');
+        query = query.or('title.ilike.%junior%,title.ilike.%júnior%,title.ilike.%estágio%,title.ilike.%estagio%,title.ilike.%trainee%,title.ilike.%entry%,title.ilike.%inicial%,title.ilike.%aprendiz%,title.ilike.%estagiário%,title.ilike.%estagiaria%,title.ilike.%sem experiência%,title.ilike.%assistente%,title.ilike.%ajudante%,title.ilike.%operador%,title.ilike.%auxiliar%');
       } else if (selectedQuickFilter === 'pcd') {
-        query = query.or('title.ilike.%pcd%,title.ilike.%inclusiv%,title.ilike.%inclusão%,title.ilike.%inclusion%,title.ilike.%defici%');
+        query = query.or('title.ilike.%pcd%,title.ilike.%inclusiv%,title.ilike.%inclusão%,title.ilike.%inclusion%,title.ilike.%defici%,title.ilike.%igualdade%,title.ilike.%diversidade%,title.ilike.%acessib%,title.ilike.%(m/f/d)%,title.ilike.%(m/f/x)%,title.ilike.%cota%,title.ilike.%adaptad%');
       } else if (selectedQuickFilter === 'via_verde') {
-        query = query.or('title.ilike.%tech visa%,title.ilike.%via verde%,title.ilike.%relocation%,title.ilike.%sponsorship%,title.ilike.%visa support%,title.ilike.%visto de trabalho%');
+        query = query.or('title.ilike.%tech visa%,title.ilike.%via verde%,title.ilike.%urgente%,title.ilike.%urgência%,title.ilike.%imediato%,title.ilike.%imediata%,title.ilike.%admissão imediata%,title.ilike.%entrada imediata%,title.ilike.%sponsorship%');
       }
 
       const from = (currentPage - 1) * JOBS_PER_PAGE;
@@ -486,31 +524,33 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
       setFilteredTotalCount(count !== null ? count : 0);
 
-      const formatted: JobPost[] = (data || []).map(dbJob => {
-        const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at;
-        const postDate = rawTime ? new Date(rawTime) : now;
-        const diffHours = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60 * 60));
-        const diffDays = Math.floor(diffHours / 24);
-        let displayDate = 'Hoje';
-        if (diffHours < 12) displayDate = 'Hoje (Recente)';
-        else if (diffHours < 24) displayDate = 'Hoje';
-        else if (diffDays === 1) displayDate = 'Ontem';
-        else if (diffDays <= 30) displayDate = `Há ${diffDays} dias`;
-        else displayDate = postDate.toLocaleDateString('pt-PT');
+      const formatted: JobPost[] = (data || [])
+        .map(dbJob => {
+          const rawTime = (dbJob as any).created_at || (dbJob as any).posted_at;
+          const postDate = rawTime ? new Date(rawTime) : now;
+          const diffHours = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60 * 60));
+          const diffDays = Math.floor(diffHours / 24);
+          let displayDate = 'Hoje';
+          if (diffHours < 12) displayDate = 'Hoje (Recente)';
+          else if (diffHours < 24) displayDate = 'Hoje';
+          else if (diffDays === 1) displayDate = 'Ontem';
+          else if (diffDays <= 30) displayDate = `Há ${diffDays} dias`;
+          else displayDate = postDate.toLocaleDateString('pt-PT');
 
-        return {
-          id: dbJob.id,
-          title: decodeJobText(dbJob.title) || t('jobs_no_title', language),
-          location: decodeJobText(dbJob.location) || 'Portugal',
-          sourceName: dbJob.source_name || 'MIRA',
-          sourceUrl: dbJob.source_url,
-          datePosted: displayDate,
-          posted_at: rawTime || now.toISOString(),
-          tags: Array.isArray((dbJob as any).tags) ? (dbJob as any).tags : (dbJob.title && dbJob.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
-          category: normalizeCategory(dbJob.category || 'Trabalho & Carreira'),
-          workTopic: normalizeWorkTopic((dbJob as any).work_topic, dbJob.title)
-        };
-      });
+          return {
+            id: dbJob.id,
+            title: decodeJobText(dbJob.title) || t('jobs_no_title', language),
+            location: decodeJobText(dbJob.location) || 'Portugal',
+            sourceName: dbJob.source_name || 'MIRA',
+            sourceUrl: dbJob.source_url,
+            datePosted: displayDate,
+            posted_at: rawTime || now.toISOString(),
+            tags: Array.isArray((dbJob as any).tags) ? (dbJob as any).tags : (dbJob.title && dbJob.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
+            category: normalizeCategory(dbJob.category || 'Trabalho & Carreira'),
+            workTopic: normalizeWorkTopic((dbJob as any).work_topic, dbJob.title)
+          };
+        })
+        .filter(job => isPortugalOrRemoteJob(job.title, job.location));
 
       setJobs(formatted);
 
@@ -533,7 +573,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
   useEffect(() => {
     fetchJobs();
-  }, [searchQuery, selectedCity, selectedWorkTopic, selectedDateRange, selectedQuickFilter, currentPage]);
+  }, [debouncedSearchQuery, selectedCity, selectedWorkTopic, selectedDateRange, selectedQuickFilter, currentPage]);
 
   const totalEffectiveCount = filteredTotalCount !== null ? filteredTotalCount : (totalPlatformJobs || 0);
   const totalPages = Math.max(1, Math.ceil(totalEffectiveCount / JOBS_PER_PAGE));
@@ -586,19 +626,21 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     <div className="min-h-screen bg-slate-50 flex flex-col pb-24 text-slate-900 font-sans">
       {/* Header Sticky Section - SLIM & RESPONSIVE */}
       <div className="bg-white/95 backdrop-blur-xl px-4 sm:px-6 pt-4 pb-3 space-y-3 z-30 border-b border-slate-200/80 sticky top-0 shadow-sm">
-        <div className="flex items-center justify-between gap-2">
-          <div className="space-y-0.5 min-w-0">
-            <h2 className="mira-module-title truncate">{t('jobs_title', language)}</h2>
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="space-y-0.5 min-w-0 flex-1">
+            <h2 className="text-base xs:text-lg sm:text-2xl md:text-3xl font-black uppercase tracking-tight text-slate-900 leading-tight break-words">
+              {t('jobs_title', language)}
+            </h2>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-mira-orange animate-pulse shadow-[0_0_10px_#FF8C00] shrink-0" />
-              <p className="mira-module-subtitle !mb-0 truncate">{t('jobs_subtitle', language)}</p>
+              <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 truncate">{t('jobs_subtitle', language)}</p>
             </div>
           </div>
-          <div className="flex gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {hasActiveFilters && (
               <button
                 onClick={resetFilters}
-                className="p-2.5 sm:p-3 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl sm:rounded-2xl transition-all flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest border border-red-100"
+                className="p-2 sm:p-3 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl sm:rounded-2xl transition-all flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest border border-red-100 shrink-0"
               >
                 <X size={15} /> <span className="hidden sm:inline">{t('jobs_reset_filters_btn', language)}</span>
               </button>
@@ -607,7 +649,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               onClick={() => fetchJobs(true)}
               disabled={loading}
               title={language === 'en' ? 'Refresh Job Offers' : 'Atualizar Vagas em Tempo Real'}
-              className="p-2.5 sm:p-3 bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded-xl sm:rounded-2xl transition-all border border-slate-200"
+              className="p-2 sm:p-3 bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded-xl sm:rounded-2xl transition-all border border-slate-200 shrink-0"
             >
               <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
             </button>

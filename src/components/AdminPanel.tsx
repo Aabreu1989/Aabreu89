@@ -626,8 +626,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 <div>
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
-                                            <h2 className="text-sm font-black uppercase tracking-widest text-white/60">Totais Acumulados</h2>
-                                            <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Dados reais em tempo real</p>
+                                            <h2 className="text-sm font-black uppercase tracking-widest text-white/60">Métricas Canónicas de Impacto (Homologadas)</h2>
+                                            <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">População Oficial · Dados Auditados para Relatórios & Fundos UE</p>
                                         </div>
                                         <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-3 py-1.5 rounded-full border border-emerald-500/20 animate-pulse">🔴 LIVE</span>
                                     </div>
@@ -636,7 +636,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                              { label: 'Utilizadores', value: counts.users, sub: `+${counts.usersToday} hoje`, icon: Users, color: 'text-[#FF8C00]', bg: 'from-orange-900/30' },
                                              { label: 'Acessos App 🚀', value: (counts as any).appAccesses ?? 0, sub: 'Entradas na Plataforma (Tempo Real)', icon: Eye, color: 'text-sky-400', bg: 'from-sky-900/30' },
                                              { label: 'Navegações & Interações 📊', value: (counts as any).totalInteractions ?? 0, sub: 'Páginas Vistas + Ações (Acumulado)', icon: Activity, color: 'text-indigo-400', bg: 'from-indigo-900/30' },
-                                             { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Total ao assistente', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
+                                             { label: 'Perguntas MIRA 🤖', value: counts.aiQueries ?? 0, sub: 'Demanda Humana Oficial', icon: Bot, color: 'text-violet-400', bg: 'from-violet-900/30' },
                                              { label: 'Simulações 🧮', value: (counts as any).simulations ?? 0, sub: 'IRS, Salários & Prazos', icon: Calculator, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
                                              { label: 'Minutas & Guias 📑', value: templates.length + serviceGuides.length, sub: `${templates.length} minutas + ${serviceGuides.length} guias`, icon: FileSignature, color: 'text-amber-300', bg: 'from-amber-950/40' },
                                              { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas gerados', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
@@ -692,8 +692,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 <div>
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                                         <div>
-                                            <h2 className="text-sm font-black uppercase tracking-widest text-white/60">Atividade no Período</h2>
-                                            <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Dados novos no intervalo selecionado</p>
+                                            <h2 className="text-sm font-black uppercase tracking-widest text-white/60">Observabilidade Operacional em Tempo Real</h2>
+                                            <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Atividade Operacional & Diagnóstico ao Vivo (Últimas 24H / 7D / 30D)</p>
                                         </div>
                                         <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-xl border border-white/10">
                                             {([24, 168, 720] as const).map((h) => (
@@ -746,75 +746,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         <p className="text-lg font-black text-white">ESTÁVEL ✅</p>
                                         <p className="text-[8px] text-white/30 font-black uppercase tracking-widest mt-1">Gemini Flash 1.5</p>
                                     </div>
-                                </div>
-
-                                {/* Quick Actions Row */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                                    <button onClick={handleSovereignSync} disabled={isSyncing} className="w-full p-8 bg-white/5 border border-white/10 rounded-[2.5rem] text-left hover:bg-white/10 transition-all group overflow-hidden relative">
-                                        {isSyncing && <Loader2 className="absolute right-8 top-8 animate-spin text-[#FF8C00]" size={24} />}
-                                        <RefreshCcw className={`mb-4 ${isSyncing ? 'animate-spin' : ''} text-[#FF8C00]`} size={32} />
-                                        <h4 className="text-xl font-black uppercase tracking-tight">Sincronização Nuclear</h4>
-                                        <p className="text-xs text-white/40 font-bold mt-2 uppercase">Atualiza toda a rede de vagas e serviços</p>
-                                    </button>
-                                    <button onClick={() => setActiveTab('knowledge')} className="w-full p-8 bg-white/5 border border-white/10 rounded-[2.5rem] text-left hover:bg-white/10 transition-all group">
-                                        <Bot className="mb-4 text-[#FF8C00]" size={32} />
-                                        <h4 className="text-xl font-black uppercase tracking-tight">Injetar Inteligência</h4>
-                                        <p className="text-xs text-white/40 font-bold mt-2 uppercase">Garante que o MIRA sabe as leis de 2026</p>
-                                    </button>
-                                    {onViewChange && (
-                                        <button onClick={() => setActiveTab('concursos')} className="w-full p-8 bg-gradient-to-br from-indigo-950/40 via-slate-900 to-indigo-950/30 border border-indigo-500/20 rounded-[2.5rem] text-left hover:border-orange-500/40 hover:scale-[1.02] transition-all group shadow-2xl relative overflow-hidden">
-                                            <div className="absolute top-[-20%] right-[-20%] w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                                            <Award className="mb-4 text-orange-400 group-hover:scale-110 transition-transform duration-300" size={32} />
-                                            <h4 className="text-xl font-black uppercase tracking-tight text-white flex items-center gap-1.5">Painel de Candidaturas <Sparkles size={16} className="text-orange-400 animate-pulse" /></h4>
-                                            <p className="text-xs text-slate-400 font-bold mt-2 uppercase">Relatório de Impacto Auditado & i18n para Concursos (EUSIC/PT2030)</p>
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* ═══ EXPORTAÇÃO DE AUDITORIA ═══ */}
-                                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-950 border border-[#FF8C00]/30 rounded-[2.5rem] space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-3 bg-[#FF8C00]/20 rounded-2xl border border-[#FF8C00]/30">
-                                            <Download size={22} className="text-[#FF8C00]" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-sm font-black uppercase tracking-wider text-white">Exportação de Relatórios para Auditoria</h3>
-                                            <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">PDF com Logo MIRA · Excel Multi-aba para Auditores · Dados desde o lançamento</p>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <button
-                                            onClick={async () => {
-                                                try {
-                                                    showToast('A gerar PDF do Admin Hub...', 'info');
-                                                    await generateAdminHubPDF(counts as any);
-                                                    showToast('PDF gerado com sucesso! ✅', 'success');
-                                                } catch (e) {
-                                                    showToast('Erro ao gerar PDF. Tente novamente.', 'error');
-                                                }
-                                            }}
-                                            className="flex items-center justify-center gap-3 p-5 bg-[#FF8C00] hover:bg-orange-600 text-white font-black rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-500/25"
-                                        >
-                                            <FileText size={18} />
-                                            <span>Exportar PDF Admin Hub</span>
-                                        </button>
-                                        <button
-                                            onClick={async () => {
-                                                try {
-                                                    showToast('A gerar Excel de Auditoria...', 'info');
-                                                    await generateAuditExcel(counts as any, undefined, 'admin');
-                                                    showToast('Excel gerado com sucesso! ✅', 'success');
-                                                } catch (e) {
-                                                    showToast('Erro ao gerar Excel. Tente novamente.', 'error');
-                                                }
-                                            }}
-                                            className="flex items-center justify-center gap-3 p-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-emerald-500/25"
-                                        >
-                                            <Download size={18} />
-                                            <span>Exportar Excel Auditável</span>
-                                        </button>
-                                    </div>
-                                    <p className="text-[8px] font-bold text-white/25 uppercase tracking-widest text-center">O Excel inclui: Resumo Executivo · Métricas por Mês · Evolução Anual · Utilizadores · Consultas IA · Simulações · Vagas · Comunidade · Metadados</p>
                                 </div>
                             </div>
                         )}
