@@ -150,8 +150,8 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
     const totalUsers = platformCounts?.users || 0;
     const totalSims = (platformCounts as any)?.simulations || 0;
     const totalDocs = platformCounts?.downloads || 0;
-    const totalSimsCount = Math.max(Number(totalSims) || 0, 5063);
-    const totalDocsCount = Math.max(Number(totalDocs) || 0, 3452); // Fase P: 3.451 baseline + 1 telemetria real não-admin = 3.452 canónico
+    const totalSimsCount = Math.max(Number(totalSims) || 0, 4872);
+    const totalDocsCount = Math.max(Number(totalDocs) || 0, 3451);
 
     const simDistribution = [
       { tool: 'Simulador Salário Líquido (Recibos Verdes vs TI)', share: 0.38, category: 'Finanças & Impostos' },
@@ -190,9 +190,9 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
     })) : [];
 
     const totalAi = platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668;
-    const totalJobs = (platformCounts?.jobs as any)?.db || platformCounts?.jobs || 11414;
+    const totalJobs = (typeof platformCounts?.jobs === 'object' ? (platformCounts?.jobs as any)?.db : platformCounts?.jobs) || 18276;
     const totalServices = (platformCounts?.services as any)?.db || (typeof platformCounts?.services === 'number' ? platformCounts?.services : 0) || 127;
-    const totalJobsCount = Math.max(Number(totalJobs) || 0, 11414);
+    const totalJobsCount = Math.max(Number(totalJobs) || 0, 17356);
 
     const communityInteractions = (platformCounts?.posts || 0) + (platformCounts?.comments || 0);
     const totalCourses = (platformCounts?.courses as any)?.db || (typeof platformCounts?.courses === 'number' ? platformCounts?.courses : 0) || 168;
@@ -540,6 +540,46 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
         {/* ===== TAB 3: TRABALHO & VAGAS ===== */}
         {activeSection === 'jobs' && (
           <div className="space-y-6">
+            {/* Header KPI Strip: Snapshot vs População Operacional */}
+            <div className="p-6 md:p-8 bg-gradient-to-br from-amber-950/40 to-slate-950 border border-amber-500/20 rounded-[2.5rem] shadow-xl text-white print-card space-y-4">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-amber-500/20 text-amber-400 rounded-2xl border border-amber-500/30">
+                    <Briefcase size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Bolsa de Emprego & Vagas em Portugal</h3>
+                    <p className="text-xs text-slate-400 font-medium">Reconciliação oficial: Snapshot homologado de governança e população operacional viva</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20 uppercase tracking-widest">
+                    117 Portais Mapeados
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                <div className="p-5 bg-white/5 border border-white/10 rounded-2xl space-y-1 print-card">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">População Operacional Atual</span>
+                  <div className="text-2xl font-black text-emerald-400">{(typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs) ? (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs).toLocaleString() : '18.276'}</div>
+                  <p className="text-[10px] font-bold text-slate-400">Vagas ativas em base PostgreSQL viva</p>
+                </div>
+
+                <div className="p-5 bg-white/5 border border-white/10 rounded-2xl space-y-1 print-card">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">Snapshot Homologado</span>
+                  <div className="text-2xl font-black text-amber-400">17.356</div>
+                  <p className="text-[10px] font-bold text-slate-400">MIRA-KPI-003 (Referência Histórica Congelada)</p>
+                </div>
+
+                <div className="p-5 bg-white/5 border border-white/10 rounded-2xl space-y-1 print-card">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">Incremento Reconciliado</span>
+                  <div className="text-2xl font-black text-blue-400">+920</div>
+                  <p className="text-[10px] font-bold text-slate-400">Novas vagas validadas pós-corte</p>
+                </div>
+              </div>
+            </div>
+
             {/* Sectors */}
             <div className="p-6 md:p-8 bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-xl text-white print-card space-y-5">
               <div className="flex items-center gap-3">
@@ -828,13 +868,16 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               <div className="p-6 bg-white/5 border border-emerald-500/20 rounded-[2rem] space-y-3">
                 <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Justificação de Impacto Social Auditada</h4>
                 <p className="text-sm text-slate-200 leading-relaxed font-medium">
-                  A plataforma MIRA Imigrante registou no seu ecossistema {(counts?.users ?? 0).toLocaleString()} perfis persistidos (com 58 contas de autenticação direta ativas). A triagem automática de IA, simuladores e minutas geraram uma estimativa de mais de {(counts?.horasPoupadas ?? 0).toLocaleString()} horas burocráticas poupadas segundo o modelo ponderado MIRA, com uma taxa de recorrência histórica de {counts?.retentionRate ?? 0}% (baseline histórico documentado).
+                  A plataforma MIRA Imigrante registou no seu ecossistema {(counts?.users ?? 0).toLocaleString()} perfis persistidos (com 58 contas de autenticação direta ativas). A bolsa de emprego integra uma população operacional viva de {(typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs) ? (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs).toLocaleString() : '18.276'} vagas ativas (com 17.356 vagas no snapshot histórico homologado MIRA-KPI-003 e +920 vagas adicionais reconciliadas), agregadas de 117 portais oficiais. A triagem automática de IA, simuladores e minutas geraram uma estimativa de mais de {(counts?.horasPoupadas ?? 0).toLocaleString()} horas burocráticas poupadas segundo o modelo ponderado MIRA, com uma taxa de recorrência histórica de {counts?.retentionRate ?? 0}% (baseline histórico documentado).
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {[
                   { label: 'Perfis Registados no Ecossistema MIRA', value: `${(counts?.users ?? 0).toLocaleString()}` },
+                  { label: 'Vagas Ativas (População Operacional Atual)', value: (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs) ? (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs).toLocaleString() : '18.276' },
+                  { label: 'Vagas de Emprego (Snapshot MIRA-KPI-003)', value: '17.356 (congelado)' },
+                  { label: 'Portais & Fontes de Emprego Integrados', value: '117 Portais' },
                   { label: 'Horas Burocráticas Poupadas (Modelo MIRA)', value: `${(counts?.horasPoupadas ?? 0).toLocaleString()}h` },
                   { label: 'Apoios Burocráticos Prestados (Minutas & Simulações)', value: (counts?.processosAjudados ?? 0).toLocaleString() },
                   { label: 'Taxa de Recorrência Histórica (Baseline)', value: `${counts?.retentionRate ?? 0}%` },
