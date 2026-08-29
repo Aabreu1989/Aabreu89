@@ -71,11 +71,11 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             id: 'residence',
             title: 'Naturalização por Residência Legal — CPLP',
             icon: '⏱️',
-            tag: '7 ANOS (CPLP)',
+            tag: '5 ANOS (Art. 15.º)',
             tagColor: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
             glow: 'hover:shadow-sky-500/5',
             ring: 'hover:ring-sky-400/30',
-            sub: 'Cidadãos de países CPLP: Brasil, Angola, Cabo Verde, Moçambique, etc. 7 anos de residência legal (cartão emitido, tempo de espera não conta).'
+            sub: 'Cidadãos de países CPLP: Brasil, Angola, Cabo Verde, etc. 5 anos de residência legal (Lei Orgânica 1/2024: tempo de espera desde a submissão do pedido na AIMA conta integralmente).'
         },
         {
             id: 'marriage',
@@ -85,7 +85,7 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
             glow: 'hover:shadow-pink-500/5',
             ring: 'hover:ring-pink-400/30',
-            sub: '3 anos de casamento/união de facto reconhecida com cidadão português.'
+            sub: '3 anos de casamento ou união de facto reconhecida com cidadão português (Art. 3.º da Lei da Nacionalidade).'
         },
         {
             id: 'ancestry',
@@ -95,17 +95,17 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
             glow: 'hover:shadow-violet-500/5',
             ring: 'hover:ring-violet-400/30',
-            sub: 'Filho ou neto de cidadão português. Não exige residência em Portugal.'
+            sub: 'Filho ou neto de cidadão português (Art. 1.º da Lei da Nacionalidade). Não exige residência em Portugal.'
         },
         {
             id: 'filho_nascido_portugal',
             title: 'Filho Nascido em Portugal (Filhos de Estrangeiros)',
             icon: '👶',
-            tag: 'LEI 2026',
+            tag: 'LEI NACIONALIDADE',
             tagColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
             glow: 'hover:shadow-amber-500/5',
             ring: 'hover:ring-amber-400/30',
-            sub: 'Antes de 19/05/2026: 1 ano residência dos pais. Após 19/05/2026: 5 anos de residência legal de um dos pais à data do nascimento.'
+            sub: 'Nascimento em Portugal: basta que um dos progenitores resida legalmente no país à data do nascimento (Art. 1.º n.º 1 al. f).'
         },
         {
             id: 'equality_status',
@@ -115,7 +115,7 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
             glow: 'hover:shadow-emerald-500/5',
             ring: 'hover:ring-emerald-400/30',
-            sub: 'Exclusivo para brasileiros. Dá igualdade de direitos civis e políticos em Portugal. Não é nacionalidade mas permite Cartão de Cidadão.'
+            sub: 'Exclusivo para brasileiros com residência válida. Confere igualdade de direitos civis e políticos e emissão de Cartão de Cidadão.'
         },
     ];
 
@@ -123,13 +123,13 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
     const otherPathways = [
         {
             id: 'residence',
-            title: 'Naturalização por Residência Legal — Padrão',
+            title: 'Naturalização por Residência Legal — Geral',
             icon: '⏱️',
-            tag: '10 ANOS',
+            tag: '5 ANOS (Art. 15.º)',
             tagColor: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
             glow: 'hover:shadow-orange-500/5',
             ring: 'hover:ring-orange-400/30',
-            sub: 'Para cidadãos de países não-CPLP. Exige 10 anos de residência legal com cartão emitido (tempo de espera não conta).'
+            sub: 'Regime Geral: 5 anos de residência legal em Portugal. Pela Lei Orgânica 1/2024, o tempo de espera do pedido de residência na AIMA conta para os 5 anos.'
         },
         {
             id: 'marriage',
@@ -139,7 +139,7 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
             glow: 'hover:shadow-pink-500/5',
             ring: 'hover:ring-pink-400/30',
-            sub: '3 anos de casamento/união de facto reconhecida com cidadão português.'
+            sub: '3 anos de casamento ou união de facto reconhecida com cidadão português (Art. 3.º da Lei da Nacionalidade).'
         },
         {
             id: 'ancestry',
@@ -149,7 +149,7 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
             glow: 'hover:shadow-violet-500/5',
             ring: 'hover:ring-violet-400/30',
-            sub: 'Filho ou neto de cidadão português. Não exige residência em Portugal.'
+            sub: 'Filho ou neto de cidadão português (Art. 1.º da Lei da Nacionalidade). Não exige residência em Portugal.'
         },
         {
             id: 'sephardic',
@@ -159,17 +159,17 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
             glow: 'hover:shadow-purple-500/5',
             ring: 'hover:ring-purple-400/30',
-            sub: 'Para descendentes de judeus sefarditas portugueses expulsos em 1496. Requer prova de ligação histórica.'
+            sub: 'Para descendentes de judeus sefarditas portugueses (Art. 6.º n.º 7). Requer certificado de comunidade israelita e ligação a Portugal.'
         },
         {
             id: 'filho_nascido_portugal',
             title: 'Filho Nascido em Portugal (Filhos de Estrangeiros)',
             icon: '👶',
-            tag: 'LEI 2026',
+            tag: 'LEI NACIONALIDADE',
             tagColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
             glow: 'hover:shadow-amber-500/5',
             ring: 'hover:ring-amber-400/30',
-            sub: 'Antes de 19/05/2026: 1 ano residência dos pais. Após 19/05/2026: 5 anos de residência legal de um dos pais à data do nascimento.'
+            sub: 'Nascimento em Portugal: atribuição da nacionalidade originária se um dos progenitores residir legalmente em Portugal.'
         },
     ];
 
