@@ -35,6 +35,12 @@ export const authService = {
                 }
 
                 if (data) {
+                    if ((!data.email || data.email.trim().length === 0) && email && email.includes('@')) {
+                        data.email = email.toLowerCase().trim();
+                        try {
+                            await supabase.from('profiles').update({ email: data.email }).eq('id', userId);
+                        } catch (_) {}
+                    }
                     if (isCEO) {
                         data.role = 'admin';
                         data.reputation = Math.max(data.reputation || 0, 10458);
