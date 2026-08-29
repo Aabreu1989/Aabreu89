@@ -37,7 +37,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         city: "Lisboa",
         website: "https://aima.gov.pt",
         phone: "(+351) 21 810 61 00",
-        email: "cnaim.lisboa@acm.gov.pt",
+        email: "cnaim.lisboa@aima.gov.pt",
         schedule: "Segunda a Sexta-feira, 08h00–17h00",
         avgRating: 5.0,
         ratings: [],
@@ -54,7 +54,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         city: "Porto",
         website: "https://aima.gov.pt",
         phone: "(+351) 22 207 38 10",
-        email: "cnaim.norte@acm.gov.pt",
+        email: "cnaim.norte@aima.gov.pt",
         schedule: "Segunda a Sexta-feira, 08h00–17h00",
         avgRating: 5.0,
         ratings: [],
@@ -71,7 +71,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         city: "Faro",
         website: "https://aima.gov.pt",
         phone: "(+351) 289 895 450",
-        email: "cnaim.algarve@acm.gov.pt",
+        email: "cnaim.algarve@aima.gov.pt",
         schedule: "Segunda a Sexta-feira, 08h30–17h00",
         avgRating: 5.0,
         ratings: [],
@@ -88,7 +88,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         city: "Beja",
         website: "https://aima.gov.pt",
         phone: "(+351) 967 071 313",
-        email: "cnaim.beja@acm.gov.pt",
+        email: "cnaim.beja@aima.gov.pt",
         schedule: "Segunda a Sexta-feira, 09h00–12h30 e 14h00–17h30",
         avgRating: 5.0,
         ratings: [],
@@ -135,7 +135,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Campus de Justiça, Edifício H, Av. D. João II, 1990-097 Lisboa",
         city: "Lisboa",
-        website: "https://siga.marcacaoprevia.pt/",
+        website: "https://siga.marcacaoprevia.gov.pt/",
         avgRating: 5.0,
         ratings: [],
         description: "Plataforma oficial do Estado Português para marcação de atendimento presencial no IRN, Segurança Social, Finanças e Lojas do Cidadão."
@@ -209,7 +209,6 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua das Pedras, 307 e Rua Diogo Cão, 257, 4400-249 Vila Nova de Gaia",
         city: "Vila Nova de Gaia",
-        website: "https://www.asigv.org",
         avgRating: 5.0,
         ratings: [],
         description: "Acolhimento humanitário e solidariedade social em Gaia: mediação intercultural, distribuição alimentar e capacitação profissional para migrantes."
@@ -265,7 +264,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Avenida 1.º de Maio, 4, R/C, 2825-395 Costa da Caparica",
         city: "Almada",
-        website: "https://www.cspcostacap.org",
+        website: "https://www.cspcostacaparica.pt",
         avgRating: 5.0,
         ratings: [],
         description: "Apoio social na Costa da Caparica: banco de alimentos, atendimento e acompanhamento social de famílias, centro de dia e atividades para crianças."
@@ -279,7 +278,6 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua José Malhoa, 11, Trajouce, 2785-657 São Domingos de Rana",
         city: "Cascais",
-        website: "https://ccmoldavo.pt/",
         avgRating: 5.0,
         ratings: [],
         description: "Associação de apoio e acolhimento à comunidade moldava, romena e eslava em Portugal: apoio na tradução de documentos, apoio jurídico e preservação cultural."
@@ -461,7 +459,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Avenida Columbano Bordalo Pinheiro, 86, 1070-065 Lisboa",
         city: "Lisboa",
-        website: "https://escolhas.pt",
+        website: "https://ipdj.gov.pt/programa-escolhas",
         avgRating: 5.0,
         ratings: [],
         description: "Programa governamental nacional de inclusão social de crianças e jovens de contextos socioeconómicos vulneráveis e comunidades de migrantes."
@@ -559,7 +557,6 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua Varela Silva, Lote 10, Loja B, 1750-403 Lisboa",
         city: "Lisboa",
-        website: "https://aemirep.pt",
         avgRating: 5.0,
         ratings: [],
         description: "Apoio a empreendedores e pequenas empresas de migrantes: consultoria para criação de negócios, acesso a financiamento, contabilidade e formação em gestão."
@@ -1135,7 +1132,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Avenida Fontes Pereira de Melo, 34B, 1050-121 Lisboa",
         city: "Lisboa",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Loja do Cidadão no centro financeiro de Lisboa: balcões do IRN (Cartão de Cidadão/Passaporte), Finanças (NIF), Segurança Social e CTT."
@@ -1149,7 +1146,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Avenida Dom João II, 18, 2800-008 Almada",
         city: "Almada",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Balcão multisserviços em Almada: atendimento presencial do IRN, Finanças, Segurança Social, CTT e serviços municipais da Câmara de Almada."
@@ -1163,7 +1160,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua Dr. Alfredo da Costa, 2, 2710-523 Sintra",
         city: "Sintra",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Loja do Cidadão no concelho de Sintra: reúne num só local os balcões de identificação civil do IRN, Finanças e Segurança Social."
@@ -1177,7 +1174,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Largo da República, 1, 2750-508 Cascais",
         city: "Cascais",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Atendimento unificado do Estado em Cascais: emissão de documentos civis, registo fiscal, apoios da Segurança Social e SMAS de Cascais."
@@ -1191,7 +1188,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Avenida dos Aliados, 11, 4000-065 Porto",
         city: "Porto",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Loja do Cidadão na emblemática Avenida dos Aliados no Porto: atendimento integrado do IRN, Finanças, Segurança Social e Águas do Porto."
@@ -1205,7 +1202,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Largo São João do Souto, 4700-326 Braga",
         city: "Braga",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Polo central de serviços públicos de Braga: renovação de Cartão de Cidadão, Passaporte, registo predial, NIF e Segurança Social."
@@ -1219,7 +1216,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua D. João I, 4810-225 Guimarães",
         city: "Guimarães",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Balcão multisserviços em Guimarães: reúne atendimentos da Autoridade Tributária, Segurança Social, IRN e Câmara Municipal."
@@ -1233,7 +1230,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua do Brasil, 55, 3030-175 Coimbra",
         city: "Coimbra",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Loja do Cidadão de Coimbra: serviços integrados do IRN, Segurança Social, Finanças, CTT e Águas de Coimbra com atendimento presencial agendado."
@@ -1247,7 +1244,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Largo da Praça do Peixe, 3800-243 Aveiro",
         city: "Aveiro",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Espaço de atendimento público em Aveiro: emissão de documentos de identidade e viagem, validação de NIF e gestão de pensões e subsídios."
@@ -1261,7 +1258,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua da República, 7000-656 Évora",
         city: "Évora",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Loja do Cidadão em Évora: simplificação de contactos com o Estado com balcões de Finanças, Segurança Social, IRN e EDP/Distribuição."
@@ -1275,7 +1272,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Avenida da República, 286, 8000-079 Faro",
         city: "Faro",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Principal Loja do Cidadão do Algarve: acolhimento ao cidadão com balcões do IRN, Finanças, Segurança Social, CTT e Balcão do Emigrante."
@@ -1289,7 +1286,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Avenida Luísa Todi, 125, 2900-462 Setúbal",
         city: "Setúbal",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Loja do Cidadão na baixa de Setúbal: emissão de Cartão de Cidadão, Passaporte, NIF, NISS e atendimento ao munícipe."
@@ -1303,7 +1300,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua Serpa Pinto, 10, 3500-192 Viseu",
         city: "Viseu",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Atendimento unificado do Estado em Viseu: balcões da Segurança Social, Finanças, Registo Civil e Predial do IRN."
@@ -1317,7 +1314,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Praça do Município, 1, 5300-245 Bragança",
         city: "Bragança",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Espaço público multisserviços em Bragança: atendimento presencial do IRN, Finanças, Segurança Social e Câmara Municipal."
@@ -1331,7 +1328,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Campo da Feira, 6000-101 Castelo Branco",
         city: "Castelo Branco",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Loja do Cidadão na Beira Baixa: serviços integrados para resolução rápida de processos de identificação, impostos e segurança social."
@@ -1345,7 +1342,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         distance: 'N/A',
         address: "Rua de São Bento, 2000-118 Santarém",
         city: "Santarém",
-        website: "https://www.portaldocidadao.pt",
+        website: "https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao",
         avgRating: 5.0,
         ratings: [],
         description: "Atendimento concentrado em Santarém: balcões do IRN, Autoridade Tributária, Segurança Social e serviços municipais."

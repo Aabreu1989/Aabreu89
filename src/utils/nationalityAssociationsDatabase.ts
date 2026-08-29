@@ -595,8 +595,7 @@ export const NATIONALITY_ASSOCIATIONS_DATABASE: MapAlert[] = [
         address: "Rua José Malhoa, 11, Trajouce, 2785-657 São Domingos de Rana",
         city: "Cascais",
         phone: "(+351) 963 800 299",
-        email: "contact@ccmoldavo.pt",
-        website: "https://ccmoldavo.pt",
+        email: "centroculturalmoldavo@gmail.com",
         ratings: [],
         avgRating: 5.0
     },

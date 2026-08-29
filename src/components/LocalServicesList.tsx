@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { submitReportRest } from '../services/reportService';
-import { Search, Filter, MapPin, Phone, Globe, Building2, RefreshCcw, ChevronDown, X, Mail } from 'lucide-react';
+import { Search, Filter, MapPin, Phone, Globe, Building2, RefreshCcw, ChevronDown, X, Mail, Navigation } from 'lucide-react';
 import { MapAlert } from '../types';
 import { t } from '../utils/translations';
 import { PROTECTED_SERVICES } from '../utils/protectedData';
@@ -22,6 +22,23 @@ const normalizeForSearch = (str: string | undefined | null): string => {
 const getServiceWebsite = (service: MapAlert): string => {
     let url = (service.website || '').trim();
     
+    // Normalizações de URLs desatualizadas ou migradas
+    if (url.includes('portaldocidadao.pt')) {
+        return 'https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao';
+    }
+    if (url.includes('siga.marcacaoprevia.pt')) {
+        return 'https://siga.marcacaoprevia.gov.pt/';
+    }
+    if (url.includes('escolhas.pt')) {
+        return 'https://www.programaescolhas.pt/';
+    }
+    if (url.includes('cspcostacap.org')) {
+        return 'https://www.cspcostacaparica.pt';
+    }
+    if (url.includes('ccmoldavo.pt') || url.includes('asigv.org') || url.includes('aemirep.pt')) {
+        url = '';
+    }
+
     // Se o site já estiver preenchido com link válido, garante apenas o protocolo
     if (url) {
         if (!url.startsWith('http') && !url.startsWith('mailto:')) {
@@ -64,6 +81,10 @@ const getServiceWebsite = (service: MapAlert): string => {
     
     if (title.includes('SNS') || title.includes('SAÚDE') || title.includes('HOSPITAL') || title.includes('CENTRO DE SAUDE') || title.includes('SAUDE')) {
         return 'https://www.sns.gov.pt/';
+    }
+
+    if (title.includes('LOJA DO CIDADÃO') || title.includes('LOJA DO CIDADAO') || title.includes('ESPAÇO CIDADÃO') || title.includes('ESPACO CIDADAO')) {
+        return 'https://eportugal.gov.pt/locais-de-atendimento-de-servicos-publicos/lojas-de-cidadao';
     }
 
     if (title.includes('CPLP') || title.includes('VISTO')) {
@@ -520,6 +541,26 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                                         </div>
 
                                         <div className="flex flex-wrap gap-2">
+                                            {service.lat && service.lng ? (
+                                                <a
+                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${service.lat},${service.lng}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        trackServiceInteraction(service, 'directions');
+                                                    }}
+                                                    className="flex items-center gap-2 px-3 py-2 bg-sky-50 border border-sky-200 rounded-xl text-sky-700 hover:bg-sky-100 hover:border-[#0ea5e9] transition-all"
+                                                >
+                                                    <Navigation size={14} className="shrink-0 text-sky-600" />
+                                                    <span className="text-[9px] font-black tracking-widest uppercase">
+                                                        {language.toLowerCase() === 'pt' ? 'Como Chegar' 
+                                                         : language.toLowerCase() === 'es' ? 'Cómo Llegar' 
+                                                         : language.toLowerCase() === 'fr' ? 'Itinéraire' 
+                                                         : 'Directions'}
+                                                    </span>
+                                                </a>
+                                            ) : null}
                                             {service.phone && (
                                                 <a
                                                     href={`tel:${service.phone}`}
@@ -575,7 +616,7 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                             <p className="text-xs font-bold text-slate-400 leading-relaxed">{t('service_no_results_desc', language)}</p>
                         </div>
                         <button
-                            onClick={() => { setSearchTerm(''); setSelectedCategory('Todos'); }}
+                            onClick={() => { setSearchTerm(''); setSelectedCategory('Todos'); setSelectedLocation('Todos'); }}
                             className="px-8 py-3 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all shadow-sm"
                         >
                             {t('service_clear_filters', language)}

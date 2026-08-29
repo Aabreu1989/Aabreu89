@@ -30,7 +30,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
         address: "Praceta Estanislau Raimundo Nogueira, 1 e 2, 2615-075 Alverca do Ribatejo",
         city: "Alverca",
         website: "https://aima.gov.pt",
-        description: "Posto de atendimento da AIMA para processos de manifestação de interesse, regularização de cidadãos estrangeiros e recolha de dados biométricos."
+        description: "Posto de atendimento da AIMA para concessão e renovação de autorizações de residência, biometria e processos de regularização documental."
     },
     {
         id: 'p-aima-angra',
@@ -523,7 +523,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
         avgRating: 5.0,
         address: "Avenida Professor Egas Moniz, 1649-035 Lisboa",
         city: "Lisboa",
-        website: "https://www.chln.min-saude.pt",
+        website: "https://www.ulssm.min-saude.pt",
         description: "Hospital universitário central do SNS em Lisboa: serviço de urgência geral 24h, consultas de todas as especialidades médicas, cirurgia e maternidade."
     },
     {
@@ -551,7 +551,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
         avgRating: 5.0,
         address: "Praceta Professor Mota Pinto, 3000-075 Coimbra",
         city: "Coimbra",
-        website: "https://www.chuc.min-saude.pt",
+        website: "https://www.ulscoimbra.min-saude.pt",
         description: "Complexo hospitalar de referência no Centro do país: urgências 24h, transplantação, cardiologia, neurocirurgia e investigação médica."
     },
     {
@@ -607,7 +607,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
         avgRating: 5.0,
         address: "Rua Camilo Castelo Branco, 2910-446 Setúbal",
         city: "Setúbal",
-        website: "https://www.chs.min-saude.pt",
+        website: "https://www.ulsa.min-saude.pt",
         description: "Hospital público de referência na Península de Setúbal: urgência de adultos e obstetrícia, medicina interna e especialidades cirúrgicas."
     },
     {
@@ -950,12 +950,12 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     },
 
     // ============================================================
-    // ♿ ORGANIZAÇÕES DE APOIO A PCD (AJUDA HUMANITÁRIA & INCLUSÃO)
+    // ♿ ORGANIZAÇÕES DE APOIO A PCD (DIREITOS & INCLUSÃO)
     // ============================================================
     {
         id: '1263c23e-b716-4100-afa3-20382906f9e4',
         title: "APD — Associação Portuguesa de Deficientes",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7203,
         lng: -9.1541,
         distance: "...",
@@ -969,7 +969,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '8b191c13-7d84-484b-a25e-04f85e4ae1bb',
         title: "ACAPO — Associação de Cegos e Amblíopes de Portugal",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7088,
         lng: -9.1534,
         distance: "...",
@@ -983,7 +983,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: 'e7323863-718d-4e96-a83d-0ea2da484643',
         title: "FENACERCI — Federação Nacional das Cooperativas de Solidariedade Social",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7566,
         lng: -9.1622,
         distance: "...",
@@ -997,7 +997,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: 'f33e7d58-7cae-4f51-a90a-a0fdb9b8971f',
         title: "FPAS — Federação Portuguesa das Associações de Surdos",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7592,
         lng: -9.2241,
         distance: "...",
@@ -1011,7 +1011,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '64a93864-4c40-42ae-ad8a-a4309c6f2a87',
         title: "FAPPC — Federação das Associações de Paralisia Cerebral",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7610,
         lng: -9.1610,
         distance: "...",
@@ -1025,7 +1025,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '12b1d3ef-cf03-4f96-b08e-5bcfd30eb088',
         title: "FPDA — Federação Portuguesa de Autismo",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7090,
         lng: -9.1980,
         distance: "...",
@@ -1039,7 +1039,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: 'ce0cfec9-234b-4c55-b0fc-fb0a3a782255',
         title: "FPDD — Federação Portuguesa de Desporto para Pessoas com Deficiência",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7890,
         lng: -9.1680,
         distance: "...",
@@ -1053,7 +1053,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '5bcebfba-c8b1-4be5-94ca-ea4b348e3cf5',
         title: "FEDRA — Federação de Doenças Raras de Portugal",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7810,
         lng: -9.1120,
         distance: "...",
@@ -1067,7 +1067,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '9142f9e6-ee39-444b-bce9-bfbcfeae1c2f',
         title: "ASBIHP — Associação Spina Bifida e Hidrocefalia de Portugal",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7450,
         lng: -9.1150,
         distance: "...",
@@ -1081,7 +1081,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '72491b98-bc1c-4395-8fc0-4d3752e50529',
         title: "SPEM — Sociedade Portuguesa de Esclerose Múltipla",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7440,
         lng: -9.1020,
         distance: "...",
@@ -1095,7 +1095,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '185038c1-4dfd-4e4f-b6e8-232537b819f7',
         title: "FORMEM — Formação Profissional e Emprego para Pessoas com Deficiência",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 40.2250,
         lng: -8.4310,
         distance: "...",
@@ -1109,7 +1109,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '1cbb66e3-f667-4a67-b501-ad26f5fa5018',
         title: "CNOD — Confederação Nacional de Organismos de Deficientes",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7490,
         lng: -9.1010,
         distance: "...",
@@ -1123,7 +1123,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '7fc0c754-5c9c-473d-82d2-43093557fbcf',
         title: "Associação Salvador",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7300,
         lng: -9.1480,
         distance: "...",
@@ -1137,7 +1137,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     {
         id: '41ebefd7-d703-4a11-8e50-9aebe24921b7',
         title: "CVI — Centro de Vida Independente",
-        category: "Ajuda Humanitária",
+        category: "Direitos & Apoio Social",
         lat: 38.7485,
         lng: -9.1005,
         distance: "...",
