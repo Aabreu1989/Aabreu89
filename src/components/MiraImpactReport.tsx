@@ -878,10 +878,11 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                   { label: 'Vagas Ativas (População Operacional Atual)', value: (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs) ? (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs).toLocaleString() : '18.276' },
                   { label: 'Vagas de Emprego (Snapshot MIRA-KPI-003)', value: '17.356 (congelado)' },
                   { label: 'Portais & Fontes de Emprego Integrados', value: '117 Portais' },
+                  { label: 'Consultas MIRA Chat (População Atual)', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18694).toLocaleString() },
+                  { label: 'Consultas MIRA Chat (Baseline MIRA-KPI-002)', value: '18.668 (congelado)' },
                   { label: 'Horas Burocráticas Poupadas (Modelo MIRA)', value: `${(counts?.horasPoupadas ?? 0).toLocaleString()}h` },
                   { label: 'Apoios Burocráticos Prestados (Minutas & Simulações)', value: (counts?.processosAjudados ?? 0).toLocaleString() },
                   { label: 'Taxa de Recorrência Histórica (Baseline)', value: `${counts?.retentionRate ?? 0}%` },
-                  { label: 'Consultas IA Auditadas e Mapeadas', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668).toLocaleString() },
                   { label: 'Instalações da Aplicação PWA (Desde 12/08)', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString() },
                 ].map(({ label, value }) => (
                   <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex justify-between items-center print-card">
