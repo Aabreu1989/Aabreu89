@@ -26,6 +26,7 @@ const ANON_KEY      = process.env.VITE_SUPABASE_ANON_KEY   || process.env.SUPABA
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || process.env.VITE_ADMIN_EMAIL || 'amandasabreu89@gmail.com').toLowerCase().trim();
 
 const ADMIN_EMAILS = [
+  'amanda.abreu@iseg.ulisboa.pt',
   'amandasabreu89@gmail.com',
   'amandajhonnes@yahoo.com.br',
   'mira.app@hotmail.com'
@@ -33,6 +34,7 @@ const ADMIN_EMAILS = [
 
 const ADMIN_USER_IDS = [
   '00000000-0000-0000-0000-000000000001',
+  '6afae965-8c6e-4699-90f1-f82d2f0c6658',
   '775fb10a-78cd-4753-938d-dea75fddd77a',
   'bc16353e-67ae-4ff5-a6aa-bc4d8f62af08',
   'dea69de1-0ed4-44dc-9699-0544e6f39ed8',
