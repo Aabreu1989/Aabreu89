@@ -11,7 +11,8 @@
 Todos os relatórios e documentos que apresentem métricas e indicadores do ecossistema MIRA **DEVEM refletir a realidade operacional viva da plataforma no exato momento da sua geração**.
 
 > **Regra de Ouro:**  
-> O relatório deve extrair os dados diretamente das fontes soberanas em tempo real (PostgreSQL Supabase e telemetria auditável). O valor principal apresentado deve sempre refletir o estado mais recente disponível, e nunca uma fotografia obsoleta meramente porque esta foi anteriormente homologada.
+> O relatório deve extrair os dados diretamente das fontes soberanas em tempo real (PostgreSQL Supabase e telemetria auditável). O valor principal apresentado deve sempre refletir o estado mais recente disponível, e nunca uma fotografia obsoleta meramente porque esta foi anteriormente homologada.  
+> **"Um número homologado ontem não é necessariamente um número válido hoje. A homologação protege a definição e a linhagem; a extração atual determina o valor presente."**
 
 ---
 
