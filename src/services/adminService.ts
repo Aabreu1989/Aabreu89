@@ -92,128 +92,71 @@ export const adminService: AdminService = {
         searchTerm: string = '', 
         statusFilter: 'all' | 'active' | 'blocked' | 'verified' = 'all'
     ): Promise<{ users: User[], total: number }> {
-        // 1. Tentar via Gateway Administrativo Seguro (/api/admin?action=list-users)
-        try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-            if (session?.access_token) {
-                headers['Authorization'] = `Bearer ${session.access_token}`;
-            }
-
-            const apiUrl = import.meta.env.VITE_API_URL || '';
-            const searchParam = encodeURIComponent(searchTerm.trim());
-            const endpoint = `${apiUrl}/api/admin?action=list-users&page=${page}&limit=${pageSize}&search=${searchParam}&status=${statusFilter}`;
-
-            const res = await fetch(endpoint, { method: 'GET', headers });
-            if (res.ok) {
-                const json = await res.json();
-                if (json && Array.isArray(json.users)) {
-                    return {
-                        users: json.users,
-                        total: typeof json.total === 'number' ? json.total : json.users.length
-                    };
-                }
-            }
-        } catch (apiErr) {
-            console.warn("MIRA Admin Gateway: Consulta direta ao endpoint /api/admin indisponível, usando fallback:", apiErr);
+        // 1. Validar sessão ativa e access_token antes de qualquer requisição
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) {
+            throw new Error('AUTH_REQUIRED');
         }
 
-        // 2. Fallback Seguro via Supabase SDK
-        const from = page * pageSize;
-        const to = from + pageSize - 1;
+        const headers: Record<string, string> = { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+        };
 
-        try {
-            let query = supabase.from('profiles').select('*', { count: 'exact' });
+        const apiUrl = import.meta.env.VITE_API_URL || '';
+        const searchParam = encodeURIComponent(searchTerm.trim());
+        const endpoint = `${apiUrl}/api/admin?action=list-users&page=${page}&limit=${pageSize}&search=${searchParam}&status=${statusFilter}`;
 
-            if (searchTerm.trim()) {
-                const term = searchTerm.trim();
-                query = query.or(`name.ilike.%${term}%,full_name.ilike.%${term}%,username.ilike.%${term}%,email.ilike.%${term}%`);
-            }
+        const res = await fetch(endpoint, { method: 'GET', headers });
 
-            if (statusFilter === 'blocked') {
-                query = query.eq('account_status', 'blocked');
-            } else if (statusFilter === 'verified') {
-                query = query.eq('is_verified', true);
-            }
+        if (res.status === 401 || res.status === 403) {
+            throw new Error('ADMIN_UNAUTHORIZED');
+        }
 
-            const queryRes = await query.order('created_at', { ascending: false }).range(from, to);
+        if (!res.ok || res.status !== 200) {
+            throw new Error(`API_ERROR_${res.status}`);
+        }
 
-            if (queryRes.error) {
-                console.error("🛑 [MIRA ADMIN] Erro na query profiles:", queryRes.error);
-                return { users: [], total: 0 };
-            }
-
-            const data = queryRes.data || [];
-            const count = queryRes.count !== null && queryRes.count !== undefined ? queryRes.count : data.length;
-
+        const json = await res.json();
+        if (json && Array.isArray(json.users)) {
             return {
-                users: data.map((u: any) => {
-                    const userEmail = u.email || 'Sem email';
-                    const userName = u.name || u.full_name || u.username || (u.email ? u.email.split('@')[0] : 'Membro');
-                    return {
-                        id: u.id,
-                        name: userName,
-                        email: userEmail,
-                        avatar: u.avatar_url || u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}`,
-                        reputation: u.reputation || 0,
-                        trustLevel: u.trust_level || 'Observador',
-                        role: u.role || 'member',
-                        isMuted: u.is_muted || false,
-                        isBlocked: u.account_status === 'blocked' || u.is_blocked || false,
-                        isVerified: u.is_verified || false,
-                        sovereignty_score: u.sovereignty_score || 0,
-                        followersCount: 0,
-                        followingCount: 0,
-                        verifiedPostsCount: 0,
-                        totalLikesReceived: 0
-                    };
-                }), 
-                total: count
+                users: json.users,
+                total: typeof json.total === 'number' ? json.total : json.users.length
             };
-
-        } catch (e) {
-            console.error("fetchUsers Critical Fallback:", e);
-            return { users: [], total: 0 };
         }
+
+        throw new Error('INVALID_PAYLOAD');
     },
 
     async fetchUserFilterCounts(): Promise<{ total: number; active: number; blocked: number; verified: number }> {
-        // 1. Tentar via Gateway Administrativo Seguro (/api/admin?action=user-filter-counts)
-        try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-            if (session?.access_token) {
-                headers['Authorization'] = `Bearer ${session.access_token}`;
-            }
-
-            const apiUrl = import.meta.env.VITE_API_URL || '';
-            const res = await fetch(`${apiUrl}/api/admin?action=user-filter-counts`, { method: 'GET', headers });
-            if (res.ok) {
-                const json = await res.json();
-                if (json && json.filterCounts) {
-                    return json.filterCounts;
-                }
-            }
-        } catch (_) {}
-
-        // 2. Fallback Seguro direto ao Supabase SDK
-        try {
-            const [totalRes, blockedRes, verifiedRes] = await Promise.all([
-                supabase.from('profiles').select('id', { count: 'exact', head: true }),
-                supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('account_status', 'blocked'),
-                supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_verified', true)
-            ]);
-
-            const total = totalRes.count || 0;
-            const blocked = blockedRes.count || 0;
-            const verified = verifiedRes.count || 0;
-            const active = Math.max(0, total - blocked);
-
-            return { total, active, blocked, verified };
-        } catch (e) {
-            console.error("fetchUserFilterCounts Critical Fallback:", e);
-            return { total: 0, active: 0, blocked: 0, verified: 0 };
+        // 1. Validar sessão ativa e access_token antes de qualquer requisição
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) {
+            throw new Error('AUTH_REQUIRED');
         }
+
+        const headers: Record<string, string> = { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+        };
+
+        const apiUrl = import.meta.env.VITE_API_URL || '';
+        const res = await fetch(`${apiUrl}/api/admin?action=user-filter-counts`, { method: 'GET', headers });
+
+        if (res.status === 401 || res.status === 403) {
+            throw new Error('ADMIN_UNAUTHORIZED');
+        }
+
+        if (!res.ok || res.status !== 200) {
+            throw new Error(`API_ERROR_${res.status}`);
+        }
+
+        const json = await res.json();
+        if (json && json.filterCounts) {
+            return json.filterCounts;
+        }
+
+        throw new Error('INVALID_PAYLOAD');
     },
 
     async toggleBlockUser(userId: string, isBlocked: boolean): Promise<void> {

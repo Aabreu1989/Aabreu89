@@ -204,6 +204,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const [selectedUserForMedals, setSelectedUserForMedals] = useState<User | null>(null);
     const [userMedals, setUserMedals] = useState<string[]>([]);
     const [userFilterCounts, setUserFilterCounts] = useState<{ total: number; active: number; blocked: number; verified: number }>({ total: 0, active: 0, blocked: 0, verified: 0 });
+    const [authError, setAuthError] = useState<'AUTH_REQUIRED' | 'ADMIN_UNAUTHORIZED' | null>(null);
     const { showToast } = useToast();
 
     // 🛡️ SNIPER CACHE & PROGRESSIVE TARGETED LOADER (PATCH 4E.1)
@@ -247,22 +248,36 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         const taskPromise = (async () => {
             if (tab === 'users') {
                 setLoadingUsers(true);
-                const [result, filterCounts] = await Promise.all([
-                    adminService.fetchUsers(usersPage, 20, userSearchTerm, userFilterStatus),
-                    adminService.fetchUserFilterCounts()
-                ]);
-                
-                if (result) {
-                    setUsers(result.users || []);
-                    setTotalUsers(result.total || 0);
+                setAuthError(null);
+                try {
+                    const [result, filterCounts] = await Promise.all([
+                        adminService.fetchUsers(usersPage, 20, userSearchTerm, userFilterStatus),
+                        adminService.fetchUserFilterCounts()
+                    ]);
+                    
+                    if (result && Array.isArray(result.users) && typeof result.total === 'number') {
+                        setUsers(result.users);
+                        setTotalUsers(result.total);
+                        if (filterCounts) {
+                            setUserFilterCounts(filterCounts);
+                        }
+                        // 🛡️ REGRA DE INTEGRIDADE: O cache só é preenchido quando a resposta HTTP é 200 OK, o payload é estruturalmente válido e a operação foi concluída sem erro
+                        const cachePayload = { timestamp: Date.now(), data: { result, filterCounts } };
+                        dataCacheRef.current[cacheKey] = cachePayload;
+                        setDataCache(prev => ({ ...prev, [cacheKey]: cachePayload }));
+                    }
+                } catch (err: any) {
+                    const msg = err?.message || '';
+                    if (msg.includes('AUTH_REQUIRED')) {
+                        setAuthError('AUTH_REQUIRED');
+                    } else if (msg.includes('ADMIN_UNAUTHORIZED')) {
+                        setAuthError('ADMIN_UNAUTHORIZED');
+                    } else {
+                        console.error("[MIRA AdminPanel] Erro ao carregar utilizadores:", err);
+                    }
+                } finally {
+                    setLoadingUsers(false);
                 }
-                if (filterCounts) {
-                    setUserFilterCounts(filterCounts);
-                }
-                const cachePayload = { timestamp: Date.now(), data: { result, filterCounts } };
-                dataCacheRef.current[cacheKey] = cachePayload;
-                setDataCache(prev => ({ ...prev, [cacheKey]: cachePayload }));
-                setLoadingUsers(false);
 
             } else if (tab === 'dashboard') {
                 setLoadingDashboard(true);
@@ -381,8 +396,37 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }, [userSearchTerm, userFilterStatus, usersPage, activeTab, loadData]);
 
     useEffect(() => {
-        // Carga inicial suave respeitando cache
-        loadData(false);
+        let isMounted = true;
+
+        const initTabLoad = async () => {
+            if (activeTab === 'users') {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session?.access_token) {
+                    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+                        if (s?.access_token && isMounted) {
+                            subscription.unsubscribe();
+                            loadData(false);
+                        }
+                    });
+                    setTimeout(() => {
+                        if (isMounted) {
+                            supabase.auth.getSession().then(({ data }) => {
+                                if (!data.session && isMounted) {
+                                    setAuthError('AUTH_REQUIRED');
+                                    setLoadingUsers(false);
+                                }
+                            });
+                        }
+                    }, 3000);
+                    return;
+                }
+            }
+            if (isMounted) {
+                loadData(false);
+            }
+        };
+
+        initTabLoad();
 
         // 🚀 MIRA GENTLE POLLING: Intervalo de 15s que não força concorrência e só roda quando a aba está visível
         const interval = setInterval(() => {
@@ -390,7 +434,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 loadData(false);
             }
         }, 15000);
-        return () => clearInterval(interval);
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
     }, [activeTab, dashboardPeriod, loadData]);
 
     // 🛡️ MIRA REAL-TIME: Escuta eventos locais e Postgres com debounce seguro de 500ms
@@ -825,6 +872,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                         </div>
                                                     </td>
                                                 </tr>
+                                            ) : authError ? (
+                                                <tr>
+                                                    <td colSpan={5} className="px-6 py-12 text-center text-amber-400/80 text-xs font-bold uppercase tracking-wider">
+                                                        <div className="flex flex-col items-center justify-center gap-2">
+                                                            <ShieldAlert size={24} className="text-amber-400" />
+                                                            <span>{authError === 'AUTH_REQUIRED' ? 'Sessão administrativa necessária para consultar utilizadores.' : 'Acesso não autorizado ao módulo de utilizadores.'}</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             ) : users.length === 0 ? (
                                                 <tr>
                                                     <td colSpan={5} className="px-6 py-12 text-center text-white/30 text-xs font-bold uppercase tracking-wider">
@@ -913,7 +969,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                                 {/* Mobile cards */}
                                 <div className="grid grid-cols-1 gap-3 lg:hidden">
-                                    {users.length === 0 && !loadingUsers && (
+                                    {loadingUsers && users.length === 0 && (
+                                        <div className="p-8 text-center text-white/50 bg-white/5 rounded-3xl border border-white/10 flex items-center justify-center gap-3">
+                                            <Loader2 size={20} className="animate-spin text-[#FF8C00]" />
+                                            <span className="text-xs font-bold uppercase tracking-wider">A carregar utilizadores...</span>
+                                        </div>
+                                    )}
+                                    {authError && !loadingUsers && (
+                                        <div className="p-8 text-center text-amber-400/90 text-xs font-bold uppercase tracking-wider bg-amber-500/10 rounded-3xl border border-amber-500/20 flex flex-col items-center justify-center gap-2">
+                                            <ShieldAlert size={24} className="text-amber-400" />
+                                            <span>{authError === 'AUTH_REQUIRED' ? 'Sessão administrativa necessária para consultar utilizadores.' : 'Acesso não autorizado ao módulo de utilizadores.'}</span>
+                                        </div>
+                                    )}
+                                    {users.length === 0 && !loadingUsers && !authError && (
                                         <div className="p-8 text-center text-white/40 text-xs font-bold uppercase tracking-widest bg-white/5 rounded-3xl border border-white/10">
                                             Nenhum utilizador encontrado
                                         </div>
