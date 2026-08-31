@@ -9,6 +9,7 @@ export {
     CANONICAL_AI_METRICS,
     HISTORICAL_CUMULATIVE_BASELINES,
     HISTORICAL_AI_CATEGORIES,
+    CANONICAL_HUMAN_ACTIONS,
     CANONICAL_INTERACTION_ACTIONS,
     consolidatePlatformMetrics
 } from '../../lib/telemetryBaselines.js';
@@ -22,9 +23,11 @@ export interface RealDatabaseTelemetryCounts {
     docDownloadEvents: number;
     pwaMobileEvents: number;
     pwaDesktopEvents: number;
-    // C.2 — Recorrentes pós-cutoff: number (resultado real) | null (falha de query — preservar erro)
-    // 🔒 PROIBIDO: tratar null como 0. null indica falha de integração, não ausência de recorrentes.
+    // Recorrentes pós-cutoff calculados via session clustering e dias distintos
     returningUsersPostCutoff: number | null;
+    observedUsers?: number;
+    distinctSessions?: number;
+    distinctDaysReturningUsers?: number;
 
     // Tipo B: Estado Corrente das Tabelas da Base de Dados (COUNT real direto)
     currentUsers: number;
@@ -34,6 +37,22 @@ export interface RealDatabaseTelemetryCounts {
     currentPosts: number;
     currentComments: number;
     currentLikes: number;
+}
+
+export interface RecurrenceMetricsSnapshot {
+    isLoaded: boolean;
+    observedUsers: number;
+    distinctSessions: number;
+    returningUsers: number;
+    observedRetentionRate: number;
+    distinctDaysReturningUsers: number;
+    distinctDaysRetentionRate: number;
+    intraDayOnlyReturningUsers: number;
+    historicalReturningUsersBaseline: number;
+    telemetryPeriodStart: string;
+    sessionRule: string;
+    distinctDaysRule: string;
+    sourceSnapshotAt: string;
 }
 
 export interface ConsolidatedPlatformMetrics {
@@ -48,10 +67,24 @@ export interface ConsolidatedPlatformMetrics {
     userDocuments: number;
     pwaMobile: number;
     pwaDesktop: number;
-    // C.1 — Referência histórica legada (832). NÃO é contagem observada.
+
+    // 🔒 ÚNICA AUTORIDADE DE RETORNO E RECORRÊNCIA
+    recurrence: RecurrenceMetricsSnapshot | null;
+
+    // Aliases derivados de compatibilidade
+    observedUsers: number;
+    distinctSessions: number;
     returningUsers: number;
-    // C.2 — Contagem real pós-cutoff. null = falha de query; não deve ser tratado como zero.
-    returningUsersPostCutoff: number | null;
+    observedRetentionRate: number;
+    distinctDaysReturningUsers: number;
+    distinctDaysRetentionRate: number;
+    retentionRate: number; // Mapeado para observedRetentionRate
+
+    // Referência Histórica Documentada (Piloto)
+    historicalReturningUsersBaseline: number;
+    telemetryPeriodStart: string;
+    sessionRule: string;
+    distinctDaysRule: string;
 
     jobs: number;
     services: number;
@@ -59,8 +92,6 @@ export interface ConsolidatedPlatformMetrics {
     posts: number;
     comments: number;
     likes: number;
-
     horasPoupadas: number;
     processosAjudados: number;
-    retentionRate: number;
 }

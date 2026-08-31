@@ -33,10 +33,10 @@ interface AdminPanelProps {
 const getInitialDashboardCounts = () => {
     try {
         if (typeof window !== 'undefined') {
-            const stored = sessionStorage.getItem('mira_admin_dashboard_counts');
+            const stored = sessionStorage.getItem('mira_admin_dashboard_counts_v7');
             if (stored) {
                 const parsed = JSON.parse(stored);
-                if (parsed && typeof parsed === 'object' && parsed.users !== undefined) {
+                if (parsed && typeof parsed === 'object' && parsed.recurrence && parsed.recurrence.isLoaded === true) {
                     return parsed;
                 }
             }
@@ -52,8 +52,15 @@ const getInitialDashboardCounts = () => {
         suggestions: 0, 
         posts: 0, 
         comments: 0, 
+        recurrence: null, // 🔒 NUNCA CARREGA NÚMEROS FALSOS / ESTADO AUSENTE
         retentionRate: 0, 
+        observedRetentionRate: 0,
+        observedUsers: 0,
+        distinctSessions: 0,
         returningUsers: 0, 
+        distinctDaysReturningUsers: 0,
+        distinctDaysRetentionRate: 0,
+        historicalReturningUsersBaseline: 832,
         pwaMobileDownloads: 0, 
         pwaComputerDownloads: 0, 
         horasPoupadas: 0, 
@@ -298,6 +305,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 adminService.fetchSyncStatus().then(status => {
                     if (status) {
                         const newCounts = { 
+                            ...status,
+                            recurrence: status.recurrence || null,
                             courses: status.courses || { db: 0, prot: 0 }, 
                             services: status.services || { db: 0, prot: 0 }, 
                             users: status.users || 0, 
@@ -312,8 +321,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             downloads: status.downloads || 0,
                             simulations: status.simulations || 0,
                             totalLikes: status.totalLikes || 0,
-                            retentionRate: status.retentionRate || 0,
-                            returningUsers: status.returningUsers || 0,
+                            retentionRate: status.recurrence?.observedRetentionRate ?? status.retentionRate ?? 0,
+                            observedRetentionRate: status.recurrence?.observedRetentionRate ?? status.retentionRate ?? 0,
+                            observedUsers: status.recurrence?.observedUsers ?? status.observedUsers ?? 0,
+                            distinctSessions: status.recurrence?.distinctSessions ?? status.distinctSessions ?? 0,
+                            returningUsers: status.recurrence?.returningUsers ?? status.returningUsers ?? 0,
+                            distinctDaysReturningUsers: status.recurrence?.distinctDaysReturningUsers ?? (status as any).distinctDaysReturningUsers ?? 0,
+                            distinctDaysRetentionRate: status.recurrence?.distinctDaysRetentionRate ?? (status as any).distinctDaysRetentionRate ?? 0,
+                            historicalReturningUsersBaseline: status.recurrence?.historicalReturningUsersBaseline ?? (status as any).historicalReturningUsersBaseline ?? 832,
                             pwaMobileDownloads: status.pwaMobileDownloads || 0,
                             pwaComputerDownloads: status.pwaComputerDownloads || 0,
                             horasPoupadas: status.horasPoupadas || 0,
@@ -322,7 +337,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         };
                         setCounts(newCounts);
                         try {
-                            sessionStorage.setItem('mira_admin_dashboard_counts', JSON.stringify(newCounts));
+                            sessionStorage.setItem('mira_admin_dashboard_counts_v7', JSON.stringify(newCounts));
                         } catch (_) {}
                         const cachePayload = { timestamp: Date.now(), data: newCounts };
                         dataCacheRef.current['dashboard'] = cachePayload;
@@ -714,9 +729,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Minutas + Simulações</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
-                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Recorrência Histórica</p>
-                                        <p className="text-2xl font-black text-white">{counts.retentionRate}%</p>
-                                        <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">{counts.returningUsers} com ≥ 2 sessões</p>
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Retorno & Recorrência de Uso</p>
+                                        {!counts.recurrence || !counts.recurrence.isLoaded ? (
+                                            <div className="flex items-center space-x-2 py-2">
+                                                <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+                                                <span className="text-xs text-white/40 font-bold uppercase tracking-wider">A sincronizar...</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <p className="text-2xl font-black text-white">{counts.recurrence.observedRetentionRate}%</p>
+                                                <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">{counts.recurrence.returningUsers} retornantes ({counts.recurrence.distinctDaysReturningUsers} em dias distintos) em {counts.recurrence.observedUsers} observados</p>
+                                                <p className="text-[7px] text-white/20 mt-1">Atividade canónica • Janela ≥30m • UTC</p>
+                                            </>
+                                        )}
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
                                         <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Likes Totais</p>

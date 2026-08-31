@@ -4,6 +4,7 @@ import { PROTECTED_SERVICES, PROTECTED_JOBS as SMALL_JOBS } from '../utils/prote
 import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
 import { 
     consolidatePlatformMetrics, 
+    CANONICAL_HUMAN_ACTIONS,
     CANONICAL_INTERACTION_ACTIONS, 
     TELEMETRY_CUTOFF_DATE,
     CANONICAL_AI_METRICS,
@@ -744,19 +745,21 @@ export const adminService: AdminService = {
             const docDownloadsCount = Math.max(userDocsCount || 0, docActivityCount || 0);
 
             // ──────────────────────────────────────────────────────────────────────────────
-            // C.2 — RECORRENTES PÓS-CUTOFF (Opção C — Prova 3 — Auditoria READ-ONLY)
-            // COUNT(DISTINCT user_id) com ≥2 eventos app_access elegíveis pós-cutoff.
-            //
-            // 🔒 REGRA: NÃO somar com RETURNING_USERS: 832 (H.RETURNING_USERS).
-            //    832 é referência histórica legada — os dois universos temporais são independentes.
-            //    A complementaridade não foi comprovada; dupla contagem não foi excluída.
-            //
-            // 🔒 REGRA: Em caso de falha, preservar o erro para diagnóstico.
-            //    PROIBIDO: catch { return 0 } ou ?? 0 para mascarar falha como resultado válido.
+            // RECORRÊNCIA DE USO OBSERVADA (TELEMETRIA TEMPO REAL PÓS-CUTOFF)
+            // • Universo Canónico: Exclusivamente eventos de CANONICAL_HUMAN_ACTIONS
+            // • Regra Determinística de Sessão: eventos separados por <30min no mesmo dia
+            //   pertencem à mesma sessão; eventos separados por ≥30min ou em datas civis
+            //   distintas constituem sessões distintas.
+            // • observedUsers: Utilizadores distintos com ≥1 sessão canónica observada
+            // • returningUsers: Utilizadores com ≥2 sessões canónicas distintas comprovadas
             // ──────────────────────────────────────────────────────────────────────────────
             let returningUsersPostCutoffValue: number | null = null;
+            let observedUsersValue: number = 0;
+            let distinctSessionsValue: number = 0;
+            let distinctDaysReturningUsersValue: number = 0;
+
             try {
-                const accessCountPerUser: Record<string, number> = {};
+                const userTimestampsMap: Record<string, number[]> = {};
                 let page = 0;
                 const pageSize = 1000;
                 let hasMore = true;
@@ -766,19 +769,21 @@ export const adminService: AdminService = {
                     const to = from + pageSize - 1;
                     const { data: pageLogs, error: appAccessError } = await supabase
                         .from('activity_logs')
-                        .select('user_id')
-                        .eq('action', 'app_access')
+                        .select('user_id, created_at')
+                        .in('action', CANONICAL_HUMAN_ACTIONS)
                         .gte('created_at', TELEMETRY_CUTOFF_DATE)
                         .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)
                         .not('user_id', 'is', null)
+                        .order('created_at', { ascending: true })
                         .range(from, to);
 
                     if (appAccessError) throw appAccessError;
 
                     if (pageLogs && pageLogs.length > 0) {
                         for (const row of pageLogs) {
-                            if (row.user_id) {
-                                accessCountPerUser[row.user_id] = (accessCountPerUser[row.user_id] || 0) + 1;
+                            if (row.user_id && row.created_at) {
+                                if (!userTimestampsMap[row.user_id]) userTimestampsMap[row.user_id] = [];
+                                userTimestampsMap[row.user_id].push(new Date(row.created_at).getTime());
                             }
                         }
                         if (pageLogs.length < pageSize) {
@@ -791,8 +796,43 @@ export const adminService: AdminService = {
                     }
                 }
 
-                // COUNT(DISTINCT user_id) com ≥2 eventos
-                returningUsersPostCutoffValue = Object.values(accessCountPerUser).filter(n => n >= 2).length;
+                observedUsersValue = Object.keys(userTimestampsMap).length;
+                let returningCount = 0;
+                let distinctDaysReturningCount = 0;
+
+                for (const [userId, timestamps] of Object.entries(userTimestampsMap)) {
+                    timestamps.sort((a, b) => a - b);
+                    let sessionsForUser = 1;
+                    const userDatesSet = new Set<string>();
+
+                    for (let i = 0; i < timestamps.length; i++) {
+                        const curr = timestamps[i];
+                        const currDate = new Date(curr).toISOString().slice(0, 10);
+                        userDatesSet.add(currDate);
+
+                        if (i > 0) {
+                            const prev = timestamps[i - 1];
+                            const prevDate = new Date(prev).toISOString().slice(0, 10);
+                            const diffMs = curr - prev;
+
+                            // Nova sessão se inatividade >= 30 min ou data civil distinta
+                            if (diffMs >= 30 * 60 * 1000 || prevDate !== currDate) {
+                                sessionsForUser++;
+                            }
+                        }
+                    }
+
+                    distinctSessionsValue += sessionsForUser;
+                    if (sessionsForUser >= 2) {
+                        returningCount++;
+                    }
+                    if (userDatesSet.size >= 2) {
+                        distinctDaysReturningCount++;
+                    }
+                }
+
+                returningUsersPostCutoffValue = returningCount;
+                distinctDaysReturningUsersValue = distinctDaysReturningCount;
             } catch (recurringErr) {
                 // Falha preservada para diagnóstico — returningUsersPostCutoffValue permanece null
                 console.error('[MIRA Audit C.2] Falha na query de recorrentes pós-cutoff:', recurringErr);
@@ -807,6 +847,9 @@ export const adminService: AdminService = {
                 pwaMobileEvents,
                 pwaDesktopEvents,
                 returningUsersPostCutoff: returningUsersPostCutoffValue,
+                observedUsers: observedUsersValue,
+                distinctSessions: distinctSessionsValue,
+                distinctDaysReturningUsers: distinctDaysReturningUsersValue,
 
                 currentUsers: userCount || 0,
                 currentJobs: jobCount || 11116,
@@ -856,6 +899,7 @@ export const adminService: AdminService = {
                 articleViews: 0,
                 retentionRate: 0,
                 returningUsers: 0,
+                recurrence: null,
                 horasPoupadas: 0,
                 processosAjudados: 0,
                 pwaMobileDownloads: 0,

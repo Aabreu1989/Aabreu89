@@ -444,20 +444,32 @@ Para garantir que nenhuma métrica volta a apresentar 0 e que todas as contagens
 6. **Docs Gerados 📄 (3.452+)**:
    $$\text{Docs Gerados} = \underbrace{3.451}_{\text{Base Histórica (Março – Julho)}} + \text{COUNT}(\text{public.user\_documents})$$
 
-7. **Taxa de Retenção 🔄 (80% / 833 Regressaram)**:
-   $$\text{Taxa de Retenção} = \frac{\overbrace{832}^{\text{Base Histórica}} + \text{Novos Utilizadores Recorrentes em Tempo Real}}{\text{Total de Utilizadores (1.035)}} \times 100 = \mathbf{80\%}$$
+7. **Modelo Dual de Recorrência e Retorno 🔄 (Telemetria Humana Canónica)**:
+   * **Métrica A — Taxa de Recorrência por Sessões (Episódios de Uso)**:
+     $$\text{Taxa de Recorrência por Sessões} = \frac{\text{Utilizadores Autenticados com } \ge 2 \text{ Sessões Canónicas}}{\text{Total de Utilizadores com } \ge 1 \text{ Sessão Canónica Observada}} \times 100$$
+     *Regra de Sessão:* Atividade humana canónica (`CANONICAL_HUMAN_ACTIONS`) separada por $\ge 30$ minutos de inatividade ou alteração de data civil.
+   * **Métrica B — Taxa de Retorno em Dias Distintos (Retorno Inter-Diário)**:
+     $$\text{Taxa de Retorno em Dias Distintos} = \frac{\text{Utilizadores com Atividade Humana em } \ge 2 \text{ Datas Civis Distintas}}{\text{Total de Utilizadores com } \ge 1 \text{ Sessão Canónica Observada}} \times 100$$
+     *Regra de Retorno Inter-diário:* Exclusivamente utilizadores com atividade humana deliberada comprovada em pelo menos duas datas civis de calendário diferentes (`COUNT(DISTINCT civil_date) >= 2`), sendo 100% independente de logout ou timers de inatividade.
+   * **Isolamento de Baseline Histórico:** O valor histórico piloto de **832 utilizadores** permanece registrado exclusivamente como referência documental pré-telemetria, sendo terminantemente proibido utilizá-lo como numerador sobre a população total viva de perfis.
 
-8. **PWA Móvel 📱 (1.428+)**:
-   $$\text{PWA Móvel} = \underbrace{1.428}_{\text{Base Histórica}} + \text{COUNT}\left(\text{activity\_logs WHERE action = 'pwa\_install' AND metadata\to>platform \neq 'desktop'}\right)$$
+8. **PWA Móvel 📱 (100% Realtime pós-lançamento)**:
+   $$\text{PWA Móvel} = \text{COUNT}\left(\text{activity\_logs WHERE action = 'pwa\_install' AND metadata\to>platform \neq 'desktop'}\right)$$
 
-9. **PWA Desktop 🖥️ (412+)**:
-   $$\text{PWA Desktop} = \underbrace{412}_{\text{Base Histórica}} + \text{COUNT}\left(\text{activity\_logs WHERE action = 'pwa\_install' AND metadata\to>platform = 'desktop'}\right)$$
+9. **PWA Desktop 🖥️ (100% Realtime pós-lançamento)**:
+   $$\text{PWA Desktop} = \text{COUNT}\left(\text{activity\_logs WHERE action = 'pwa\_install' AND metadata\to>platform = 'desktop'}\right)$$
 
 ---
 
+#### ARTIGO 67. REGULAMENTAÇÃO SOBERANA DE MÉTRICAS DE RECORRÊNCIA E SESSÕES CANÓNICAS
+1. **Proibição de Fração Híbrida Temporal:** Nenhuma métrica de retenção, recorrência ou retorno de utilizadores poderá utilizar um número histórico fixo como numerador de uma taxa calculada sobre uma população física atual.
+2. **Derivação Exclusiva da Atividade Humana:** Métricas de recorrência ativa devem ser derivadas exclusivamente de eventos de telemetria humana voluntária (`CANONICAL_HUMAN_ACTIONS`) e de um universo temporal explicitamente definido.
+3. **Requisito de Sessões Genuínas:** O conceito de *"utilizador recorrente"* exige evidência determinística de pelo menos duas sessões distintas de uso humano (janela de inatividade $\ge 30$ minutos ou alteração de data civil). Eventos consecutivos rápidos representam a mesma sessão contínua.
+4. **Fidelidade da UI e Relatórios:** O número exibido como *"com $\ge 2$ sessões"* deve ser sempre o resultado de uma consulta em tempo real ao estado físico da telemetria, acompanhado do número total de utilizadores observados e do período de medição, nunca uma constante pré-programada.
+
 ---
 
-### ARTIGO 67. ESPECIFICAÇÃO DE AUDITORIA DAS 6 ABAS DOS SIMULADORES ECONÓMICOS MIRA
+### ARTIGO 68. ESPECIFICAÇÃO DE AUDITORIA DAS 6 ABAS DOS SIMULADORES ECONÓMICOS MIRA
 
 Fica homologada a especificação matemática, legal e protocolar dos 6 simuladores financeiros e legais independentes integrados no módulo `SimulatorsView.tsx`:
 

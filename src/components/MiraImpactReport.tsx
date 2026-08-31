@@ -10,6 +10,7 @@ import {
 import { adminService } from '../services/adminService';
 import { generateImpactReportPDF, generateAuditExcel } from '../services/exportService';
 import { UNIFIED_CATEGORIES } from '../types';
+import { RecurrenceMetricsSnapshot } from '../config/telemetryBaselines';
 
 interface PlatformCounts {
   users: number;
@@ -19,6 +20,7 @@ interface PlatformCounts {
   processosAjudados: number;
   retentionRate: number;
   returningUsers: number;
+  recurrence?: RecurrenceMetricsSnapshot | null;
   pwaMobileDownloads: number;
   pwaComputerDownloads: number;
   usersToday: number;
@@ -371,7 +373,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               { label: 'Perfis', value: (counts?.users ?? 0).toLocaleString(), sub: 'Perfis Registados', color: 'text-[#FF8C00]', icon: Users },
               { label: 'Apoios Prestados', value: (counts?.processosAjudados ?? 0).toLocaleString(), sub: 'Minutas + Simulações', color: 'text-emerald-400', icon: CheckCircle2 },
               { label: 'Horas Poupadas', value: (counts?.horasPoupadas ?? 0).toLocaleString(), sub: 'Modelo Ponderado', color: 'text-indigo-400', icon: Clock },
-              { label: 'Recorrência', value: `${counts?.retentionRate ?? 0}%`, sub: 'Baseline histórico de retenção', color: 'text-blue-400', icon: TrendingUp },
+              { label: 'Retorno & Recorrência', value: counts?.recurrence?.isLoaded ? `${counts.recurrence.observedRetentionRate}%` : '...', sub: counts?.recurrence?.isLoaded ? `${counts.recurrence.returningUsers} de ${counts.recurrence.observedUsers} observados` : 'A sincronizar...', color: 'text-blue-400', icon: TrendingUp },
               { label: 'Consultas IA', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18668).toLocaleString(), sub: 'Consultas Humanas', color: 'text-purple-400', icon: BarChart3 },
               { label: 'PWA Installs', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString(), sub: 'Mobile + Desktop', color: 'text-rose-400', icon: Activity },
             ].map(({ label, value, sub, color, icon: Icon }) => (
@@ -388,68 +390,81 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
         {/* ===== MODULE SELECTION TABS ===== */}
         <div className="flex flex-wrap gap-2 no-print">
           {[
-            { id: 'kpis', label: '📊 Visão Geral', icon: Target },
-            { id: 'searches', label: '🔎 Buscas & Cliques', icon: Search },
-            { id: 'jobs', label: '💼 Trabalho & Vagas', icon: Briefcase },
-            { id: 'housing', label: '🏠 Habitação & Rendas', icon: Home },
-            { id: 'services', label: '📍 Serviços Locais', icon: MapPin },
-            { id: 'tools', label: '🧮 Simuladores & Minutas', icon: Calculator },
-            { id: 'grant_report', label: '🏆 Dossiê Fundos / PDF', icon: Award },
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSection(tab.id as any)}
-              className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-                activeSection === tab.id
-                  ? 'bg-[#FF8C00] text-white shadow-lg shadow-orange-500/20 scale-[1.01]'
-                  : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              <tab.icon size={13} />
-              <span>{tab.label}</span>
-            </button>
-          ))}
+            { id: 'kpis', label: '1. Resumo Executivo', icon: Target },
+            { id: 'grant_report', label: '2. Relatório de Financiamento & Impacto', icon: Award },
+            { id: 'searches', label: '3. Análise de Demandas IA', icon: MessageCircle },
+            { id: 'jobs', label: '4. Emprego & Integração', icon: Briefcase },
+            { id: 'housing', label: '5. Habitação & Apoio', icon: Home },
+            { id: 'services', label: '6. Serviços Públicos', icon: Globe },
+            { id: 'tools', label: '7. Ferramentas & PWA', icon: Calculator },
+          ].map(tab => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSection(tab.id as any)}
+                className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
+                  activeSection === tab.id
+                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Icon size={16} />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* ===== TAB 1: VISÃO GERAL DE IMPACTO ===== */}
+        {/* ========================================================= */}
+        {/* TAB 1: RESUMO EXECUTIVO (MÉTRICAS CORE)                  */}
+        {/* ========================================================= */}
         {activeSection === 'kpis' && (
           <div className="space-y-6">
-            <div className="p-6 md:p-8 bg-gradient-to-br from-indigo-950/60 to-slate-950 border border-indigo-500/20 rounded-[2.5rem] shadow-xl text-white print-card">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-indigo-500/20 text-indigo-300 rounded-2xl border border-indigo-500/30">
-                  <Target size={24} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black uppercase tracking-tight text-white">Análise Integrada por Categorias MIRA</h2>
-                  <p className="text-xs text-slate-400 font-medium">Mapeamento em tempo real conectado às 10 Categorias Unificadas da plataforma</p>
-                </div>
-              </div>
+            <div className="p-6 md:p-8 bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-xl text-white print-card">
+              <h3 className="text-xl font-black uppercase tracking-tight text-white mb-2 flex items-center gap-2">
+                <Target className="text-orange-400" size={24} />
+                Indicadores-Chave de Impacto Social
+              </h3>
+              <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-6">
+                Dados em Tempo Real • Plataforma Soberana MIRA Imigrante
+              </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 bg-white/5 border border-indigo-500/20 rounded-[2rem] space-y-3 print-card">
-                  <Clock size={28} className="text-indigo-400" />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Horas Burocráticas Poupadas</p>
-                  <p className="text-4xl font-black text-white">{(counts?.horasPoupadas ?? Math.floor((counts?.users || 0) * 4.5)).toLocaleString()}h</p>
-                  <p className="text-xs text-indigo-300 font-semibold">Estimativa baseada em 4,5h médias por processo burocrático (INE 2024)</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-6 bg-white/5 border border-orange-500/20 rounded-[2rem] space-y-3 print-card">
+                  <Users size={28} className="text-orange-400" />
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Total de Perfis Registados</p>
+                  <p className="text-4xl font-black text-white">{(counts?.users ?? 0).toLocaleString()}</p>
+                  <p className="text-xs text-orange-300 font-semibold">População Física de Utilizadores na Base de Dados</p>
                 </div>
 
                 <div className="p-6 bg-white/5 border border-emerald-500/20 rounded-[2rem] space-y-3 print-card">
-                  <CheckCircle2 size={28} className="text-emerald-400" />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Apoios Burocráticos Prestados</p>
-                  <p className="text-4xl font-black text-white">{(counts?.processosAjudados ?? (counts?.users || 0)).toLocaleString()}</p>
+                  <FileCheck size={28} className="text-emerald-400" />
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Processos & Minutas Apoiadas</p>
+                  <p className="text-4xl font-black text-white">{(counts?.processosAjudados ?? 0).toLocaleString()}</p>
                   <p className="text-xs text-emerald-300 font-semibold">Minutas, Simulações Fiscais e Guias de Orientação (NISS, IRS, AR)</p>
                 </div>
 
                 <div className="p-6 bg-white/5 border border-blue-500/20 rounded-[2rem] space-y-3 print-card">
                   <TrendingUp size={28} className="text-blue-400" />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Taxa de Retenção</p>
-                  <p className="text-4xl font-black text-white">{counts?.retentionRate ?? 0}%</p>
-                  <p className="text-xs text-blue-300 font-semibold">{(counts?.returningUsers ?? 0).toLocaleString()} utilizadores recorrentes ativos</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Retorno & Recorrência de Uso</p>
+                  {!counts?.recurrence || !counts.recurrence.isLoaded ? (
+                    <div className="flex items-center space-x-2 py-2">
+                      <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-xs text-blue-300 font-semibold">A sincronizar com a base de dados...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-4xl font-black text-white">{counts.recurrence.observedRetentionRate}%</p>
+                      <p className="text-xs text-blue-300 font-semibold">
+                        {counts.recurrence.returningUsers.toLocaleString()} retornantes ({counts.recurrence.distinctDaysReturningUsers} em dias distintos) em {counts.recurrence.observedUsers.toLocaleString()} observados
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* UNIFIED CATEGORIES GRID */}
             <div className="p-6 md:p-8 bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-xl text-white print-card space-y-4">
               <h3 className="text-lg font-black uppercase tracking-tight text-white flex items-center gap-2">
                 <Layers className="text-orange-400" size={20} />
@@ -868,7 +883,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
               <div className="p-6 bg-white/5 border border-emerald-500/20 rounded-[2rem] space-y-3">
                 <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Justificação de Impacto Social Auditada</h4>
                 <p className="text-sm text-slate-200 leading-relaxed font-medium">
-                  A plataforma MIRA Imigrante registou no seu ecossistema {(counts?.users ?? 0).toLocaleString()} perfis persistidos (com 58 contas de autenticação direta ativas). A bolsa de emprego integra uma população operacional viva de {(typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs) ? (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs).toLocaleString() : '18.276'} vagas ativas (com 17.356 vagas no snapshot histórico homologado MIRA-KPI-003 e +920 vagas adicionais reconciliadas), agregadas de 117 portais oficiais. A triagem automática de IA, simuladores e minutas geraram uma estimativa de mais de {(counts?.horasPoupadas ?? 0).toLocaleString()} horas burocráticas poupadas segundo o modelo ponderado MIRA, com uma taxa de recorrência histórica de {counts?.retentionRate ?? 0}% (baseline histórico documentado).
+                  A plataforma MIRA Imigrante registou no seu ecossistema {(counts?.users ?? 0).toLocaleString()} perfis persistidos (com 58 contas de autenticação direta ativas). A bolsa de emprego integra uma população operacional viva de {(typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs) ? (typeof counts?.jobs === 'object' ? (counts?.jobs as any)?.db : counts?.jobs).toLocaleString() : '18.276'} vagas ativas (com 17.356 vagas no snapshot histórico homologado MIRA-KPI-003 e +920 vagas adicionais reconciliadas), agregadas de 117 portais oficiais. A triagem automática de IA, simuladores e minutas geraram uma estimativa de mais de {(counts?.horasPoupadas ?? 0).toLocaleString()} horas burocráticas poupadas segundo o modelo ponderado MIRA, com uma taxa de recorrência de uso observada de {counts?.retentionRate ?? 0}% (apurada sobre atividade humana canónica pós-cutoff, com baseline piloto histórico de 832 utilizadores documentado).
                 </p>
               </div>
 
@@ -882,7 +897,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                   { label: 'Consultas MIRA Chat (Baseline MIRA-KPI-002)', value: '18.668 (congelado)' },
                   { label: 'Horas Burocráticas Poupadas (Modelo MIRA)', value: `${(counts?.horasPoupadas ?? 0).toLocaleString()}h` },
                   { label: 'Apoios Burocráticos Prestados (Minutas & Simulações)', value: (counts?.processosAjudados ?? 0).toLocaleString() },
-                  { label: 'Taxa de Recorrência Histórica (Baseline)', value: `${counts?.retentionRate ?? 0}%` },
+                  { label: 'Taxa de Retorno e Recorrência de Utilizadores', value: counts?.recurrence?.isLoaded ? `${counts.recurrence.observedRetentionRate}% (${counts.recurrence.returningUsers}/${counts.recurrence.observedUsers})` : 'A sincronizar...' },
                   { label: 'Instalações da Aplicação PWA (Desde 12/08)', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString() },
                 ].map(({ label, value }) => (
                   <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex justify-between items-center print-card">

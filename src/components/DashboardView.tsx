@@ -531,7 +531,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
 
                             <div className="bg-gradient-to-br from-emerald-900/80 to-slate-900/80 p-5 rounded-[2.2rem] border border-emerald-500/30 shadow-xl relative overflow-hidden">
                                 <TrendingUp size={18} className="text-emerald-400 mb-3" />
-                                <p className="text-[9px] font-black uppercase text-emerald-300 tracking-wider mb-1">Recorrência Histórica</p>
+                                <p className="text-[9px] font-black uppercase text-emerald-300 tracking-wider mb-1">Recorrência de Uso</p>
                                 <h3 className="text-3xl font-black text-emerald-400">{counts.retentionRate}%</h3>
                             </div>
 
