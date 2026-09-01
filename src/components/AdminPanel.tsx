@@ -716,7 +716,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                              { label: 'Simulações 🧮', value: (counts as any).simulations ?? 0, sub: 'IRS, Salários & Prazos', icon: Calculator, color: 'text-emerald-400', bg: 'from-emerald-900/30' },
                                              { label: 'Minutas & Guias 📑', value: templates.length + serviceGuides.length, sub: `${templates.length} minutas + ${serviceGuides.length} guias`, icon: FileSignature, color: 'text-amber-300', bg: 'from-amber-950/40' },
                                              { label: 'Docs Gerados 📄', value: counts.downloads ?? 0, sub: 'Documentos e minutas gerados', icon: FileText, color: 'text-amber-400', bg: 'from-amber-900/30' },
-                                             { label: 'Vagas', value: counts.jobs?.db ?? 11116, sub: '11.116 vagas públicas ativas', icon: Briefcase, color: 'text-teal-400', bg: 'from-teal-900/30' },
+                                             { label: 'Vagas', value: counts.jobs?.db ?? 0, sub: `${(counts.jobs?.db ?? 0).toLocaleString('pt-PT')} vagas públicas ativas`, icon: Briefcase, color: 'text-teal-400', bg: 'from-teal-900/30' },
                                              { label: 'Serviços', value: counts.services?.db ?? 0, sub: 'Serviços mapeados', icon: MapPin, color: 'text-[#00E5FF]', bg: 'from-cyan-900/30' },
                                              { label: 'Cursos', value: counts.courses?.db ?? 0, sub: 'Cursos de formação', icon: GraduationCap, color: 'text-rose-400', bg: 'from-rose-900/30' },
                                              { label: 'Posts & Fórum', value: counts.posts, sub: `${counts.comments} comentários`, icon: MessageCircle, color: 'text-blue-400', bg: 'from-blue-900/30' },

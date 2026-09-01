@@ -88,93 +88,35 @@ const getSuggestions = (lang: string, _user?: UserType) => {
 
   const suggestions: Record<string, string[]> = {
     PT: [
-      "Novas Regras de Imigração",
-      "Visto D1 (Trabalho)",
+      "Retorno Voluntário",
       "Via Verde para Empresas",
-      "Retorno Voluntário"
+      "Novas Regras de Imigração",
+      "Visto de Trabalho (D1)"
     ],
     EN: [
-      "New Immigration Rules",
-      "D1 Visa (Work)",
+      "Voluntary Return",
       "Via Verde for Companies",
-      "Voluntary Return"
+      "New Immigration Rules",
+      "Work Visa (D1)"
     ],
     ES: [
-      "Nuevas Reglas de Inmigración",
-      "Visado D1 (Trabajo)",
+      "Retorno Voluntario",
       "Vía Verde para Empresas",
-      "Retorno Voluntario"
+      "Nuevas Reglas de Inmigración",
+      "Visado de Trabajo (D1)"
     ],
     FR: [
-      "Nouvelles Règles d'Immigration",
-      "Visa D1 (Travail)",
+      "Retour Volontaire",
       "Via Verde pour Entreprises",
-      "Retour Volontaire"
+      "Nouvelles Règles d'Immigration",
+      "Visa de Travail (D1)"
     ]
   };
   return suggestions[normLang] || suggestions['PT'];
 };
 
-const getContextualSuggestions = (messages: any[], lang: string, user?: UserType): string[] => {
+const getContextualSuggestions = (_messages: any[], lang: string, user?: UserType): string[] => {
   const normLang = (lang || 'PT').toUpperCase();
-  if (!messages || messages.length <= 1) {
-    return getSuggestions(normLang, user);
-  }
-
-  // Analisa as mensagens recentes para sugerir próximos passos contextuais na jornada de regularização
-  const recentText = messages.slice(-3).map(m => m.text || '').join(' ').toLowerCase();
-
-  if (normLang === 'PT') {
-    if (recentText.includes('estud') || recentText.includes('faculdade') || recentText.includes('universidade') || recentText.includes('91')) {
-      return ["Retorno Voluntário", "Via Verde para Empresas", "Novas Regras de Imigração", "Visto de Trabalho (D1)"];
-    }
-    if (recentText.includes('d1') || recentText.includes('promessa') || recentText.includes('contrato')) {
-      return ["Visto D1 (Trabalho)", "Via Verde para Empresas", "Minuta de Promessa de Contrato", "Requisitos IEFP e VFS"];
-    }
-    if (recentText.includes('d8') || recentText.includes('nomada') || recentText.includes('remoto') || recentText.includes('teletrabalho')) {
-      return ["Visto D8 (Nómada Digital)", "Comprovação de Rendimentos D8", "D8 Estada Temporária vs Residência", "Enquadramento Fiscal IRS"];
-    }
-    if (recentText.includes('via verde') || recentText.includes('empresa')) {
-      return ["Via Verde para Empresas", "Visto D1 (Trabalho)", "Termo de Responsabilidade Empresarial", "Agendamento Prioritário AIMA"];
-    }
-    if (recentText.includes('aima') || recentText.includes('resid') || recentText.includes('agendamento')) {
-      return ["Agendamento AIMA 2026", "Retorno Voluntário", "Reagrupamento Familiar", "Gerar Minuta AIMA em PDF"];
-    }
-    if (recentText.includes('nif') || recentText.includes('niss')) {
-      return ["Como tirar o NIF?", "Como pedir o NISS?", "Visto D1 (Trabalho)", "Linha de Metro da Integração"];
-    }
-  } else if (normLang === 'EN') {
-    if (recentText.includes('study') || recentText.includes('student') || recentText.includes('91')) {
-      return ["Voluntary Return", "Via Verde for Companies", "New Immigration Rules", "Work Visa (D1)"];
-    }
-    if (recentText.includes('d1') || recentText.includes('contract') || recentText.includes('job')) {
-      return ["D1 Visa (Work)", "Via Verde for Companies", "Work Promise Letter PDF", "IEFP & VFS Requirements"];
-    }
-    if (recentText.includes('d8') || recentText.includes('nomad') || recentText.includes('remote')) {
-      return ["D8 Visa (Digital Nomad)", "D8 Income Proof", "D8 Temporary vs Residence", "Tax Guidance IRS"];
-    }
-  } else if (normLang === 'ES') {
-    if (recentText.includes('estud') || recentText.includes('universidad') || recentText.includes('91')) {
-      return ["Retorno Voluntario", "Vía Verde para Empresas", "Nuevas Reglas de Inmigración", "Visado de Trabajo (D1)"];
-    }
-    if (recentText.includes('d1') || recentText.includes('contrato') || recentText.includes('trabajo')) {
-      return ["Visado D1 (Trabajo)", "Vía Verde para Empresas", "Minuta Promesa de Contrato", "Requisitos IEFP y VFS"];
-    }
-    if (recentText.includes('d8') || recentText.includes('nomada') || recentText.includes('remoto')) {
-      return ["Visado D8 (Nómada Digital)", "Comprobación de Ingresos D8", "D8 Temporal vs Residencia", "Orientación Fiscal IRS"];
-    }
-  } else if (normLang === 'FR') {
-    if (recentText.includes('etud') || recentText.includes('universite') || recentText.includes('91')) {
-      return ["Retour Volontaire", "Via Verde pour Entreprises", "Nouvelles Règles d'Immigration", "Visa de Travail (D1)"];
-    }
-    if (recentText.includes('d1') || recentText.includes('contrat') || recentText.includes('travail')) {
-      return ["Visa D1 (Travail)", "Via Verde pour Entreprises", "Promesse de Contrat PDF", "Exigences IEFP et VFS"];
-    }
-    if (recentText.includes('d8') || recentText.includes('nomade') || recentText.includes('distance')) {
-      return ["Visa D8 (Nomade Digital)", "Justificatifs de Revenus D8", "D8 Séjour Temporaire vs Résidence", "Fiscalité IRS"];
-    }
-  }
-
   return getSuggestions(normLang, user);
 };
 

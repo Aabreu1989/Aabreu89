@@ -48,24 +48,16 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'promulgou': '🏛️ PROMULGAÇÃO DO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (31 DE AGOSTO DE 2026):\nO Presidente da República promulgou a nova Lei de Estrangeiros e Asilo com diretrizes interpretativas obrigatórias do Tribunal Constitucional que protegem crianças nascidas em Portugal, asseguram a unidade familiar no Reagrupamento e limitam a retenção de estrangeiros sem antecedentes.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
   'promulgação': '🏛️ PROMULGAÇÃO DO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (31 DE AGOSTO DE 2026):\nO Presidente da República promulgou a nova Lei de Estrangeiros e Asilo com diretrizes interpretativas obrigatórias do Tribunal Constitucional que protegem crianças nascidas em Portugal, asseguram a unidade familiar no Reagrupamento e limitam a retenção de estrangeiros sem antecedentes.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
   'promulgacao': '🏛️ PROMULGAÇÃO DO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (31 DE AGOSTO DE 2026):\nO Presidente da República promulgou a nova Lei de Estrangeiros e Asilo com diretrizes interpretativas obrigatórias do Tribunal Constitucional que protegem crianças nascidas em Portugal, asseguram a unidade familiar no Reagrupamento e limitam a retenção de estrangeiros sem antecedentes.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'novas regras de imigração': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO PROMULGADO (31/08/2026):\n\n1. PROTEÇÃO DA CRIANÇA E FAMÍLIAS (Tribunal Constitucional):\nProibição absoluta de expulsão de crianças nascidas em Portugal e salvaguarda rigorosa contra separações familiares com menores.\n\n2. REAGRUPAMENTO FAMILIAR (Art. 98.º):\nIsenção prioritária de deferimento para filhos menores e dependentes directos (Portaria 1563/2007: 100% titular + 50% cônjuge + 30% filho).\n\n3. VISTOS CONSULARES PRÉVIOS OBRIGATÓRIOS:\nExtinção definitiva das Manifestações de Interesse. Exige-se visto consular obtido antes da viagem (D1 Trabalho, D2 Empreendedor, D3 Altamente Qualificado, D7 Aposentados/Rendimentos, D8 Nómada Digital, Procura de Trabalho).\n\n4. PRAZOS RÍGIDOS DE 90 DIAS:\nFixação de limite máximo improrrogável de 90 dias para decisão de processos na AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA e Apoio Legal] [view:DOCUMENT_ASSISTANT:Gerar Minutas Oficiais]',
-  'novas regras de imigracao': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO PROMULGADO (31/08/2026):\n1. Proteção de menores nascidos em Portugal e não separação de famílias.\n2. Fim definitivo das manifestações de interesse e visto consular prévio obrigatório.\n3. Reagrupamento familiar prioritário para menores.\n4. Prazo limite de 90 dias para decisões da AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'novas regras': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO PROMULGADO (31/08/2026):\n1. Proteção de crianças nascidas em Portugal e não separação familiar.\n2. Fim das manifestações de interesse e exigência de vistos consulares prévios.\n3. Reagrupamento familiar com prioridade para menores.\n4. Prazo improrrogável de 90 dias para a AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'mudanças na imigração': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO PROMULGADO (31/08/2026):\n1. Proteção de crianças nascidas em Portugal.\n2. Fim da manifestação de interesse e exigência de vistos consulares.\n3. Reagrupamento prioritário de menores.\n4. Prazo de 90 dias na AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'pacote de leis': '🏛️ NOVO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (PROMULGADO PELO PRESIDENTE EM 31/08/2026):\n1. Proteção estrita de crianças nascidas em Portugal e proibição de separação familiar (Tribunal Constitucional).\n2. Reagrupamento Familiar (Art. 98.º) com isenção prioritária para menores.\n3. Exigência estrita de Visto Consular prévio obtido no país de origem (fim da Manifestação de Interesse).\n4. Prazos de 90 dias não prorrogáveis para decisão de pedidos.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'tribunal constitucional': '⚖️ DECISÃO DO TRIBUNAL CONSTITUCIONAL SOBRE A LEI DE ESTRANGEIROS (Agosto 2026):\nO Tribunal Constitucional validou o diploma e fixou critérios orientadores vinculativos: salvaguarda do superior interesse da criança, proibição de expulsão de crianças nascidas em Portugal, garantia da unidade familiar e proporcionalidade na não privação de liberdade de cidadãos sem antecedentes.\n[view:LOCAL_SERVICES:Ver Apoio Legal]',
-  'mudancas de lei': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS E ASILO PROMULGADO (31/08/2026):\nO novo quadro legal aprovado e promulgado pelo Presidente estabelece: 1. Proteção de crianças nascidas em Portugal e não separação de famílias; 2. Fim da manifestação de interesse e obrigatoriedade de vistos consulares prévios (D1 a D8); 3. Reagrupamento familiar prioritário para menores; 4. Prazo improrrogável de 90 dias para decisões AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'novas leis': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS E ASILO PROMULGADO (31/08/2026):\nO novo quadro legal aprovado e promulgado pelo Presidente estabelece: 1. Proteção de crianças nascidas em Portugal e não separação de famílias; 2. Fim da manifestação de interesse e obrigatoriedade de vistos consulares prévios (D1 a D8); 3. Reagrupamento familiar prioritário para menores; 4. Prazo improrrogável de 90 dias para decisões AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'parlamento': 'O Parlamento Português aprovou alterações estruturais à Lei de Estrangeiros: 1. Extinção das Manifestações de Interesse (Art. 88/89); 2. Exigência obrigatória de visto prévio obtido no consulado de origem; 3. Reformulação do Visto de Procura de Trabalho com pré-validação empresarial; 4. Novas regras de Reagrupamento Familiar com tempo de residência prévia e prova estrita de alojamento; 5. Descentralização judicial das ações contra a AIMA pelos tribunais administrativos de todo o país.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'lei': 'As últimas alterações à Lei de Estrangeiros aprovadas no Parlamento estabelecem que NENHUM estrangeiro pode regularizar-se a partir de estatuto de turista em Portugal. É obrigatória a instrução do visto no posto consular do país de residência legal antes da viagem.\n[view:LOCAL_SERVICES:Ver Mapa de Apoio Legal]',
-  'cplp': 'VISTOS E RESIDÊNCIA CPLP (Acordo de Mobilidade): A concessão da Autorização de Residência CPLP mantém-se ativa mas exige apresentação de Visto Consular emitido no país de origem ou agendamento oficial. Os cidadãos CPLP beneficiam de isenção de taxas de visto e dispensam apresentação de comprovativo de meios quando apoiados por termo de responsabilidade.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas CPLP]',
-  'residencia': 'Para obter residência legal: 1. Obtém o visto adequado no Consulado do teu país de origem. 2. Viaja para Portugal com visto válido. 3. Agenda na AIMA via portal aima.gov.pt para emitir o Título de Residência. Regularizar-se em território nacional como turista foi extinto pelas reformas do Parlamento.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'aima': 'A AIMA (Agência para a Integração, Migrações e Asilo) gere todos os processos de imigração. Com as leis aprovadas em 2025/2026, a AIMA disponibilizou o Portal de Renovações Online para cartões permanentes e UE, e o Governo descentralizou os processos judiciais pelos tribunais do país para acelerar as pendências.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
-  'sns': 'Para aceder ao SNS (Serviço Nacional de Saúde), registas-te no Centro de Saúde da tua área com o passaporte e comprovativo de morada. Tens direito a médico de família e urgências.\n[view:LOCAL_SERVICES:Centros de Saúde SNS]',
-  'emprego': 'Na secção de Emprego do MIRA temos 5.326 vagas de emprego ativas sincronizadas em tempo real com portais como IEFP, Net-Empregos, Sapo Emprego e Turismo de Portugal. Podes filtrar por categoria, localidade e candidatura direta.\n[view:JOBS:Ver 5.326 Vagas de Emprego]',
-  'vagas': 'A plataforma MIRA disponibiliza 5.326 vagas de emprego ativas em Portugal em diversas áreas (Hotelaria, Restauração, Construção, TI, Saúde, Serviços e Administração).\n[view:JOBS:Ver 5.326 Vagas de Emprego]',
-  'curso': 'Na secção de Formação temos 156 cursos de formação gratuitos e certificados pelo IEFP e DGES / Passaporte Qualifica.\n[view:LEARNING:Ver 156 Cursos Gratuitos]',
-  'cursos': 'Na secção de Formação temos 156 cursos de formação gratuitos e certificados pelo IEFP e DGES / Passaporte Qualifica.\n[view:LEARNING:Ver 156 Cursos Gratuitos]',
+  'novas regras de imigração': '⚠️ NOVO PACOTE LEGISLATIVO DE IMIGRAÇÃO & ASILO (PROMULGADO EM 31/08/2026):\n\n1. MEDIDAS DURAS & RESTRIÇÕES SEVERAS:\n• FIM TOTAL DA REGULARIZAÇÃO EM PORTUGAL: A Manifestação de Interesse (Art. 88/89) acabou em definitivo. Entrar como turista para trabalhar não é permitido e gera ordem de abandono do país.\n• REAGRUPAMENTO FAMILIAR RESTRITO (Art. 98.º): Exigência de tempo de residência legal prévia do titular e comprovação financeira rigorosa. Familiares sem visto enfrentam risco de indeferimento.\n• CENTROS DE INSTALAÇÃO TEMPORÁRIA (CIT): Detenção e retenção em centros fechados para processos de afastamento e asilo em fronteira.\n• EXPULSÃO & INTERDIÇÃO SCHENGEN: Prazos curtos para saída voluntária; incumprimento gera expulsão forçada e interdição de 3 a 5 anos no Espaço Schengen.\n• MULTAS PESADAS A EMPREGADORES: Coimas elevadas para contratação sem título.\n\n2. SALVAGUARDAS DO TRIBUNAL CONSTITUCIONAL:\n• Proibição de expulsão de crianças nascidas em Portugal e não separação forçada de famílias.\n\n3. ÚNICA VIA LEGAL:\n• Obter Visto Consular prévio antes da viagem (D1 a D8 ou Procura de Trabalho) ou aderir ao Retorno Voluntário (OIM/AIMA).\n[view:LOCAL_SERVICES:Ver Balcões AIMA e Apoio Legal] [view:DOCUMENTS:voluntary_return:Programa de Retorno Voluntário (ARVoRE VIII)] [view:DOCUMENT_ASSISTANT:Gerar Minutas Oficiais]',
+  'novas regras de imigracao': '⚠️ PACOTE DE IMIGRAÇÃO PROMULGADO (31/08/2026): Fim definitivo das manifestações de interesse, restrições no reagrupamento familiar, centros de detenção (CIT), expulsões com interdição Schengen de 3 a 5 anos e multas pesadas a empresas. O TC apenas salvaguardou a não expulsão de crianças nascidas em Portugal. Exige-se visto consular prévio.\n[view:LOCAL_SERVICES:Ver Balcões AIMA e Apoio Legal]',
+  'novas regras': '⚠️ PACOTE DE IMIGRAÇÃO PROMULGADO (31/08/2026): Fim das manifestações de interesse, visto consular prévio obrigatório, restrições no reagrupamento, centros de retenção (CIT) e expulsões com interdição Schengen de 3 a 5 anos. Não expulsão de crianças nascidas em Portugal salvaguardada pelo TC.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'pacote de leis': '⚠️ PACOTE LEGISLATIVO DE IMIGRAÇÃO PROMULGADO (31/08/2026): Fim definitivo da regularização em Portugal (Art. 88/89), barreiras ao reagrupamento familiar, centros de instalação temporária (CIT) e expulsão com interdição Schengen de 3 a 5 anos para quem não cumprir notificações de abandono. Exige-se visto consular prévio.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'mudancas de lei': '⚠️ MUDANÇAS NA LEI DE IMIGRAÇÃO (PROMULGADAS EM 31/08/2026): Regras duras em vigor — fim da regularização para quem entra como turista, exigência de visto consular prévio, centros de retenção (CIT), prazos curtos para saída voluntária e interdição Schengen de 3 a 5 anos em caso de expulsão.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'novas leis': '⚠️ MUDANÇAS NA LEI DE IMIGRAÇÃO (PROMULGADAS EM 31/08/2026): Regras duras em vigor — fim da regularização para quem entra como turista, exigência de visto consular prévio, centros de retenção (CIT), prazos curtos para saída voluntária e interdição Schengen de 3 a 5 anos em caso de expulsão.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'emprego': 'Na secção de Emprego do MIRA encontras milhares de vagas de emprego ativas em Portugal sincronizadas em tempo real com portais como IEFP, Net-Empregos, Sapo Emprego e Turismo de Portugal. Podes filtrar por categoria, localidade e candidatura direta.\n[view:JOBS:Ver Vagas de Emprego]',
+  'vagas': 'A plataforma MIRA disponibiliza milhares de vagas de emprego ativas em Portugal em diversas áreas (Hotelaria, Restauração, Construção, TI, Saúde, Serviços e Administração).\n[view:JOBS:Ver Vagas de Emprego]',
+  'curso': 'Na secção de Formação temos cursos de formação gratuitos e certificados pelo IEFP e DGES / Passaporte Qualifica.\n[view:LEARNING:Ver Cursos Gratuitos]',
+  'cursos': 'Na secção de Formação temos cursos de formação gratuitos e certificados pelo IEFP e DGES / Passaporte Qualifica.\n[view:LEARNING:Ver Cursos Gratuitos]',
   'serviço': 'No mapa de Serviços Locais encontras 238 pontos de apoio oficiais ao imigrante em Portugal (CNAIM, CLAIM, Balcões AIMA e Lojas do Cidadão).\n[view:LOCAL_SERVICES:Ver Mapa de Serviços]',
   'servicos': 'No mapa de Serviços Locais encontras 238 pontos de apoio oficiais ao imigrante em Portugal (CNAIM, CLAIM, Balcões AIMA e Lojas do Cidadão).\n[view:LOCAL_SERVICES:Ver Mapa de Serviços]',
   'comunidade': 'A Comunidade MIRA reúne 999+ membros ativos, onde podes partilhar dúvidas, participar em debates, consultar publicações verificadas e ganhar selos de conquista.\n[view:COMMUNITY:Entrar na Comunidade]',
@@ -660,70 +652,90 @@ Interdiction de séjour au Portugal et dans l'Espace Schengen de 3 ans (sauf rem
       'nueva ley de extranjeria', 'nuevas reglas de inmigracion', 'nuevas reglas de inmigración', 'reglas de inmigracion',
       'nouvelle loi immigration', 'nouvelles regles immigration', 'nouvelles règles d immigration', 'nouvelles règles d\'immigration'
     ],
-    PT: `🏛️ NOVO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (PROMULGADO PELO PRESIDENTE DA REPÚBLICA — 31 DE AGOSTO DE 2026):
+    PT: `⚠️ NOVO PACOTE LEGISLATIVO DE IMIGRAÇÃO & ASILO (PROMULGADO EM 31/08/2026):
 
-1. CONTEXTO & VALIDAÇÃO PELO TRIBUNAL CONSTITUCIONAL:
-O Presidente da República promulgou o novo diploma que revê o regime de entrada, permanência, saída e concessão de asilo em Portugal, após o Tribunal Constitucional (Acórdão de 28/08/2026) ter fixado diretrizes orientadoras vinculativas.
+O Presidente da República promulgou o novo quadro legal que endurece severamente as regras de entrada, permanência e expulsão em Portugal. O Tribunal Constitucional travou a expulsão de crianças nascidas em Portugal, mas todo o restante pacote de restrições pesadas entrou em vigor:
 
-2. CRITÉRIOS VINCULATIVOS DE SALVAGUARDA DE DIREITOS:
-- SUPERIOR INTERESSE DA CRIANÇA: Salvaguarda e proibição absoluta de expulsão de crianças nascidas em Portugal e impedimento legal de qualquer separação forçada de famílias com dependentes menores.
-- PROPORCIONALIDADE DA DETENÇÃO: Ficam estritamente vedadas retenções desproporcionadas de cidadãos estrangeiros sem antecedentes criminais; centros de acolhimento sob estrita supervisão judicial.
-- ASILO & PROTEÇÃO HUMANITÁRIA: Garantia integral do princípio de non-refoulement (não repulsão) e acolhimento humanitário.
+🚨 1. MEDIDAS DURAS & RESTRIÇÕES SEVERAS PARA OS IMIGRANTES:
+• FIM TOTAL DA REGULARIZAÇÃO EM PORTUGAL: A Manifestação de Interesse (Art. 88.º/89.º) acabou em definitivo. Entrar como turista e tentar trabalhar ou regularizar-se já NÃO é permitido. Pedidos feitos em território nacional sem visto consular prévio são liminarmente recusados com notificação para abandonar o país.
+• REAGRUPAMENTO FAMILIAR MUITO MAIS DIFÍCIL (Art. 98.º): Exigência de tempo de residência legal prévia do titular e comprovação rigorosa de rendimentos e habitação registada na AT (Portaria 1563/2007). Familiares que já estejam em Portugal sem visto enfrentam risco direto de recusa.
+• CENTROS DE INSTALAÇÃO TEMPORÁRIA (CIT) & DETENÇÃO: Criação e expansão de centros fechados para retenção de migrantes em processo de afastamento ou em procedimentos acelerados de asilo nas fronteiras e aeroportos.
+• NOTIFICAÇÕES DE ABANDONO & EXPULSÃO RÁPIDA: Prazos mais curtos para saída voluntária (10 a 20 dias). O não cumprimento resulta em expulsão coerciva com interdição de entrada em Portugal e em todo o Espaço Schengen por 3 a 5 anos.
+• MULTAS PESADAS & FISCALIZAÇÃO POLICIAL: Coimas agravadas para empregadores que contratem estrangeiros sem título, levando empresas a rescindir contratos ou recusar contratações, além de fiscalizações reforçadas da AIMA, PSP, GNR e ACT.
 
-3. PILARES OPERACIONAIS DA NOVA LEI:
-- REAGRUPAMENTO FAMILIAR (Art. 98.º a 108.º): Regra geral de residência legal prévia com isenção prioritária imediata para filhos menores e dependentes directos (Portaria 1563/2007: 100% titular + 50% cônjuge + 30% filho).
-- VISTOS CONSULARES OBRIGATÓRIOS: Extinção definitiva das Manifestações de Interesse (Art. 88/89). Exigência estrita de vistos prévios obtidos no Consulado (Visto D1 Trabalho, D2 Empreendedor, D3 Altamente Qualificados/Tech Visa, D7 Aposentados/Rendimentos, D8 Nómadas Digitais e Visto de Procura de Trabalho).
-- PRAZOS RÍGIDOS DE 90 DIAS: Fixação de prazo máximo não prorrogável para decisão dos processos na AIMA para eliminar as pendências históricas.
+🛡️ 2. O QUE O TRIBUNAL CONSTITUCIONAL IMPEDIU:
+• Proibição de expulsão de crianças nascidas em território português;
+• Proibição de separação forçada entre pais e filhos menores dependentes;
+• Garantia formal de recurso aos tribunais.
 
-[view:LOCAL_SERVICES:Ver Balcões AIMA e Apoio Legal] [view:DOCUMENT_ASSISTANT:Gerar Minutas Oficiais] [view:SIMULATORS:habitacao:Verificar Custo de Vida]`,
-    EN: `🏛️ NEW IMMIGRATION & ASYLUM LEGISLATIVE PACKAGE (PROMULGATED BY THE PRESIDENT OF PORTUGAL — AUGUST 31, 2026):
+📋 3. QUAL É A ÚNICA VIA LEGAL AGORA?
+• Exige-se obrigatoriamente um VISTO CONSULAR emitido no país de origem antes de viajar (D1 Trabalho, D2 Empreendedor, D3 Altamente Qualificado, D4 Estudante, D7 Aposentado/Rendimentos, D8 Nómada Digital ou Visto de Procura de Trabalho);
+• Se estás em situação irregular e sem perspetiva de visto, o Programa de Apoio ao Retorno Voluntário (OIM / AIMA) é a alternativa oficial gratuita para regressar com dignidade e apoio à reintegração.
 
-1. CONTEXT & CONSTITUTIONAL COURT RULING:
-The President of the Republic promulgated the new Foreigners and Asylum Act following the Constitutional Court's unanimous ruling establishing binding human rights safeguards.
+[view:LOCAL_SERVICES:Ver Balcões AIMA e Apoio Legal] [view:DOCUMENTS:voluntary_return:Programa de Retorno Voluntário (ARVoRE VIII)] [view:DOCUMENT_ASSISTANT:Gerar Minutas Oficiais]`,
+    EN: `⚠️ NEW RESTRICTIVE IMMIGRATION & ASYLUM LAW (PROMULGATED AUGUST 31, 2026):
 
-2. BINDING CONSTITUTIONAL SAFEGUARDS:
-- BEST INTERESTS OF THE CHILD: Absolute ban on the deportation of children born in Portugal and protection against forced family separation.
-- PROPORTIONALITY IN DETENTION: Strictly forbids disproportionate detention of foreign nationals without criminal records.
-- REFUGEE & ASYLUM PROTECTION: Full reinforcement of the non-refoulement principle and guaranteed legal/social support.
+The President of Portugal has promulgated the new immigration and asylum law that severely tightens entry, residence, and deportation rules. While the Constitutional Court prevented the deportation of children born in Portugal, the rest of the strict package is now in full force:
 
-3. OPERATIONAL PILLARS:
-- FAMILY REUNIFICATION (Art. 98): Legal residence framework with immediate priority exemptions for minor and dependent children.
-- MANDATORY PRIOR CONSULAR VISAS: Final extinction of Expressions of Interest. All entries for work/residence require prior consular visas (D1 to D8, Job Seeker).
-- STRICT 90-DAY DEADLINE: Imposition of a non-extendable 90-day deadline for AIMA process resolutions.
+🚨 1. TOUGH MEASURES & SEVERE RESTRICTIONS:
+• TOTAL END OF IN-COUNTRY REGULARIZATION: Expressions of Interest (Art. 88/89) are permanently extinct. Arriving on a tourist visa to look for work or regularize is strictly illegal. In-country applications without a consular visa are rejected on the spot with departure orders.
+• STRICTER & DELAYED FAMILY REUNIFICATION (Art. 98): Requires prior legal residency length and rigid proof of family income. Undocumented relatives already in Portugal face severe rejection risks.
+• DETENTION CENTERS (CIT) & BORDER CAMPS: Expansion of closed Temporary Installation Centers to detain irregular migrants undergoing expulsion or during fast-track border asylum reviews.
+• FAST DEPORTATION & SCHENGEN ENTRY BANS: Short departure deadlines. Non-compliance results in forced expulsion and 3 to 5-year entry bans across the Schengen Area.
+• MASSIVE FINES FOR EMPLOYERS: Substantially increased penalties for companies hiring undocumented workers, causing severe job barriers and intensified police/labor raids.
 
-[view:LOCAL_SERVICES:View AIMA Support Centers] [view:DOCUMENT_ASSISTANT:Generate Official PDF Forms]`,
-    ES: `🏛️ NUEVO PAQUETE LEGISLATIVO DE EXTRANJERÍA Y ASILO (PROMULGADO POR EL PRESIDENTE — 31 DE AGOSTO DE 2026):
+🛡️ 2. SAFEGUARDS UPHELD BY THE CONSTITUTIONAL COURT:
+• Absolute ban on deporting children born in Portugal;
+• Prohibition of forced separation of families with minor children;
+• Right to judicial review.
 
-1. CONTEXTO Y TRIBUNAL CONSTITUCIONAL:
-El Presidente de la República promulgó la nueva Ley de Extranjería y Asilo con criterios interpretativos vinculantes fijados por el Tribunal Constitucional.
+📋 3. THE ONLY LEGAL PATHWAY:
+• You MUST obtain a Consular Visa prior to traveling (D1 Work, D2 Entrepreneur, D3 Tech, D4 Student, D7 Passive Income, D8 Nomad, or Job Seeker Visa);
+• For those in an irregular situation with no legal pathway, the IOM Voluntary Return Program (ARVoRE VIII) provides free flight and reintegration aid.
 
-2. GARANTÍAS VINCULANTES DE DERECHOS:
-- INTERÉS SUPERIOR DEL MENOR: Prohibición expresa de expulsión de niños nacidos en Portugal y garantía contra la separación familiar.
-- PROPORCIONALIDAD: Prohibición de privación desproporcionada de libertad de extranjeros sin antecedentes penales.
-- PROTECCIÓN INTERNACIONAL: Plena vigencia del principio de no devolución (non-refoulement).
+[view:LOCAL_SERVICES:View AIMA Support Centers] [view:DOCUMENTS:voluntary_return:Voluntary Return Program (ARVoRE VIII)] [view:DOCUMENT_ASSISTANT:Generate Official PDF Forms]`,
+    ES: `⚠️ NUEVO PAQUETE LEGISLATIVO RESTRICTIVO DE EXTRANJERÍA (PROMULGADO EL 31/08/2026):
 
-3. EJES FUNDAMENTALES:
-- REAGRUPACIÓN FAMILIAR: Tramitación prioritaria y exención para hijos menores.
-- VISADOS CONSULARES PREVIOS: Supresión definitiva de la Manifestación de Interés. Obligación de visado consular previo (D1 a D8, Búsqueda de Empleo).
-- PLAZOS DE 90 DÍAS: Límite improrrogable para resoluciones en AIMA.
+El Presidente de la República ha promulgado el nuevo marco legal que endurece notablemente las condiciones de inmigración y asilo en Portugal. Aunque el Tribunal Constitucional frenó la expulsión de menores nacidos en Portugal, la nueva ley impone fuertes restricciones:
 
-[view:LOCAL_SERVICES:Ver Centros AIMA] [view:DOCUMENT_ASSISTANT:Generar Formularios Oficiales]`,
-    FR: `🏛️ NOUVEAU PAQUET LÉGISLATIF IMMIGRATION & ASILE (PROMULGUÉ PAR LE PRÉSIDENT — 31 AOÛT 2026) :
+🚨 1. SEVERAS RESTRICCIONES Y MEDIDAS DURAS:
+• FIN DEFINITIVO DE LA REGULARIZACIÓN EN DESTINO: La Manifestación de Interés (Art. 88/89) queda totalmente extinguida. Llegar como turista para trabajar o regularizarse ya NO es posible y genera orden de expulsión.
+• REAGRUPACIÓN FAMILIAR MÁS DIFÍCIL (Art. 98): Exigencia de residencia legal previa consolidada y demostración económica estricta. Familiares sin visado en territorio luso afrontan graves trabas.
+• CENTROS DE RETENCIÓN (CIT) Y CONTROL FRONTERIZO: Creación y uso de centros de internamiento para extranjeros en procesos de devolución o solicitudes de asilo en frontera.
+• ÓRDENES DE ABANDONO Y PROHIBICIÓN SCHENGEN: Plazos cortos para salida voluntaria bajo apercibimiento de expulsión coercitiva y prohibición de entrada en el espacio Schengen de 3 a 5 años.
+• MULTAS ELEVADAS A EMPLEADORES: Sanciones económicas muy severas para empresas que contraten personas sin permiso y mayor fiscalización policial.
 
-1. PROMULGATION ET COUR CONSTITUTIONNELLE :
-Le Président de la République a promulgué la nouvelle Loi sur les Étrangers et le Droit d'Asile avec des garanties contraignantes de la Cour Constitutionnelle.
+🛡️ 2. SALVAGUARDAS DEL TRIBUNAL CONSTITUCIONAL:
+• No expulsión de niños nacidos en territorio portugués;
+• Prohibición de separación de familias con hijos menores;
+• Derecho a recurso judicial.
 
-2. GARANTIES FONDAMENTALES :
-- INTÉRÊT SUPÉRIEUR DE L'ENFANT : Interdiction d'expulsion des enfants nés au Portugal et interdiction de séparation des familles avec mineurs.
-- PROPORTIONNALITÉ : Interdiction de rétention disproportionnée pour les étrangers sans casier judiciaire.
-- NON-REFOULEMENT : Protection stricte des demandeurs d'asile et réfugiés.
+📋 3. LA ÚNICA VÍA LEGAL:
+• Tramitar obligatoriamente un VISADO CONSULAR previo en el país de origen (Visado D1 Trabajo, D2 Emprendedor, D3 Tech, D4 Estudiante, D7 Jubilados/Rentas, D8 Nómada o Búsqueda de Empleo);
+• En situación irregular sin salida legal, el Programa de Retorno Voluntario (OIM / AIMA) ofrece billete gratuito y ayuda económica.
 
-3. PILIERS CLÉS :
-- REGROUPEMENT FAMILIAL : Priorité absolue pour les enfants mineurs et dépendants.
-- VISAS CONSULAIRES OBLIGATOIRES : Fin définitive de la Déclaration d'Intérêt. Visa consulaire requis avant l'arrivée (D1 à D8).
-- DÉLAI DE 90 JOURS : Délai strict et non prorogeable pour les décisions de l'AIMA.
+[view:LOCAL_SERVICES:Ver Centros AIMA] [view:DOCUMENTS:voluntary_return:Programa de Retorno Voluntario (ARVoRE VIII)] [view:DOCUMENT_ASSISTANT:Generar Formularios Oficiales]`,
+    FR: `⚠️ NOUVELLES RÈGLES STRICTES D'IMMIGRATION & ASILE (PROMULGUÉES LE 31/08/2026) :
 
-[view:LOCAL_SERVICES:Centres AIMA] [view:DOCUMENT_ASSISTANT:Modèles Officiels PDF]`
+Le Président de la République a promulgué la nouvelle loi qui durcit considérablement les conditions d'immigration et d'asile au Portugal. Bien que la Cour Constitutionnelle ait interdit l'expulsion des mineurs nés au Portugal, la loi impose des restrictions sévères :
+
+🚨 1. RESTRICTIONS SÉVÈRES ET MESURES STRICTES :
+• FIN DÉFINITIVE DE LA RÉGULARISATION SUR PLACE : Les Déclarations d'Intérêt (Art. 88/89) sont définitivement supprimées. Arriver en touriste pour travailler n'est plus permis et entraîne une obligation de quitter le territoire.
+• REGROUPEMENT FAMILIAL DURCI (Art. 98) : Exigence d'une durée préalable de séjour régulier du demandeur et justificatifs de revenus renforcés.
+• CENTRES DE RÉTENTION (CIT) : Rétention possible des personnes en situation irrégulière ou en procédure accélérée d'asile aux frontières.
+• EXPULSION & INTERDICTION SCHENGEN : Délais stricts pour quitter le territoire sous peine d'expulsion forcée avec interdiction de séjour de 3 à 5 ans dans tout l'Espace Schengen.
+• FORTES AMENDES POUR LES EMPLOYEURS : Sanctions financières très lourdes pour le travail non déclaré et contrôles accrus.
+
+🛡️ 2. CE QUE LA COUR CONSTITUTIONNELLE A PROTÉGÉ :
+• Interdiction formelle d'expulser les enfants nés au Portugal ;
+• Interdiction de séparation forcée des familles avec mineurs ;
+• Maintien des voies de recours.
+
+📋 3. LA SEULE VOIE LÉGALE :
+• Obtenir obligatoirement un VISA CONSULAIRE avant le départ (D1 Travail, D2 Entrepreneur, D3 Tech, D4 Études, D7 Revenus Passifs, D8 Nomade ou Recherche d'Emploi) ;
+• Pour les personnes sans perspective de régularisation, le Programme de Retour Volontaire (OIM / AIMA) prend en charge le billet d'avion et l'aide à la réinstallation.
+
+[view:LOCAL_SERVICES:Centres AIMA] [view:DOCUMENTS:voluntary_return:Programme de Retour Volontaire (ARVoRE VIII)] [view:DOCUMENT_ASSISTANT:Modèles Officiels PDF]`
   },
 
   REAGRUPAMENTO_FAMILIAR: {
