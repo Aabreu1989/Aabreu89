@@ -1,3 +1,5 @@
+import { detectSemanticIntent } from '../utils/semanticIntentEngine';
+import { aiQuotaService } from './aiQuotaService';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ""; 
 
@@ -31,7 +33,6 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'visto d2': '🏢 VISTO D2 (EMPREENDEDORES & INDEPENDENTES):\nDestinado a cidadãos estrangeiros que pretendam abrir empresa em Portugal, exercer atividade independente ou investir no país. Exige plano de negócios, constituição de sociedade ou relevância económica.\n[view:SIMULATORS:empreendedor:Abrir Simulador Empreendedor]',
   'visto d3': '🔬 VISTO D3 (ALTAMENTE QUALIFICADOS & TECH VISA):\nPara profissionais de topo, engenheiros, investigadores, médicos e quadros técnicos de empresas certificadas (Via Verde / Tech Visa). Exige contrato qualificado com remuneração acima da média nacional.\n[view:JOBS:Ver Vagas de Emprego]',
   'visto d8': '💻 VISTO D8 (NÓMADAS DIGITAIS & TELETRABALHO):\nPara trabalhadores remotos e freelancers com contratos ou clientes fora de Portugal. Exige comprovação de rendimentos médios mensais iguais ou superiores a 4x o salário mínimo nacional (mínimo 3.680€/mês) nos últimos 3 meses.\n[view:SIMULATORS:recibos:Simular Rendimentos]',
-  'visto d7': '🏠 VISTO D7 (REFORMADOS & RENDIMENTOS PASSIVOS):\nPara aposentados, reformados e titulares de rendimentos passivos estáveis (imóveis arrendados, dividendos, aplicações financeiras). Exige comprovação de rendimento mínimo anual de 100% do Salário Mínimo Nacional (11.040€/ano).\n[view:SIMULATORS:habitacao:Verificar Custo de Vida]',
   'procura de trabalho': '🔍 GUIA COMPLETO: VISTO DE PROCURA DE TRABALHO (PORTUGAL 2026)\n\n1. 💶 MEIOS DE SUBSISTÊNCIA (COMPROVAÇÃO FINANCEIRA):\n- Exigência: Comprovação de pelo menos 3 vezes o Salário Mínimo Nacional (RMMG 920€ em 2026 = 2.760€; ou ~2.610€ caso o consulado utilize como base o ano de 870€).\n- Alternativa: Apresentação de Termo de Responsabilidade subscrito por cidadão português ou estrangeiro residente legal em Portugal que assegure alojamento e subsistência.\n\n2. 📄 INSCRIÇÃO PRÉVIA NO IEFP (OBRIGATÓRIO):\n- Deves registar-te previamente no portal do IEFP (iefp.pt) e submeter a "Declaração de Manifestação de Interesse para Oferta de Emprego".\n- O comprovativo emitido pelo IEFP com o teu número de registo tem de ser anexado obrigatoriamente no agendamento da VFS Global / Consulado.\n\n3. ⏱️ PRAZOS MÉDIOS RECENTES NA VFS / CONSULADOS:\n- O prazo legal de decisão é de até 30 a 60 dias úteis.\n- Na prática recente dos últimos meses: VFS Brasil (SP/RJ/BH) tem demorado em média entre 25 a 45 dias úteis após a recolha biométrica; outros postos consulares variam entre 30 a 60 dias.\n\n4. 👥 RELATOS EM TEMPO REAL:\n- Para acompanhar prazos exatos e experiências de quem teve o visto deferido no último mês no teu consulado específico, consulta os relatos na Comunidade MIRA.\n\n[view:JOBS:Ver Vagas no IEFP e MIRA] [view:COMMUNITY:Ver Relatos na Comunidade]',
   'visto de procura de trabalho': '🔍 GUIA COMPLETO: VISTO DE PROCURA DE TRABALHO (PORTUGAL 2026)\n\n1. 💶 MEIOS DE SUBSISTÊNCIA (COMPROVAÇÃO FINANCEIRA):\n- Exigência: Comprovação de pelo menos 3 vezes o Salário Mínimo Nacional (RMMG 920€ em 2026 = 2.760€; ou ~2.610€ caso o consulado utilize como base o ano de 870€).\n- Alternativa: Apresentação de Termo de Responsabilidade subscrito por cidadão português ou estrangeiro residente legal em Portugal que assegure alojamento e subsistência.\n\n2. 📄 INSCRIÇÃO PRÉVIA NO IEFP (OBRIGATÓRIO):\n- Deves registar-te previamente no portal do IEFP (iefp.pt) e submeter a "Declaração de Manifestação de Interesse para Oferta de Emprego".\n- O comprovativo emitido pelo IEFP com o teu número de registo tem de ser anexado obrigatoriamente no agendamento da VFS Global / Consulado.\n\n3. ⏱️ PRAZOS MÉDIOS RECENTES NA VFS / CONSULADOS:\n- O prazo legal de decisão é de até 30 a 60 dias úteis.\n- Na prática recente dos últimos meses: VFS Brasil (SP/RJ/BH) tem demorado em média entre 25 a 45 dias úteis após a recolha biométrica; outros postos consulares variam entre 30 a 60 dias.\n\n4. 👥 RELATOS EM TEMPO REAL:\n- Para acompanhar prazos exatos e experiências de quem teve o visto deferido no último mês no teu consulado específico, consulta os relatos na Comunidade MIRA.\n\n[view:JOBS:Ver Vagas no IEFP e MIRA] [view:COMMUNITY:Ver Relatos na Comunidade]',
   'visto procura de trabalho': '🔍 GUIA COMPLETO: VISTO DE PROCURA DE TRABALHO (PORTUGAL 2026)\n\n1. 💶 MEIOS DE SUBSISTÊNCIA (COMPROVAÇÃO FINANCEIRA):\n- Exigência: Comprovação de pelo menos 3 vezes o Salário Mínimo Nacional (RMMG 920€ em 2026 = 2.760€; ou ~2.610€ caso o consulado utilize como base o ano de 870€).\n- Alternativa: Apresentação de Termo de Responsabilidade subscrito por cidadão português ou estrangeiro residente legal em Portugal que assegure alojamento e subsistência.\n\n2. 📄 INSCRIÇÃO PRÉVIA NO IEFP (OBRIGATÓRIO):\n- Deves registar-te previamente no portal do IEFP (iefp.pt) e submeter a "Declaração de Manifestação de Interesse para Oferta de Emprego".\n- O comprovativo emitido pelo IEFP com o teu número de registo tem de ser anexado obrigatoriamente no agendamento da VFS Global / Consulado.\n\n3. ⏱️ PRAZOS MÉDIOS RECENTES NA VFS / CONSULADOS:\n- O prazo legal de decisão é de até 30 a 60 dias úteis.\n- Na prática recente dos últimos meses: VFS Brasil (SP/RJ/BH) tem demorado em média entre 25 a 45 dias úteis após a recolha biométrica; outros postos consulares variam entre 30 a 60 dias.\n\n4. 👥 RELATOS EM TEMPO REAL:\n- Para acompanhar prazos exatos e experiências de quem teve o visto deferido no último mês no teu consulado específico, consulta os relatos na Comunidade MIRA.\n\n[view:JOBS:Ver Vagas no IEFP e MIRA] [view:COMMUNITY:Ver Relatos na Comunidade]',
@@ -1184,6 +1185,8 @@ export const generateAssistantResponseV45 = async (
           return { 
             text: localResp, 
             source: 'local_fallback' as const,
+            provider: 'none' as const,
+            model: 'none',
             success: true, 
             version: 'SHORTCIRCUIT_GREETING', 
             hydration: 0, 
@@ -1213,6 +1216,8 @@ export const generateAssistantResponseV45 = async (
         return { 
           text: cached.response, 
           source: 'local_fallback' as const,
+          provider: 'none' as const,
+          model: 'none',
           success: true, 
           version: 'SESSION_CACHE_HIT', 
           hydration: 0, 
@@ -1276,6 +1281,33 @@ export const generateAssistantResponseV45 = async (
     console.log(`🧠 [MIRA AGENT] Histórico compacto: ${sanitizedHistory.length}/${rawHistory.length} turnos. SABER IA: ${verifiedKb ? verifiedKb.length + ' chars' : 'sem resultado'}`);
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 🛡️ ORÇAMENTO DE SEGURANÇA (INTERNAL FREE-TIER SAFETY LIMIT)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (action === 'chat' && aiQuotaService.isSafetyBudgetExceeded()) {
+      console.warn('⚠️ [MIRA CHAT] INTERNAL_FREE_TIER_SAFETY_LIMIT excedido preventivamente! Bloqueando chamada ao Gemini.');
+      aiQuotaService.recordCall({
+        timestamp: new Date().toISOString(),
+        source: 'local_fallback',
+        provider: 'none',
+        model: 'none',
+        status: 429,
+        fallbackReason: 'INTERNAL_FREE_TIER_SAFETY_LIMIT'
+      });
+      const localResult = getMiraLocalResponse(p, resolvedLang);
+      return {
+        text: localResult,
+        source: 'local_fallback' as const,
+        provider: 'none' as const,
+        model: 'none',
+        reason: 'INTERNAL_FREE_TIER_SAFETY_LIMIT',
+        success: true,
+        version: 'LOCAL_FALLBACK_SAFETY_BUDGET',
+        hydration: 0,
+        perf: '0ms'
+      };
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 🤖 GEMINI PRIMARY_LLM — Tentativa prioritária
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
@@ -1293,19 +1325,47 @@ export const generateAssistantResponseV45 = async (
     });
 
     let chatSource: 'gemini' | 'local_fallback' = 'gemini';
+    let chatProvider: 'google' | 'none' = 'google';
     let textResult = '';
-    let responseModel = 'gemini-2.5-flash';
+    let responseModel = 'gemini-3.6-flash';
+    let fallbackReason = '';
 
     if (response.ok) {
       const data = await response.json().catch(() => ({}));
       if (data && data.success && data.text && !data.fallbackRequired) {
         chatSource = 'gemini';
+        chatProvider = 'google';
         textResult = data.text;
-        responseModel = data.model || 'gemini-2.5-flash';
-        console.log(`⚡ [MIRA CHAT] source=gemini model=${responseModel}`);
+        responseModel = data.model || 'gemini-3.6-flash';
+        console.log(`⚡ [MIRA CHAT] source=gemini provider=google model=${responseModel}`);
+        aiQuotaService.recordCall({
+          timestamp: new Date().toISOString(),
+          source: 'gemini',
+          provider: 'google',
+          model: responseModel,
+          status: 200,
+          latencyMs: Date.now() - t0,
+          promptTokens: data.usageMetadata?.promptTokenCount,
+          candidatesTokens: data.usageMetadata?.candidatesTokenCount,
+          thoughtsTokens: data.usageMetadata?.thoughtsTokenCount,
+          totalTokens: data.usageMetadata?.totalTokenCount,
+          finishReason: data.finishReason
+        });
       } else {
         chatSource = 'local_fallback';
-        console.warn(`⚠️ [MIRA CHAT] source=local_fallback (Gemini fallback flag: ${data?.errorType || data?.error || 'unspecified'})`);
+        chatProvider = 'none';
+        responseModel = 'none';
+        fallbackReason = data?.reason || data?.errorType || data?.error || 'unspecified_fallback_flag';
+        console.warn(`⚠️ [MIRA CHAT] source=local_fallback provider=none model=none (Reason: ${fallbackReason})`);
+        aiQuotaService.recordCall({
+          timestamp: new Date().toISOString(),
+          source: 'local_fallback',
+          provider: 'none',
+          model: 'none',
+          status: response.status || 500,
+          latencyMs: Date.now() - t0,
+          fallbackReason
+        });
         textResult = getMiraLocalResponse(p, resolvedLang);
       }
     } else if (action === 'translate') {
@@ -1313,6 +1373,8 @@ export const generateAssistantResponseV45 = async (
       return {
         text: '',
         source: 'local_fallback',
+        provider: 'none' as const,
+        model: 'none',
         success: false,
         version: 'TRANSLATE_FAILED',
         hydration: 0,
@@ -1320,7 +1382,10 @@ export const generateAssistantResponseV45 = async (
       };
     } else {
       chatSource = 'local_fallback';
-      console.warn(`⚠️ [MIRA CHAT] source=local_fallback (HTTP ${response.status})`);
+      chatProvider = 'none';
+      responseModel = 'none';
+      fallbackReason = `HTTP_${response.status}`;
+      console.warn(`⚠️ [MIRA CHAT] source=local_fallback provider=none model=none (HTTP ${response.status})`);
       textResult = getMiraLocalResponse(p, resolvedLang);
     }
 
@@ -1343,6 +1408,9 @@ export const generateAssistantResponseV45 = async (
     return { 
       text: textResult, 
       source: chatSource,
+      provider: chatProvider,
+      model: responseModel,
+      reason: fallbackReason || undefined,
       success: true, 
       version: chatSource === 'gemini' ? responseModel : 'LOCAL_FALLBACK', 
       hydration: 0, 

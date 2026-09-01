@@ -3,6 +3,7 @@ import { ShieldCheck, Brain, Database, Flame, Briefcase, Stethoscope, Home, File
 import { adminService } from '../services/adminService';
 import { useToast } from './Toast';
 import { SABER_IA_TAXONOMY } from '../brain/taxonomy/knowledgeTaxonomy';
+import { AdminAiQuotaDashboard } from './AdminAiQuotaDashboard';
 
 /**
  * 🛡️ MIRA SOVEREIGN v6.0: ADMIN SABER IA
@@ -107,6 +108,9 @@ const AdminSaberIA = ({ onRefresh }: { onRefresh?: () => void }) => {
                     </div>
                 </div>
             </div>
+
+            {/* 📊 PAINEL DE CONTROLO DE QUOTA & GEMINI TELEMETRY */}
+            <AdminAiQuotaDashboard />
 
             {/* Injection Form: The Master Gateway */}
             <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] shadow-2xl backdrop-blur-3xl relative overflow-hidden group">

@@ -48,6 +48,8 @@ export default async function handler(req, res) {
     }
 
     const { prompt, history, communityContext, language, action, kbContext, profileContext } = req.body;
+    const isTranslate = action === 'translate';
+    const lang = (language || 'PT').toUpperCase().split('-')[0];
     const apiKey = (process.env.GEMINI_API_KEY || "").trim();
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -55,7 +57,7 @@ export default async function handler(req, res) {
     // ──────────────────────────────────────────────────────────────────────────
     if (action === 'translate') {
         const normText = (prompt || '').trim();
-        const normLang = (language || 'PT').toUpperCase().split('-')[0];
+        const normLang = lang;
 
         if (!normText || normLang === 'PT') {
             return res.status(200).json({ success: true, text: normText, source: 'original' });
@@ -89,7 +91,7 @@ export default async function handler(req, res) {
         // 2. Tentar tradução via Google Gemini
         if (apiKey) {
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
                 const gemResponse = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -621,7 +623,7 @@ ${userProfileBlock}
         ? `Professional Translation: Translate the following text to ${lang}. Output ONLY the translated text, no comments or greetings.`
         : (SYSTEM_PROMPTS[lang] || SYSTEM_PROMPTS['PT']);
 
-    const modelId = 'gemini-2.5-flash';
+    const modelId = 'gemini-3.6-flash';
     
     // 🧬 3. SMART HISTORY MERGER (V1.7M - Amanda Abreu Standards)
     let processedHistory = [];
@@ -683,7 +685,10 @@ ${userProfileBlock}
                 fallbackRequired: true,
                 errorType,
                 error: data.error?.message || 'Gemini API Error',
-                source: 'local_fallback'
+                source: 'local_fallback',
+                provider: 'none',
+                model: 'none',
+                reason: `Gemini ${status} (${errorType}): ${data.error?.message || 'Error'}`
             });
         }
 
@@ -698,14 +703,18 @@ ${userProfileBlock}
                 fallbackRequired: true,
                 errorType: 'EMPTY_RESPONSE',
                 error: 'Resposta vazia do Gemini',
-                source: 'local_fallback'
+                source: 'local_fallback',
+                provider: 'none',
+                model: 'none',
+                reason: 'Resposta vazia da Google Gemini API'
             });
         }
 
-        console.log(`⚡ [MIRA CHAT] source=gemini model=${modelId} status=200 finishReason=${finishReason}`);
+        console.log(`⚡ [MIRA CHAT] source=gemini provider=google model=${modelId} status=200 finishReason=${finishReason}`);
         return res.status(200).json({
             text: textOutput,
             source: 'gemini',
+            provider: 'google',
             category: 'Soberana',
             model: modelId,
             success: true,
@@ -719,7 +728,10 @@ ${userProfileBlock}
             fallbackRequired: true,
             errorType: 'EXCEPTION',
             error: err.message,
-            source: 'local_fallback'
+            source: 'local_fallback',
+            provider: 'none',
+            model: 'none',
+            reason: err.message
         });
     }
 }

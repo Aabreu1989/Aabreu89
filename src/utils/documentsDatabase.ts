@@ -376,11 +376,263 @@ export const templates: DocumentTemplate[] = [
             authority: 'DGE',
             location: 'loc_escola_secundaria',
             description: 'revalidacao_diploma_equivalencia_desc',
+tips: 'nacionalidade_filhos_tips',
+        requirements: ['req_minor_birth_cert', 'req_parents_id'],
+        fields: [...standardFields, { id: 'child_name', label: 'field_child_name', placeholder: 'place_child_name', type: 'text' }]
+    },
+    {
+        id: 'procuracao_registo', title: 'procuracao_registo', category: CATEGORIES.RIGHTS, complexity: 'Medium', authority: 'IRN', location: 'loc_notario',
+        description: 'procuracao_registo_desc',
+        explanation: 'expl_procuracao_registo',
+        purpose: 'procuracao_registo_purpose',
+        tips: 'procuracao_registo_tips',
+        requirements: ['req_attorney_data'],
+        fields: [...standardFields, { id: 'attorney_name', label: 'field_attorney_name', placeholder: 'place_attorney_name', type: 'text' }]
+    },
+    {
+        id: 'irn_cc_resident', title: 'irn_cc_resident', category: CATEGORIES.RIGHTS, complexity: 'Medium', authority: 'IRN', location: 'loc_loja_cidadao',
+        description: 'irn_cc_resident_desc',
+        explanation: 'expl_irn_cc_resident',
+        purpose: 'irn_cc_resident_purpose',
+        tips: 'irn_cc_resident_tips',
+        requirements: ['req_previous_cc'],
+        fields: [...standardFields]
+    },
+    {
+        id: 'imt_certificado_tvde', title: 'imt_certificado_tvde', category: CATEGORIES.WORK, complexity: 'Hard', authority: 'IMT', location: 'loc_imt',
+        description: 'imt_certificado_tvde_desc',
+        explanation: 'expl_imt_certificado_tvde',
+        purpose: 'imt_certificado_tvde_purpose',
+        tips: 'imt_certificado_tvde_tips',
+        requirements: ['req_tvde_curso', 'req_registo_criminal_tvde', 'req_grupo2'],
+        fields: [...standardFields]
+    },
+
+    // --- EMPREGO E FORMAÇÃO ---
+    {
+        id: 'iefp_inscricao', title: 'iefp_inscricao', category: CATEGORIES.WORK, complexity: 'Easy', authority: 'IEFP', location: 'loc_iefp_online',
+        description: 'iefp_inscricao_desc',
+        explanation: 'expl_iefp_inscricao',
+        purpose: 'iefp_inscricao_purpose',
+        tips: 'iefp_inscricao_tips',
+        requirements: ['req_id', 'req_cv'],
+        fields: [...standardFields]
+    },
+    {
+        id: 'iefp_reembolso_formacao', title: 'iefp_reembolso_formacao', category: CATEGORIES.WORK, complexity: 'Easy', authority: 'IEFP', location: 'loc_iefp_center',
+        description: 'iefp_reembolso_formacao_desc',
+        explanation: 'expl_iefp_reembolso_formacao',
+        purpose: 'iefp_reembolso_formacao_purpose',
+        tips: 'iefp_reembolso_formacao_tips',
+        requirements: ['req_invoices', 'req_attendance_sheets'],
+        fields: [...standardFields, { id: 'course_code', label: 'field_course_code', placeholder: 'place_course_code', type: 'text' }]
+    },
+    {
+        id: 'ss_dec_desemprego', title: 'ss_dec_desemprego', category: CATEGORIES.WORK, complexity: 'Medium', authority: 'Segurança Social', location: 'loc_ss',
+        description: 'ss_dec_desemprego_desc',
+        explanation: 'expl_ss_dec_desemprego',
+        purpose: 'ss_dec_desemprego_purpose',
+        tips: 'ss_dec_desemprego_tips',
+        requirements: ['req_company_data', 'req_termination_reason'],
+        fields: [...standardFields, { id: 'company_name', label: 'field_company_name', placeholder: 'place_company_name', type: 'text' }]
+    },
+
+    // --- SEGURANÇA SOCIAL ---
+    {
+        id: 'ss_abono_familia', title: 'ss_abono_familia', category: CATEGORIES.SOCIAL_SECURITY, complexity: 'Medium', authority: 'Segurança Social', location: 'loc_ss_direta',
+        description: 'ss_abono_familia_desc',
+        explanation: 'expl_ss_abono_familia',
+        purpose: 'ss_abono_familia_purpose',
+        tips: 'ss_abono_familia_tips',
+        requirements: ['req_household', 'req_income'],
+        fields: [...standardFields, { id: 'num_agregado', label: 'field_num_agregado', placeholder: 'place_num_agregado', type: 'number' }]
+    },
+    {
+        id: 'ss_dec_situacao_economica', title: 'ss_dec_situacao_economica', category: CATEGORIES.SOCIAL_SECURITY, complexity: 'Medium', authority: 'Segurança Social', location: 'loc_ss_direta',
+        description: 'ss_dec_situacao_economica_desc',
+        explanation: 'expl_ss_dec_situacao_economica',
+        purpose: 'ss_dec_situacao_economica_purpose',
+        tips: 'ss_dec_situacao_economica_tips',
+        requirements: ['req_irs_proof'],
+        fields: [...standardFields]
+    },
+    {
+        id: 'ss_niss', title: 'ss_niss', category: CATEGORIES.SOCIAL_SECURITY, complexity: 'Medium', authority: 'Segurança Social', location: 'loc_ss',
+        description: 'ss_niss_desc',
+        explanation: 'expl_ss_niss',
+        purpose: 'ss_niss_purpose',
+        tips: 'ss_niss_tips',
+        requirements: ['req_id', 'req_nif'],
+        fields: [...standardFields]
+    },
+
+    // --- SAÚDE (SNS) ---
+    {
+        id: 'sns_inscricao', title: 'sns_inscricao', category: CATEGORIES.HEALTH, complexity: 'Medium', authority: 'SNS', location: 'loc_sns_center',
+        description: 'sns_inscricao_desc',
+        explanation: 'expl_sns_inscricao',
+        purpose: 'sns_inscricao_purpose',
+        tips: 'sns_inscricao_tips',
+        requirements: ['req_id', 'req_nif', 'req_junta_cert'],
+        fields: [...standardFields]
+    },
+    {
+        id: 'sns_alteracao_dados', title: 'sns_alteracao_dados', category: CATEGORIES.HEALTH, complexity: 'Easy', authority: 'SNS', location: 'loc_sns_center',
+        description: 'sns_alteracao_dados_desc',
+        explanation: 'expl_sns_alteracao_dados',
+        purpose: 'sns_alteracao_dados_purpose',
+        tips: 'sns_alteracao_dados_tips',
+        requirements: ['req_rnut'],
+        fields: [...standardFields, { id: 'phone', label: 'field_phone', placeholder: 'place_phone', type: 'text' }]
+    },
+    {
+        id: 'sns_reembolso_despesas', title: 'sns_reembolso_despesas', category: CATEGORIES.HEALTH, complexity: 'Medium', authority: 'SNS', location: 'loc_aces',
+        description: 'sns_reembolso_despesas_desc',
+        explanation: 'expl_sns_reembolso_despesas',
+        purpose: 'sns_reembolso_despesas_purpose',
+        tips: 'sns_reembolso_despesas_tips',
+        requirements: ['req_invoices', 'req_prescription'],
+        fields: [...standardFields, { id: 'invoice', label: 'field_invoice', placeholder: 'place_invoice', type: 'text' }]
+    },
+
+    // --- FINANÇAS ---
+    {
+        id: 'nif_req', title: 'nif_req', category: CATEGORIES.FINANCE, complexity: 'Easy', authority: 'AT', location: 'loc_financas',
+        description: 'nif_req_desc',
+        explanation: 'expl_nif_req',
+        purpose: 'nif_req_purpose',
+        tips: 'nif_req_tips',
+        requirements: ['req_passport'],
+        fields: [...standardFields]
+    },
+    {
+        id: 'at_rep_fiscal', title: 'at_rep_fiscal', category: CATEGORIES.FINANCE, complexity: 'Medium', authority: 'AT', location: 'loc_financas_online',
+        description: 'at_rep_fiscal_desc',
+        explanation: 'expl_at_rep_fiscal',
+        purpose: 'at_rep_fiscal_purpose',
+        tips: 'at_rep_fiscal_tips',
+        requirements: ['req_rep_id'],
+        fields: [...standardFields, { id: 'rep_nif', label: 'field_rep_nif', placeholder: 'place_rep_nif', type: 'text' }]
+    },
+    {
+        id: 'at_alteracao_morada', title: 'at_alteracao_morada', category: CATEGORIES.FINANCE, complexity: 'Easy', authority: 'AT', location: 'loc_portal_financas',
+        description: 'at_alteracao_morada_desc',
+        explanation: 'expl_at_alteracao_morada',
+        purpose: 'at_alteracao_morada_purpose',
+        tips: 'at_alteracao_morada_tips',
+        requirements: ['req_new_addr'],
+        fields: [...standardFields, { id: 'new_addr', label: 'field_new_addr', placeholder: 'place_new_addr', type: 'text' }]
+    },
+
+    // --- EDUCAÇÃO E RECONHECIMENTO ---
+    {
+        id: 'dges_reconhecimento', title: 'dges_reconhecimento', category: CATEGORIES.EDUCATION, complexity: 'Hard', authority: 'DGES', location: 'loc_portal_dges',
+        description: 'dges_reconhecimento_desc',
+        explanation: 'expl_dges_reconhecimento',
+        purpose: 'dges_reconhecimento_purpose',
+        tips: 'dges_reconhecimento_tips',
+        requirements: ['req_apostilled_diploma', 'req_transcripts'],
+        fields: [...standardFields, { id: 'course', label: 'field_course', placeholder: 'place_course', type: 'text' }]
+    },
+    {
+    id: 'dge_secundario_equivalencia',
+    title: 'dge_secundario_equivalencia',
+    category: CATEGORIES.EDUCATION,
+    complexity: 'Medium',
+    authority: 'DGE',
+    location: 'loc_escola_secundaria',
+    description: 'dge_secundario_equivalencia_desc',
+    explanation: 'expl_dge_secundario_equivalencia',
+    purpose: 'dge_secundario_equivalencia_purpose',
+    tips: 'dge_secundario_equivalencia_tips',
+    requirements: ['req_apostilled_diploma'],
+    fields: [...standardFields],
+},
+// --- REVALIDAÇÃO DE DIPLOMA (TODAS AS OPÇÕES) ---
+{
+            id: 'revalidacao_diploma_autenticacao',
+            title: 'revalidacao_diploma_autenticacao',
+            category: CATEGORIES.EDUCATION,
+            complexity: 'Medium',
+            authority: 'DGES',
+            location: 'loc_portal_dges',
+            description: 'revalidacao_diploma_autenticacao_desc',
+            explanation: 'revalidacao_diploma_autenticacao_expl',
+            purpose: 'revalidacao_diploma_autenticacao_purpose',
+            tips: 'revalidacao_diploma_autenticacao_tips',
+            requirements: ['req_apostilled_diploma', 'req_transcripts'],
+            fields: [...standardFields]
+        },
+        {
+            id: 'revalidacao_diploma_equivalencia',
+            title: 'revalidacao_diploma_equivalencia',
+            category: CATEGORIES.EDUCATION,
+            complexity: 'Hard',
+            authority: 'DGE',
+            location: 'loc_escola_secundaria',
+            description: 'revalidacao_diploma_equivalencia_desc',
             explanation: 'revalidacao_diploma_equivalencia_expl',
             purpose: 'revalidacao_diploma_equivalencia_purpose',
             tips: 'revalidacao_diploma_equivalencia_tips',
             requirements: ['req_apostilled_diploma', 'req_secondary_transcripts'],
             fields: [...standardFields]
+        },
+        // --- TEMPLATES EDUCATIVOS EXPANDIDOS (CRIANÇAS ATÉ DOUTORAMENTO & ORDENS) ---
+        {
+            id: 'revalidacao_diploma_tecnico',
+            title: 'revalidacao_diploma_tecnico',
+            category: CATEGORIES.EDUCATION,
+            complexity: 'Medium',
+            authority: 'ANQEP / Centros Qualifica',
+            location: 'loc_portal_anqep',
+            description: 'revalidacao_diploma_tecnico_desc',
+            explanation: 'revalidacao_diploma_tecnico_expl',
+            purpose: 'revalidacao_diploma_tecnico_purpose',
+            tips: 'revalidacao_diploma_tecnico_tips',
+            requirements: ['req_apostilled_diploma', 'req_transcripts'],
+            fields: [...standardFields, { id: 'course', label: 'field_course', placeholder: 'place_course', type: 'text' }]
+        },
+        {
+            id: 'revalidacao_grau_mestre',
+            title: 'revalidacao_grau_mestre',
+            category: CATEGORIES.EDUCATION,
+            complexity: 'Hard',
+            authority: 'DGES / Universidades',
+            location: 'loc_portal_dges',
+            description: 'revalidacao_grau_mestre_desc',
+            explanation: 'revalidacao_grau_mestre_expl',
+            purpose: 'revalidacao_grau_mestre_purpose',
+            tips: 'revalidacao_grau_mestre_tips',
+            requirements: ['req_apostilled_diploma', 'req_transcripts', 'req_master_dissertation'],
+            fields: [...standardFields, { id: 'course', label: 'field_course', placeholder: 'place_course', type: 'text' }]
+        },
+        {
+            id: 'revalidacao_grau_doutoramento',
+            title: 'revalidacao_grau_doutoramento',
+            category: CATEGORIES.EDUCATION,
+            complexity: 'Hard',
+            authority: 'DGES / Universidades / FCT',
+            location: 'loc_portal_dges',
+            description: 'revalidacao_grau_doutoramento_desc',
+            explanation: 'revalidacao_grau_doutoramento_expl',
+            purpose: 'revalidacao_grau_doutoramento_purpose',
+            tips: 'revalidacao_grau_doutoramento_tips',
+            requirements: ['req_apostilled_diploma', 'req_phd_thesis', 'req_scientific_cv'],
+            fields: [...standardFields, { id: 'course', label: 'field_course', placeholder: 'place_course', type: 'text' }]
+        },
+        {
+            id: 'revalidacao_profissao_regulamentada',
+            title: 'revalidacao_profissao_regulamentada',
+            category: CATEGORIES.EDUCATION,
+            complexity: 'Hard',
+            authority: 'DGES & Ordem Profissional / ACSS',
+            location: 'loc_portal_dges',
+            description: 'revalidacao_profissao_regulamentada_desc',
+            explanation: 'revalidacao_profissao_regulamentada_expl',
+            purpose: 'revalidacao_profissao_regulamentada_purpose',
+            tips: 'revalidacao_profissao_regulamentada_tips',
+            requirements: ['req_apostilled_diploma', 'req_transcripts', 'req_good_standing', 'req_criminal_record'],
+            fields: [...standardFields, { id: 'course', label: 'field_course', placeholder: 'place_course', type: 'text' }]
         },
         {
             id: 'revalidacao_diploma_extranjero',

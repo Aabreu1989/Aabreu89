@@ -830,7 +830,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     <div className="p-5 bg-gradient-to-br from-[#FF8C00]/20 to-[#FF4500]/10 border border-orange-500/30 rounded-3xl flex flex-col justify-between">
                                         <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Estado da Rede</p>
                                         <p className="text-lg font-black text-white">ESTÁVEL ✅</p>
-                                        <p className="text-[8px] text-white/30 font-black uppercase tracking-widest mt-1">Gemini Flash 1.5</p>
+                                        <p className="text-[8px] text-white/30 font-black uppercase tracking-widest mt-1">Gemini 3.6 Flash</p>
                                     </div>
                                 </div>
                             </div>
