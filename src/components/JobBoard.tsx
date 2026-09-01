@@ -290,15 +290,17 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const jobListTopRef = React.useRef<HTMLDivElement>(null);
   const scannedJobIdsRef = React.useRef<Set<string>>(new Set());
 
-  // 📊 SOBERANIA MIRA: Carregar distribuição real de vagas por setor direto do Supabase
+  // 📊 SOBERANIA MIRA: Carregar distribuição real de vagas por setor direto do Supabase (Strictly <= 90 days)
   const loadTopicCounts = React.useCallback(async () => {
     try {
+      const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
       const results = await Promise.all(
         WORK_TOPICS.map(async (topic) => {
           const { count } = await supabase
             .from('job_posts')
             .select('id', { count: 'exact', head: true })
             .eq('is_active', true)
+            .gte('created_at', ninetyDaysAgo)
             .eq('work_topic', topic);
           return [topic, count || 0];
         })
@@ -417,6 +419,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
     try {
       const now = new Date();
+      const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -425,7 +428,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         { count: recentCount },
         { count: prevCount }
       ] = await Promise.all([
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', ninetyDaysAgo),
         supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', sevenDaysAgo),
         supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', fourteenDaysAgo).lt('created_at', sevenDaysAgo)
       ]);
@@ -496,6 +499,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
       } else if (selectedDateRange === '30d') {
         const d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         query = query.gte('created_at', d);
+      } else {
+        // Regra Inviolável MIRA: Máximo de 90 dias de antiguidade para qualquer vaga ativa
+        query = query.gte('created_at', ninetyDaysAgo);
       }
 
       if (selectedQuickFilter === 'english') {

@@ -80,11 +80,15 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
         initialTab === 'bank' ? 'bank' :
         initialTab === 'metro' ? 'metro' :
         initialTab === 'accommodation' ? 'accommodation' :
-        (initialTab === 'regularize' || initialTab === 'visa_job_search' || initialTab === 'retirement' || initialTab === 'voluntary_return') ? 'regularize' :
+        (initialTab === 'regularize' || initialTab === 'visa_job_search' || initialTab === 'retirement' || initialTab === 'voluntary_return' || initialTab === 'student' || initialTab === 'visa_d4') ? 'regularize' :
         (initialTab === 'docs' ? 'gallery' : 'menu')
     );
     const [wizardChoice, setWizardChoice] = useState<string | undefined>(
-        initialTab === 'visa_job_search' ? 'visa_job_search' : (initialTab === 'retirement' ? 'retirement' : (initialTab === 'voluntary_return' ? 'voluntary_return' : undefined))
+        initialTab === 'visa_job_search' ? 'visa_job_search' :
+        initialTab === 'retirement' ? 'retirement' :
+        initialTab === 'voluntary_return' ? 'voluntary_return' :
+        (initialTab === 'student' || initialTab === 'visa_d4') ? 'visa_d4' :
+        undefined
     );
 
     // ── State declarations — must be ABOVE useEffect that calls these setters ──
@@ -120,13 +124,22 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
             setActiveScreen('bank');
         } else if (urlTab === 'metro' || initialTab === 'metro') {
             setActiveScreen('metro');
-        } else if (urlTab === 'regularize' || initialTab === 'regularize' || urlTab === 'visa_job_search' || initialTab === 'visa_job_search' || urlTab === 'retirement' || initialTab === 'retirement' || urlTab === 'voluntary_return' || initialTab === 'voluntary_return') {
+        } else if (
+            urlTab === 'regularize' || initialTab === 'regularize' ||
+            urlTab === 'visa_job_search' || initialTab === 'visa_job_search' ||
+            urlTab === 'retirement' || initialTab === 'retirement' ||
+            urlTab === 'voluntary_return' || initialTab === 'voluntary_return' ||
+            urlTab === 'student' || initialTab === 'student' ||
+            urlTab === 'visa_d4' || initialTab === 'visa_d4'
+        ) {
             if (urlTab === 'voluntary_return' || initialTab === 'voluntary_return') {
                 setWizardChoice('voluntary_return');
             } else if (urlTab === 'retirement' || initialTab === 'retirement') {
                 setWizardChoice('retirement');
             } else if (urlTab === 'visa_job_search' || initialTab === 'visa_job_search') {
                 setWizardChoice('visa_job_search');
+            } else if (urlTab === 'student' || initialTab === 'student' || urlTab === 'visa_d4' || initialTab === 'visa_d4') {
+                setWizardChoice('visa_d4');
             } else {
                 setWizardChoice(undefined);
             }

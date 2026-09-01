@@ -533,6 +533,27 @@ export const adminService: AdminService = {
         }
     },
 
+    async purgeOldJobs(): Promise<{ success: boolean; purgedCount?: number }> {
+        try {
+            const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+            const { error, count } = await supabase
+                .from('job_posts')
+                .delete({ count: 'exact' })
+                .lt('created_at', ninetyDaysAgo);
+
+            if (error) {
+                console.warn('⚠️ [MIRA ADMIN] Purge direct error, trying API route:', error.message);
+                const res = await fetch('/api/admin?action=purge-old-jobs', { method: 'POST' });
+                const json = await res.json();
+                return json;
+            }
+            return { success: true, purgedCount: count || 0 };
+        } catch (e: any) {
+            console.error('❌ [MIRA ADMIN] Erro na purga de vagas antigas:', e);
+            return { success: false };
+        }
+    },
+
     async syncCoursesFromProtected() {
         const { DGES_RECOGNIZED_DATABASE } = await import('../utils/dgesCoursesDatabase');
         const { IEFP_MASSIVE_DATABASE } = await import('../utils/iefpCoursesDatabase');

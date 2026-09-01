@@ -103,9 +103,9 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'reformados': '🏠 VISTO D7 PARA REFORMADOS & APOSENTADOS:\nPara pensionistas e titulares de rendimentos passivos próprios. Exige pensão regular igual ou superior ao Salário Mínimo Nacional (920€/mês), NIF português, conta bancária em Portugal com fundos para 1 ano e alojamento comprovado.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos]',
   'rendimentos passivos': '🏠 VISTO D7 DE RENDIMENTOS PASSIVOS:\nPara quem vive de rendas de imóveis, dividendos, investimentos ou pensões. Exige rendimento comprovado anual de pelo menos 11.040€ para o titular (+50% cônjuge, +30% filho), NIF, conta bancária em Portugal com saldo líquido e alojamento de longa duração.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos]',
   'visto d6': '👨‍👩‍👧 VISTO D6 (REAGRUPAMENTO FAMILIAR CONSULAR):\nDestinado a familiares de residentes legais em Portugal que se encontram no país de origem. Exige deferimento prévio ou instrução com comprovativo de residência do chamador, meios de subsistência familiares (Portaria 1563/2007), alojamento na AT e certidões civis apostiladas de Haia.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta de Reagrupamento Familiar]',
-  'estudante': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal que tenham entrado legalmente no país podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA em território nacional.\n- Requisitos: Matrícula ativa em estabelecimento reconhecido + Propinas pagas + Meios de subsistência (bolsa de estudo, poupanças bancárias ou termo de encarregado) + Alojamento + Seguro de Saúde ou inscrição no SNS.\n- DIREITO AO TRABALHO (Art. 97.º da Lei 23/2007): O estudante residente tem direito legal de trabalhar a contrato ou recibos verdes em Portugal (basta notificar a AIMA e inscrever-se na Segurança Social - NISS).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
-  'estudantes': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal com entrada legal podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA e TÊM DIREITO LEGAL AO TRABALHO a contrato ou recibos verdes (Art. 97.º).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
-  'visto de estudante': '🎓 RESIDÊNCIA E VISTO DE ESTUDANTE (Art. 91.º Lei 23/2007):\nPermite estudar no Ensino Superior em Portugal. Se já estás em Portugal com entrada legal e matriculado, podes solicitar a Autorização de Residência de Estudante diretamente na AIMA. Tens direito legal a trabalhar (Art. 97.º).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
+  'estudante': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal que tenham entrado legalmente no país podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA em território nacional.\n- Requisitos: Matrícula ativa em estabelecimento reconhecido + Propinas pagas + Meios de subsistência (bolsa de estudo, poupanças bancárias ou termo de encarregado) + Alojamento + Seguro de Saúde ou inscrição no SNS.\n- DIREITO AO TRABALHO (Art. 97.º da Lei 23/2007): O estudante residente tem direito legal de trabalhar a contrato ou recibos verdes em Portugal (basta notificar a AIMA e inscrever-se na Segurança Social - NISS).\n[view:DOCUMENTS:student:Abrir Requisitos AIMA e Guia de Estudante]',
+  'estudantes': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal com entrada legal podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA e TÊM DIREITO LEGAL AO TRABALHO a contrato ou recibos verdes (Art. 97.º).\n[view:DOCUMENTS:student:Abrir Requisitos AIMA e Guia de Estudante]',
+  'visto de estudante': '🎓 RESIDÊNCIA E VISTO DE ESTUDANTE (Art. 91.º Lei 23/2007):\nPermite estudar no Ensino Superior em Portugal. Se já estás em Portugal com entrada legal e matriculado, podes solicitar a Autorização de Residência de Estudante diretamente na AIMA. Tens direito legal a trabalhar (Art. 97.º).\n[view:DOCUMENTS:student:Abrir Requisitos AIMA e Guia de Estudante]',
   'segurança social': 'A Segurança Social Portuguesa garante acesso a subsídio de desemplego, abono de família, baixa médica e reforma. Registas-te com NIF e contrato de trabalho. Portal: seg-social.pt.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta NISS]',
   'banco': 'Para abrir conta bancária em Portugal precisas de: passaporte, NIF e comprovativo de morada. Bancos como a Caixa Geral de Depósitos, BPI e Millennium BCP aceitam imigrantes. Alguns permitem abertura online.\n[view:SIMULATORS:Guia de Abertura de Conta]',
   'contrato': 'O contrato de trabalho em Portugal pode ser a prazo (máximo 2 anos, renovável) ou sem termo (permanente). O salário mínimo em 2026 é de 920€/mês. O empregador deve inscrevê-lo na Segurança Social.\n[view:JOBS:Ver Vagas de Emprego]',
@@ -391,7 +391,7 @@ O estudante residente tem pleno direito legal de trabalhar a contrato ou recibos
 4. JORNADA MIRA:
 Posicionas-te na Estação 1 (Entrada/Vistos) ou Estação 6 (Residência AIMA).
 
-[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante] [view:LEARNING:Ver Cursos e Equivalências DGES] [view:JOBS:Ver Vagas Compatíveis com Estudante]`,
+[view:DOCUMENTS:student:Abrir Requisitos AIMA e Guia de Estudante] [view:LEARNING:Ver Cursos e Equivalências DGES] [view:JOBS:Ver Vagas Compatíveis com Estudante]`,
     EN: `🎓 STUDENT RESIDENCY & ART. 91 (PORTUGUESE IMMIGRATION LAW):
 
 1. LEGAL ENTRY & D4 VISA:
@@ -407,7 +407,7 @@ Student residents are legally entitled to work (employment contract or self-empl
 4. MIRA JOURNEY:
 Anchored in Station 1 (Entry/Visas) or Station 6 (AIMA Residence).
 
-[view:SIMULATORS:Open AIMA Student Guide] [view:LEARNING:View DGES Courses & Equivalence] [view:JOBS:View Student Friendly Jobs]`,
+[view:DOCUMENTS:student:Open AIMA Student Guide] [view:LEARNING:View DGES Courses & Equivalence] [view:JOBS:View Student Friendly Jobs]`,
     ES: `🎓 RESIDENCIA DE ESTUDIANTE Y ART. 91 (LEY DE EXTRANJERÍA DE PORTUGAL):
 
 1. ENTRADA LEGAL Y VISADO D4:
@@ -420,7 +420,7 @@ Los estudiantes matriculados en Educación Superior que hayan entrado legalmente
 3. DERECHO A TRABAJAR (ART. 97):
 El estudiante residente tiene derecho legal a trabajar (contrato laboral o autónomo/recibos verdes). Debe comunicarse a AIMA y registrarse en la Seguridad Social (NISS).
 
-[view:SIMULATORS:Abrir Requisitos AIMA y Guía de Estudiante] [view:LEARNING:Ver Cursos y Equivalencias DGES] [view:JOBS:Ver Ofertas de Empleo Compatibles]`,
+[view:DOCUMENTS:student:Abrir Requisitos AIMA y Guía de Estudiante] [view:LEARNING:Ver Cursos y Equivalencias DGES] [view:JOBS:Ver Ofertas de Empleo Compatibles]`,
     FR: `🎓 RÉSIDENCE ÉTUDIANT & ART. 91 (LOI SUR L'IMMIGRATION AU PORTUGAL) :
 
 1. ENTRÉE LÉGALE & VISA D4 :
@@ -433,7 +433,7 @@ Les étudiants inscrits dans l'Enseignement Supérieur entrés légalement peuve
 3. DROIT DE TRAVAILLER (ART. 97) :
 Les étudiants résidents ont le droit légal de travailler (contrat ou travail indépendant). Déclaration requise auprès de l'AIMA et inscription à la Sécurité Sociale (NISS).
 
-[view:SIMULATORS:Guide Résidence Étudiant AIMA] [view:LEARNING:Formations et Équivalences DGES] [view:JOBS:Offres d'Emploi Compatibles]`
+[view:DOCUMENTS:student:Guide Résidence Étudiant AIMA] [view:LEARNING:Formations et Équivalences DGES] [view:JOBS:Offres d'Emploi Compatibles]`
   },
 
   VISTO_D1: {

@@ -137,7 +137,11 @@ export default async function handler(req, res) {
         getCount('profiles'),
         supabaseAdmin.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString()),
         getCount('services'),
-        supabaseAdmin.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true),
+        (() => {
+          const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+          supabaseAdmin.from('job_posts').delete().lt('created_at', ninetyDaysAgo).then(() => {}).catch(() => {});
+          return supabaseAdmin.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', ninetyDaysAgo);
+        })(),
         getCount('courses'),
         getCount('reports'),
         getCount('app_suggestions'),
@@ -510,6 +514,19 @@ export default async function handler(req, res) {
         results.push(await supabaseAdmin.from('knowledge_base').delete().eq('topic', topic));
       }
       return res.status(200).json({ success: true, results });
+    }
+
+    // ── POST: purge-old-jobs (Purga de Vagas > 90 dias) ─────────────────────
+    if (action === 'purge-old-jobs') {
+      if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+      const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+      const { error, count } = await supabaseAdmin
+        .from('job_posts')
+        .delete({ count: 'exact' })
+        .lt('created_at', ninetyDaysAgo);
+
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ success: true, purgedCount: count || 0, cutoffDate: ninetyDaysAgo });
     }
 
     // ── GET/POST: list-users (Lista Administrativa Segura de Perfis) ────────
