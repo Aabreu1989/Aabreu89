@@ -46,7 +46,9 @@ const TEMPLATE_META: Record<string, string> = {
     promessa_trabalho_art88: "promessa_trabalho_art88",
     sef_declaracao_entrada: "sef_declaracao_entrada",
     aima_asilo_req: "aima_asilo_req",
-    aima_refugiado_status: "aima_refugiado_status"
+    aima_refugiado_status: "aima_refugiado_status",
+    reagrupamento_requerimento: "reagrupamento_requerimento",
+    d7_rendimentos_passivos: "d7_rendimentos_passivos"
 };
 
 // ─── Step Indicator Dots ─────────────────────────────────────────────────────
@@ -114,9 +116,7 @@ const ChoiceButton = ({ icon, label, badgeText, onClick, idx, isRevoked }: {
                     </span>
                 )}
                 {isRevoked && (
-                    <span className="px-2 py-0.5 text-[7px] font-black uppercase tracking-wider bg-amber-500 text-white rounded-md">
-                        Pendente de Alteração
-                    </span>
+                    <span className="px-2 py-0.5 text-[7px] font-black uppercase tracking-wider bg-amber-500 text-white rounded-md">{t('wizard_pending_change', language)}</span>
                 )}
             </div>
             <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-slate-950 transition-colors">
@@ -245,8 +245,10 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.title = t("wiz_d7_title", language);
             result.desc = t("wiz_d7_desc", language);
             result.steps = [t("wiz_d7_step1", language), t("wiz_d7_step2", language), t("wiz_d7_step3", language)];
-            result.docs = ["nomad_income_proof", "nif_req"];
+            result.docs = ["d7_rendimentos_passivos", "aima_dec_sustento", "aima_dec_alojamento", "nif_req"];
             result.needsConsularVisa = true;
+            result.needsAIMAAppointment = true;
+            result.infoNote = t('wiz_d7_note', language);
         } else if (purpose === "visa_d4") {
             result.title = t("wiz_d4_title", language);
             result.desc = t("wiz_d4_desc", language);
@@ -270,9 +272,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.docs = ["work_contract_template", "aima_dec_responsabilidade", "nif_req", "ss_niss"];
             result.needsConsularVisa = true;
             result.needsAIMAAppointment = true;
-            result.infoNote = language === 'pt' 
-                ? "Canal prioritário para contratação de trabalhadores estrangeiros por empresas com parecer célere AIMA/IEFP." 
-                : "Priority channel for hiring foreign workers with fast-track consular and AIMA processing.";
+            result.infoNote = t('wiz_via_verde_note', language);
         } else if (purpose === "art122") {
             result.title = t("wiz_art122_title", language);
             result.desc = t("wiz_art122_desc", language);
@@ -282,11 +282,9 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.title = t("wiz_family_title", language);
             result.desc = t("wiz_family_desc", language);
             result.steps = [t("wiz_family_step1", language), t("wiz_family_step2", language), t("wiz_family_step3", language)];
-            result.docs = ["aima_dec_responsabilidade", "aima_dec_alojamento", "aima_dec_sustento", "certidao_civil_req", "nif_req"];
+            result.docs = ["reagrupamento_requerimento", "aima_dec_sustento", "aima_dec_alojamento", "aima_dec_responsabilidade", "certidao_civil_req", "nif_req"];
             result.needsAIMAAppointment = true;
-            result.infoNote = language.toLowerCase() === 'pt'
-                ? "💡 REAGRUPAMENTO FAMILIAR (Lei 23/2007 com alterações da Lei 61/2025): O titular de residência válida pode requerer o reagrupamento de cônjuge, filhos menores/estudantes e ascendentes a cargo. A Lei 61/2025 estabelece como regra geral 2 anos de residência legal prévia do titular (isenção imediata para filhos menores e dependentes directos, ou 15 meses de coabitação prévia comprovada). Meios de subsistência baseados no Salário Mínimo Nacional (920€: 100% titular + 50% cônjuge + 30% por filho). Familiares fora de Portugal instruem o Visto D6 no Consulado."
-                : "💡 FAMILY REUNIFICATION (Law 23/2007 as amended by Law 61/2025): Legal residence holders can reunite spouse, minor/student children, and dependent parents. Law 61/2025 establishes a general 2-year prior legal residence rule for the sponsor (exempt for minor/dependent children, or 15 months of proven prior cohabitation). Subsistence means based on €920 minimum wage (100% sponsor + 50% spouse + 30% per child). Relatives abroad apply for D6 Visa at the Portuguese Consulate.";
+            result.infoNote = t('wiz_family_note', language);
         } else if (purpose === "humanitarian" || sit === "asylum") {
             result.title = t("wiz_sit_asylum", language);
             result.desc = t("wiz_purp_humanitarian_desc", language);
@@ -305,32 +303,14 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             }
         }
 
-        if (sit !== "voluntary_return" && !result.docs.includes("aima_audiencia_previa")) {
-            result.docs.push("aima_audiencia_previa");
-        }
-
-        // 📝 MIRA LEGISLATIVO: Telemetria de acompanhamento parlamentar em tempo real
+        // 📝 MIRA LEGISLATIVO: Telemetria de acompanhamento parlamentar e promulgação presidencial
         const warningsList: string[] = [];
+        warningsList.push(t('wiz_promulgated_law_notice', language));
         if (purpose === "art122") {
-            warningsList.push(
-                language.toLowerCase() === 'pt' 
-                    ? "AVISO LEGISLATIVO: Existem propostas em apreciação parlamentar sobre a regularização por filho menor (Artigo 122.º). Este procedimento de exceção encontra-se pendente de alteração regulamentar." 
-                    : "LEGISLATIVE NOTICE: Proposals are currently under parliamentary review regarding regularization via minor children (Article 122). This exceptional pathway is pending legislative amendment."
-            );
+            warningsList.push(t('wiz_art122_notice', language));
         }
         if (sit === "student" || purpose === "visa_d4") {
-            warningsList.push(
-                language.toLowerCase() === 'pt'
-                    ? "AVISO LEGISLATIVO: Existem propostas em análise para alteração das regras de cursos profissionais. Acompanhe os desenvolvimentos e consulte sempre os canais oficiais."
-                    : "LEGISLATIVE NOTICE: Proposed changes exist regarding professional course rules. Monitor ongoing legislative proceedings."
-            );
-        }
-        if (sit === "contract" || sit === "student" || result.docs.includes("aima_deferimento_tacito")) {
-            warningsList.push(
-                language.toLowerCase() === 'pt'
-                    ? "AVISO LEGAL: A aplicação do 'Deferimento Tácito' encontra-se em debate legislativo e pendente de regulamentação e decisão final."
-                    : "LEGAL NOTICE: The application of 'Tacit Deferral' is under parliamentary debate and pending final legislative decision."
-            );
+            warningsList.push(t('wiz_studies_notice', language));
         }
         result.warnings = warningsList;
 
@@ -616,9 +596,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                             {t('wizard_view_fill_template', language)}
                                                         </p>
                                                         {docId === 'aima_deferimento_tacito' && (
-                                                            <span className="px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-amber-500 text-white rounded">
-                                                                Pendente de Alteração
-                                                            </span>
+                                                            <span className="px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-amber-500 text-white rounded">{t('wizard_pending_change', language)}</span>
                                                         )}
                                                     </div>
                                                     <h4 className="text-xs font-black text-slate-700 uppercase tracking-tight leading-tight whitespace-normal break-words group-hover:text-orange-500 transition-colors">
@@ -645,7 +623,8 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                             {(() => {
                                 let pathwayKey = (answers.purpose || answers.situation) || '';
                                 if (pathwayKey === 'retirement') pathwayKey = 'visa_d7';
-                                const langKey = language?.toLowerCase() || 'pt';
+                                const normLang = (language || 'pt').toLowerCase().split('-')[0];
+                                const langKey = (normLang === 'br' || normLang === 'pt') ? 'pt' : (normLang === 'es' ? 'es' : (normLang === 'fr' ? 'fr' : 'en'));
                                 const detailDocs = PATHWAY_DOCS_DETAIL_GUIDE[langKey]?.[pathwayKey] || [];
                                 if (detailDocs.length === 0) return null;
                                 return (
@@ -653,10 +632,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                         <div className="flex items-center gap-3 px-1">
                                             <div className="w-1.5 h-1.5 rounded-full bg-orange-400" />
                                             <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                                {language.toLowerCase() === 'pt' ? '📋 Especificação de Documentos & Hacks' 
-                                                 : language.toLowerCase() === 'es' ? '📋 Especificación de Documentos y Trucos' 
-                                                 : language.toLowerCase() === 'fr' ? '📋 Spécifications des Documents & Hacks' 
-                                                 : '📋 Document Specifications & Hacks'}
+                                                {t('wiz_doc_specs_title', language)}
                                             </h3>
                                         </div>
 
@@ -684,10 +660,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                                 {/* Format Accepted */}
                                                                 <div className="space-y-1.5">
                                                                     <h5 className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                                                                        {language.toLowerCase() === 'pt' ? '✅ O que é aceite' 
-                                                                         : language.toLowerCase() === 'es' ? '✅ Qué se acepta' 
-                                                                         : language.toLowerCase() === 'fr' ? '✅ Format Accepté' 
-                                                                         : '✅ What is Accepted'}
+                                                                        {t('wiz_accepted_title', language)}
                                                                     </h5>
                                                                     <p className="text-[10.5px] text-slate-700 leading-relaxed font-semibold">
                                                                         {item.accepted}
@@ -697,10 +670,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                                 {/* Where to Obtain */}
                                                                 <div className="space-y-1.5 border-t border-slate-100/60 pt-3">
                                                                     <h5 className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                                                                        {language.toLowerCase() === 'pt' ? '📍 Onde conseguir' 
-                                                                         : language.toLowerCase() === 'es' ? '📍 Dónde conseguirlo' 
-                                                                         : language.toLowerCase() === 'fr' ? '📍 Où se le procurer' 
-                                                                         : '📍 Where to Obtain'}
+                                                                        {t('wiz_where_title', language)}
                                                                     </h5>
                                                                     <p className="text-[10.5px] text-slate-700 leading-relaxed font-semibold">
                                                                         {item.where}
@@ -711,10 +681,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                                 <div className="space-y-1.5 border-t border-slate-100/60 pt-3 bg-orange-500/[0.02] -mx-6 px-6 pb-2">
                                                                     <h5 className="text-[8px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1">
                                                                         <span>💡</span> 
-                                                                        {language.toLowerCase() === 'pt' ? 'Life Hacks & Conselhos' 
-                                                                         : language.toLowerCase() === 'es' ? 'Trucos y Consejos' 
-                                                                         : language.toLowerCase() === 'fr' ? 'Life Hacks & Conseils' 
-                                                                         : 'Life Hacks & Advice'}
+                                                                        {t('wiz_hacks_title', language)}
                                                                     </h5>
                                                                     <p className="text-[10.5px] text-orange-700 leading-relaxed font-bold">
                                                                         {item.hack}

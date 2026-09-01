@@ -90,25 +90,25 @@ const getSuggestions = (lang: string, _user?: UserType) => {
     PT: [
       "Visto D1 (Trabalho)",
       "Via Verde para Empresas",
-      "Regularização por Estudos (Art. 91.º)",
+      "Retorno Voluntário",
       "Visto D8 (Nómada Digital)"
     ],
     EN: [
       "D1 Visa (Work)",
       "Via Verde for Companies",
-      "Student Regularization (Art. 91)",
+      "Voluntary Return",
       "D8 Visa (Digital Nomad)"
     ],
     ES: [
       "Visado D1 (Trabajo)",
       "Vía Verde para Empresas",
-      "Regularización por Estudios (Art. 91)",
+      "Retorno Voluntario",
       "Visado D8 (Nómada Digital)"
     ],
     FR: [
       "Visa D1 (Travail)",
       "Via Verde pour Entreprises",
-      "Régularisation Études (Art. 91)",
+      "Retour Volontaire",
       "Visa D8 (Nomade Digital)"
     ]
   };
@@ -126,7 +126,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
 
   if (normLang === 'PT') {
     if (recentText.includes('estud') || recentText.includes('faculdade') || recentText.includes('universidade') || recentText.includes('91')) {
-      return ["Regularização por Estudos (Art. 91.º)", "Via Verde para Empresas", "Estudante Pode Trabalhar?", "Visto de Trabalho (D1)"];
+      return ["Retorno Voluntário", "Via Verde para Empresas", "Estudante Pode Trabalhar?", "Visto de Trabalho (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('promessa') || recentText.includes('contrato')) {
       return ["Visto D1 (Trabalho)", "Via Verde para Empresas", "Minuta de Promessa de Contrato", "Requisitos IEFP e VFS"];
@@ -138,14 +138,14 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
       return ["Via Verde para Empresas", "Visto D1 (Trabalho)", "Termo de Responsabilidade Empresarial", "Agendamento Prioritário AIMA"];
     }
     if (recentText.includes('aima') || recentText.includes('resid') || recentText.includes('agendamento')) {
-      return ["Agendamento AIMA 2026", "Regularização por Estudos (Art. 91.º)", "Reagrupamento Familiar", "Gerar Minuta AIMA em PDF"];
+      return ["Agendamento AIMA 2026", "Retorno Voluntário", "Reagrupamento Familiar", "Gerar Minuta AIMA em PDF"];
     }
     if (recentText.includes('nif') || recentText.includes('niss')) {
       return ["Como tirar o NIF?", "Como pedir o NISS?", "Visto D1 (Trabalho)", "Linha de Metro da Integração"];
     }
   } else if (normLang === 'EN') {
     if (recentText.includes('study') || recentText.includes('student') || recentText.includes('91')) {
-      return ["Student Regularization (Art. 91)", "Via Verde for Companies", "Can Students Work?", "Work Visa (D1)"];
+      return ["Voluntary Return", "Via Verde for Companies", "Can Students Work?", "Work Visa (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contract') || recentText.includes('job')) {
       return ["D1 Visa (Work)", "Via Verde for Companies", "Work Promise Letter PDF", "IEFP & VFS Requirements"];
@@ -155,7 +155,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'ES') {
     if (recentText.includes('estud') || recentText.includes('universidad') || recentText.includes('91')) {
-      return ["Regularización por Estudios (Art. 91)", "Vía Verde para Empresas", "¿Estudiantes Pueden Trabajar?", "Visado de Trabajo (D1)"];
+      return ["Retorno Voluntario", "Vía Verde para Empresas", "¿Estudiantes Pueden Trabajar?", "Visado de Trabajo (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contrato') || recentText.includes('trabajo')) {
       return ["Visado D1 (Trabajo)", "Vía Verde para Empresas", "Minuta Promesa de Contrato", "Requisitos IEFP y VFS"];
@@ -165,7 +165,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'FR') {
     if (recentText.includes('etud') || recentText.includes('universite') || recentText.includes('91')) {
-      return ["Régularisation Études (Art. 91)", "Via Verde pour Entreprises", "Les Étudiants Peuvent Travailler ?", "Visa de Travail (D1)"];
+      return ["Retour Volontaire", "Via Verde pour Entreprises", "Les Étudiants Peuvent Travailler ?", "Visa de Travail (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contrat') || recentText.includes('travail')) {
       return ["Visa D1 (Travail)", "Via Verde pour Entreprises", "Promesse de Contrat PDF", "Exigences IEFP et VFS"];

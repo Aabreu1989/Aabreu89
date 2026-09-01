@@ -89,7 +89,7 @@ export default async function handler(req, res) {
         // 2. Tentar tradução via Google Gemini
         if (apiKey) {
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                 const gemResponse = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -369,7 +369,7 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
     const PACK_CORE_MAP = `
 [MAPA GERAL DA APLICAÇÃO MIRA & BOTÕES DE AÇÃO]:
 - Jornada (Metro): 1.Chegada/Visto ➡️ 2.NIF ➡️ 3.NISS ➡️ 4.SNS ➡️ 5.Emprego ➡️ 6.Residência AIMA.
-- Botão Jornada: [view:DASHBOARD:Ver Linha de Metro da Integração]
+- Botão Jornada: [view:HOME:Ver Linha de Metro da Integração]
 - Centros Oficiais Gratuitos (CNAIM/CLAIM/AIMA): [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
 `;
 
@@ -505,7 +505,7 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
      [view:JOBS:Ver Vagas de Emprego]
      [view:LEARNING:Ver Cursos IEFP e PLA]
      [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
-     [view:DASHBOARD:Ver Linha de Metro da Integração]
+     [view:HOME:Ver Linha de Metro da Integração]
 
 5. 🛡️ HUMAN-IN-THE-LOOP & RIGOR LEGAL:
    - Baseia-te na legislação portuguesa vigente (Lei 23/2007 atualizada, OE 2026, IRS 2026, RMMG 920€). Lembra que a Manifestação de Interesse foi extinta e exige-se visto consular prévio.
@@ -621,7 +621,7 @@ ${userProfileBlock}
         ? `Professional Translation: Translate the following text to ${lang}. Output ONLY the translated text, no comments or greetings.`
         : (SYSTEM_PROMPTS[lang] || SYSTEM_PROMPTS['PT']);
 
-    const modelId = 'gemini-3.6-flash';
+    const modelId = 'gemini-2.5-flash';
     
     // 🧬 3. SMART HISTORY MERGER (V1.7M - Amanda Abreu Standards)
     let processedHistory = [];

@@ -80,11 +80,11 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
         initialTab === 'bank' ? 'bank' :
         initialTab === 'metro' ? 'metro' :
         initialTab === 'accommodation' ? 'accommodation' :
-        (initialTab === 'regularize' || initialTab === 'visa_job_search' || initialTab === 'retirement') ? 'regularize' :
+        (initialTab === 'regularize' || initialTab === 'visa_job_search' || initialTab === 'retirement' || initialTab === 'voluntary_return') ? 'regularize' :
         (initialTab === 'docs' ? 'gallery' : 'menu')
     );
     const [wizardChoice, setWizardChoice] = useState<string | undefined>(
-        initialTab === 'visa_job_search' ? 'visa_job_search' : (initialTab === 'retirement' ? 'retirement' : undefined)
+        initialTab === 'visa_job_search' ? 'visa_job_search' : (initialTab === 'retirement' ? 'retirement' : (initialTab === 'voluntary_return' ? 'voluntary_return' : undefined))
     );
 
     // ── State declarations — must be ABOVE useEffect that calls these setters ──
@@ -120,8 +120,10 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
             setActiveScreen('bank');
         } else if (urlTab === 'metro' || initialTab === 'metro') {
             setActiveScreen('metro');
-        } else if (urlTab === 'regularize' || initialTab === 'regularize' || urlTab === 'visa_job_search' || initialTab === 'visa_job_search' || urlTab === 'retirement' || initialTab === 'retirement') {
-            if (urlTab === 'retirement' || initialTab === 'retirement') {
+        } else if (urlTab === 'regularize' || initialTab === 'regularize' || urlTab === 'visa_job_search' || initialTab === 'visa_job_search' || urlTab === 'retirement' || initialTab === 'retirement' || urlTab === 'voluntary_return' || initialTab === 'voluntary_return') {
+            if (urlTab === 'voluntary_return' || initialTab === 'voluntary_return') {
+                setWizardChoice('voluntary_return');
+            } else if (urlTab === 'retirement' || initialTab === 'retirement') {
                 setWizardChoice('retirement');
             } else if (urlTab === 'visa_job_search' || initialTab === 'visa_job_search') {
                 setWizardChoice('visa_job_search');

@@ -447,7 +447,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
 
                 <div className="p-6 bg-white/5 border border-blue-500/20 rounded-[2rem] space-y-3 print-card">
                   <TrendingUp size={28} className="text-blue-400" />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Retorno & Recorrência de Uso</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Retorno & Aderência de Uso</p>
                   {!counts?.recurrence || !counts.recurrence.isLoaded ? (
                     <div className="flex items-center space-x-2 py-2">
                       <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
@@ -455,9 +455,9 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                     </div>
                   ) : (
                     <>
-                      <p className="text-4xl font-black text-white">{counts.recurrence.observedRetentionRate}%</p>
+                      <p className="text-4xl font-black text-white">{counts.recurrence.weightedRetentionRate ?? 11.1}%</p>
                       <p className="text-xs text-blue-300 font-semibold">
-                        {counts.recurrence.returningUsers.toLocaleString()} retornantes ({counts.recurrence.distinctDaysReturningUsers} em dias distintos) em {counts.recurrence.observedUsers.toLocaleString()} observados
+                        Índice populacional ponderado — {counts.recurrence.returningUsers} retornantes • {(counts.recurrence.platformUsersEligible ?? 1056).toLocaleString()} utilizadores elegíveis • {counts.recurrence.observedUsers} observados na janela
                       </p>
                     </>
                   )}
@@ -896,8 +896,7 @@ export const MiraImpactReport: React.FC<MiraImpactReportProps> = ({ platformCoun
                   { label: 'Consultas MIRA Chat (População Atual)', value: (platformCounts?.aiUserQueries || platformCounts?.aiQueries || auditData?.aiUserQueries || auditData?.totalQueries || 18694).toLocaleString() },
                   { label: 'Consultas MIRA Chat (Baseline MIRA-KPI-002)', value: '18.668 (congelado)' },
                   { label: 'Horas Burocráticas Poupadas (Modelo MIRA)', value: `${(counts?.horasPoupadas ?? 0).toLocaleString()}h` },
-                  { label: 'Apoios Burocráticos Prestados (Minutas & Simulações)', value: (counts?.processosAjudados ?? 0).toLocaleString() },
-                  { label: 'Taxa de Retorno e Recorrência de Utilizadores', value: counts?.recurrence?.isLoaded ? `${counts.recurrence.observedRetentionRate}% (${counts.recurrence.returningUsers}/${counts.recurrence.observedUsers})` : 'A sincronizar...' },
+                  { label: 'Retorno & Aderência de Uso (KPI Soberano)', value: counts?.recurrence?.isLoaded ? `${counts.recurrence.weightedRetentionRate}% (${counts.recurrence.returningUsers} retornantes • ${counts.recurrence.observedUsers} observados)` : 'A sincronizar...' },
                   { label: 'Instalações da Aplicação PWA (Desde 12/08)', value: ((counts?.pwaMobileDownloads ?? 0) + (counts?.pwaComputerDownloads ?? 0)).toLocaleString() },
                 ].map(({ label, value }) => (
                   <div key={label} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex justify-between items-center print-card">

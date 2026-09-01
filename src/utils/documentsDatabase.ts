@@ -67,6 +67,24 @@ export const templates: DocumentTemplate[] = [
         fields: [...standardFields]
     },
     {
+        id: 'reagrupamento_requerimento', title: 'reagrupamento_requerimento', category: CATEGORIES.IMMIGRATION, complexity: 'Medium', authority: 'AIMA / Consulado', location: 'loc_aima',
+        description: 'reagrupamento_requerimento_desc',
+        explanation: 'reagrupamento_requerimento_expl',
+        purpose: 'reagrupamento_requerimento_purpose',
+        tips: 'reagrupamento_requerimento_tips',
+        requirements: ['req_residence_title', 'req_kinship_cert', 'req_family_income', 'req_lease_or_property'],
+        fields: [...standardFields, { id: 'relative_name', label: 'field_relative_name', placeholder: 'place_relative_name', type: 'text' }, { id: 'kinship', label: 'field_kinship', placeholder: 'place_kinship', type: 'text' }]
+    },
+    {
+        id: 'd7_rendimentos_passivos', title: 'd7_rendimentos_passivos', category: CATEGORIES.IMMIGRATION, complexity: 'Medium', authority: 'Consulado / AIMA', location: 'loc_mne',
+        description: 'd7_rendimentos_passivos_desc',
+        explanation: 'd7_rendimentos_passivos_expl',
+        purpose: 'd7_rendimentos_passivos_purpose',
+        tips: 'd7_rendimentos_passivos_tips',
+        requirements: ['req_pension_proof', 'req_pt_bank_account', 'req_lease_or_property', 'req_health_insurance'],
+        fields: [...standardFields, { id: 'income_type', label: 'field_income_type', placeholder: 'place_income_type', type: 'text' }, { id: 'monthly_income', label: 'field_monthly_income', placeholder: 'place_monthly_income', type: 'text' }]
+    },
+    {
         id: 'aima_ar_humanitaria', title: 'aima_ar_humanitaria', category: CATEGORIES.HUMANITARIAN, complexity: 'Medium', authority: 'AIMA', location: 'loc_aima',
         description: 'aima_ar_humanitaria_desc',
         explanation: 'aima_ar_humanitaria_expl',

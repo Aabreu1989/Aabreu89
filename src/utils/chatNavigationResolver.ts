@@ -52,6 +52,10 @@ export function resolveChatNavigation(
       };
     }
 
+    case 'LEGALIZATION':
+    case 'REGULARIZE':
+    case 'REGULARIZATION':
+    case 'JORNADA':
     case 'DOCUMENT_ASSISTANT':
     case 'DOCUMENTS': {
       if (subTab) {
@@ -125,12 +129,16 @@ export function resolveChatNavigation(
       };
     }
 
+    case 'HOME':
+    case 'MAIN':
+    case 'INICIO':
+    case 'INÍCIO':
     case 'DASHBOARD': {
       if (subTab) {
         params.tab = subTab;
       }
       return {
-        view: ViewType.DASHBOARD,
+        view: ViewType.HOME,
         params,
         isValid: true
       };
@@ -147,7 +155,9 @@ export function resolveChatNavigation(
       };
     }
 
-    case 'ADMIN': {
+    case 'ADMIN':
+    case 'ADMIN_HUB':
+    case 'ADMIN_DASHBOARD': {
       if (subTab) {
         params.tab = subTab;
       }

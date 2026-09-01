@@ -11,6 +11,8 @@ export {
     HISTORICAL_AI_CATEGORIES,
     CANONICAL_HUMAN_ACTIONS,
     CANONICAL_INTERACTION_ACTIONS,
+    ADMIN_USER_IDS,
+    deriveCanonicalRecurrenceMetrics,
     consolidatePlatformMetrics
 } from '../../lib/telemetryBaselines.js';
 
@@ -25,9 +27,16 @@ export interface RealDatabaseTelemetryCounts {
     pwaDesktopEvents: number;
     // Recorrentes pós-cutoff calculados via session clustering e dias distintos
     returningUsersPostCutoff: number | null;
+    platformUsersEligible?: number;
+    baseObservedUsers?: number;
+    kpiUsersCount?: number;
     observedUsers?: number;
     distinctSessions?: number;
     distinctDaysReturningUsers?: number;
+    weightedAdherenceScoreTotal?: number;
+    weightedAdherenceReturningIndex?: number;
+    weightedAdherenceIndex?: number;
+    weightedAdherenceMethodology?: string;
 
     // Tipo B: Estado Corrente das Tabelas da Base de Dados (COUNT real direto)
     currentUsers: number;
@@ -41,6 +50,14 @@ export interface RealDatabaseTelemetryCounts {
 
 export interface RecurrenceMetricsSnapshot {
     isLoaded: boolean;
+    // 🔒 KPI SOBERANO FINAL ÚNICO:
+    weightedRetentionRate: number;
+    retentionRate?: number;
+    // Universos Canónicos Segregados:
+    platformUsersEligible?: number;
+    platformUsers?: number;
+    baseObservedUsers?: number;
+    kpiUsersCount?: number;
     observedUsers: number;
     distinctSessions: number;
     returningUsers: number;
@@ -48,6 +65,10 @@ export interface RecurrenceMetricsSnapshot {
     distinctDaysReturningUsers: number;
     distinctDaysRetentionRate: number;
     intraDayOnlyReturningUsers: number;
+    weightedAdherenceScoreTotal: number;
+    weightedAdherenceReturningIndex: number;
+    weightedAdherenceIndex: number;
+    weightedAdherenceMethodology: string;
     historicalReturningUsersBaseline: number;
     telemetryPeriodStart: string;
     sessionRule: string;

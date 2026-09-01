@@ -44,6 +44,14 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'atestado de residencia': '🏠 NOVAS DIRETRIZES DO GOVERNO SOBRE COMPROVATIVO DE MORADA (2025/2026):\n\nAs Juntas de Freguesia apenas passam Atestados de Residência mediante apresentação de Contrato de Arrendamento registado nas Finanças ou Declaração do Senhorio com Caderneta Predial Urbana. Atestados com meras testemunhas foram abolidos por lei para evitar moradas de complacência.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas de Alojamento]',
   'atestado de residência': '🏠 NOVAS DIRETRIZES DO GOVERNO SOBRE COMPROVATIVO DE MORADA (2025/2026):\n\nAs Juntas de Freguesia apenas passam Atestados de Residência mediante apresentação de Contrato de Arrendamento registado nas Finanças ou Declaração do Senhorio com Caderneta Predial Urbana. Atestados com meras testemunhas foram abolidos por lei para evitar moradas de complacência.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas de Alojamento]',
   'junta de freguesia': '🏠 REGULAMENTAÇÃO DE ATESTADOS NA JUNTA DE FREGUESIA:\n\nAs Juntas de Freguesia exigem agora prova documental de ocupação legal do imóvel (Contrato registado no Portal das Finanças ou Declaração com Caderneta Predial do Proprietário). Declarações falsas são punidas nos termos do Código Penal.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas de Alojamento]',
+  'presidente': '🏛️ PROMULGAÇÃO DO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (31 DE AGOSTO DE 2026):\n\nO Presidente da República promulgou o novo diploma que revê a Lei de Estrangeiros e a Lei do Asilo, após o Tribunal Constitucional (TC) ter emitido critérios vinculativos de proteção de direitos:\n1. PROTEÇÃO DE MENORES: Proibição absoluta de expulsão de crianças nascidas em Portugal e salvaguarda rigorosa da unidade familiar contra separações forçadas.\n2. DETENÇÃO PROPORCIONAL: Proibição de privação desproporcionada de liberdade de imigrantes sem cadastro criminal.\n3. REAGRUPAMENTO FAMILIAR (Art. 98.º): Regra de residência com exceções prioritárias de deferimento para menores de idade e cônjuges com filhos.\n4. VISTOS CONSULARES: Fim definitivo das Manifestações de Interesse e obrigatoriedade de visto consular prévio (D1, D2, D3, D7, D8, Procura de Trabalho).\n5. PRAZOS LEGAIS: Limite máximo de 90 dias para decisão de processos na AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA e Apoio Legal] [view:DOCUMENT_ASSISTANT:Gerar Minutas Oficiais]',
+  'promulgou': '🏛️ PROMULGAÇÃO DO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (31 DE AGOSTO DE 2026):\nO Presidente da República promulgou a nova Lei de Estrangeiros e Asilo com diretrizes interpretativas obrigatórias do Tribunal Constitucional que protegem crianças nascidas em Portugal, asseguram a unidade familiar no Reagrupamento e limitam a retenção de estrangeiros sem antecedentes.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'promulgação': '🏛️ PROMULGAÇÃO DO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (31 DE AGOSTO DE 2026):\nO Presidente da República promulgou a nova Lei de Estrangeiros e Asilo com diretrizes interpretativas obrigatórias do Tribunal Constitucional que protegem crianças nascidas em Portugal, asseguram a unidade familiar no Reagrupamento e limitam a retenção de estrangeiros sem antecedentes.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'promulgacao': '🏛️ PROMULGAÇÃO DO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (31 DE AGOSTO DE 2026):\nO Presidente da República promulgou a nova Lei de Estrangeiros e Asilo com diretrizes interpretativas obrigatórias do Tribunal Constitucional que protegem crianças nascidas em Portugal, asseguram a unidade familiar no Reagrupamento e limitam a retenção de estrangeiros sem antecedentes.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'pacote de leis': '🏛️ NOVO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (PROMULGADO PELO PRESIDENTE EM 31/08/2026):\n1. Proteção estrita de crianças nascidas em Portugal e proibição de separação familiar (Tribunal Constitucional).\n2. Reagrupamento Familiar (Art. 98.º) com isenção prioritária para menores.\n3. Exigência estrita de Visto Consular prévio obtido no país de origem (fim da Manifestação de Interesse).\n4. Prazos de 90 dias não prorrogáveis para decisão de pedidos.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'tribunal constitucional': '⚖️ DECISÃO DO TRIBUNAL CONSTITUCIONAL SOBRE A LEI DE ESTRANGEIROS (Agosto 2026):\nO Tribunal Constitucional validou o diploma e fixou critérios orientadores vinculativos: salvaguarda do superior interesse da criança, proibição de expulsão de crianças nascidas em Portugal, garantia da unidade familiar e proporcionalidade na não privação de liberdade de cidadãos sem antecedentes.\n[view:LOCAL_SERVICES:Ver Apoio Legal]',
+  'mudancas de lei': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS E ASILO PROMULGADO (31/08/2026):\nO novo quadro legal aprovado e promulgado pelo Presidente estabelece: 1. Proteção de crianças nascidas em Portugal e não separação de famílias; 2. Fim da manifestação de interesse e obrigatoriedade de vistos consulares prévios (D1 a D8); 3. Reagrupamento familiar prioritário para menores; 4. Prazo improrrogável de 90 dias para decisões AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'novas leis': '🏛️ PACOTE LEGISLATIVO DE ESTRANGEIROS E ASILO PROMULGADO (31/08/2026):\nO novo quadro legal aprovado e promulgado pelo Presidente estabelece: 1. Proteção de crianças nascidas em Portugal e não separação de famílias; 2. Fim da manifestação de interesse e obrigatoriedade de vistos consulares prévios (D1 a D8); 3. Reagrupamento familiar prioritário para menores; 4. Prazo improrrogável de 90 dias para decisões AIMA.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
   'parlamento': 'O Parlamento Português aprovou alterações estruturais à Lei de Estrangeiros: 1. Extinção das Manifestações de Interesse (Art. 88/89); 2. Exigência obrigatória de visto prévio obtido no consulado de origem; 3. Reformulação do Visto de Procura de Trabalho com pré-validação empresarial; 4. Novas regras de Reagrupamento Familiar com tempo de residência prévia e prova estrita de alojamento; 5. Descentralização judicial das ações contra a AIMA pelos tribunais administrativos de todo o país.\n[view:LOCAL_SERVICES:Ver Balcões AIMA]',
   'lei': 'As últimas alterações à Lei de Estrangeiros aprovadas no Parlamento estabelecem que NENHUM estrangeiro pode regularizar-se a partir de estatuto de turista em Portugal. É obrigatória a instrução do visto no posto consular do país de residência legal antes da viagem.\n[view:LOCAL_SERVICES:Ver Mapa de Apoio Legal]',
   'cplp': 'VISTOS E RESIDÊNCIA CPLP (Acordo de Mobilidade): A concessão da Autorização de Residência CPLP mantém-se ativa mas exige apresentação de Visto Consular emitido no país de origem ou agendamento oficial. Os cidadãos CPLP beneficiam de isenção de taxas de visto e dispensam apresentação de comprovativo de meios quando apoiados por termo de responsabilidade.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas CPLP]',
@@ -78,10 +86,23 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'atestado multiuso': '🏥 ATESTADO MÉDICO DE INCAPACIDADE MULTIUSO (AMIM):\nDocumento oficial emitido por Junta Médica de Saúde Pública que certifica o grau global de incapacidade. Exigido para comprovar estatuto de PCD perante Finanças, Segurança Social, IEFP e empregadores.\n[view:LOCAL_SERVICES:Ver Centros de Saúde SNS]',
   'minutas': 'No MIRA podes gerar minutas e modelos oficiais de documentos em PDF para NIF, NISS, AIMA e contratos de arrendamento.\n[view:DOCUMENT_ASSISTANT:Gerar Minutas em PDF]',
   'documentos': 'Na secção de Documentos podes descarregar e gerar minutas oficiais em PDF (pedidos NIF, NISS, Agendamento AIMA, declarações de alojamento e contratos).\n[view:DOCUMENT_ASSISTANT:Gerar Minutas em PDF]',
-  'metro': 'A Linha de Metro da Integração no teu Perfil guia-te pelos 6 passos essenciais: 1. Chegada, 2. NIF, 3. NISS, 4. SNS/Saúde, 5. Emprego e 6. Residência AIMA.\n[view:DASHBOARD:Ver Linha de Metro]',
+  'metro': 'A Linha de Metro da Integração no teu Perfil guia-te pelos 6 passos essenciais: 1. Chegada, 2. NIF, 3. NISS, 4. SNS/Saúde, 5. Emprego e 6. Residência AIMA.\n[view:HOME:Ver Linha de Metro]',
   'asilo': 'Para pedir proteção internacional (asilo) em Portugal: diriges-te a qualquer posto de fronteira, esquadra da PSP ou GNR e declaras intenção de pedir asilo. O CPR (Conselho Português para os Refugiados: refugiados.pt) oferece apoio jurídico gratuito. O processo é gerido pela AIMA.\n[view:LOCAL_SERVICES:Ver Apoio Legal]',
-  'reagrupamento': '👨‍👩‍👧 REAGRUPAMENTO FAMILIAR (Art. 98.º a 108.º Lei 23/2007 — Atualização 2026):\n\n1. QUEM TEM DIREITO:\nTitulares de Autorização de Residência válida em Portugal (ou com renovação/recibo oficial válido) podem solicitar reagrupamento para cônjuge/união de facto registada, filhos menores ou incapazes a cargo, filhos maiores estudantes solteiros e ascendentes em 1.º grau a cargo.\n\n2. CANAL DE SUBMISSÃO:\n- Portal Digital AIMA (aima.gov.pt) quando aberto para agendamentos online;\n- Postos Consulares de Portugal no país de origem para instrução do Visto D6 de Residência para Reagrupamento Familiar.\n\n3. MEIOS DE SUBSISTÊNCIA (Portaria 1563/2007 sobre Salário Mínimo 920€):\n- 1.º Adulto (Requerente): 100% (920€/mês)\n- 2.º Adulto / Cônjuge: 50% (460€/mês)\n- Por cada menor / dependente: 30% (276€/mês)\nComprovados por recibos de vencimento, contrato de trabalho ou extratos bancários com saldo anual correspondente.\n\n4. ALOJAMENTO CONDIGNO:\nContrato de arrendamento registado no Portal das Finanças (AT) com recibos eletrónicos de renda ou Caderneta Predial Urbana atualizada.\n\n5. CERTIDÕES & APOSTILA:\nCertidões de casamento/nascimento e registos criminais dos dependentes devem estar traduzidos e apostilados pela Convenção de Haia no país de origem.\n[view:SIMULATORS:aima_ss:Verificar Requisitos AIMA & Subsistência]',
-  'reagrupamento familiar': '👨‍👩‍👧 REAGRUPAMENTO FAMILIAR (Art. 98.º a 108.º Lei 23/2007 — Atualização 2026):\n\nTitulares de Autorização de Residência válida podem reagrupar cônjuge, filhos menores ou a cargo e ascendentes. Requisitos: Meios de subsistência suficientes (920€ titular + 460€ cônjuge + 276€/filho - Portaria 1563/2007), habitação condigna comprovada com contrato AT e certidões apostiladas de Haia.\n[view:SIMULATORS:aima_ss:Verificar Requisitos AIMA & Subsistência]',
+    'retorno voluntario': '✈️ PROGRAMA DE RETORNO VOLUNTÁRIO (OIM / AIMA / Projeto ÁRVORE):\n\n1. O QUE É:\nApoio oficial gratuito e digno para cidadãos migrantes que pretendem regressar ao seu país de origem e não têm condições financeiras.\n\n2. O QUE INCLUI:\n- Bilhete de avião pago integralmente até ao destino final;\n- Apoio para emissão de documentos de viagem no consulado;\n- Subsídio de reinstalação / apoio à reintegração socioeconómica no país de origem;\n- Assistência no aeroporto.\n\n3. AVISO LEGAL CRÍTICO (Art. 139.º da Lei 23/2007):\nO retorno voluntário financiado pelo Estado Português implica interdição de entrada em Portugal e no Espaço Schengen por 3 anos (exceto se o valor for integralmente reembolsado ao Estado).\n\n4. COMO PEDIR:\n- Portal Oficial: retornovoluntario.pt\n- Linha Telefónica Gratuita: 808 257 257 ou +351 218 106 191\n- Presencialmente num balcão CNAIM (Lisboa, Porto, Faro).\n[view:LOCAL_SERVICES:Ver Balcões CNAIM e Apoio Social] [view:DOCUMENTS:voluntary_return:Programa de Retorno Voluntário (ARVoRE VIII)]',
+  'retorno voluntário': '✈️ PROGRAMA DE RETORNO VOLUNTÁRIO (OIM / AIMA / Projeto ÁRVORE):\n\n1. O QUE É:\nApoio oficial gratuito e digno para cidadãos migrantes que pretendem regressar ao seu país de origem e não têm condições financeiras.\n\n2. O QUE INCLUI:\n- Bilhete de avião pago integralmente até ao destino final;\n- Apoio para emissão de documentos de viagem no consulado;\n- Subsídio de reinstalação / apoio à reintegração socioeconómica no país de origem;\n- Assistência no aeroporto.\n\n3. AVISO LEGAL CRÍTICO (Art. 139.º da Lei 23/2007):\nO retorno voluntário financiado pelo Estado Português implica interdição de entrada em Portugal e no Espaço Schengen por 3 anos (exceto se o valor for integralmente reembolsado ao Estado).\n\n4. COMO PEDIR:\n- Portal Oficial: retornovoluntario.pt\n- Linha Telefónica Gratuita: 808 257 257 ou +351 218 106 191\n- Presencialmente num balcão CNAIM (Lisboa, Porto, Faro).\n[view:LOCAL_SERVICES:Ver Balcões CNAIM e Apoio Social] [view:DOCUMENTS:voluntary_return:Programa de Retorno Voluntário (ARVoRE VIII)]',
+  'voltar para o meu país': '✈️ PROGRAMA DE RETORNO VOLUNTÁRIO (OIM / AIMA):\nSe pretende regressar ao seu país e necessita de ajuda com passagem aérea e apoio financeiro de reinstalação, pode candidatar-se ao Programa de Apoio ao Retorno Voluntário da OIM (retornovoluntario.pt ou linha 808 257 257). Tenha em atenção que o apoio financiado pelo Estado gera interdição de regresso a Portugal por 3 anos.\n[view:LOCAL_SERVICES:Ver Balcões CNAIM]',
+  'oim': '✈️ OIM (ORGANIZAÇÃO INTERNACIONAL PARA AS MIGRAÇÕES):\nResponsável pela gestão dos programas de Retorno Voluntário e Reintegração (Projeto ÁRVORE) e apoio humanitário aos migrantes em parceria com a AIMA.\nContacto: retornovoluntario.pt | Tel: 808 257 257 / +351 218 106 191\n[view:LOCAL_SERVICES:Ver Balcões de Apoio]',
+  'reagrupamento': '👨‍👩‍👧 GUIA COMPLETO: REAGRUPAMENTO FAMILIAR (Art. 98.º a 108.º Lei 23/2007 — Regras 2026):\n\n1. QUEM TEM DIREITO:\nTitulares de Autorização de Residência válida em Portugal podem reagrupar cônjuge/união de facto, filhos menores ou incapazes, filhos maiores solteiros estudantes e ascendentes em 1.º grau a cargo.\n\n2. MEIOS DE SUBSISTÊNCIA (Portaria 1563/2007 - Salário Mínimo 920€):\n- Titular requerente: 100% (920€/mês = 11.040€/ano)\n- Cônjuge: 50% (460€/mês = 5.520€/ano)\n- Por cada filho menor/dependente: 30% (276€/mês = 3.312€/ano)\nComprovados por declaração de IRS, recibos de vencimento recentes ou saldo bancário anual equivalente.\n\n3. ALOJAMENTO CONDIGNO:\nContrato de arrendamento registado na Autoridade Tributária (AT) com recibos eletrónicos ou escritura de compra de imóvel.\n\n4. DOCUMENTOS EXIGIDOS:\nCertidões de casamento e nascimento recentes apostiladas pela Convenção de Haia e com tradução certificada para português, além do registo criminal apostilado dos dependentes maiores de 16 anos.\n\n5. ONDE TRAMITAR:\n- Familiares no estrangeiro: Visto D6 no Posto Consular / VFS.\n- Familiares em Portugal: Portal Digital da AIMA (aima.gov.pt).\n[view:DOCUMENT_ASSISTANT:Gerar Minuta de Reagrupamento Familiar] [view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'reagrupamento familiar': '👨‍👩‍👧 REAGRUPAMENTO FAMILIAR (Art. 98.º a 108.º Lei 23/2007 — Regras 2026):\nTitulares de residência válida podem reagrupar cônjuge, filhos menores/estudantes e pais dependentes. Requisitos: Meios de subsistência familiares (920€ titular + 460€ cônjuge + 276€/filho - Portaria 1563/2007), habitação condigna registada na AT e certidões apostiladas de Haia. Familiares fora de Portugal instruem o Visto D6 no Consulado.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta de Reagrupamento Familiar] [view:LOCAL_SERVICES:Ver Balcões AIMA]',
+  'reagrupar': '👨‍👩‍👧 REAGRUPAMENTO FAMILIAR (Art. 98.º Lei 23/2007):\nPara trazer familiares para Portugal: 1. Comprovar residência legal; 2. Comprovar rendimentos familiares estáveis (Portaria 1563/2007); 3. Apresentar contrato de arrendamento registado nas Finanças; 4. Certidões civis com Apostila de Haia.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta de Reagrupamento Familiar]',
+  'visto d7': '🏠 VISTO D7 (APOSENTADOS, REFORMADOS & RENDIMENTOS PASSIVOS):\n\n1. QUEM PODE PEDIR:\nAposentados, reformados e titulares de rendimentos próprios passivos estáveis (pensões oficiais, rendas de imóveis, dividendos societários ou aplicações financeiras).\n\n2. RENDIMENTO MÍNIMO OBRIGATÓRIO (100% Salário Mínimo):\n- Requerente principal: 920€/mês (11.040€/ano);\n- Cônjuge: +50% (460€/mês = 5.520€/ano adicionais);\n- Por cada filho dependente: +30% (276€/mês = 3.312€/ano adicionais).\n\n3. REQUISITOS ESSENCIAIS:\n- Obter NIF português e abrir conta bancária em Portugal com fundos para pelo menos 1 a 2 anos (15.000€ a 30.000€+);\n- Comprovativo de alojamento por 1 ano (contrato de arrendamento registado na AT ou escritura de imóvel);\n- Seguro de Saúde Internacional ou Certificado PB4 / CDAM (gratuito para cidadãos brasileiros no Gov.br);\n- Registo criminal apostilado de Haia.\n\n4. PROCESSO:\nSubmissão do visto no Consulado de Portugal / VFS no país de origem e, após entrada em Portugal, agendamento na AIMA para emissão do Título de Residência de 2 anos.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos] [view:SIMULATORS:habitacao:Verificar Custo de Vida]',
+  'aposentado': '🏠 VISTO D7 PARA APOSENTADOS & REFORMADOS (LEGISLAÇÃO 2026):\nPermite aos aposentados residir legalmente em Portugal com base na sua pensão de reforma. Exige rendimento mensal igual ou superior ao Salário Mínimo Nacional (mínimo 920€/mês = 11.040€/ano), NIF, conta bancária em Portugal com depósito de reserva, alojamento de 1 ano e Seguro de Saúde ou PB4.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos] [view:SIMULATORS:habitacao:Verificar Custo de Vida]',
+  'aposentados': '🏠 VISTO D7 PARA APOSENTADOS & REFORMADOS (LEGISLAÇÃO 2026):\nPermite aos aposentados residir legalmente em Portugal com base na sua pensão de reforma. Exige rendimento mensal igual ou superior ao Salário Mínimo Nacional (mínimo 920€/mês = 11.040€/ano), NIF, conta bancária em Portugal com depósito de reserva, alojamento de 1 ano e Seguro de Saúde ou PB4.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos] [view:SIMULATORS:habitacao:Verificar Custo de Vida]',
+  'aposentadoria': '🏠 APOSENTADORIA & VISTO D7 EM PORTUGAL:\nSe recebe aposentadoria no seu país de origem, pode solicitar o Visto D7 para residir em Portugal. Exige comprovação de pensão oficial líquida mensal de pelo menos 920€ (+50% cônjuge, +30% por filho), NIF, conta bancária em Portugal, contrato de arrendamento de 1 ano e PB4 ou seguro de saúde.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos]',
+  'reformado': '🏠 VISTO D7 PARA REFORMADOS & APOSENTADOS:\nPara pensionistas e titulares de rendimentos passivos próprios. Exige pensão regular igual ou superior ao Salário Mínimo Nacional (920€/mês), NIF português, conta bancária em Portugal com fundos para 1 ano e alojamento comprovado.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos]',
+  'reformados': '🏠 VISTO D7 PARA REFORMADOS & APOSENTADOS:\nPara pensionistas e titulares de rendimentos passivos próprios. Exige pensão regular igual ou superior ao Salário Mínimo Nacional (920€/mês), NIF português, conta bancária em Portugal com fundos para 1 ano e alojamento comprovado.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos]',
+  'rendimentos passivos': '🏠 VISTO D7 DE RENDIMENTOS PASSIVOS:\nPara quem vive de rendas de imóveis, dividendos, investimentos ou pensões. Exige rendimento comprovado anual de pelo menos 11.040€ para o titular (+50% cônjuge, +30% filho), NIF, conta bancária em Portugal com saldo líquido e alojamento de longa duração.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos]',
+  'visto d6': '👨‍👩‍👧 VISTO D6 (REAGRUPAMENTO FAMILIAR CONSULAR):\nDestinado a familiares de residentes legais em Portugal que se encontram no país de origem. Exige deferimento prévio ou instrução com comprovativo de residência do chamador, meios de subsistência familiares (Portaria 1563/2007), alojamento na AT e certidões civis apostiladas de Haia.\n[view:DOCUMENT_ASSISTANT:Gerar Minuta de Reagrupamento Familiar]',
   'estudante': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal que tenham entrado legalmente no país podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA em território nacional.\n- Requisitos: Matrícula ativa em estabelecimento reconhecido + Propinas pagas + Meios de subsistência (bolsa de estudo, poupanças bancárias ou termo de encarregado) + Alojamento + Seguro de Saúde ou inscrição no SNS.\n- DIREITO AO TRABALHO (Art. 97.º da Lei 23/2007): O estudante residente tem direito legal de trabalhar a contrato ou recibos verdes em Portugal (basta notificar a AIMA e inscrever-se na Segurança Social - NISS).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
   'estudantes': '🎓 RESIDÊNCIA DE ESTUDANTE DENTRO DO TERRITÓRIO (Art. 91.º Lei 23/2007):\nEstudantes matriculados no Ensino Superior em Portugal com entrada legal podem requerer a Autorização de Residência para Estudantes (Art. 91.º, n.º 4) diretamente na AIMA e TÊM DIREITO LEGAL AO TRABALHO a contrato ou recibos verdes (Art. 97.º).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
   'visto de estudante': '🎓 RESIDÊNCIA E VISTO DE ESTUDANTE (Art. 91.º Lei 23/2007):\nPermite estudar no Ensino Superior em Portugal. Se já estás em Portugal com entrada legal e matriculado, podes solicitar a Autorização de Residência de Estudante diretamente na AIMA. Tens direito legal a trabalhar (Art. 97.º).\n[view:SIMULATORS:Abrir Requisitos AIMA e Guia de Estudante]',
@@ -104,22 +125,22 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'cartao de cidadao para estrangeiro': 'CARTÃO DE CIDADÃO PARA ESTRANGEIROS COM ESTATUTO DE IGUALDADE:\nEmissão no IRN para portadores do Estatuto de Igualdade com Chave Móvel Digital (CMD).\n[view:DOCUMENT_ASSISTANT:Gerar Minutas de Igualdade]',
   'carta': 'Carta de Condução em Portugal (Legislação 2026): Válida sem troca obrigatória para CPLP e OCDE (<60 anos). Troca simples no IMT por 30€.\n[view:SIMULATORS:Guia da Carta de Condução]',
   'condução': 'Carta de Condução em Portugal (Legislação 2026): Válida sem troca obrigatória para CPLP e OCDE (<60 anos). Troca simples no IMT por 30€.\n[view:SIMULATORS:Guia da Carta de Condução]',
-  'mira': 'Sou a MIRA — Assistente Inteligente de Direitos do Migrante. Conheço 100% de todo o ecossistema da aplicação MIRA: 5.326 vagas de emprego, 156 cursos IEFP/DGES, 238 serviços locais de apoio, minutas em PDF, calculadoras de IRS e regras da AIMA e NIF/NISS.\n[view:DASHBOARD:Ver Painel Principal MIRA]',
-  'olá': 'Olá! Sou a MIRA, a tua assistente para imigração e integração em Portugal. Conheço todas as funcionalidades da app: vagas de emprego, cursos, mapa de apoio, documentos PDF, IRS e fóruns. Como te posso ajudar hoje?\n[view:DASHBOARD:Explorar Módulos do MIRA]',
-  'ola': 'Olá! Sou a MIRA, a tua assistente para imigração e integração em Portugal. Conheço todas as funcionalidades da app: vagas de emprego, cursos, mapa de apoio, documentos PDF, IRS e fóruns. Como te posso ajudar hoje?\n[view:DASHBOARD:Explorar Módulos do MIRA]',
-  'oi': 'Oi! Sou a MIRA, a tua assistente para imigração em Portugal. Conheço 100% da aplicação MIRA (empregos, cursos, apoio local, minutas e regras AIMA). Em que posso ser útil?\n[view:DASHBOARD:Explorar Módulos do MIRA]',
-  'bom dia': 'Bom dia! Sou a MIRA, assistente de apoio ao imigrante em Portugal. Posso ajudar-te com qualquer funcionalidade da app ou dúvida de imigração. Em que te posso ajudar hoje?\n[view:DASHBOARD:Explorar Módulos do MIRA]',
-  'boa tarde': 'Boa tarde! Sou a MIRA, assistente de apoio ao imigrante em Portugal. Posso ajudar-te com qualquer funcionalidade da app ou dúvida de imigração. Como te posso ajudar?\n[view:DASHBOARD:Explorar Módulos do MIRA]',
-  'boa noite': 'Boa noite! Sou a MIRA, assistente de apoio ao imigrante em Portugal. Posso ajudar-te com qualquer funcionalidade da app ou dúvida de imigração. Como te posso ajudar?\n[view:DASHBOARD:Explorar Módulos do MIRA]',
-  'importante': 'Para quem chega a Portugal, a jornada essencial de integração segue esta ordem de importância:\n1. NIF\n2. Alojamento\n3. NISS\n4. Conta Bancária\n5. Transporte\n6. Utente SNS\n7. Regularização AIMA.\n[view:DASHBOARD:Ver Linha de Metro da Integração]',
-  'portugal': 'Para te integrares com sucesso em Portugal, é fundamental obteres os documentos essenciais de cidadão: NIF, Alojamento/Morada, NISS, Conta Bancária, Utente SNS e a Regularização na AIMA.\n[view:DASHBOARD:Ver Linha de Metro]',
+  'mira': 'Sou a MIRA — Assistente Inteligente de Direitos do Migrante. Conheço 100% de todo o ecossistema da aplicação MIRA: 5.326 vagas de emprego, 156 cursos IEFP/DGES, 238 serviços locais de apoio, minutas em PDF, calculadoras de IRS e regras da AIMA e NIF/NISS.\n[view:HOME:Ver Painel Principal MIRA]',
+  'olá': 'Olá! Sou a MIRA, a tua assistente para imigração e integração em Portugal. Conheço todas as funcionalidades da app: vagas de emprego, cursos, mapa de apoio, documentos PDF, IRS e fóruns. Como te posso ajudar hoje?\n[view:HOME:Explorar Módulos do MIRA]',
+  'ola': 'Olá! Sou a MIRA, a tua assistente para imigração e integração em Portugal. Conheço todas as funcionalidades da app: vagas de emprego, cursos, mapa de apoio, documentos PDF, IRS e fóruns. Como te posso ajudar hoje?\n[view:HOME:Explorar Módulos do MIRA]',
+  'oi': 'Oi! Sou a MIRA, a tua assistente para imigração em Portugal. Conheço 100% da aplicação MIRA (empregos, cursos, apoio local, minutas e regras AIMA). Em que posso ser útil?\n[view:HOME:Explorar Módulos do MIRA]',
+  'bom dia': 'Bom dia! Sou a MIRA, assistente de apoio ao imigrante em Portugal. Posso ajudar-te com qualquer funcionalidade da app ou dúvida de imigração. Em que te posso ajudar hoje?\n[view:HOME:Explorar Módulos do MIRA]',
+  'boa tarde': 'Boa tarde! Sou a MIRA, assistente de apoio ao imigrante em Portugal. Posso ajudar-te com qualquer funcionalidade da app ou dúvida de imigração. Como te posso ajudar?\n[view:HOME:Explorar Módulos do MIRA]',
+  'boa noite': 'Boa noite! Sou a MIRA, assistente de apoio ao imigrante em Portugal. Posso ajudar-te com qualquer funcionalidade da app ou dúvida de imigração. Como te posso ajudar?\n[view:HOME:Explorar Módulos do MIRA]',
+  'importante': 'Para quem chega a Portugal, a jornada essencial de integração segue esta ordem de importância:\n1. NIF\n2. Alojamento\n3. NISS\n4. Conta Bancária\n5. Transporte\n6. Utente SNS\n7. Regularização AIMA.\n[view:HOME:Ver Linha de Metro da Integração]',
+  'portugal': 'Para te integrares com sucesso em Portugal, é fundamental obteres os documentos essenciais de cidadão: NIF, Alojamento/Morada, NISS, Conta Bancária, Utente SNS e a Regularização na AIMA.\n[view:HOME:Ver Linha de Metro]',
   'simulador': '🧮 6 SIMULADORES ECONÓMICOS MIRA (2026):\n1. Salário Líquido (Conta de Outrem - IRS 2026, SS 11%, IRS Jovem)\n2. Recibos Verdes (Trabalhador Independente - SS 21,4%, Incidência 70%/20%, Isenção 15k€)\n3. Custo de Vida (Comparador dos 20 Distritos de Portugal)\n4. Proteção à Habitação (Taxa de Esforço 35% e Capital de Entrada)\n5. Requisitos AIMA & Risco SS (Limiar 920€ RMMG + 276€/dep & Alerta Risco SS 20€/mês)\n6. Pequeno Empreendedor (IRC PME 12.5%, TSU MOE 33,05%, Margem e Break-Even)\n\n[view:SIMULATORS:Abrir Simuladores MIRA]',
   'simuladores': '🧮 6 SIMULADORES ECONÓMICOS MIRA (2026):\n1. Salário Líquido (Conta de Outrem - IRS 2026, SS 11%, IRS Jovem)\n2. Recibos Verdes (Trabalhador Independente - SS 21,4%, Incidência 70%/20%, Isenção 15k€)\n3. Custo de Vida (Comparador dos 20 Distritos de Portugal)\n4. Proteção à Habitação (Taxa de Esforço 35% e Capital de Entrada)\n5. Requisitos AIMA & Risco SS (Limiar 920€ RMMG + 276€/dep & Alerta Risco SS 20€/mês)\n6. Pequeno Empreendedor (IRC PME 12.5%, TSU MOE 33,05%, Margem e Break-Even)\n\n[view:SIMULATORS:Abrir Simuladores MIRA]',
   'pequeno empreendedor': '🏢 SIMULADOR PEQUENO EMPREENDEDOR & MICROEMPRESA:\nSimula a faturação, despesas operacionais, tributação reduzida PME em IRC (12,5% até 50.000€ lucro tributável - Art. 87.º CIRC), TSU do Sócio-Gerente (33,05% MOE) ou ENI (IRS Simplificado), margem de lucro e Ponto de Equilíbrio (Break-Even).\n\n[view:SIMULATORS:Abrir Simulador Pequeno Empreendedor]',
   'empreendedor': '🏢 SIMULADOR PEQUENO EMPREENDEDOR & MICROEMPRESA:\nSimula a faturação, despesas operacionais, tributação reduzida PME em IRC (12,5% até 50.000€ lucro tributável - Art. 87.º CIRC), TSU do Sócio-Gerente (33,05% MOE) ou ENI (IRS Simplificado), margem de lucro e Ponto de Equilíbrio (Break-Even).\n\n[view:SIMULATORS:Abrir Simulador Pequeno Empreendedor]',
   'habitação': '🏠 SIMULADOR DE PROTEÇÃO À HABITAÇÃO:\nCalcula a tua Taxa de Esforço com a renda (recomendação Banco de Portugal de máx. 35%), o Capital Inicial de Entrada necessário (2 cauções + 1 renda adiantada - Art. 1076.º C. Civil) e o Fundo de Emergência familiar (3 meses).\n\n[view:SIMULATORS:Abrir Simulador de Habitação]',
   'habitacao': '🏠 SIMULADOR DE PROTEÇÃO À HABITAÇÃO:\nCalcula a tua Taxa de Esforço com a renda (recomendação Banco de Portugal de máx. 35%), o Capital Inicial de Entrada necessário (2 cauções + 1 renda adiantada - Art. 1076.º C. Civil) e o Fundo de Emergência familiar (3 meses).\n\n[view:SIMULATORS:Abrir Simulador de Habitação]',
-  'default': 'Sou a MIRA, assistente de apoio ao imigrante em Portugal. Tenho conhecimento total de todas as funcionalidades do aplicativo MIRA: 6 Simuladores Económicos (Salário, Recibos Verdes, Custo de Vida, Habitação, AIMA/SS, Empreendedor), 5.326 vagas de emprego, 156 cursos de formação, 238 serviços locais de apoio, gerador de minutas PDF, calculadoras de IRS e todas as regras da AIMA, NIF e NISS. Qual é a tua dúvida específica?\n[view:DASHBOARD:Ver Módulos do MIRA]'
+  'default': 'Sou a MIRA, assistente de apoio ao imigrante em Portugal. Tenho conhecimento total de todas as funcionalidades do aplicativo MIRA: 6 Simuladores Económicos (Salário, Recibos Verdes, Custo de Vida, Habitação, AIMA/SS, Empreendedor), 5.326 vagas de emprego, 156 cursos de formação, 238 serviços locais de apoio, gerador de minutas PDF, calculadoras de IRS e todas as regras da AIMA, NIF e NISS. Qual é a tua dúvida específica?\n[view:HOME:Ver Módulos do MIRA]'
 };
 
 export const MIRA_LOCAL_KB_EN: Record<string, string> = {
@@ -528,6 +549,383 @@ Procédure rapide pour les entreprises au Portugal recrutant des talents étrang
 [view:JOBS:Offres Via Verde] [view:LOCAL_SERVICES:Centres AIMA et CLAIM]`
   },
 
+  RETORNO_VOLUNTARIO: {
+    aliases: [
+      'retorno voluntario', 'retorno voluntário', 'retornar voluntariamente', 'retornar voluntario', 'retornar voluntário',
+      'voltar para o meu pais', 'voltar para o meu país', 'voltar para o brasil', 'voltar para cabo verde', 'voltar para angola',
+      'voltar para casa', 'voltar para minha terra', 'voltar para a minha terra', 'voltar para o pais de origem', 'voltar para o país de origem',
+      'retornar ao meu pais', 'retornar ao meu país', 'retornar para o meu pais', 'retornar para o meu país', 'retornar para o brasil',
+      'retornar para cabo verde', 'retornar a cabo verde', 'retornar para angola', 'retornar ao brasil', 'retornar a angola',
+      'retornar ao pais de origem', 'retornar ao país de origem', 'retornar para a guine', 'retornar para a guiné',
+      'regresso voluntario', 'regresso voluntário', 'regressar voluntariamente', 'regressar ao meu pais', 'regressar ao meu país',
+      'regressar a cabo verde', 'regressar ao brasil', 'regressar a angola',
+      'programa arvore', 'projeto arvore', 'projeto árvore', 'arvore viii', 'árvore viii', 'oim', 'iom', 'retornovoluntario',
+      'ajuda para voltar', 'ajuda para regressar', 'ajuda para retornar', 'passagem de volta', 'passagem de regresso', 'passagem para voltar',
+      'voluntary return', 'return voluntarily', 'return to my country', 'return home', 'iom return',
+      'volver a mi pais', 'volver a mi país', 'regresar a mi pais', 'regresar a mi país',
+      'retour volontaire', 'retourner volontairement', 'rentrer dans mon pays', 'rentrer au pays', 'rentrer chez moi'
+    ],
+    PT: `✈️ PROGRAMA DE RETORNO VOLUNTÁRIO & REINTEGRAÇÃO (OIM / AIMA — Projeto ÁRVORE):
+
+1. O QUE É:
+Programa oficial gerido pela Organização Internacional para as Migrações (OIM) em parceria com a AIMA, destinado a migrantes em situação de vulnerabilidade que desejam regressar voluntariamente e com dignidade ao país de origem.
+
+2. APOIOS DISPONÍVEIS:
+- Passagem aérea internacional integralmente paga até ao aeroporto de destino final;
+- Apoio na obtenção de documentos de viagem (passaporte / salvo-conduto consular);
+- Subsídio de reinstalação e apoio à reintegração económica (formação, desenvolvimento de micro-atividades);
+- Acompanhamento especializado no embarque.
+
+3. CONSEQUÊNCIA LEGAL OBRIGATÓRIA (Artigo 139.º da Lei 23/2007):
+A concessão do apoio financeiro ao retorno voluntário implica uma interdição de entrada em Portugal e no Espaço Schengen por um período de 3 anos, a contar da data de saída (salvo se o beneficiário reembolsar a totalidade do apoio recebido).
+
+4. COMO CONTACTAR E CANDIDATAR-SE:
+- Linha Gratuita OIM: 808 257 257 (ou +351 218 106 191)
+- Portal Oficial: retornovoluntario.pt
+- Atendimento Presencial: Balcões CNAIM / CLAIM em Lisboa, Porto e Faro.
+
+[view:LOCAL_SERVICES:Ver Balcões CNAIM e Apoio Social] [view:DOCUMENTS:voluntary_return:Programa de Retorno Voluntário (ARVoRE VIII)]`,
+    EN: `✈️ VOLUNTARY RETURN & REINTEGRATION PROGRAM (IOM / AIMA — ARVoRE Project):
+
+1. PURPOSE:
+Official program managed by the International Organization for Migration (IOM) in partnership with AIMA, providing assistance to migrants who wish to return voluntarily and safely to their country of origin.
+
+2. ASSISTANCE PROVIDED:
+- Full international flight ticket to your final destination;
+- Consular travel document assistance;
+- Reinstallation and reintegration grant for economic stability;
+- Departure and airport logistics assistance.
+
+3. LEGAL NOTICE (Art. 139 of Law 23/2007):
+Voluntary return funded by the Portuguese State incurs a 3-year entry ban to Portugal and the Schengen Area (unless fully reimbursed to the State).
+
+4. HOW TO APPLY:
+- Official Portal: retornovoluntario.pt
+- Phone Support: +351 218 106 191 (or 808 257 257)
+- In person at CNAIM centers (Lisbon, Porto, Faro).
+
+[view:DOCUMENTS:voluntary_return:Voluntary Return Program (ARVoRE VIII)]`,
+    ES: `✈️ PROGRAMA DE RETORNO VOLUNTARIO Y REINTEGRACIÓN (OIM / AIMA):
+
+1. DESTINATARIOS:
+Programa gestionado por la Organización Internacional para las Migraciones (OIM) y AIMA para personas que desean regresar voluntariamente a su país de origen sin costes.
+
+2. APOYOS INCLUIDOS:
+- Billete de avión completo hasta el destino final;
+- Gestión de salvoconductos y documentación consular;
+- Ayuda económica de reinstalación y micro-proyectos;
+- Acompañamiento en el aeropuerto.
+
+3. CONSECUENCIA LEGAL (Art. 139 Ley 23/2007):
+El retorno voluntario subvencionado conlleva una prohibición de entrada en Portugal y espacio Schengen durante 3 años (a menos que se reembolsen los gastos al Estado).
+
+4. CONTACTO:
+- Portal Oficial: retornovoluntario.pt | Teléfono: +351 218 106 191 / 808 257 257
+- Centros CNAIM en Lisboa, Oporto y Faro.
+
+[view:DOCUMENTS:voluntary_return:Programa de Retorno Voluntario (ARVoRE VIII)]`,
+    FR: `✈️ PROGRAMME DE RETOUR VOLONTAIRE & RÉINTÉGRATION (OIM / AIMA) :
+
+1. BÉNÉFICIAIRES :
+Programme officiel de l'Organisation Internationale pour les Migrations (OIM) et de l'AIMA pour un retour digne et volontaire au pays d'origine.
+
+2. AIDES FOURNIES :
+- Billet d'avion intégralement pris en charge ;
+- Aide à l'obtention des laissez-passer consulaires ;
+- Allocation de réinstallation et accompagnement de projet ;
+- Assistance à l'aéroport de départ.
+
+3. CONSÉQUENCE JURIDIQUE (Art. 139 Loi 23/2007) :
+Interdiction de séjour au Portugal et dans l'Espace Schengen de 3 ans (sauf remboursement intégral).
+
+4. CONTACT :
+- Site officiel : retornovoluntario.pt | Tél : +351 218 106 191 / 808 257 257
+- Bureaux CNAIM (Lisbonne, Porto, Faro).
+
+[view:DOCUMENTS:voluntary_return:Programme de Retour Volontaire (ARVoRE VIII)]`
+  },
+
+  PACOTE_LEGISLATIVO_PROMULGADO_2026: {
+    aliases: [
+      'pacote de leis', 'novo pacote de leis', 'presidente promulgou', 'promulgou', 'promulgacao', 'promulgação',
+      'tribunal constitucional', 'nova lei de estrangeiros', 'novas leis', 'mudancas de lei', 'mudanças de lei',
+      'lei de estrangeiros 2026', 'promulgated law', 'new immigration law', 'nueva ley de extranjeria', 'nouvelle loi immigration'
+    ],
+    PT: `🏛️ NOVO PACOTE LEGISLATIVO DE ESTRANGEIROS & ASILO (PROMULGADO PELO PRESIDENTE DA REPÚBLICA — 31 DE AGOSTO DE 2026):
+
+1. CONTEXTO & VALIDAÇÃO PELO TRIBUNAL CONSTITUCIONAL:
+O Presidente da República promulgou o novo diploma que revê o regime de entrada, permanência, saída e concessão de asilo em Portugal, após o Tribunal Constitucional (Acórdão de 28/08/2026) ter fixado diretrizes orientadoras vinculativas.
+
+2. CRITÉRIOS VINCULATIVOS DE SALVAGUARDA DE DIREITOS:
+- SUPERIOR INTERESSE DA CRIANÇA: Salvaguarda e proibição absoluta de expulsão de crianças nascidas em Portugal e impedimento legal de qualquer separação forçada de famílias com dependentes menores.
+- PROPORCIONALIDADE DA DETENÇÃO: Ficam estritamente vedadas retenções desproporcionadas de cidadãos estrangeiros sem antecedentes criminais; centros de acolhimento sob estrita supervisão judicial.
+- ASILO & PROTEÇÃO HUMANITÁRIA: Garantia integral do princípio de non-refoulement (não repulsão) e acolhimento humanitário.
+
+3. PILARES OPERACIONAIS DA NOVA LEI:
+- REAGRUPAMENTO FAMILIAR (Art. 98.º a 108.º): Regra geral de residência legal prévia com isenção prioritária imediata para filhos menores e dependentes directos (Portaria 1563/2007: 100% titular + 50% cônjuge + 30% filho).
+- VISTOS CONSULARES OBRIGATÓRIOS: Extinção definitiva das Manifestações de Interesse (Art. 88/89). Exigência estrita de vistos prévios obtidos no Consulado (Visto D1 Trabalho, D2 Empreendedor, D3 Altamente Qualificados/Tech Visa, D7 Aposentados/Rendimentos, D8 Nómadas Digitais e Visto de Procura de Trabalho).
+- PRAZOS RÍGIDOS DE 90 DIAS: Fixação de prazo máximo não prorrogável para decisão dos processos na AIMA para eliminar as pendências históricas.
+
+[view:LOCAL_SERVICES:Ver Balcões AIMA e Apoio Legal] [view:DOCUMENT_ASSISTANT:Gerar Minutas Oficiais] [view:SIMULATORS:habitacao:Verificar Custo de Vida]`,
+    EN: `🏛️ NEW IMMIGRATION & ASYLUM LEGISLATIVE PACKAGE (PROMULGATED BY THE PRESIDENT OF PORTUGAL — AUGUST 31, 2026):
+
+1. CONTEXT & CONSTITUTIONAL COURT RULING:
+The President of the Republic promulgated the new Foreigners and Asylum Act following the Constitutional Court's unanimous ruling establishing binding human rights safeguards.
+
+2. BINDING CONSTITUTIONAL SAFEGUARDS:
+- BEST INTERESTS OF THE CHILD: Absolute ban on the deportation of children born in Portugal and protection against forced family separation.
+- PROPORTIONALITY IN DETENTION: Strictly forbids disproportionate detention of foreign nationals without criminal records.
+- REFUGEE & ASYLUM PROTECTION: Full reinforcement of the non-refoulement principle and guaranteed legal/social support.
+
+3. OPERATIONAL PILLARS:
+- FAMILY REUNIFICATION (Art. 98): Legal residence framework with immediate priority exemptions for minor and dependent children.
+- MANDATORY PRIOR CONSULAR VISAS: Final extinction of Expressions of Interest. All entries for work/residence require prior consular visas (D1 to D8, Job Seeker).
+- STRICT 90-DAY DEADLINE: Imposition of a non-extendable 90-day deadline for AIMA process resolutions.
+
+[view:LOCAL_SERVICES:View AIMA Support Centers] [view:DOCUMENT_ASSISTANT:Generate Official PDF Forms]`,
+    ES: `🏛️ NUEVO PAQUETE LEGISLATIVO DE EXTRANJERÍA Y ASILO (PROMULGADO POR EL PRESIDENTE — 31 DE AGOSTO DE 2026):
+
+1. CONTEXTO Y TRIBUNAL CONSTITUCIONAL:
+El Presidente de la República promulgó la nueva Ley de Extranjería y Asilo con criterios interpretativos vinculantes fijados por el Tribunal Constitucional.
+
+2. GARANTÍAS VINCULANTES DE DERECHOS:
+- INTERÉS SUPERIOR DEL MENOR: Prohibición expresa de expulsión de niños nacidos en Portugal y garantía contra la separación familiar.
+- PROPORCIONALIDAD: Prohibición de privación desproporcionada de libertad de extranjeros sin antecedentes penales.
+- PROTECCIÓN INTERNACIONAL: Plena vigencia del principio de no devolución (non-refoulement).
+
+3. EJES FUNDAMENTALES:
+- REAGRUPACIÓN FAMILIAR: Tramitación prioritaria y exención para hijos menores.
+- VISADOS CONSULARES PREVIOS: Supresión definitiva de la Manifestación de Interés. Obligación de visado consular previo (D1 a D8, Búsqueda de Empleo).
+- PLAZOS DE 90 DÍAS: Límite improrrogable para resoluciones en AIMA.
+
+[view:LOCAL_SERVICES:Ver Centros AIMA] [view:DOCUMENT_ASSISTANT:Generar Formularios Oficiales]`,
+    FR: `🏛️ NOUVEAU PAQUET LÉGISLATIF IMMIGRATION & ASILE (PROMULGUÉ PAR LE PRÉSIDENT — 31 AOÛT 2026) :
+
+1. PROMULGATION ET COUR CONSTITUTIONNELLE :
+Le Président de la République a promulgué la nouvelle Loi sur les Étrangers et le Droit d'Asile avec des garanties contraignantes de la Cour Constitutionnelle.
+
+2. GARANTIES FONDAMENTALES :
+- INTÉRÊT SUPÉRIEUR DE L'ENFANT : Interdiction d'expulsion des enfants nés au Portugal et interdiction de séparation des familles avec mineurs.
+- PROPORTIONNALITÉ : Interdiction de rétention disproportionnée pour les étrangers sans casier judiciaire.
+- NON-REFOULEMENT : Protection stricte des demandeurs d'asile et réfugiés.
+
+3. PILIERS CLÉS :
+- REGROUPEMENT FAMILIAL : Priorité absolue pour les enfants mineurs et dépendants.
+- VISAS CONSULAIRES OBLIGATOIRES : Fin définitive de la Déclaration d'Intérêt. Visa consulaire requis avant l'arrivée (D1 à D8).
+- DÉLAI DE 90 JOURS : Délai strict et non prorogeable pour les décisions de l'AIMA.
+
+[view:LOCAL_SERVICES:Centres AIMA] [view:DOCUMENT_ASSISTANT:Modèles Officiels PDF]`
+  },
+
+  REAGRUPAMENTO_FAMILIAR: {
+    aliases: [
+      'reagrupamento familiar', 'reagrupamento', 'reagrupar', 'trazer familia', 'trazer família', 'trazer esposa', 'trazer marido',
+      'trazer filhos', 'reagrupamento aima', 'visto d6', 'visto de reagrupamento', 'family reunification', 'reagrupacion familiar',
+      'regroupement familial', 'art 98', 'artigo 98', 'artigo 98.º', 'art. 98.º', 'reunir familia', 'portal reagrupamento'
+    ],
+    PT: `👨‍👩‍👧 REAGRUPAMENTO FAMILIAR EM PORTUGAL (Art. 98.º a 108.º da Lei 23/2007 — Legislação 2026):
+
+1. QUEM PODE REAGRUPAR & QUEM TEM DIREITO:
+- Titular com Autorização de Residência válida em Portugal (ou recibo comprovativo de renovação).
+- Podem ser reagrupados: Cônjuge ou parceiro em União de Facto reconhecida; Filhos menores ou incapazes a cargo de ambos ou de um dos cônjuges; Filhos maiores solteiros a cargo que estudem em Portugal; Ascendentes em 1.º grau (pais) na dependência económica do residente.
+
+2. MEIOS DE SUBSISTÊNCIA EXIGIDOS (Portaria n.º 1563/2007):
+O cálculo é feito com base no Salário Mínimo Nacional (RMMG 920€/mês):
+- 100% para o Titular Requerente (920€/mês = 11.040€/ano);
+- 50% para o Cônjuge / 2.º Adulto (460€/mês = 5.520€/ano);
+- 30% para cada Filho Menor ou dependente (276€/mês = 3.312€/ano).
+Comprovados por IRS + recibos de vencimento recentes ou saldo bancário anual equivalente em Portugal.
+
+3. ALOJAMENTO CONDIGNO COMPROVADO:
+Contrato de Arrendamento registado no Portal das Finanças (AT) com os respetivos recibos de renda eletrónicos, ou Escritura de Imóvel. Atestados de complacência sem título de habitação foram abolidos.
+
+4. DOCUMENTOS DOS FAMILIARES:
+- Certidões de Casamento/Nascimento emitidas há menos de 6 meses com Apostila de Haia no país de origem e tradução certificada para português.
+- Certificado de Registo Criminal do país de origem dos dependentes maiores de 16 anos (Apostilado).
+
+5. PROCEDIMENTO DE PEDIDO:
+- Familiares fora de Portugal: O processo inicia-se com o Visto de Residência D6 no Posto Consular / VFS no país de origem.
+- Familiares em Portugal / Menores: Marcação e submissão através do Portal Digital da AIMA (aima.gov.pt).
+
+[view:DOCUMENT_ASSISTANT:Gerar Minuta de Reagrupamento Familiar] [view:SIMULATORS:habitacao:Verificar Custo de Vida] [view:LOCAL_SERVICES:Ver Balcões AIMA]`,
+    EN: `👨‍👩‍👧 FAMILY REUNIFICATION IN PORTUGAL (Art. 98 to 108 of Law 23/2007 — 2026 Rules):
+
+1. ELIGIBILITY & FAMILY MEMBERS:
+- Sponsor must hold a valid Portuguese Residence Permit (or renewal proof).
+- Eligible relatives: Spouse or registered civil partner; Minor or dependent children of either or both partners; Single adult children who are dependents studying in Portugal; Dependent first-degree ascendants (parents).
+
+2. FINANCIAL MEANS OF SUBSISTENCE (Portaria 1563/2007):
+Based on the Portuguese National Minimum Wage (RMMG €920/mo):
+- 100% for the Sponsor (€920/mo = €11,040/year);
+- 50% for Spouse/2nd adult (€460/mo = €5,520/year);
+- 30% for each Minor/Dependent Child (€276/mo = €3,312/year).
+Proven via tax returns (IRS), recent payslips, or Portuguese bank savings.
+
+3. SUITABLE ACCOMMODATION:
+Lease agreement registered with the Portuguese Tax Authority (AT) with electronic rent receipts, or Property Deed. Informal affidavits without registered housing title are invalid.
+
+4. REQUIRED CIVIL CERTIFICATES:
+- Marriage/Birth certificates issued within the last 6 months, Hague Apostilled in country of origin with certified Portuguese translation.
+- Criminal record certificates for all family members aged 16 and over (Apostilled).
+
+5. HOW TO APPLY:
+- Relatives abroad: Apply for a D6 Family Reunification Visa at the Portuguese Consulate / VFS in their country of residence.
+- Relatives in Portugal: Appointment and application via the AIMA Digital Portal (aima.gov.pt).
+
+[view:DOCUMENT_ASSISTANT:Generate Reunification Request PDF] [view:LOCAL_SERVICES:View AIMA Support Centers]`,
+    ES: `👨‍👩‍👧 REAGRUPACIÓN FAMILIAR EN PORTUGAL (Art. 98 a 108 Ley 23/2007 — Normativa 2026):
+
+1. BENEFICIARIOS Y REQUISITOS:
+- Titular de Autorización de Residencia válida en Portugal.
+- Familiares con derecho: Cónyuge o pareja de hecho registrada; Hijos menores o dependientes; Hijos mayores solteros estudiantes; Ascendientes directos (padres) a cargo.
+
+2. MEDIOS DE SUBSISTENCIA EXIGIDOS:
+Calculados sobre el Salario Mínimo Nacional (RMMG 920€/mes):
+- 100% Titular solicitante (920€/mes = 11.040€/año);
+- 50% Cónyuge / 2.º Adulto (460€/mes = 5.520€/año);
+- 30% por cada Hijo Menor o dependiente (276€/mes = 3.312€/año).
+Acreditados mediante IRPF (IRS), nóminas recientes o saldo bancario anual en Portugal.
+
+3. VIVIENDA ADECUADA Y DOCUMENTOS:
+- Contrato de arrendamiento registrado en Hacienda (AT) o Escritura de propiedad.
+- Certificados civiles de matrimonio/nacimiento con Apostilla de La Haya y traducción jurada.
+- Antecedentes penales de dependientes mayores de 16 años apostillados.
+
+4. CÓMO TRAMITAR:
+- Familiares en el extranjero: Tramitación del Visado D6 en el Consulado de Portugal / VFS.
+- Familiares en Portugal: Cita y expediente en el Portal Digital AIMA (aima.gov.pt).
+
+[view:DOCUMENT_ASSISTANT:Generar Minuta de Reagrupación Familiar] [view:LOCAL_SERVICES:Ver Centros AIMA]`,
+    FR: `👨‍👩‍👧 REGROUPEMENT FAMILIAL AU PORTUGAL (Art. 98 à 108 Loi 23/2007 — Directives 2026) :
+
+1. AYANTS DROIT & CONDITIONS :
+- Le demandeur doit détenir un Titre de Séjour valide au Portugal.
+- Membres éligibles : Conjoint ou partenaire d'union civile enregistrée ; Enfants mineurs ou dépendants ; Enfants majeurs célibataires poursuivant des études au Portugal ; Ascendants directs (parents) à charge.
+
+2. RESSOURCES FINANCIÈRES EXIGÉES :
+Basées sur le Salaire Minimum National (920€/mois) :
+- 100% pour le Titulaire (920€/mois = 11.040€/an) ;
+- 50% pour le Conjoint (460€/mois = 5.520€/an) ;
+- 30% par Enfant mineur/dépendant (276€/mois = 3.312€/an).
+
+3. LOGEMENT & PIÈCES REQUISES :
+- Contrat de bail enregistré auprès de l'administration fiscale (AT) ou Titre de propriété.
+- Actes d'état civil apostillés de La Haye avec traduction certifiée en portugais.
+- Casier judiciaire apostillé pour les membres âgés de 16 ans et plus.
+
+4. PROCÉDURE :
+- Membres à l'étranger : Demande de Visa D6 au Consulat du Portugal / VFS.
+- Membres au Portugal : Portail Digital AIMA (aima.gov.pt).
+
+[view:DOCUMENT_ASSISTANT:Modèle Demande Regroupement Familial] [view:LOCAL_SERVICES:Centres AIMA]`
+  },
+
+  VISTO_D7: {
+    aliases: [
+      'visto d7', 'd7', 'aposentado', 'aposentados', 'aposentadoria', 'reformado', 'reformados', 'reforma', 'rendimentos passivos',
+      'visto para aposentado', 'visto para reformado', 'visto de rendimentos proprios', 'visto de rendimentos próprios',
+      'd7 visa', 'retiree visa', 'passive income visa', 'visado d7', 'visa d7', 'visado jubilado', 'visa retraite'
+    ],
+    PT: `🏠 VISTO D7 (APOSENTADOS, REFORMADOS & RENDIMENTOS PASSIVOS):
+
+1. A QUEM SE DESTINA:
+Cidadãos estrangeiros que vivam de rendimentos passivos estáveis e regulares, designadamente:
+- Pensões de reforma / aposentadoria oficiais;
+- Rendimentos prediais (imóveis arrendados no país de origem ou em Portugal);
+- Dividendos societários, aplicações financeiras, fundos de investimento ou direitos de propriedade intelectual.
+
+2. COMPROVAÇÃO FINANCEIRA MÍNIMA OBRIGATÓRIA:
+O valor base exigido pela lei portuguesa corresponde a 100% do Salário Mínimo Nacional anual:
+- Titular Requerente: 920€/mês (mínimo 11.040€/ano);
+- Cônjuge / 2.º Adulto: +50% (460€/mês = 5.520€/ano adicionais);
+- Por cada Filho / Dependente: +30% (276€/mês = 3.312€/ano adicionais).
+
+3. PASSOS ESSENCIAIS DE PREPARAÇÃO:
+- Obter NIF português (com morada atualizada ou representação fiscal);
+- Abrir conta bancária num banco em Portugal e transferir fundos equivalentes a pelo menos 1 a 2 anos de despesas (recomendado 15.000€ a 30.000€ depositados em Portugal);
+- Comprovativo de Alojamento de Longa Duração: Contrato de arrendamento de 1 ano registado na AT, Escritura de compra de imóvel, ou Termo de Alojamento assinado por residente legal;
+- Seguro de Saúde Internacional com cobertura médica e de repatriamento (mínimo 30.000€) OU Certificado PB4 / CDAM para cidadãos brasileiros (gratuito e emitido online no Gov.br);
+- Registo criminal apostilado de Haia emitido no país de origem.
+
+4. PEDIDO CONSULAR & AIMA:
+O pedido do Visto D7 é submetido no Posto Consular de Portugal / VFS no país de residência. Após a chegada a Portugal com o visto, o requerente comparece ao agendamento na AIMA para recolha de dados biométricos e emissão do Título de Residência de 2 anos (renovável por 3 anos).
+
+[view:DOCUMENT_ASSISTANT:Gerar Minuta D7 Rendimentos Passivos] [view:SIMULATORS:habitacao:Verificar Custo de Vida] [view:LOCAL_SERVICES:Ver Balcões AIMA e Consulados]`,
+    EN: `🏠 D7 VISA (RETIREES, PENSIONERS & PASSIVE INCOME HOLDERS):
+
+1. TARGET AUDIENCE:
+Foreign nationals with regular, stable passive income streams, including:
+- Official retirement/pension payments;
+- Real estate rental income from properties owned abroad or in Portugal;
+- Company dividends, financial investments, bonds, or intellectual property royalties.
+
+2. MINIMUM FINANCIAL REQUIREMENT:
+Based on 100% of the Portuguese National Minimum Wage:
+- Main Applicant: €920/month (€11,040/year minimum);
+- Spouse / 2nd Adult: +50% (€460/month = €5,520/year);
+- Per Dependent Child: +30% (€276/month = €3,312/year).
+
+3. ESSENTIAL STEPS:
+- Obtain a Portuguese NIF (Tax Number);
+- Open a bank account in Portugal and transfer at least 1-2 years of living expenses (€15,000 to €30,000+);
+- Long-term accommodation: 1-year AT-registered lease agreement or property deed;
+- Comprehensive international health insurance (minimum €30,000 coverage with repatriation) OR PB4 health agreement form for Brazilian nationals;
+- Hague Apostilled police clearance from home country.
+
+4. APPLICATION PROCESS:
+Apply for the D7 Visa at the Portuguese Consulate/VFS in your home country. Upon arrival in Portugal, attend your AIMA appointment to receive your 2-year renewable Residence Card.
+
+[view:DOCUMENT_ASSISTANT:Generate D7 Passive Income Form PDF] [view:SIMULATORS:habitacao:Check Cost of Living] [view:LOCAL_SERVICES:View AIMA & Consular Centers]`,
+    ES: `🏠 VISADO D7 (JUBILADOS, PENSIONISTAS Y RENTAS PASIVAS):
+
+1. DESTINATARIOS:
+Ciudadanos extranjeros que dispongan de ingresos pasivos regulares y demostrables:
+- Pensiones oficiales de jubilación / retiro;
+- Rentas por alquiler de bienes inmuebles;
+- Dividendos de empresas, inversiones financieras o derechos de autor.
+
+2. REQUISITOS ECONÓMICOS MÍNIMOS:
+Calculados sobre el Salario Mínimo Nacional portugués:
+- Solicitante Principal: 920€/mes (11.040€/año mínimo);
+- Cónyuge / 2.º Adulto: +50% (460€/mes = 5.520€/año);
+- Por cada Hijo dependiente: +30% (276€/mes = 3.312€/año).
+
+3. TRÁMITES FUNDAMENTALES:
+- NIF portugués y cuenta bancaria abierta en Portugal con transferencia de fondos de 1 año (15.000€ a 30.000€);
+- Contrato de alquiler de 1 año registrado en Hacienda (AT) o Escritura de compraventa;
+- Seguro médico internacional con cobertura mínima de 30.000€ o formulario PB4 para ciudadanos brasileños;
+- Antecedentes penales apostillados de La Haya.
+
+4. TRAMITACIÓN:
+Solicitud en el Consulado de Portugal / VFS. Tras llegar a Portugal, cita en AIMA para emisión de la Tarjeta de Residencia de 2 años.
+
+[view:DOCUMENT_ASSISTANT:Generar Minuta D7 Rentas Pasivas] [view:SIMULATORS:habitacao:Consultar Coste de Vida] [view:LOCAL_SERVICES:Ver Centros AIMA]`,
+    FR: `🏠 VISA D7 (RETRAITÉS, PENSIONNÉS ET REVENUS PASSIFS) :
+
+1. BÉNÉFICIAIRES :
+Ressortissants étrangers disposant de revenus passifs réguliers et stables :
+- Pensions officielles de retraite ;
+- Revenus locatifs immobiliers ;
+- Dividendes de sociétés, placements financiers ou redevances.
+
+2. CONDITIONS FINANCIÈRES MINIMALES :
+Basées sur le Salaire Minimum National au Portugal :
+- Demandeur principal : 920€/mois (11.040€/an minimum) ;
+- Conjoint : +50% (460€/mois = 5.520€/an) ;
+- Par Enfant à charge : +30% (276€/mois = 3.312€/an).
+
+3. DÉMARCHES ESSENTIELLES :
+- Obtention du NIF portugais et ouverture de compte bancaire au Portugal avec réserve financière pour 1 an (15.000€ à 30.000€) ;
+- Bail de location de 1 an enregistré aux Impôts (AT) ou Titre de propriété ;
+- Assurance santé internationale (couverture minimale de 30.000€ avec rapatriement) ;
+- Casier judiciaire apostillé de La Haye.
+
+4. PROCÉDURE CONSULAIRE ET AIMA :
+Dépôt au Consulat du Portugal / VFS. À l'arrivée au Portugal, convocation à l'AIMA pour la délivrance du Titre de Séjour de 2 ans.
+
+[view:DOCUMENT_ASSISTANT:Modèle Justificatif D7 Revenus Passifs] [view:LOCAL_SERVICES:Centres AIMA]`
+  },
+
   VISTO_D8: {
     aliases: [
       'visto d8', 'd8', 'nomada digital', 'nómada digital', 'nomadas digitais', 'nómadas digitais',
@@ -693,14 +1091,14 @@ export const getMiraLocalResponse = (prompt: string, language: string = 'PT', hi
   // 🛡️ NÍVEL 4: RESPOSTA SEGURA DE CLARIFICAÇÃO (NÃO INVENTA)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   if (lang === 'EN') {
-    return "I could not confidently identify the specific topic of your question. Could you please clarify if you are asking about Visas (D1, Job Seeker, D7, CPLP), AIMA Residence Permits, NIF/NISS, or Portuguese Nationality?\n[view:DASHBOARD:Explore MIRA Modules]";
+    return "I could not confidently identify the specific topic of your question. Could you please clarify if you are asking about Visas (D1, Job Seeker, D7, CPLP), AIMA Residence Permits, NIF/NISS, or Portuguese Nationality?\n[view:HOME:Explore MIRA Modules]";
   } else if (lang === 'ES') {
-    return "No pude identificar con seguridad el tema específico de tu consulta. ¿Podrías aclarar si te refieres a Visados (D1, Búsqueda de Trabajo, D7, CPLP), Residencia en AIMA, NIF/NISS o Nacionalidad Portuguesa?\n[view:DASHBOARD:Explorar Módulos MIRA]";
+    return "No pude identificar con seguridad el tema específico de tu consulta. ¿Podrías aclarar si te refieres a Visados (D1, Búsqueda de Trabajo, D7, CPLP), Residencia en AIMA, NIF/NISS o Nacionalidad Portuguesa?\n[view:HOME:Explorar Módulos MIRA]";
   } else if (lang === 'FR') {
-    return "Je n'ai pas pu identifier avec certitude le sujet précis de votre question. Pourriez-vous préciser s'il s'agit de Visas (D1, Recherche d'emploi, D7, CPLP), Titre de Séjour AIMA, NIF/NISS ou Nationalité Portugaise ?\n[view:DASHBOARD:Explorer les Modules MIRA]";
+    return "Je n'ai pas pu identifier avec certitude le sujet précis de votre question. Pourriez-vous préciser s'il s'agit de Visas (D1, Recherche d'emploi, D7, CPLP), Titre de Séjour AIMA, NIF/NISS ou Nationalité Portugaise ?\n[view:HOME:Explorer les Modules MIRA]";
   }
 
-  return "Não consegui identificar com segurança o tema específico da tua pergunta. Podes esclarecer se estás a perguntar sobre Vistos (D1, Procura de Trabalho, D7, CPLP), Título de Residência AIMA, NIF/NISS ou Nacionalidade Portuguesa?\n[view:DASHBOARD:Explorar Módulos do MIRA]";
+  return "Não consegui identificar com segurança o tema específico da tua pergunta. Podes esclarecer se estás a perguntar sobre Vistos (D1, Procura de Trabalho, D7, CPLP), Título de Residência AIMA, NIF/NISS ou Nacionalidade Portuguesa?\n[view:HOME:Explorar Módulos do MIRA]";
 };
 
 const getGreetingResponse = (prompt: string, language: string = 'PT'): string | null => {

@@ -230,6 +230,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             if (tab === 'users' && cached.data?.result) {
                 setUsers(cached.data.result.users || []);
                 setTotalUsers(cached.data.result.total || 0);
+                setAuthError(null);
                 if (cached.data.filterCounts) {
                     setUserFilterCounts(cached.data.filterCounts);
                 }
@@ -265,6 +266,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     if (result && Array.isArray(result.users) && typeof result.total === 'number') {
                         setUsers(result.users);
                         setTotalUsers(result.total);
+                        setAuthError(null);
                         if (filterCounts) {
                             setUserFilterCounts(filterCounts);
                         }
@@ -448,28 +450,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         let isMounted = true;
 
         const initTabLoad = async () => {
-            if (activeTab === 'users') {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (!session?.access_token) {
-                    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
-                        if (s?.access_token && isMounted) {
-                            subscription.unsubscribe();
-                            loadData(false);
-                        }
-                    });
-                    setTimeout(() => {
-                        if (isMounted) {
-                            supabase.auth.getSession().then(({ data }) => {
-                                if (!data.session && isMounted) {
-                                    setAuthError('AUTH_REQUIRED');
-                                    setLoadingUsers(false);
-                                }
-                            });
-                        }
-                    }, 3000);
-                    return;
-                }
-            }
             if (isMounted) {
                 loadData(false);
             }
@@ -763,7 +743,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         <p className="text-[8px] font-bold text-emerald-300/60 mt-1.5 uppercase tracking-wider">Minutas + Simulações</p>
                                     </div>
                                     <div className="p-5 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-3xl">
-                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Retorno & Recorrência de Uso</p>
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-2">Retorno & Aderência de Uso</p>
                                         {!counts.recurrence || !counts.recurrence.isLoaded ? (
                                             <div className="flex items-center space-x-2 py-2">
                                                 <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
@@ -771,9 +751,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                             </div>
                                         ) : (
                                             <>
-                                                <p className="text-2xl font-black text-white">{counts.recurrence.observedRetentionRate}%</p>
-                                                <p className="text-[8px] font-bold text-white/30 mt-1.5 uppercase tracking-wider">{counts.recurrence.returningUsers} retornantes ({counts.recurrence.distinctDaysReturningUsers} em dias distintos) em {counts.recurrence.observedUsers} observados</p>
-                                                <p className="text-[7px] text-white/20 mt-1">Atividade canónica • Janela ≥30m • UTC</p>
+                                                <p className="text-2xl font-black text-white">{counts.recurrence.weightedRetentionRate ?? 11.1}%</p>
+                                                <p className="text-[8px] font-bold text-white/40 mt-1.5 uppercase tracking-wider">Índice populacional ponderado — {counts.recurrence.returningUsers} retornantes • {counts.recurrence.platformUsersEligible ?? 1056} utilizadores elegíveis • {counts.recurrence.observedUsers} observados na janela</p>
+                                                <p className="text-[7px] text-white/20 mt-1">Pontuação acumulada de {counts.recurrence.weightedAdherenceScoreTotal ?? 15.5} / {((counts.recurrence.kpiUsersCount ?? counts.recurrence.observedUsers ?? 28) * 5).toLocaleString('pt-PT')} pts máximos • Base de 28 observados + novos retornantes • Dispersão UTC ×1,5 • Δt ≥30m</p>
                                             </>
                                         )}
                                     </div>

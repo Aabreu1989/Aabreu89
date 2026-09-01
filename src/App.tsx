@@ -1461,7 +1461,14 @@ const AppContent: React.FC = () => {
                     targetServiceId={viewParams?.id || targetServiceId} 
                     onClearTargetService={() => { setTargetServiceId(null); setViewParams(null); }} 
                 />;
-             case ViewType.DASHBOARD: return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} />;
+             case ViewType.DASHBOARD: 
+                 if (isInitializing && !user) {
+                     return <div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-mira-orange" size={32} /></div>;
+                 }
+                 if (!isUserAdmin(user)) {
+                     return <HomeView user={user} onViewChange={handleViewChange} language={language} onLogout={handleLogout} masterPosts={masterPosts} />;
+                 }
+                 return <DashboardView masterPosts={masterPosts} onUpdatePosts={setMasterPosts} totalOfficialDocs={templates.length + serviceGuides.length} onAddCourse={(c) => setCourses([c, ...courses])} onAddMultipleCourses={(cs) => setCourses([...cs, ...courses])} onLogout={handleLogout} onDeleteAllUsers={() => {}} onViewChange={handleViewChange} />;
              case ViewType.ADMIN: 
                  if (isInitializing && !user) {
                      return <div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-mira-orange" size={32} /></div>;

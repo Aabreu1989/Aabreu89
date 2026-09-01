@@ -15,7 +15,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { 
   consolidatePlatformMetrics, 
+  CANONICAL_HUMAN_ACTIONS,
   CANONICAL_INTERACTION_ACTIONS,
+  ADMIN_USER_IDS,
+  deriveCanonicalRecurrenceMetrics,
   TELEMETRY_CUTOFF_DATE 
 } from '../lib/telemetryBaselines.js';
 
@@ -30,18 +33,6 @@ const ADMIN_EMAILS = [
   'amandasabreu89@gmail.com',
   'amandajhonnes@yahoo.com.br',
   'mira.app@hotmail.com'
-];
-
-const ADMIN_USER_IDS = [
-  '00000000-0000-0000-0000-000000000001',
-  '6afae965-8c6e-4699-90f1-f82d2f0c6658',
-  '775fb10a-78cd-4753-938d-dea75fddd77a',
-  'bc16353e-67ae-4ff5-a6aa-bc4d8f62af08',
-  'dea69de1-0ed4-44dc-9699-0544e6f39ed8',
-  '99b0f5c9-dc81-453b-a60d-e63b6c591ee3',
-  '8efd79c9-b4f1-4ae2-adbd-3c192b309642',
-  '0d648290-0cda-4684-a32e-7f8de68e87af',
-  '70b7679d-b809-48df-b7c7-bf0906e4caf5'
 ];
 
 // ─── HELPER: Verificar Admin ──────────────────────────────────────────────────
@@ -211,38 +202,47 @@ export default async function handler(req, res) {
 
       const docDownloadsCount = Math.max(userDocsRes.count || 0, docActivityRes.count || 0);
 
-      // Cálculo canónico de Utilizadores Recorrentes pós-cutoff (Critério A: 2+ dias distintos de atividade)
-      let returningUsersPostCutoff = 0;
-      const authLogsTotal = authLogsCountRes?.count || 0;
-      if (authLogsTotal > 0) {
-        const PAGE_SIZE = 1000;
-        const numPages = Math.ceil(authLogsTotal / PAGE_SIZE);
-        const pagePromises = [];
-        for (let i = 0; i < numPages; i++) {
-          pagePromises.push(
-            supabaseAdmin
-              .from('activity_logs')
-              .select('user_id, created_at')
-              .gte('created_at', TELEMETRY_CUTOFF_DATE)
-              .not('user_id', 'is', null)
-              .range(i * PAGE_SIZE, (i + 1) * PAGE_SIZE - 1)
-          );
+      // 🔒 MOTOR CANÓNICO DE RECORRÊNCIA E SESSÕES (ALGORITMO ÚNICO DE DERIVAÇÃO)
+      let recurrenceLogs = [];
+      let recFrom = 0;
+      const recStep = 1000;
+      let recHasMore = true;
+      while (recHasMore) {
+        const { data: recPage } = await supabaseAdmin
+          .from('activity_logs')
+          .select('user_id, created_at, action')
+          .in('action', CANONICAL_HUMAN_ACTIONS)
+          .gte('created_at', TELEMETRY_CUTOFF_DATE)
+          .not('user_id', 'is', null)
+          .not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)
+          .order('created_at', { ascending: true })
+          .range(recFrom, recFrom + recStep - 1);
+
+        if (recPage && recPage.length > 0) {
+          recurrenceLogs = recurrenceLogs.concat(recPage);
+          if (recPage.length < recStep) recHasMore = false;
+          else recFrom += recStep;
+        } else {
+          recHasMore = false;
         }
-        const pageResults = await Promise.all(pagePromises);
-        const userDaysMap = new Map();
-        pageResults.forEach((pageRes) => {
-          (pageRes.data || []).forEach((r) => {
-            if (!r.user_id || r.user_id === 'guest' || r.user_id.startsWith('guest_') || r.user_id === 'undefined') return;
-            const day = r.created_at?.slice(0, 10);
-            if (!day) return;
-            if (!userDaysMap.has(r.user_id)) userDaysMap.set(r.user_id, new Set());
-            userDaysMap.get(r.user_id).add(day);
-          });
-        });
-        userDaysMap.forEach((days) => {
-          if (days.size >= 2) returningUsersPostCutoff++;
-        });
       }
+
+      const totalProfilesCount = profilesRes.count || 0;
+      const platformUsersEligible = Math.max(0, totalProfilesCount - (Array.isArray(ADMIN_USER_IDS) ? ADMIN_USER_IDS.length : 9));
+
+      const {
+        baseObservedUsers,
+        kpiUsersCount,
+        observedUsers,
+        distinctSessions,
+        returningUsers,
+        distinctDaysReturningUsers,
+        weightedRetentionRate,
+        weightedAdherenceScoreTotal,
+        weightedAdherenceReturningIndex,
+        weightedAdherenceIndex,
+        weightedAdherenceMethodology
+      } = deriveCanonicalRecurrenceMetrics(recurrenceLogs, platformUsersEligible);
 
       // Consolidação Soberana única
       const consolidated = consolidatePlatformMetrics({
@@ -253,9 +253,20 @@ export default async function handler(req, res) {
         docDownloadEvents: docDownloadsCount,
         pwaMobileEvents,
         pwaDesktopEvents,
-        returningUsersPostCutoff,
+        returningUsersPostCutoff: returningUsers,
+        platformUsersEligible,
+        baseObservedUsers,
+        kpiUsersCount,
+        observedUsers,
+        distinctSessions,
+        distinctDaysReturningUsers,
+        weightedRetentionRate,
+        weightedAdherenceScoreTotal,
+        weightedAdherenceReturningIndex,
+        weightedAdherenceIndex,
+        weightedAdherenceMethodology,
 
-        currentUsers: profilesRes.count || 0,
+        currentUsers: totalProfilesCount,
         currentJobs: jobsRes.count || 0,
         currentServices: servicesRes.count || 0,
         currentCourses: coursesRes.count || 0,

@@ -173,10 +173,28 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         voluntary_return: [
             {
-                docName: "✈️ Requerimento do Programa ARVoRe (OIM / AIMA)",
-                accepted: "Inscrição oficial no Programa de Apoio ao Retorno Voluntário e à Reintegração gerido pela Organização Internacional para as Migrações (OIM).",
-                where: "Gabinete da OIM Portugal (retornovoluntario.pt) ou balcão da AIMA.",
-                hack: "O programa cobre o custo integral da viagem de regresso ao país de origem, apoio logístico no aeroporto e subsídio de reinstalação para projetos produtivos."
+                docName: "✈️ 1. Inscrição no Programa ARVoRe VIII (OIM / AIMA)",
+                accepted: "Inscrição formal preenchida e submetida online no portal retornovoluntario.pt, por email (arvore@iom.int / retornovoluntario@iom.int) ou presencialmente nos balcões do CNAIM / CLAIM.",
+                where: "Gabinete da OIM Portugal (Lisboa: Rua José Estêvão, 137 / Tel: 808 257 257 ou +351 21 324 2940) ou balcões oficiais AIMA / CNAIM.",
+                hack: "O processo é 100% gratuito, confidencial e digno. A OIM não partilha dados com entidades policiais de forma punitiva. Todos os cidadãos estrangeiros sem capacidade financeira para custear a viagem podem candidatar-se."
+            },
+            {
+                docName: "🛂 2. Passaporte Nacional ou Salvo-Conduto Consular",
+                accepted: "Passaporte válido ou caducado do país de origem, OU Título de Viagem Única / Salvo-Conduto (Laissez-Passer) emitido pelo Consulado ou Embaixada em Portugal.",
+                where: "Consulado ou Embaixada do país de origem em Lisboa ou Porto.",
+                hack: "Se o seu passaporte estiver perdido, retido ou expirado, a equipa técnica da OIM faz a articulação direta com a sua representação consular e apoia no pagamento das taxas de emissão do documento de viagem."
+            },
+            {
+                docName: "🎫 3. Passagem Aérea & Assistência no Aeroporto",
+                accepted: "Bilhete de avião internacional emitido e pago integralmente pela OIM até à cidade de destino mais próxima da sua residência no país de origem, com bagagem de porão incluída.",
+                where: "Gerido e emitido diretamente pela OIM Portugal em articulação com as companhias aéreas.",
+                hack: "Migrantes com problemas de saúde, grávidas, idosos ou famílias com crianças recebem apoio logístico e acompanhamento assistencial presencial no Aeroporto de Lisboa ou Porto até ao embarque no avião."
+            },
+            {
+                docName: "💼 4. Apoio à Reintegração & Subsídio de Micro-Negócio",
+                accepted: "Plano de reintegração socioeconómica validado para concessão de apoio financeiro no país de origem (compra de ferramentas de trabalho, equipamento, formação ou apoio educacional).",
+                where: "Gabinetes locais da OIM e parceiros sociais no país de regresso.",
+                hack: "O subsídio de reintegração pós-chegada não é entregue em dinheiro líquido no aeroporto, mas sim gerido em projetos de capacitação e compra de bens produtivos para garantir a sustentabilidade económica da família."
             }
         ]
     },
@@ -347,10 +365,28 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         voluntary_return: [
             {
-                docName: "✈️ ARVoRe Program Application (IOM / AIMA)",
-                accepted: "Official registration in the Assisted Voluntary Return and Reintegration Program managed by the International Organization for Migration (IOM).",
-                where: "IOM Portugal office (retornovoluntario.pt) or AIMA branch.",
-                hack: "The program covers 100% of flight travel costs to the home country, airport assistance, and reintegration grants for productive projects."
+                docName: "✈️ 1. ARVoRe VIII Program Registration (IOM / AIMA)",
+                accepted: "Formal registration submitted online at retornovoluntario.pt, via email (arvore@iom.int / retornovoluntario@iom.int), or in person at CNAIM/CLAIM offices.",
+                where: "IOM Portugal office (Lisbon: Rua José Estêvão, 137 / Tel: +351 21 324 2940 or 808 257 257) or official AIMA / CNAIM service centers.",
+                hack: "The process is 100% free, confidential, and safe. IOM does not share personal data for punitive purposes. Any foreign national lacking financial means to travel home can apply."
+            },
+            {
+                docName: "🛂 2. National Passport or Consular Travel Document",
+                accepted: "Valid or expired passport from home country, OR Emergency Travel Certificate / Laissez-Passer issued by your home country Consulate in Portugal.",
+                where: "Consulate or Embassy of your home country in Lisbon or Porto.",
+                hack: "If your passport is lost, retained, or expired, the IOM team directly liaises with your consulate and can cover the issuance fees for your emergency travel certificate."
+            },
+            {
+                docName: "🎫 3. Flight Ticket & Airport Assistance",
+                accepted: "International flight ticket fully funded and issued by IOM to the airport nearest to your home town, including checked baggage allowance.",
+                where: "Issued directly by IOM Portugal in coordination with commercial airlines.",
+                hack: "Vulnerable individuals, pregnant women, elderly citizens, and families with children receive dedicated in-person airport assistance in Lisbon or Porto until boarding."
+            },
+            {
+                docName: "💼 4. Reintegration Grant & Micro-Business Support",
+                accepted: "Socio-economic reintegration plan approved for post-arrival financial aid (vocational training, business equipment purchase, or educational support).",
+                where: "Local IOM offices and partner organizations in your destination country.",
+                hack: "The post-arrival reintegration grant is managed through tool purchases and vocational projects rather than raw cash, ensuring long-term family self-sufficiency."
             }
         ]
     },
@@ -521,10 +557,28 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         voluntary_return: [
             {
-                docName: "✈️ Solicitud del Programa ARVoRe (OIM / AIMA)",
-                accepted: "Inscripción oficial en el Programa de Apoyo al Retorno Voluntario y la Reintegración gestionado por la OIM.",
-                where: "Oficina de la OIM Portugal (retornovoluntario.pt) o delegación de AIMA.",
-                hack: "El programa cubre el 100% del billete de avión, asistencia en el aeropuerto y subsidio de reinstalación para proyectos productivos."
+                docName: "✈️ 1. Inscripción en el Programa ARVoRe VIII (OIM / AIMA)",
+                accepted: "Inscripción formal presentada en línea en retornovoluntario.pt, por correo electrónico (arvore@iom.int / retornovoluntario@iom.int) o presencialmente en centros CNAIM.",
+                where: "Oficina de la OIM Portugal (Lisboa / Tel: 808 257 257 o +351 21 324 2940) o delegaciones de AIMA / CNAIM.",
+                hack: "El trámite es 100% gratuito, confidencial y digno. La OIM no comparte datos con fines punitivos. Cualquier extranjero sin recursos suficientes puede solicitarlo."
+            },
+            {
+                docName: "🛂 2. Pasaporte Nacional o Salvoconducto Consular",
+                accepted: "Pasaporte válido o caducado del país de origen, O Salvoconducto / Título de Viaje de Emergencia emitido por el Consulado en Portugal.",
+                where: "Consulado o Embajada del país de origen en Lisboa u Oporto.",
+                hack: "Si su pasaporte está extraviado, retenido o vencido, la OIM coordina directamente con su consulado y apoya en el pago de tasas de emisión."
+            },
+            {
+                docName: "🎫 3. Billete de Avión y Asistencia en el Aeropuerto",
+                accepted: "Billete de avión internacional cubierto al 100% por la OIM hasta el aeropuerto más cercano a su destino, con equipaje de bodega incluido.",
+                where: "Gestionado y emitido directamente por la OIM Portugal.",
+                hack: "Personas en situación de vulnerabilidad de salud, embarazadas o familias con niños disponen de acompañamiento presencial en el aeropuerto hasta el embarque."
+            },
+            {
+                docName: "💼 4. Ayuda de Reintegración y Apoyo a Micro-Negocios",
+                accepted: "Plan de reintegración socioeconómica aprobado para concesión de ayuda financiera tras la llegada (compra de herramientas de trabajo o formación).",
+                where: "Oficinas locales de la OIM y ONG colaboradoras en el país de destino.",
+                hack: "La ayuda tras la llegada se destina a la compra directa de equipos de trabajo o cursos para garantizar la estabilidad económica de la familia."
             }
         ]
     },
@@ -693,12 +747,30 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 hack: "Les demandeurs d'asile ont un accès complet aux soins médicaux du SNS et reçoivent un Titre de Séjour Provisoire après admission."
             }
         ],
-        voluntary_return: [
+                voluntary_return: [
             {
-                docName: "✈️ Demande du Programme ARVoRe (OIM / AIMA)",
-                accepted: "Inscription officielle au Programme d'Aide au Retour Volontaire et à la Réintégration géré par l'OIM.",
-                where: "Bureau de l'OIM Portugal (retornovoluntario.pt) ou guichet de l'AIMA.",
-                hack: "Le programme prend en charge 100% du billet d'avion, l'assistance à l'aéroport et une allocation de réinstallation pour projets productifs."
+                docName: "✈️ 1. Inscription au Programme ARVoRe VIII (OIM / AIMA)",
+                accepted: "Inscription officielle soumise en ligne sur retornovoluntario.pt, par e-mail (arvore@iom.int / retornovoluntario@iom.int) ou aux guichets CNAIM / CLAIM.",
+                where: "Bureau de l'OIM Portugal (Lisbonne : Rua José Estêvão, 137 / Tél : 808 257 257 ou +351 21 324 2940) ou centres officiels AIMA / CNAIM.",
+                hack: "La démarche est 100% gratuite, confidentielle et sécurisée. L'OIM ne transmet pas de données à la police à des fins punitives. Tout ressortissant étranger sans moyens financiers peut postuler."
+            },
+            {
+                docName: "🛂 2. Passeport National ou Laissez-Passer Consulaire",
+                accepted: "Passeport valide ou expiré du pays d'origine, OU Laissez-passer / Titre de voyage d'urgence délivré par le Consulat ou l'Ambassade au Portugal.",
+                where: "Consulat ou Ambassade du pays d'origine à Lisbonne ou Porto.",
+                hack: "En cas de passeport perdu, retenu ou expiré, l'équipe de l'OIM assiste directement auprès du consulat et prend en charge les frais d'émission du document de voyage."
+            },
+            {
+                docName: "🎫 3. Billet d'Avion & Assistance à l'Aéroport",
+                accepted: "Billet d'avion international pris en charge à 100% par l'OIM jusqu'à l'aéroport le plus proche du domicile dans le pays d'origine, bagage en soute inclus.",
+                where: "Géré et émis directement par l'OIM Portugal en coordination avec les compagnies aériennes.",
+                hack: "Les personnes vulnérables, femmes enceintes, seniors et familles avec enfants bénéficient d'un accompagnement personnalisé aux aéroports de Lisbonne ou Porto jusqu'à l'embarquement."
+            },
+            {
+                docName: "💼 4. Allocation de Réinstallation & Soutien de Projet",
+                accepted: "Plan de réintégration socio-économique validé pour le soutien financier post-arrivée (achat d'outils, d'équipements de travail ou formation professionnelle).",
+                where: "Bureaux locaux de l'OIM et partenaires dans le pays de retour.",
+                hack: "L'allocation post-arrivée est investie dans du matériel professionnel et des projets concrets pour assurer l'autonomie durable du foyer."
             }
         ]
     }
