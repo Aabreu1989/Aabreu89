@@ -370,10 +370,44 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 setLoadingGamification(false);
 
             } else if (tab === 'broadcast' || tab === 'impact') {
-                if (!counts.users) {
+                if (!counts.users || !counts.recurrence?.isLoaded) {
                     adminService.fetchSyncStatus().then(status => {
                         if (status) {
-                            setCounts(prev => ({ ...prev, users: status.users || prev.users }));
+                            const newCounts = {
+                                ...status,
+                                recurrence: status.recurrence || null,
+                                courses: status.courses || { db: 0, prot: 0 }, 
+                                services: status.services || { db: 0, prot: 0 }, 
+                                users: status.users || 0, 
+                                usersToday: status.usersToday || 0,
+                                appAccesses: status.appAccesses || 0,
+                                totalInteractions: (status as any).totalInteractions || 0,
+                                jobs: status.jobs || { db: 0, prot: 0 }, 
+                                reports: status.reports || 0,
+                                suggestions: status.suggestions || 0,
+                                posts: status.posts || 0,
+                                comments: status.comments || 0,
+                                downloads: status.downloads || 0,
+                                simulations: status.simulations || 0,
+                                totalLikes: status.totalLikes || 0,
+                                retentionRate: status.recurrence?.observedRetentionRate ?? status.retentionRate ?? 0,
+                                observedRetentionRate: status.recurrence?.observedRetentionRate ?? status.retentionRate ?? 0,
+                                observedUsers: status.recurrence?.observedUsers ?? status.observedUsers ?? 0,
+                                distinctSessions: status.recurrence?.distinctSessions ?? status.distinctSessions ?? 0,
+                                returningUsers: status.recurrence?.returningUsers ?? status.returningUsers ?? 0,
+                                distinctDaysReturningUsers: status.recurrence?.distinctDaysReturningUsers ?? (status as any).distinctDaysReturningUsers ?? 0,
+                                distinctDaysRetentionRate: status.recurrence?.distinctDaysRetentionRate ?? (status as any).distinctDaysRetentionRate ?? 0,
+                                historicalReturningUsersBaseline: status.recurrence?.historicalReturningUsersBaseline ?? (status as any).historicalReturningUsersBaseline ?? 832,
+                                pwaMobileDownloads: status.pwaMobileDownloads || 0,
+                                pwaComputerDownloads: status.pwaComputerDownloads || 0,
+                                horasPoupadas: status.horasPoupadas || 0,
+                                processosAjudados: status.processosAjudados || 0,
+                                aiQueries: status.aiQueries || 0
+                            };
+                            setCounts(newCounts);
+                            try {
+                                sessionStorage.setItem('mira_admin_dashboard_counts_v7', JSON.stringify(newCounts));
+                            } catch (_) {}
                         }
                     });
                 }
