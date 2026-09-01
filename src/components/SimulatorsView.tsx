@@ -131,7 +131,91 @@ const translations: Record<string, Record<string, string>> = {
     setup_budget_title: 'Capital de Instalação Recomendado',
     setup_budget_sub: '2 Meses de Renda + 1 Mês Caução (Art. 1076.º C. Civil) + 3 Meses de Custos',
     emergency_fund_title: 'Fundo de Emergência Recomendado',
-    emergency_fund_sub: '3 Meses de despesas de sobrevivência segundo o Banco de Portugal'
+    emergency_fund_sub: '3 Meses de despesas de sobrevivência segundo o Banco de Portugal',
+    rv_guide_badge: "Manual Prático & Legislação 2026",
+    rv_guide_title: "Como Escolher o Seu Regime Contributivo & Segurança Social",
+    rv_guide_subtitle: "Guia oficial detalhado para saber exatamente qual opção selecionar para a sua atividade independente em Portugal.",
+    rv_sec_ss_title: "1. Regimes de Segurança Social: Qual deve escolher?",
+    rv_ss_ti_name: "Trabalhador Independente Geral (21,4%)",
+    rv_ss_ti_who: "Para quem é:",
+    rv_ss_ti_who_desc: "A grande maioria dos freelancers, prestadores de serviços, consultores, designers, programadores e trabalhadores por conta própria.",
+    rv_ss_ti_how: "Como funciona o cálculo:",
+    rv_ss_ti_how_desc: "A taxa de 21,4% incide sobre 70% da média de faturação do trimestre anterior declarada na Segurança Social Direta. Por exemplo: faturando 1.000€/mês, a base de incidência é 700€, pagando 149,80€ de contribuição mensal.",
+    rv_ss_eni_name: "Empresário em Nome Individual - ENI (25,2%)",
+    rv_ss_eni_who: "Para quem é:",
+    rv_ss_eni_who_desc: "Pessoas com negócio próprio comercial ou industrial com estabelecimento aberto em nome individual (não em sociedade).",
+    rv_ss_eni_how: "Como funciona o cálculo:",
+    rv_ss_eni_how_desc: "A taxa é de 25,2% sobre a base de incidência contributiva regulamentar.",
+    rv_ss_exempt_name: "Isenção no 1.º Ano de Atividade (Art. 157.º do CRC)",
+    rv_ss_exempt_who: "Para quem é:",
+    rv_ss_exempt_who_desc: "Cidadãos que abrem atividade independente pela primeira vez na vida em Portugal.",
+    rv_ss_exempt_how: "Como funciona:",
+    rv_ss_exempt_how_desc: "Fica 100% isento do pagamento de Segurança Social durante os primeiros 12 meses de atividade (paga 0€/mês). Se já teve atividade aberta anteriormente, este benefício não é renovado.",
+    rv_sec_var_title: "2. Ajuste Trimestral da Base da SS (-25% / 0% / +25%)",
+    rv_var_sub: "Na entrega da Declaração Trimestral na Segurança Social Direta, pode optar por ajustar a base:",
+    rv_var_0_name: "Manter Base Padrão (0% Variação)",
+    rv_var_0_desc: "Paga a contribuição exata calculada a partir da faturação real dos 3 meses anteriores.",
+    rv_var_minus_name: "Opção de Redução de Base (-25%)",
+    rv_var_minus_desc: "Reduz em 25% a sua contribuição mensal para aliviar a liquidez em meses com menor faturação. ⚠️ Atenção: reduz proporcionalmente o valor de subsídios de doença, licença parental e pensão de reforma futura.",
+    rv_var_plus_name: "Opção de Aumento de Base (+25%)",
+    rv_var_plus_desc: "Aumenta em 25% a sua contribuição mensal. Ideal para quem planeia ter filhos (aumenta o subsídio parental) ou deseja acumular maior proteção para a reforma e baixas médicas.",
+    rv_sec_act_title: "3. Tipo de Atividade e Coeficientes Fiscais",
+    rv_act_services_name: "Prestação de Serviços em Geral (Art. 151.º CIRS)",
+    rv_act_services_desc: "No regime simplificado, o fisco considera que 75% da faturação é rendimento tributável e 25% são despesas assumidas. Na Segurança Social, a base é de 70%. A retenção na fonte padrão em fatura é de 25% (ou 16,5%).",
+    rv_act_scientific_name: "Atividades Científicas, Técnicas e Artísticas",
+    rv_act_scientific_desc: "Engenheiros, arquitetos, médicos, artistas e técnicos especializados. Aplica-se retenção na fonte entre 20% e 25% sobre o rendimento de Categoria B.",
+    rv_act_products_name: "Venda de Mercadorias e Produtos / Restauração",
+    rv_act_products_desc: "Para quem comercializa produtos físicos. A incidência na Segurança Social é de apenas 20% e no IRS simplificado é de 15%, sem obrigação de retenção na fonte em fatura.",
+    rv_sec_wh_title: "4. Retenção na Fonte de IRS: Normal vs Isenção",
+    rv_wh_normal_name: "Retenção na Fonte Normal de IRS",
+    rv_wh_normal_desc: "Obrigatória ao emitir recibos verdes para empresas ou entidades com contabilidade organizada. O cliente desconta o imposto na fatura e entrega diretamente à Autoridade Tributária.",
+    rv_wh_exempt_name: "Dispensa de Retenção (Art. 101.º-B até 15.000€/ano)",
+    rv_wh_exempt_desc: "Se estima faturar menos de 15.000€ em 2026 e não tem outros rendimentos de Cat. B, pode emitir faturas sem retenção. ⚠️ O imposto não é perdoado: será apurado e liquidado no acerto anual de IRS (Modelo 3).",
+    rv_sec_jovem_title: "5. IRS Jovem para Recibos Verdes (Art. 12.º-B CIRS)",
+    rv_sec_jovem_desc: "Jovens até 35 anos com ensino secundário ou superior concluído têm isenção progressiva de IRS: 100% no 1.º ano, 75% nos anos 2-4, 50% nos anos 5-7 e 25% nos anos 8-10.",
+    so_guide_badge: "Guia Laboral & Fiscal 2026",
+    so_guide_title: "Como Funciona o Seu Salário Líquido (Trabalho por Conta de Outrem)",
+    so_guide_subtitle: "Entenda detalhadamente cada desconto de Segurança Social, retenção de IRS e benefícios do seu contrato de trabalho em Portugal.",
+    so_sec_ss_title: "1. Segurança Social do Trabalhador (11% + 23,75% Empresa)",
+    so_ss_worker_name: "Desconto do Trabalhador (11%)",
+    so_ss_worker_desc: "É descontado automaticamente do seu salário bruto. Garante o seu direito a subsídio de desemprego, baixa por doença, licença de maternidade/paternidade e pensão de reforma.",
+    so_ss_company_name: "TSU da Entidade Empregadora (23,75%)",
+    so_ss_company_desc: "É paga diretamente pela empresa à Segurança Social (não sai do seu salário líquido). Representa o custo global de proteção social suportado pela entidade patronal.",
+    so_sec_irs_title: "2. Retenção na Fonte de IRS & Acerto Anual",
+    so_irs_desc: "As tabelas de IRS da Autoridade Tributária definem a percentagem retida a cada mês. Em abril/junho do ano seguinte, na entrega do Modelo 3 de IRS, o Estado faz o acerto final: se descontou a mais, recebe reembolso; se descontou a menos, paga a diferença.",
+    so_sec_meal_title: "3. Subsídio de Alimentação (Cartão vs Dinheiro)",
+    so_meal_card_name: "Cartão de Refeição (Teto Isento: 9,60€/dia)",
+    so_meal_card_desc: "Até 9,60€ por dia útil pago em cartão de refeição está 100% livre de IRS e Segurança Social. É a forma mais vantajosa para aumentar o salário líquido.",
+    so_meal_cash_name: "Dinheiro / Transferência (Teto Isento: 6,00€/dia)",
+    so_meal_cash_desc: "Se o subsídio for pago em dinheiro na conta, o limite livre de impostos é de apenas 6,00€/dia. Qualquer valor acima é tributado como salário normal.",
+    so_sec_jovem_title: "4. Benefício IRS Jovem (Art. 12.º-B CIRS)",
+    so_sec_jovem_desc: "Trabalhadores até 35 anos com ensino secundário ou superior usufruem de isenção de IRS durante 10 anos: 100% no 1.º ano, 75% nos anos 2-4, 50% nos anos 5-7 e 25% nos anos 8-10.",
+    so_sec_family_title: "5. Família, Dependentes & Regiões Autónomas",
+    so_family_desc: "O número de dependentes e a situação de casado com 1 ou 2 titulares reduzem a taxa de retenção na fonte. Residentes fiscais na Madeira têm -20% de IRS e nos Açores -30%.",
+    pe_guide_badge: "Manual Empresarial & Fiscal 2026",
+    pe_guide_title: "Guia Estratégico para Pequenos Empreendedores & Microempresas",
+    pe_guide_subtitle: "Como escolher entre Empresa Individual (ENI) e Sociedade Lda, otimizar impostos e calcular a rentabilidade real do seu negócio.",
+    pe_sec_legal_title: "1. Estrutura Jurídica: ENI vs Sociedade Unipessoal Lda",
+    pe_legal_lda_name: "Sociedade Unipessoal Lda / PME (Recomendado)",
+    pe_legal_lda_desc: "Responsabilidade limitada ao capital social (mínimo 1€). O seu património pessoal (casa, carro, poupanças) fica 100% protegido contra dívidas da empresa. Paga IRC com taxa reduzida de 12,5% até 50.000€ de matéria coletável.",
+    pe_legal_eni_name: "Empresário em Nome Individual - ENI",
+    pe_legal_eni_desc: "Abertura simples e sem capital obrigatório, mas a responsabilidade é ilimitada: os seus bens pessoais respondem por todas as dívidas do negócio. Tributado em IRS simplificado.",
+    pe_sec_remun_title: "2. Remuneração do Gerente (Pró-Labore) vs Lucros",
+    pe_remun_moe_name: "Salário de Gerente (MOE - TSU 33,05%)",
+    pe_remun_moe_desc: "O gerente fixa um salário mensal sobre o qual incide TSU de 33,05% (23,75% empresa + 9,3% gerente), garantindo proteção social oficial.",
+    pe_remun_profit_name: "Distribuição de Dividendos / Lucros",
+    pe_remun_profit_desc: "O lucro líquido após pagamento de IRC pode ser distribuído ao sócio com taxa autónoma de 28% no IRS (ou englobamento favorável).",
+    pe_sec_sector_title: "3. Setores & Coeficientes de Tributação Simplificada",
+    pe_sector_services_name: "Serviços e Tecnologia (Coeficiente 0.75)",
+    pe_sector_services_desc: "O fisco tributa 75% da faturação e assume 25% em despesas de atividade.",
+    pe_sector_commerce_name: "Comércio e Restauração (Coeficiente 0.15)",
+    pe_sector_commerce_desc: "Tributação sobre apenas 15% do volume de negócios, refletindo margens comerciais.",
+    pe_sector_tourism_name: "Alojamento Local e Indústria (Coeficiente 0.35)",
+    pe_sector_tourism_desc: "Tributação sobre 35% da faturação em alojamento turístico e oficinas.",
+    pe_sec_iva_title: "4. IVA e Regime de Isenção (Artigo 53.º do CIVA)",
+    pe_iva_desc: "Empresas com faturação anual inferior a 15.000€ (em 2026) podem optar pelo regime de isenção do Artigo 53.º, sem cobrar nem deduzir IVA nas faturas.",
+    pe_sec_breakeven_title: "5. Ponto de Equilíbrio (Break-Even Point)",
+    pe_breakeven_desc: "Representa o valor mensal mínimo que a sua empresa tem de faturar para cobrir exatamente todas as despesas operacionais, salários e impostos sem entrar em prejuízo financeiro.",
   },
   EN: {
     title: 'MIRA Economic Simulators',
@@ -243,7 +327,91 @@ const translations: Record<string, Record<string, string>> = {
     setup_budget_title: 'Recommended Setup Capital',
     setup_budget_sub: '2 Months Rent + 1 Month Deposit (Art. 1076 Civil Code) + 3 Months Costs',
     emergency_fund_title: 'Recommended Emergency Fund',
-    emergency_fund_sub: '3 Months survival costs according to Banco de Portugal'
+    emergency_fund_sub: '3 Months survival costs according to Banco de Portugal',
+    rv_guide_badge: "Practical Guide & 2026 Legislation",
+    rv_guide_title: "How to Choose Your Contributory Regime & Social Security",
+    rv_guide_subtitle: "Official detailed guide to help you choose the exact options for your independent freelance activity in Portugal.",
+    rv_sec_ss_title: "1. Social Security Regimes: Which one applies to you?",
+    rv_ss_ti_name: "General Independent Worker (21.4%)",
+    rv_ss_ti_who: "Who it is for:",
+    rv_ss_ti_who_desc: "The vast majority of freelancers, service providers, consultants, designers, developers, and self-employed professionals.",
+    rv_ss_ti_how: "How calculation works:",
+    rv_ss_ti_how_desc: "The 21.4% rate applies to 70% of average quarterly invoices declared on SS Direta. For example: invoicing €1,000/month, the contributory base is €700, resulting in €149.80/month contribution.",
+    rv_ss_eni_name: "Sole Proprietorship - ENI (25.2%)",
+    rv_ss_eni_who: "Who it is for:",
+    rv_ss_eni_who_desc: "Individuals operating a commercial or industrial business in their own individual name with open establishment.",
+    rv_ss_eni_how: "How calculation works:",
+    rv_ss_eni_how_desc: "The rate is 25.2% applied to the regulatory contributory base.",
+    rv_ss_exempt_name: "1st Year Activity Exemption (Art. 157 CRC)",
+    rv_ss_exempt_who: "Who it is for:",
+    rv_ss_exempt_who_desc: "Citizens registering independent activity for the very first time in Portugal.",
+    rv_ss_exempt_how: "How it works:",
+    rv_ss_exempt_how_desc: "100% exempt from Social Security contributions during your first 12 months (€0/month). If you previously opened activity, this exemption is not renewable.",
+    rv_sec_var_title: "2. Quarterly Social Security Base Adjustment (-25% / 0% / +25%)",
+    rv_var_sub: "When submitting your Quarterly Declaration on SS Direta, you can adjust your base:",
+    rv_var_0_name: "Keep Standard Base (0% Adjustment)",
+    rv_var_0_desc: "You pay the exact standard contribution calculated from your previous 3 months of invoices.",
+    rv_var_minus_name: "Option to Reduce Base (-25%)",
+    rv_var_minus_desc: "Reduces your monthly contribution by 25% to ease cashflow during lower-income months. ⚠️ Caution: proportionally reduces future sickness, parental leave, and pension benefits.",
+    rv_var_plus_name: "Option to Increase Base (+25%)",
+    rv_var_plus_desc: "Increases your contribution by 25%. Ideal if planning parental leave (increases maternity/paternity payout) or building higher retirement credits.",
+    rv_sec_act_title: "3. Activity Types and Tax Coefficients",
+    rv_act_services_name: "General Service Provision (Art. 151 CIRS)",
+    rv_act_services_desc: "Under simplified IRS, 75% of income is taxable and 25% is assumed as business expense. In Social Security, the base is 70%. Standard invoice withholding tax is 25% (or 16.5%).",
+    rv_act_scientific_name: "Scientific, Technical & Artistic Activities",
+    rv_act_scientific_desc: "Engineers, doctors, architects, artists, and specialized consultants under Art. 151 CIRS. Standard withholding is 20% to 25% on Category B income.",
+    rv_act_products_name: "Product & Merchandise Sales / Dining",
+    rv_act_products_desc: "For physical goods trading. Social Security base is only 20% and simplified IRS taxable income is 15%, with zero withholding tax on invoices.",
+    rv_sec_wh_title: "4. IRS Withholding Tax: Normal vs Exemption",
+    rv_wh_normal_name: "Standard IRS Withholding",
+    rv_wh_normal_desc: "Mandatory when issuing invoices to companies with organized accounting. The client deducts tax and forwards it to the Tax Authority.",
+    rv_wh_exempt_name: "Tax Withholding Exemption (Art. 101-B up to €15,000/yr)",
+    rv_wh_exempt_desc: "If you expect to invoice under €15,000 in 2026, you can issue invoices without withholding. ⚠️ Tax is not forgiven; it will be settled in your annual IRS return (Modelo 3).",
+    rv_sec_jovem_title: "5. IRS Jovem for Freelancers (Art. 12-B CIRS)",
+    rv_sec_jovem_desc: "Young adults up to 35 with completed higher/secondary education enjoy progressive tax exemption: 100% in year 1, 75% in years 2-4, 50% in years 5-7, and 25% in years 8-10.",
+    so_guide_badge: "Labor & Tax Guide 2026",
+    so_guide_title: "Understanding Your Net Salary (Contract Employment)",
+    so_guide_subtitle: "Detailed official breakdown of Social Security deductions, IRS withholding tax, and employment benefits in Portugal.",
+    so_sec_ss_title: "1. Worker Social Security (11% + 23.75% Employer TSU)",
+    so_ss_worker_name: "Worker Contribution (11%)",
+    so_ss_worker_desc: "Deducted automatically from your gross salary. Entitles you to unemployment benefits, sick leave, maternity/paternity leave, and public pension.",
+    so_ss_company_name: "Employer TSU (23.75%)",
+    so_ss_company_desc: "Paid directly by your company to Social Security (not deducted from your net pay). Represents the company's contribution to national social protection.",
+    so_sec_irs_title: "2. IRS Monthly Withholding & Annual Tax Return",
+    so_irs_desc: "Official monthly withholding tables set your monthly deduction. In April/June of the following year (Modelo 3 return), the Tax Authority calculates the exact final balance: you get a refund if overpaid or settle the difference if underpaid.",
+    so_sec_meal_title: "3. Meal Allowance (Card vs Cash)",
+    so_meal_card_name: "Meal Card (Tax-Free Cap: €9.60/day)",
+    so_meal_card_desc: "Up to €9.60 per working day paid via meal card is 100% exempt from IRS and Social Security. The most tax-efficient way to increase net pay.",
+    so_meal_cash_name: "Cash / Direct Bank Transfer (Tax-Free Cap: €6.00/day)",
+    so_meal_cash_desc: "If paid in cash, the tax-free threshold is only €6.00/day. Any excess amount is fully taxed as regular salary.",
+    so_sec_jovem_title: "4. Youth IRS Benefit (Art. 12-B CIRS)",
+    so_sec_jovem_desc: "Workers up to 35 with completed secondary or higher education enjoy 10-year progressive IRS exemptions: 100% year 1, 75% years 2-4, 50% years 5-7, and 25% years 8-10.",
+    so_sec_family_title: "5. Family Status, Dependents & Autonomous Regions",
+    so_family_desc: "Dependents and marital status (1 vs 2 earners) reduce your monthly withholding rate. Tax residents in Madeira benefit from -20% IRS and in Azores -30%.",
+    pe_guide_badge: "Business & Tax Manual 2026",
+    pe_guide_title: "Strategic Guide for Small Businesses & Entrepreneurs",
+    pe_guide_subtitle: "How to choose between Sole Proprietorship (ENI) and Limited Company (Lda), optimize taxes, and calculate true business profitability.",
+    pe_sec_legal_title: "1. Legal Structure: ENI vs Single-Member Lda",
+    pe_legal_lda_name: "Single-Member Lda / SME Company (Recommended)",
+    pe_legal_lda_desc: "Liability limited to share capital (min €1). Your personal assets (home, car, savings) are 100% protected against company debts. Corporate tax (IRC) reduced to 12.5% on the first €50,000 of taxable profit.",
+    pe_legal_eni_name: "Sole Proprietorship - ENI",
+    pe_legal_eni_desc: "Quick registration without mandatory capital, but unlimited liability: personal assets can be seized for business debts. Taxed under simplified individual IRS.",
+    pe_sec_remun_title: "2. Manager Remuneration (Salary) vs Profit Distribution",
+    pe_remun_moe_name: "Manager Salary (MOE - TSU 33.05%)",
+    pe_remun_moe_desc: "The manager sets a monthly salary subject to 33.05% TSU (23.75% company + 9.3% manager), securing full statutory social protection.",
+    pe_remun_profit_name: "Dividend / Profit Distribution",
+    pe_remun_profit_desc: "Net profit after IRC corporate tax can be distributed to shareholders at a flat 28% IRS withholding rate.",
+    pe_sec_sector_title: "3. Sectors & Simplified Tax Coefficients",
+    pe_sector_services_name: "Services & Technology (Coefficient 0.75)",
+    pe_sector_services_desc: "The tax authority taxes 75% of revenue, automatically treating 25% as operating expense.",
+    pe_sector_commerce_name: "Commerce & Dining (Coefficient 0.15)",
+    pe_sector_commerce_desc: "Tax applies to only 15% of gross turnover, reflecting commercial retail margins.",
+    pe_sector_tourism_name: "Short-Term Rentals & Industry (Coefficient 0.35)",
+    pe_sector_tourism_desc: "Tax applies to 35% of gross revenue for tourism lodging and manufacturing workshops.",
+    pe_sec_iva_title: "4. VAT & Small Business Exemption (Art. 53 CIVA)",
+    pe_iva_desc: "Companies with annual revenue below €15,000 in 2026 can register under Article 53 exemption without charging or reclaiming VAT.",
+    pe_sec_breakeven_title: "5. Monthly Break-Even Point",
+    pe_breakeven_desc: "The exact monthly revenue required to cover 100% of operating expenses, salaries, and corporate taxes without incurring financial loss.",
   },
   ES: {
     title: 'Simuladores Económicos MIRA',
@@ -354,7 +522,91 @@ const translations: Record<string, Record<string, string>> = {
     setup_budget_title: 'Capital de Instalación Recomendado',
     setup_budget_sub: '2 Meses de Alquiler + 1 Mes de Fianza (Art. 1076 C. Civil) + 3 Meses de Gastos',
     emergency_fund_title: 'Fondo de Emergencia Recomendado',
-    emergency_fund_sub: '3 Meses de gastos de supervivencia según la recomendación del Banco de Portugal'
+    emergency_fund_sub: '3 Meses de gastos de supervivencia según la recomendación del Banco de Portugal',
+    rv_guide_badge: "Manual Práctico y Legislación 2026",
+    rv_guide_title: "Cómo Elegir su Régimen de Cotización y Seguridad Social",
+    rv_guide_subtitle: "Guía oficial detallada para saber exactamente qué opción seleccionar para su actividad autónoma en Portugal.",
+    rv_sec_ss_title: "1. Regímenes de Seguridad Social: ¿Cuál debe elegir?",
+    rv_ss_ti_name: "Trabajador Autónomo General (21,4%)",
+    rv_ss_ti_who: "Para quién es:",
+    rv_ss_ti_who_desc: "La gran mayoría de freelancers, consultores, diseñadores, programadores y trabajadores por cuenta propia.",
+    rv_ss_ti_how: "Cómo funciona el cálculo:",
+    rv_ss_ti_how_desc: "El 21,4% se aplica sobre el 70% de la facturación media del trimestre anterior declarada en la SS Direta. Por ejemplo: facturando 1.000€/mes, la base es 700€, pagando 149,80€/mes.",
+    rv_ss_eni_name: "Empresario Individual - ENI (25,2%)",
+    rv_ss_eni_who: "Para quién es:",
+    rv_ss_eni_who_desc: "Personas con negocio propio comercial o industrial con establecimiento a nombre individual.",
+    rv_ss_eni_how: "Cómo funciona el cálculo:",
+    rv_ss_eni_how_desc: "La tasa es del 25,2% sobre la base de cotización reglamentaria.",
+    rv_ss_exempt_name: "Exención del 1.er Año de Actividad (Art. 157 CRC)",
+    rv_ss_exempt_who: "Para quién es:",
+    rv_ss_exempt_who_desc: "Ciudadanos que inician actividad por primera vez en Portugal.",
+    rv_ss_exempt_how: "Cómo funciona:",
+    rv_ss_exempt_how_desc: "100% de exención de cuotas de Seguridad Social durante los primeros 12 meses (0€/mes). Si ya tuvo actividad previa, esta exención no se renueva.",
+    rv_sec_var_title: "2. Ajuste Trimestral de Base de SS (-25% / 0% / +25%)",
+    rv_var_sub: "Al presentar la Declaración Trimestral en la SS Direta, puede optar por ajustar su base:",
+    rv_var_0_name: "Mantener Base Estándar (0%)",
+    rv_var_0_desc: "Paga la cotización exacta calculada a partir de los 3 meses anteriores.",
+    rv_var_minus_name: "Opción de Reducir Base (-25%)",
+    rv_var_minus_desc: "Reduce un 25% su cuota mensual para aliviar liquidez. ⚠️ Atención: reduce proporcionalmente subsidios de enfermedad, paternidad y pensión futura.",
+    rv_var_plus_name: "Opción de Aumentar Base (+25%)",
+    rv_var_plus_desc: "Aumenta un 25% su cuota. Ideal para quienes planean baja por maternidad/paternidad o desean acumular mayor jubilación.",
+    rv_sec_act_title: "3. Tipo de Actividad y Coeficientes Fiscales",
+    rv_act_services_name: "Prestación de Servicios General (Art. 151 CIRS)",
+    rv_act_services_desc: "En IRPF simplificado, el 75% es base imponible y el 25% se asume como gasto. En Seguridad Social, la base es del 70%. La retención estándar en factura es del 25% (o 16,5%).",
+    rv_act_scientific_name: "Actividades Científicas, Técnicas y Artísticas",
+    rv_act_scientific_desc: "Ingenieros, médicos, artistas y consultores especializados. Retención en factura del 20% al 25% sobre rendimientos de Categoría B.",
+    rv_act_products_name: "Venta de Productos y Mercancías / Hostelería",
+    rv_act_products_desc: "Para venta de bienes físicos. Base de SS del 20% y en IRPF del 15%, sin retención en factura.",
+    rv_sec_wh_title: "4. Retención de IRPF en Factura: Normal vs Exención",
+    rv_wh_normal_name: "Retención Estándar de IRPF",
+    rv_wh_normal_desc: "Obligatoria al facturar a empresas con contabilidad organizada. El cliente retiene el impuesto y lo entrega a Hacienda.",
+    rv_wh_exempt_name: "Exención de Retención (Art. 101-B hasta 15.000€/año)",
+    rv_wh_exempt_desc: "Si prevé facturar menos de 15.000€ en 2026, puede emitir sin retención. ⚠️ El impuesto no se perdona; se liquidará en la declaración anual de la Renta.",
+    rv_sec_jovem_title: "5. IRS Jovem para Autónomos (Art. 12-B CIRS)",
+    rv_sec_jovem_desc: "Jóvenes hasta 35 anos con estudios concluidos tienen exención progresiva de IRPF: 100% en año 1, 75% en años 2-4, 50% en años 5-7 y 25% en años 8-10.",
+    so_guide_badge: "Guía Laboral y Fiscal 2026",
+    so_guide_title: "Cómo Funciona su Salario Neto (Trabajo por Cuenta Ajena)",
+    so_guide_subtitle: "Conozca al detalle las deducciones de Seguridad Social, retenciones de IRPF y ventajas de su contrato de trabajo en Portugal.",
+    so_sec_ss_title: "1. Seguridad Social del Trabajador (11% + 23,75% Empresa)",
+    so_ss_worker_name: "Descuento del Trabajador (11%)",
+    so_ss_worker_desc: "Se descuenta automáticamente del salario bruto. Da derecho a desempleo, baja por enfermedad, maternidad/paternidad y jubilación.",
+    so_ss_company_name: "Aportación de la Empresa (23,75%)",
+    so_ss_company_desc: "Pagada directamente por la empresa a la Seguridad Social (no sale de su sueldo neto). Representa el coste patronal de protección social.",
+    so_sec_irs_title: "2. Retención Mensual de IRPF (IRS) y Declaración Anual",
+    so_irs_desc: "Las tablas oficiales fijan la retención mensual. En abril/junio del año siguiente (Modelo 3), Hacienda liquida el saldo real: devolución si retuvo de más o pago si retuvo de menos.",
+    so_sec_meal_title: "3. Subsidio de Comida (Tarjeta vs Efectivo)",
+    so_meal_card_name: "Tarjeta Restaurante (Tope Exento: 9,60€/día)",
+    so_meal_card_desc: "Hasta 9,60€ por día laboral pagados con tarjeta de comida están 100% exentos de IRPF y Seguridad Social.",
+    so_meal_cash_name: "Efectivo / Transferencia (Tope Exento: 6,00€/día)",
+    so_meal_cash_desc: "En efectivo, el límite exento es de solo 6,00€/día. Cualquier importe superior tributa como salario ordinario.",
+    so_sec_jovem_title: "4. Beneficio IRS Jovem (Art. 12-B CIRS)",
+    so_sec_jovem_desc: "Trabajadores hasta 35 años con estudios concluidos disfrutan de 10 años de exenciones progresivas: 100% año 1, 75% años 2-4, 50% años 5-7 y 25% años 8-10.",
+    so_sec_family_title: "5. Situación Familiar, Hijos y Regiones Autónomas",
+    so_family_desc: "Los dependientes y el estado civil reducen la retención mensual. Residentes en Madeira tienen -20% de IRPF y en Azores -30%.",
+    pe_guide_badge: "Manual Empresarial y Fiscal 2026",
+    pe_guide_title: "Guía Estratégica para Emprendedores y Microempresas",
+    pe_guide_subtitle: "Cómo elegir entre Autónomo (ENI) y Sociedad Unipersonal Lda, optimizar impuestos y calcular la rentabilidad real de su negocio.",
+    pe_sec_legal_title: "1. Estructura Jurídica: ENI vs Sociedad Unipersonal Lda",
+    pe_legal_lda_name: "Sociedad Unipersonal Lda / Pyme (Recomendada)",
+    pe_legal_lda_desc: "Responsabilidad limitada al capital social (mínimo 1€). Su patrimonio personal queda 100% protegido. Impuesto de Sociedades (IRC) reducido al 12,5% sobre los primeros 50.000€ de beneficio.",
+    pe_legal_eni_name: "Empresario Individual - ENI",
+    pe_legal_eni_desc: "Alta rápida sin capital mínimo, pero responsabilidad ilimitada: los bienes personales responden por deudas comerciales. Tributa en IRPF simplificado.",
+    pe_sec_remun_title: "2. Salario del Administrador (Pró-Labore) vs Beneficios",
+    pe_remun_moe_name: "Sueldo de Administrador (TSU 33,05%)",
+    pe_remun_moe_desc: "El administrador fija un salario mensual con cotización de Seguridad Social del 33,05%, garantizando cobertura oficial completa.",
+    pe_remun_profit_name: "Distribución de Dividendos / Beneficios",
+    pe_remun_profit_desc: "El beneficio neto tras el impuesto de sociedades puede repartirse al socio con una retención fija del 28% en IRPF.",
+    pe_sec_sector_title: "3. Sectores y Coeficientes en Régimen Simplificado",
+    pe_sector_services_name: "Servicios y Tecnología (Coeficiente 0.75)",
+    pe_sector_services_desc: "Hacienda tributa el 75% de la facturación y asume el 25% en gastos operativos.",
+    pe_sector_commerce_name: "Comercio y Hostelería (Coeficiente 0.15)",
+    pe_sector_commerce_desc: "Tributación sobre solo el 15% de ingresos brutos, reflejando márgenes comerciales.",
+    pe_sector_tourism_name: "Alojamiento Turístico e Industria (Coeficiente 0.35)",
+    pe_sector_tourism_desc: "Tributación sobre el 35% de ingresos en alquiler vacacional y talleres.",
+    pe_sec_iva_title: "4. IVA y Régimen de Exención (Art. 53 CIVA)",
+    pe_iva_desc: "Empresas con facturación anual inferior a 15.000€ en 2026 pueden acogerse a la exención del Art. 53 sin repercutir ni deducir IVA.",
+    pe_sec_breakeven_title: "5. Punto de Equilibrio (Break-Even Mensual)",
+    pe_breakeven_desc: "La facturación mínima necesaria cada mes para cubrir exactamente todos los costes fijos, sueldos e impuestos sin entrar en pérdidas.",
   },
   FR: {
     title: 'Simulateurs Économiques MIRA',
@@ -465,7 +717,91 @@ const translations: Record<string, Record<string, string>> = {
     setup_budget_title: 'Capital d\'Installation Recommandé',
     setup_budget_sub: '2 Mois de Loyer + 1 Mois de Caution (Art. 1076 C. Civil) + 3 Mois de Charges',
     emergency_fund_title: 'Fonds d\'Urgence Recommandé',
-    emergency_fund_sub: '3 Mois de frais de subsistance selon la Banque du Portugal'
+    emergency_fund_sub: '3 Mois de frais de subsistance selon la Banque du Portugal',
+    rv_guide_badge: "Manuel Pratique & Législation 2026",
+    rv_guide_title: "Comment Choisir Votre Régime de Cotisation & Sécurité Sociale",
+    rv_guide_subtitle: "Guide officiel détaillé pour savoir exactement quelles options choisir pour votre activité indépendante au Portugal.",
+    rv_sec_ss_title: "1. Régimes de Sécurité Sociale : Lequel choisir ?",
+    rv_ss_ti_name: "Travailleur Indépendant Général (21,4%)",
+    rv_ss_ti_who: "Pour qui :",
+    rv_ss_ti_who_desc: "La grande majorité des freelances, prestataires de services, consultants, développeurs et indépendants.",
+    rv_ss_ti_how: "Comment fonctionne le calcul :",
+    rv_ss_ti_how_desc: "Le taux de 21,4% s'applique sur 70% de la facturation trimestrielle moyenne déclarée sur SS Direta. Ex. : facturation de 1.000€/mois, base de 700€, cotisation de 149,80€/mois.",
+    rv_ss_eni_name: "Entrepreneur Individuel - ENI (25,2%)",
+    rv_ss_eni_who: "Pour qui :",
+    rv_ss_eni_who_desc: "Personnes exerçant une activité commerciale ou industrielle en nom propre avec établissement.",
+    rv_ss_eni_how: "Comment fonctionne le calcul :",
+    rv_ss_eni_how_desc: "Le taux est de 25,2% appliqué à la base de cotisation réglementaire.",
+    rv_ss_exempt_name: "Exonération 1ère Année d'Activité (Art. 157 CRC)",
+    rv_ss_exempt_who: "Pour qui :",
+    rv_ss_exempt_who_desc: "Citoyens débutant une activité indépendante pour la toute première fois au Portugal.",
+    rv_ss_exempt_how: "Comment ça marche :",
+    rv_ss_exempt_how_desc: "Exonération totale des cotisations de Sécurité Sociale pendant les 12 premiers mois (0€/mois). Si vous avez déjà eu une activité, cette exonération ne se renouvelle pas.",
+    rv_sec_var_title: "2. Ajustement Trimestriel de la Base SS (-25% / 0% / +25%)",
+    rv_var_sub: "Lors de votre Déclaration Trimestrielle sur SS Direta, vous pouvez ajuster votre base :",
+    rv_var_0_name: "Conserver la Base Standard (0%)",
+    rv_var_0_desc: "Vous payez la cotisation standard calculée sur les 3 derniers mois.",
+    rv_var_minus_name: "Option de Réduction de Base (-25%)",
+    rv_var_minus_desc: "Réduit de 25% votre cotisation mensuelle pour soulager la trésorerie. ⚠️ Attention : réduit proportionnellement les indemnités maladie, maternité/paternité et retraite.",
+    rv_var_plus_name: "Option d'Augmentation de Base (+25%)",
+    rv_var_plus_desc: "Augmente de 25% votre cotisation. Idéal pour ceux qui planifient un congé parental ou souhaitent cumuler plus de droits à la retraite.",
+    rv_sec_act_title: "3. Type d'Activité et Coefficients Fiscaux",
+    rv_act_services_name: "Prestation de Services Générale (Art. 151 CIRS)",
+    rv_act_services_desc: "En régime simplifié, 75% des revenus sont imposables et 25% considérés comme charges. À la Sécurité Sociale, la base est de 70%. La retenue standard sur facture est de 25% (ou 16,5%).",
+    rv_act_scientific_name: "Activités Scientifiques, Techniques et Artistiques",
+    rv_act_scientific_desc: "Ingénieurs, médecins, artistes et consultants spécialisés. Retenue à la source de 20% à 25% sur les revenus de Catégorie B.",
+    rv_act_products_name: "Vente de Marchandises & Produits / Restauration",
+    rv_act_products_desc: "Pour la vente de biens physiques. Base SS de 20% et assiette fiscale de 15% en IRS simplifié, sans retenue à la source.",
+    rv_sec_wh_title: "4. Retenue à la Source IRS : Normale vs Exonération",
+    rv_wh_normal_name: "Retenue Standard IRS",
+    rv_wh_normal_desc: "Obligatoire lors de la facturation d'entreprises. Le client retient l'impôt et le verse à l'administration fiscale.",
+    rv_wh_exempt_name: "Exonération de Retenue (Art. 101-B jusqu'à 15.000€/an)",
+    rv_wh_exempt_desc: "Si vous prévoyez facturer moins de 15.000€ en 2026, vous pouvez émettre sans retenue. ⚠️ L'impôt sera régularisé lors de la déclaration annuelle (Modelo 3).",
+    rv_sec_jovem_title: "5. IRS Jovem pour Indépendants (Art. 12-B CIRS)",
+    rv_sec_jovem_desc: "Jeunes jusqu'à 35 ans diplômés bénéficient d'une exonération progressive : 100% an 1, 75% ans 2-4, 50% ans 5-7 et 25% ans 8-10.",
+    so_guide_badge: "Guide Social & Fiscal 2026",
+    so_guide_title: "Comment Fonctionne Votre Salaire Net (Salarié)",
+    so_guide_subtitle: "Comprendre en détail les cotisations de Sécurité Sociale, retenues d'impôt IRS et avantages de votre contrat au Portugal.",
+    so_sec_ss_title: "1. Sécurité Sociale du Salarié (11% + 23,75% Employeur)",
+    so_ss_worker_name: "Cotisation Salariale (11%)",
+    so_ss_worker_desc: "Déduite automatiquement du salaire brut. Ouvre droit au chômage, indemnités maladie, congé maternité/paternité et retraite.",
+    so_ss_company_name: "Cotisation Patronale TSU (23,75%)",
+    so_ss_company_desc: "Payée directement par l'employeur à la Sécurité Sociale (non déduite du net). Représente la contribution patronale à la protection sociale.",
+    so_sec_irs_title: "2. Retenue à la Source IRS & Déclaration Annuelle",
+    so_irs_desc: "Les barèmes mensuels fixent la retenue à la source. En avril/juin de l'année suivante (déclaration Modelo 3), le solde réel est calculé : remboursement ou régularisation.",
+    so_sec_meal_title: "3. Prime de Repas (Carte vs Espèces)",
+    so_meal_card_name: "Carte Déjeuner (Plafond Exonéré : 9,60€/jour)",
+    so_meal_card_desc: "Jusqu'à 9,60€ par jour ouvré payés par carte déjeuner sont 100% exonérés d'impôt IRS et de Sécurité Sociale.",
+    so_meal_cash_name: "Espèces / Virement (Plafond Exonéré : 6,00€/jour)",
+    so_meal_cash_desc: "En espèces, le plafond exonéré est de seulement 6,00€/jour. Tout montant supérieur est imposé comme salaire normal.",
+    so_sec_jovem_title: "4. Avantage IRS Jovem (Art. 12-B CIRS)",
+    so_sec_jovem_desc: "Les salariés jusqu'à 35 ans diplômés bénéficient de 10 ans d'exonérations progressives : 100% an 1, 75% ans 2-4, 50% ans 5-7 et 25% ans 8-10.",
+    so_sec_family_title: "5. Situation Familiale, Enfants & Régions Autonomes",
+    so_family_desc: "Les personnes à charge et le statut marital réduisent le taux de retenue. Les résidents fiscaux à Madère ont -20% d'IRS et aux Açores -30%.",
+    pe_guide_badge: "Manuel Entreprise & Fiscalité 2026",
+    pe_guide_title: "Guide Stratégique pour Entrepreneurs & PME",
+    pe_guide_subtitle: "Comment choisir entre Entreprise Individuelle (ENI) et Société Lda, optimiser la fiscalité et calculer la rentabilité de votre activité.",
+    pe_sec_legal_title: "1. Forme Juridique : ENI vs Société Unipersonnelle Lda",
+    pe_legal_lda_name: "Société Unipersonnelle Lda / PME (Recommandé)",
+    pe_legal_lda_desc: "Responsabilité limitée au capital social (min 1€). Votre patrimoine personnel est 100% protégé des dettes de l'entreprise. Impôt sur les sociétés (IRC) réduit à 12,5% sur les premiers 50.000€ de bénéfice.",
+    pe_legal_eni_name: "Entrepreneur Individuel - ENI",
+    pe_legal_eni_desc: "Création rapide sans capital minimum, mais responsabilité illimitée sur les biens personnels. Imposé en IRS individuel simplifié.",
+    pe_sec_remun_title: "2. Rémunération du Gérant (Salaire) vs Dividendes",
+    pe_remun_moe_name: "Salaire du Gérant (TSU 33,05%)",
+    pe_remun_moe_desc: "Le gérant fixe un salaire mensuel soumis à 33,05% de cotisations Sécurité Sociale, garantissant une couverture sociale complète.",
+    pe_remun_profit_name: "Distribution de Dividendes / Bénéfices",
+    pe_remun_profit_desc: "Le bénéfice net après impôt sur les sociétés peut être versé aux associés avec une retenue forfaitaire libératoire de 28% en IRS.",
+    pe_sec_sector_title: "3. Secteurs & Coefficients en Régime Simplifié",
+    pe_sector_services_name: "Services & Technologies (Coefficient 0.75)",
+    pe_sector_services_desc: "L'administration impose 75% du chiffre d'affaires et déduit forfaitairement 25% de frais d'activité.",
+    pe_sector_commerce_name: "Commerce & Restauration (Coefficient 0.15)",
+    pe_sector_commerce_desc: "Imposition sur seulement 15% du chiffre d'affaires brut, reflétant les marges commerciales.",
+    pe_sector_tourism_name: "Hébergement Touristique & Industrie (Coefficient 0.35)",
+    pe_sector_tourism_desc: "Imposition sur 35% du chiffre d'affaires pour les meublés touristiques et ateliers.",
+    pe_sec_iva_title: "4. TVA et Régime de Franchise (Art. 53 CIVA)",
+    pe_iva_desc: "Les entreprises réalisant moins de 15.000€ de chiffre d'affaires en 2026 peuvent opter pour la franchise de TVA (Art. 53) sans facturer ni déduire de TVA.",
+    pe_sec_breakeven_title: "5. Seuil de Rentabilité (Break-Even Mensuel)",
+    pe_breakeven_desc: "Le montant mensuel minimum de chiffre d'affaires nécessaire pour couvrir 100% des frais fixes, salaires et impôts sans perte financière.",
   }
 };
 
@@ -506,8 +842,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const [activeTab, setActiveTab] = useState<'salary_outrem' | 'salary_recibos' | 'cost' | 'housing_protection' | 'aima_health' | 'small_business'>('salary_outrem');
   const [salaryRegime, setSalaryRegime] = useState<'outrem' | 'recibos'>('outrem');
 
-  const lang = ['PT', 'EN', 'ES', 'FR'].includes(language) ? language : 'PT';
-  const tLocal = (key: string) => translations[lang]?.[key] || key;
+  const normLang = (language || 'PT').toUpperCase().split('-')[0];
+  const lang = ['PT', 'EN', 'ES', 'FR'].includes(normLang) ? normLang : 'PT';
+  const tLocal = (key: string) => translations[lang]?.[key] || translations['PT']?.[key] || key;
 
   useEffect(() => {
     const tabKey = initialTab || initialParams?.tab;
@@ -1224,6 +1561,92 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 );
               })()}
+
+              {/* ════ GUIA EXPLICATIVO DE SALÁRIO LÍQUIDO & CONTRATOS ════ */}
+              <div className="bg-white border border-slate-200/80 rounded-[2.25rem] p-6 md:p-8 shadow-sm space-y-6">
+                <div className="border-b border-slate-100 pb-5">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-700 text-[10px] font-black uppercase tracking-wider mb-2">
+                    <Sparkles size={12} className="text-emerald-600" />
+                    {tLocal('so_guide_badge')}
+                  </div>
+                  <h3 className="text-base md:text-lg font-black text-slate-900 tracking-tight">
+                    {tLocal('so_guide_title')}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+                    {tLocal('so_guide_subtitle')}
+                  </p>
+                </div>
+
+                {/* 1. Segurança Social */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-[#FF8C00]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                      {tLocal('so_sec_ss_title')}
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-800 uppercase">{tLocal('so_ss_worker_name')}</span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-[#FF8C00]/10 text-[#FF8C00] rounded-full border border-[#FF8C00]/20">11%</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">{tLocal('so_ss_worker_desc')}</p>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-800 uppercase">{tLocal('so_ss_company_name')}</span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-blue-500/10 text-blue-600 rounded-full border border-blue-500/20">23,75%</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">{tLocal('so_ss_company_desc')}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Retenção IRS & Subsídio Refeição */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-5">
+                  <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Landmark size={15} className="text-slate-700" />
+                      <h5 className="text-[10px] font-black text-slate-900 uppercase">{tLocal('so_sec_irs_title')}</h5>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">{tLocal('so_irs_desc')}</p>
+                  </div>
+
+                  <div className="p-4 bg-emerald-50/40 border border-emerald-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Coins size={15} className="text-emerald-700" />
+                      <h5 className="text-[10px] font-black text-emerald-900 uppercase">{tLocal('so_sec_meal_title')}</h5>
+                    </div>
+                    <p className="text-[10px] text-emerald-950 leading-relaxed">
+                      <strong className="font-bold">{tLocal('so_meal_card_name')}:</strong> {tLocal('so_meal_card_desc')}
+                    </p>
+                    <p className="text-[10px] text-emerald-950 leading-relaxed pt-1">
+                      <strong className="font-bold">{tLocal('so_meal_cash_name')}:</strong> {tLocal('so_meal_cash_desc')}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. IRS Jovem & Família */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-5">
+                  <div className="p-4 bg-indigo-50/40 border border-indigo-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles size={15} className="text-indigo-600" />
+                      <h5 className="text-[10px] font-black text-indigo-900 uppercase">{tLocal('so_sec_jovem_title')}</h5>
+                    </div>
+                    <p className="text-[10px] text-indigo-950 leading-relaxed">{tLocal('so_sec_jovem_desc')}</p>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <MapPin size={15} className="text-slate-700" />
+                      <h5 className="text-[10px] font-black text-slate-900 uppercase">{tLocal('so_sec_family_title')}</h5>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">{tLocal('so_family_desc')}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -1435,6 +1858,192 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 );
               })()}
+
+              {/* ════ GUIA EXPLICATIVO DE ENQUADRAMENTO (RECIBOS VERDES & SS) ════ */}
+              <div className="bg-white border border-slate-200/80 rounded-[2.25rem] p-6 md:p-8 shadow-sm space-y-6">
+                
+                {/* Header */}
+                <div className="border-b border-slate-100 pb-5">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-700 text-[10px] font-black uppercase tracking-wider mb-2">
+                    <Sparkles size={12} className="text-amber-600" />
+                    {tLocal('rv_guide_badge')}
+                  </div>
+                  <h3 className="text-base md:text-lg font-black text-slate-900 tracking-tight">
+                    {tLocal('rv_guide_title')}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+                    {tLocal('rv_guide_subtitle')}
+                  </p>
+                </div>
+
+                {/* 1. Regimes de Segurança Social */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-[#FF8C00]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                      {tLocal('rv_sec_ss_title')}
+                    </h4>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    {/* TI Geral */}
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-800 uppercase">
+                          {tLocal('rv_ss_ti_name')}
+                        </span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-[#FF8C00]/10 text-[#FF8C00] rounded-full border border-[#FF8C00]/20">
+                          21,4%
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        <strong className="text-slate-700 font-bold">{tLocal('rv_ss_ti_who')}</strong> {tLocal('rv_ss_ti_who_desc')}
+                      </p>
+                      <div className="text-[10px] text-slate-500 bg-white p-2.5 rounded-xl border border-slate-150 leading-relaxed">
+                        <strong className="text-slate-600 font-bold">{tLocal('rv_ss_ti_how')}</strong> {tLocal('rv_ss_ti_how_desc')}
+                      </div>
+                    </div>
+
+                    {/* ENI */}
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-800 uppercase">
+                          {tLocal('rv_ss_eni_name')}
+                        </span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-blue-500/10 text-blue-600 rounded-full border border-blue-500/20">
+                          25,2%
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        <strong className="text-slate-700 font-bold">{tLocal('rv_ss_eni_who')}</strong> {tLocal('rv_ss_eni_who_desc')}
+                      </p>
+                      <div className="text-[10px] text-slate-500 bg-white p-2.5 rounded-xl border border-slate-150 leading-relaxed">
+                        <strong className="text-slate-600 font-bold">{tLocal('rv_ss_eni_how')}</strong> {tLocal('rv_ss_eni_how_desc')}
+                      </div>
+                    </div>
+
+                    {/* Isenção 1º Ano */}
+                    <div className="p-4 bg-emerald-50/50 border border-emerald-200/60 rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-emerald-900 uppercase">
+                          {tLocal('rv_ss_exempt_name')}
+                        </span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-emerald-500 text-white rounded-full">
+                          0€ / 1.º Ano
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-emerald-800 leading-relaxed">
+                        <strong className="font-bold">{tLocal('rv_ss_exempt_who')}</strong> {tLocal('rv_ss_exempt_who_desc')}
+                      </p>
+                      <div className="text-[10px] text-emerald-900 bg-white/80 p-2.5 rounded-xl border border-emerald-200/60 leading-relaxed">
+                        <strong className="font-bold">{tLocal('rv_ss_exempt_how')}</strong> {tLocal('rv_ss_exempt_how_desc')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Ajuste Trimestral da Base SS */}
+                <div className="space-y-3 border-t border-slate-100 pt-5">
+                  <div className="flex items-center gap-2">
+                    <Coins size={16} className="text-[#FF8C00]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                      {tLocal('rv_sec_var_title')}
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    {tLocal('rv_var_sub')}
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    {/* -25% */}
+                    <div className="p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-700">{tLocal('rv_var_minus_name')}</span>
+                        <span className="text-[9px] font-extrabold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">-25%</span>
+                      </div>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">
+                        {tLocal('rv_var_minus_desc')}
+                      </p>
+                    </div>
+
+                    {/* 0% */}
+                    <div className="p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-700">{tLocal('rv_var_0_name')}</span>
+                        <span className="text-[9px] font-extrabold text-slate-600 bg-slate-200/60 px-2 py-0.5 rounded-full">0% Padrão</span>
+                      </div>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">
+                        {tLocal('rv_var_0_desc')}
+                      </p>
+                    </div>
+
+                    {/* +25% */}
+                    <div className="p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-700">{tLocal('rv_var_plus_name')}</span>
+                        <span className="text-[9px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">+25%</span>
+                      </div>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">
+                        {tLocal('rv_var_plus_desc')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Tipo de Atividade e Coeficientes */}
+                <div className="space-y-3 border-t border-slate-100 pt-5">
+                  <div className="flex items-center gap-2">
+                    <Briefcase size={16} className="text-[#FF8C00]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                      {tLocal('rv_sec_act_title')}
+                    </h4>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <h5 className="text-[10px] font-black text-slate-800 uppercase">{tLocal('rv_act_services_name')}</h5>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">{tLocal('rv_act_services_desc')}</p>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <h5 className="text-[10px] font-black text-slate-800 uppercase">{tLocal('rv_act_scientific_name')}</h5>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">{tLocal('rv_act_scientific_desc')}</p>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <h5 className="text-[10px] font-black text-slate-800 uppercase">{tLocal('rv_act_products_name')}</h5>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">{tLocal('rv_act_products_desc')}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Retenção na Fonte & IRS Jovem */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-5">
+                  <div className="p-4 bg-amber-50/40 border border-amber-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Landmark size={15} className="text-amber-700" />
+                      <h5 className="text-[10px] font-black text-amber-900 uppercase">{tLocal('rv_sec_wh_title')}</h5>
+                    </div>
+                    <p className="text-[10px] text-amber-950 leading-relaxed">
+                      <strong className="font-bold">{tLocal('rv_wh_normal_name')}:</strong> {tLocal('rv_wh_normal_desc')}
+                    </p>
+                    <p className="text-[10px] text-amber-950 leading-relaxed pt-1">
+                      <strong className="font-bold">{tLocal('rv_wh_exempt_name')}:</strong> {tLocal('rv_wh_exempt_desc')}
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-indigo-50/40 border border-indigo-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles size={15} className="text-indigo-600" />
+                      <h5 className="text-[10px] font-black text-indigo-900 uppercase">{tLocal('rv_sec_jovem_title')}</h5>
+                    </div>
+                    <p className="text-[10px] text-indigo-950 leading-relaxed">
+                      {tLocal('rv_sec_jovem_desc')}
+                    </p>
+                  </div>
+                </div>
+
+              </div>
             </div>
           )}
 
@@ -2332,6 +2941,112 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 );
               })()}
+
+              {/* ════ GUIA ESTRATÉGICO PEQUENO EMPREENDEDOR & MICROEMPRESA ════ */}
+              <div className="bg-white border border-slate-200/80 rounded-[2.25rem] p-6 md:p-8 shadow-sm space-y-6">
+                <div className="border-b border-slate-100 pb-5">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-700 text-[10px] font-black uppercase tracking-wider mb-2">
+                    <Building2 size={12} className="text-blue-600" />
+                    {tLocal('pe_guide_badge')}
+                  </div>
+                  <h3 className="text-base md:text-lg font-black text-slate-900 tracking-tight">
+                    {tLocal('pe_guide_title')}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+                    {tLocal('pe_guide_subtitle')}
+                  </p>
+                </div>
+
+                {/* 1. Estrutura Jurídica ENI vs Lda */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Building2 size={16} className="text-[#FF8C00]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                      {tLocal('pe_sec_legal_title')}
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div className="p-4 bg-blue-50/40 border border-blue-200/60 rounded-2xl space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-blue-900 uppercase">{tLocal('pe_legal_lda_name')}</span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-blue-600 text-white rounded-full">IRC 12,5%</span>
+                      </div>
+                      <p className="text-[11px] text-blue-950 leading-relaxed">{tLocal('pe_legal_lda_desc')}</p>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-800 uppercase">{tLocal('pe_legal_eni_name')}</span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-amber-500/10 text-amber-700 rounded-full border border-amber-300">IRS Cat. B</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">{tLocal('pe_legal_eni_desc')}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Remuneração Gerente & Dividendos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-5">
+                  <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <Briefcase size={15} className="text-slate-700" />
+                      <h5 className="text-[10px] font-black text-slate-900 uppercase">{tLocal('pe_remun_moe_name')}</h5>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">{tLocal('pe_remun_moe_desc')}</p>
+                  </div>
+
+                  <div className="p-4 bg-emerald-50/40 border border-emerald-200/60 rounded-2xl space-y-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <Coins size={15} className="text-emerald-700" />
+                      <h5 className="text-[10px] font-black text-emerald-900 uppercase">{tLocal('pe_remun_profit_name')}</h5>
+                    </div>
+                    <p className="text-[11px] text-emerald-950 leading-relaxed">{tLocal('pe_remun_profit_desc')}</p>
+                  </div>
+                </div>
+
+                {/* 3. Setores & Coeficientes */}
+                <div className="space-y-3 border-t border-slate-100 pt-5">
+                  <div className="flex items-center gap-2">
+                    <Coins size={16} className="text-[#FF8C00]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                      {tLocal('pe_sec_sector_title')}
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    <div className="p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1">
+                      <span className="text-[10px] font-black text-slate-800 block">{tLocal('pe_sector_services_name')}</span>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">{tLocal('pe_sector_services_desc')}</p>
+                    </div>
+                    <div className="p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1">
+                      <span className="text-[10px] font-black text-slate-800 block">{tLocal('pe_sector_commerce_name')}</span>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">{tLocal('pe_sector_commerce_desc')}</p>
+                    </div>
+                    <div className="p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1">
+                      <span className="text-[10px] font-black text-slate-800 block">{tLocal('pe_sector_tourism_name')}</span>
+                      <p className="text-[10px] text-slate-600 leading-relaxed">{tLocal('pe_sector_tourism_desc')}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. IVA & Break-Even */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-5">
+                  <div className="p-4 bg-amber-50/40 border border-amber-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Landmark size={15} className="text-amber-700" />
+                      <h5 className="text-[10px] font-black text-amber-900 uppercase">{tLocal('pe_sec_iva_title')}</h5>
+                    </div>
+                    <p className="text-[11px] text-amber-950 leading-relaxed">{tLocal('pe_iva_desc')}</p>
+                  </div>
+
+                  <div className="p-4 bg-indigo-50/40 border border-indigo-200/60 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <TrendingUp size={15} className="text-indigo-600" />
+                      <h5 className="text-[10px] font-black text-indigo-900 uppercase">{tLocal('pe_sec_breakeven_title')}</h5>
+                    </div>
+                    <p className="text-[11px] text-indigo-950 leading-relaxed">{tLocal('pe_breakeven_desc')}</p>
+                  </div>
+                </div>
+
+              </div>
             </div>
           )}
 
