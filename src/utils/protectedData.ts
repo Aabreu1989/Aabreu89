@@ -243,6 +243,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
     },
     {
         id: 'p-serv-6',
+        email: "geral@inpulsar.pt",
         title: "InPulsar – Associação para o Desenvolvimento Comunitário",
         category: "Direitos & Apoio Social",
         lat: 39.7450,
@@ -452,6 +453,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
     },
     {
         id: 'p-serv-escolhas',
+        email: "geral@ipdj.pt",
         title: "Programa Escolhas (IPDJ)",
         category: "Direitos & Apoio Social",
         lat: 38.7382,
@@ -536,6 +538,7 @@ export const PROTECTED_SERVICES: MapAlert[] = [
     },
     {
         id: 'p-serv-crescer',
+        email: "info@crescer.org",
         title: "CRESCER – Associação de Intervenção Comunitária",
         category: "Direitos & Apoio Social",
         lat: 38.7045,

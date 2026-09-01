@@ -810,6 +810,7 @@ export const MASSIVE_SERVICES_DATABASE: MapAlert[] = [
     // ============================================================
     {
         id: 'p-ong-jrs',
+        email: "jrsportugal@jrs.net",
         title: "JRS Portugal (Serviço Jesuíta aos Refugiados)",
         category: "Direitos & Apoio Social",
         lat: 38.7845,
