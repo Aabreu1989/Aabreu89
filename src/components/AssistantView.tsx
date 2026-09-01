@@ -88,28 +88,28 @@ const getSuggestions = (lang: string, _user?: UserType) => {
 
   const suggestions: Record<string, string[]> = {
     PT: [
+      "Novas Regras de Imigração",
       "Visto D1 (Trabalho)",
       "Via Verde para Empresas",
-      "Retorno Voluntário",
-      "Visto D8 (Nómada Digital)"
+      "Retorno Voluntário"
     ],
     EN: [
+      "New Immigration Rules",
       "D1 Visa (Work)",
       "Via Verde for Companies",
-      "Voluntary Return",
-      "D8 Visa (Digital Nomad)"
+      "Voluntary Return"
     ],
     ES: [
+      "Nuevas Reglas de Inmigración",
       "Visado D1 (Trabajo)",
       "Vía Verde para Empresas",
-      "Retorno Voluntario",
-      "Visado D8 (Nómada Digital)"
+      "Retorno Voluntario"
     ],
     FR: [
+      "Nouvelles Règles d'Immigration",
       "Visa D1 (Travail)",
       "Via Verde pour Entreprises",
-      "Retour Volontaire",
-      "Visa D8 (Nomade Digital)"
+      "Retour Volontaire"
     ]
   };
   return suggestions[normLang] || suggestions['PT'];
@@ -126,7 +126,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
 
   if (normLang === 'PT') {
     if (recentText.includes('estud') || recentText.includes('faculdade') || recentText.includes('universidade') || recentText.includes('91')) {
-      return ["Retorno Voluntário", "Via Verde para Empresas", "Estudante Pode Trabalhar?", "Visto de Trabalho (D1)"];
+      return ["Retorno Voluntário", "Via Verde para Empresas", "Novas Regras de Imigração", "Visto de Trabalho (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('promessa') || recentText.includes('contrato')) {
       return ["Visto D1 (Trabalho)", "Via Verde para Empresas", "Minuta de Promessa de Contrato", "Requisitos IEFP e VFS"];
@@ -145,7 +145,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'EN') {
     if (recentText.includes('study') || recentText.includes('student') || recentText.includes('91')) {
-      return ["Voluntary Return", "Via Verde for Companies", "Can Students Work?", "Work Visa (D1)"];
+      return ["Voluntary Return", "Via Verde for Companies", "New Immigration Rules", "Work Visa (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contract') || recentText.includes('job')) {
       return ["D1 Visa (Work)", "Via Verde for Companies", "Work Promise Letter PDF", "IEFP & VFS Requirements"];
@@ -155,7 +155,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'ES') {
     if (recentText.includes('estud') || recentText.includes('universidad') || recentText.includes('91')) {
-      return ["Retorno Voluntario", "Vía Verde para Empresas", "¿Estudiantes Pueden Trabajar?", "Visado de Trabajo (D1)"];
+      return ["Retorno Voluntario", "Vía Verde para Empresas", "Nuevas Reglas de Inmigración", "Visado de Trabajo (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contrato') || recentText.includes('trabajo')) {
       return ["Visado D1 (Trabajo)", "Vía Verde para Empresas", "Minuta Promesa de Contrato", "Requisitos IEFP y VFS"];
@@ -165,7 +165,7 @@ const getContextualSuggestions = (messages: any[], lang: string, user?: UserType
     }
   } else if (normLang === 'FR') {
     if (recentText.includes('etud') || recentText.includes('universite') || recentText.includes('91')) {
-      return ["Retour Volontaire", "Via Verde pour Entreprises", "Les Étudiants Peuvent Travailler ?", "Visa de Travail (D1)"];
+      return ["Retour Volontaire", "Via Verde pour Entreprises", "Nouvelles Règles d'Immigration", "Visa de Travail (D1)"];
     }
     if (recentText.includes('d1') || recentText.includes('contrat') || recentText.includes('travail')) {
       return ["Visa D1 (Travail)", "Via Verde pour Entreprises", "Promesse de Contrat PDF", "Exigences IEFP et VFS"];
