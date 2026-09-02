@@ -1,4 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
+
+function generateDeterministicUUID(str) {
+  const hash = crypto.createHash('md5').update(str).digest('hex');
+  return `${hash.slice(0,8)}-${hash.slice(8,12)}-4${hash.slice(13,16)}-8${hash.slice(17,20)}-${hash.slice(20,32)}`;
+}
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -883,7 +889,12 @@ export default async function handler(req, res) {
         vote_fake: 3,
         follow_user: 2,
         report_content: 1,
-        curate_guide: 15
+        curate_guide: 15,
+        // 🚀 NOVAS REGRAS CANÓNICAS CROSS-MODULE (2026)
+        simulator_completed: 10,
+        job_viewed: 5,
+        service_viewed: 10,
+        chat_daily_query: 5
       };
 
       let amount = DEFAULT_RULES[actionKey];
@@ -906,19 +917,129 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Ação de gamificação inválida ou não reconhecida.' });
       }
 
-      // Executar RPC atómica via cliente SERVICE_ROLE
+      // 🕒 Timezone canónico soberano de governança (Europe/Lisbon)
+      const lisbonDate = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Lisbon',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(new Date());
+
+      // 🛡️ Construção da chave canónica de deduplicação (Anti-Farming)
+      let dedupKey = null;
+      let reasonText = reason || `Ação: ${actionKey}`;
+
+      if (actionKey === 'chat_daily_query') {
+        dedupKey = `chat_daily_${lisbonDate}`;
+        reasonText = reason || 'Primeira Consulta Diária MIRA Chat';
+      } else if (actionKey === 'simulator_completed') {
+        const canonicalTab = typeof entityId === 'string' && entityId.trim() ? entityId.trim() : 'salary';
+        dedupKey = `sim_${canonicalTab}_${lisbonDate}`;
+        reasonText = reason || `Simulação Concluída: ${canonicalTab}`;
+      } else if (actionKey === 'job_viewed') {
+        if (!entityId || typeof entityId !== 'string') {
+          return res.status(400).json({ error: 'entityId (job_id canónico) é obrigatório para job_viewed.' });
+        }
+        dedupKey = `job_${entityId.trim()}`;
+        reasonText = reason || `Consulta de Vaga: ${entityId.trim()}`;
+      } else if (actionKey === 'service_viewed') {
+        if (!entityId || typeof entityId !== 'string') {
+          return res.status(400).json({ error: 'entityId (service_id canónico) é obrigatório para service_viewed.' });
+        }
+        dedupKey = `srv_${entityId.trim()}`;
+        reasonText = reason || `Consulta de Serviço: ${entityId.trim()}`;
+      } else if (entityId) {
+        dedupKey = `${actionKey}_${entityId.trim()}`;
+      }
+
+      // 🛡️ ATOMICIDADE REAL NO BANCO: Inserção prévia com Primary Key determinística
+      if (dedupKey) {
+        const eventUUID = generateDeterministicUUID(`mira_xp_${authenticatedUserId}_${dedupKey}`);
+        const finalReason = `[${dedupKey}] ${reasonText}`;
+
+        // 1. Inserção atómica prévia no banco como lock exclusivo e reserva de unicidade
+        const { error: insErr } = await supabaseAdmin
+          .from('reputation_logs')
+          .insert([{
+            id: eventUUID,
+            user_id: authenticatedUserId,
+            amount: amount,
+            reason: finalReason
+          }]);
+
+        if (insErr) {
+          // Código 23505 = duplicate key (chave já reservada/concedida por requisição prévia ou concorrente)
+          if (insErr.code === '23505' || (insErr.message && (insErr.message.includes('duplicate key') || insErr.message.includes('unique constraint')))) {
+            const { data: currentProfile } = await supabaseAdmin
+              .from('profiles')
+              .select('reputation')
+              .eq('id', authenticatedUserId)
+              .maybeSingle();
+
+            return res.status(200).json({
+              success: true,
+              alreadyAwarded: true,
+              pointsEarned: 0,
+              reputation: currentProfile?.reputation || 0,
+              message: 'Recompensa já atribuída anteriormente para esta ação.'
+            });
+          }
+          console.error('🚨 [MIRA API Community] Erro ao registrar lock de reputação:', insErr.message);
+          return res.status(500).json({ error: 'Falha ao processar pontos de reputação.' });
+        }
+
+        // 2. Apenas a transação que obteve o lock primário com sucesso incrementa o perfil
+        const { data: newRep, error: rpcErr } = await supabaseAdmin.rpc('increment_reputation', {
+          target_user_id: authenticatedUserId,
+          amount: amount
+        });
+
+        // 🛡️ GARANTIA DE CONSISTÊNCIA / TRANSAÇÃO COMPENSATÓRIA (ROLLBACK DE SEGURANÇA)
+        if (rpcErr || newRep === null || typeof newRep !== 'number') {
+          console.error('🚨 [MIRA API Community] Erro ao incrementar reputação! Executando ROLLBACK compensatório do log:', rpcErr?.message);
+          
+          // Remove o registro de log para nunca bloquear o utilizador em tentativas subsequentes
+          await supabaseAdmin
+            .from('reputation_logs')
+            .delete()
+            .eq('id', eventUUID);
+
+          return res.status(500).json({ error: 'Falha ao processar pontos de reputação. Evento revertido com segurança.' });
+        }
+
+        // 3. Registar em activity_logs para auditoria da comunidade
+        await supabaseAdmin.from('activity_logs').insert([{
+          user_id: authenticatedUserId,
+          action: 'reputation_gained',
+          metadata: {
+            amount,
+            reason: reasonText,
+            action_key: actionKey,
+            entity_id: entityId || null,
+            dedup_key: dedupKey,
+            event_date: lisbonDate
+          },
+          created_at: new Date().toISOString()
+        }]);
+
+        return res.status(200).json({
+          success: true,
+          alreadyAwarded: false,
+          reputation: newRep,
+          pointsEarned: amount
+        });
+      }
+
+      // Ações legadas não-deduplicadas (ex: publish_post com triggers próprios)
       const { data: newRep, error: rpcErr } = await supabaseAdmin.rpc('increment_reputation', {
         target_user_id: authenticatedUserId,
         amount: amount
       });
 
       if (rpcErr) {
-        console.error('🚨 [MIRA API Community] Erro ao incrementar reputação:', rpcErr.message);
         return res.status(500).json({ error: 'Falha ao processar pontos de reputação.' });
       }
 
-      // Registar nos audit logs
-      const reasonText = reason || `Ação: ${actionKey}`;
       await supabaseAdmin.from('reputation_logs').insert([{
         user_id: authenticatedUserId,
         amount: amount,
@@ -932,7 +1053,7 @@ export default async function handler(req, res) {
         created_at: new Date().toISOString()
       }]);
 
-      return res.status(200).json({ success: true, reputation: newRep, pointsEarned: amount });
+      return res.status(200).json({ success: true, alreadyAwarded: false, reputation: newRep, pointsEarned: amount });
     }
 
     return res.status(400).json({ error: 'Ação não suportada pelo gateway de comunidade.' });

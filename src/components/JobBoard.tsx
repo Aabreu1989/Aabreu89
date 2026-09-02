@@ -137,6 +137,7 @@ interface JobBoardProps {
   onViewChange?: (view: ViewType, params?: any) => void;
   initialTab?: 'jobs' | 'trends' | string;
   initialQuickFilter?: string;
+  onEarnPoints?: (amount: number, reason: string, actionKey?: string, entityId?: string) => void;
 }
 
 const TOPIC_DETAILS: Record<string, { emoji: string; color: string; bg: string; text: string; ring: string }> = {
@@ -226,7 +227,7 @@ function isWithin90Days(dateStr?: string): boolean {
   }
 }
 
-export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onViewChange, initialTab, initialQuickFilter }) => {
+export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onViewChange, initialTab, initialQuickFilter, onEarnPoints }) => {
   const [activeTab, setActiveTab] = useState<'jobs' | 'trends'>(initialTab === 'trends' ? 'trends' : 'jobs');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -937,7 +938,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               {/* 📋 Paginated Jobs Grid */}
               <div className="grid grid-cols-1 gap-5">
                 {paginatedJobs.map(job => (
-                  <JobItem key={job.id} job={job} language={language} />
+                  <JobItem key={job.id} job={job} language={language} onEarnPoints={onEarnPoints} />
                 ))}
               </div>
 

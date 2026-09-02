@@ -385,14 +385,14 @@ const PostCardComponent: React.FC<PostCardProps> = ({
                             } ${isAnimating === 'like' ? 'animate-bounce' : ''}`}>
                                 <HandsHeartIcon size={18} fill={localLiked ? 'currentColor' : 'none'} className={localLiked ? 'text-white' : 'text-slate-300 group-hover:text-red-400'} />
                             </div>
-                            <span className={`text-[7px] font-extrabold uppercase tracking-tighter ${localLiked ? 'text-red-500' : 'text-slate-500'}`}>{localLikeCount}</span>
+                            <span className={`text-[10px] font-black uppercase tracking-tight ${localLiked ? 'text-red-500' : 'text-slate-600'}`}>{localLikeCount}</span>
                         </button>
 
                         <button onClick={() => onComment(post.id)} className="flex flex-col items-center gap-1 group active:scale-90 transition-all">
                             <div className="p-2.5 bg-white text-slate-300 rounded-2xl shadow-sm border border-slate-50">
                                 <MessageCircle size={18} />
                             </div>
-                            <span className="text-[7px] font-extrabold text-slate-500 uppercase tracking-tighter">{(post.comments || []).length}</span>
+                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">{(post.comments || []).length}</span>
                         </button>
 
                         <button 
@@ -409,7 +409,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({
                             } ${isAnimating === 'save' ? 'animate-pulse' : ''}`}>
                                 <Bookmark size={18} fill={localSaved ? 'currentColor' : 'none'} className={localSaved ? 'text-white' : 'text-slate-300 group-hover:text-blue-400'} />
                             </div>
-                            <span className={`text-[7px] font-extrabold uppercase tracking-tighter ${localSaved ? 'text-blue-600' : 'text-slate-500'}`}>
+                            <span className={`text-[10px] font-black uppercase tracking-tight ${localSaved ? 'text-blue-600' : 'text-slate-600'}`}>
                                 {localSaved ? t('comm_saved', language) : t('comm_save_btn', language)}
                             </span>
                         </button>

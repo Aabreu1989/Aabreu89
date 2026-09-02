@@ -78,13 +78,14 @@ const BadgePill: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, te
 );
 
 // Choice button component for DRY rendering in premium style
-const ChoiceButton = ({ icon, label, badgeText, onClick, idx, isRevoked }: {
+const ChoiceButton = ({ icon, label, badgeText, onClick, idx, isRevoked, language = 'PT' }: {
     icon: React.ReactNode;
     label: string;
     badgeText?: string;
     onClick: () => void;
     idx: number;
     isRevoked?: boolean;
+    language?: string;
 }) => (
     <button
         onClick={onClick}

@@ -25,6 +25,7 @@ interface AssistantViewProps {
   language: string;
   onViewChange: (view: ViewType, params?: any) => void;
   user: UserType;
+  onEarnPoints?: (amount: number, reason: string, actionKey?: string, entityId?: string) => void;
 }
 
 export const buildSafeProfileContext = (user?: UserType, language: string = 'PT'): SafeProfileContext => {
@@ -379,7 +380,7 @@ const MiraChatMessage = React.memo(({
   );
 });
 
-const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => {
+const AssistantView = ({ language, onViewChange, user, onEarnPoints }: AssistantViewProps) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -552,6 +553,13 @@ const AssistantView = ({ language, onViewChange, user }: AssistantViewProps) => 
         persistence.set('mira_chat_history', newMessages);
         return newMessages;
       });
+
+      // 🎮 Gamificação Cross-Module: 1.ª consulta diária (Fire-and-forget estrito pós-resposta)
+      if (user?.id && onEarnPoints && response.text && response.text !== "Sem resposta...") {
+        try {
+          onEarnPoints(5, 'Consulta Diária MIRA Chat', 'chat_daily_query', 'chat_daily');
+        } catch (_) {}
+      }
     } catch (e) {
       showToast(T.chatError, "error");
     } finally {

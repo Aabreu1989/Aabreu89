@@ -1261,7 +1261,13 @@ const AppContent: React.FC = () => {
         window.location.assign('/');
     };
 
-    const handleEarnPoints = async (amount: number, reason: string = 'Atividade', optimisticOnly: boolean = false) => {
+    const handleEarnPoints = async (
+        amount: number, 
+        reason: string = 'Atividade', 
+        actionKey?: string, 
+        entityId?: string, 
+        optimisticOnly: boolean = false
+    ) => {
         if (!user) return;
         
         // Optimistic UI update (Instant local feedback)
@@ -1274,7 +1280,7 @@ const AppContent: React.FC = () => {
         
         try {
             const { gamificationService } = await import('./services/gamificationService');
-            const newRep = await gamificationService.earnPoints(user.id, amount, reason);
+            const newRep = await gamificationService.earnPoints(user.id, actionKey || amount, reason, entityId);
             const targetRep = newRep !== null ? newRep : optimisticRep;
 
             // 🛡️ MIRA AUTO-AWARD: Check for new milestones
@@ -1288,12 +1294,7 @@ const AppContent: React.FC = () => {
                     localStorage.setItem('mira_user', JSON.stringify(finalUser));
                 }
             } else {
-                setUser(prev => {
-                    if (!prev) return null;
-                    const u = { ...prev, reputation: targetRep };
-                    localStorage.setItem('mira_user', JSON.stringify(u));
-                    return u;
-                });
+                setUser(prev => prev ? { ...prev, reputation: targetRep } : prev);
             }
         } catch (err) {
             console.error('MIRA: Error persisting points:', err);
@@ -1375,10 +1376,10 @@ const AppContent: React.FC = () => {
                 hasMore={hasMorePosts} 
                 isLoading={isRefreshing}
                 onViewProfile={(id, name, avatar) => handleViewChange(ViewType.PROFILE, { profileUser: { id, name, avatar } as User })} />;
-            case ViewType.ASSISTANT: return <AssistantView language={language} onViewChange={handleViewChange} user={user} />;
-            case ViewType.SIMULATORS: return <SimulatorsView language={language} onViewChange={handleViewChange} initialTab={viewParams?.tab} initialParams={viewParams} />;
-            case ViewType.JOBS: return <JobBoard language={language} isAdmin={user.role === 'admin'} user={user} onViewChange={handleViewChange} initialTab={viewParams?.tab} initialQuickFilter={viewParams?.quickFilter || (viewParams?.tab === 'pcd' ? 'pcd' : undefined)} />;
-            case ViewType.MAP: return <LocalServicesList language={language} user={user} targetServiceId={viewParams?.id || targetServiceId} onClearTargetService={() => { setTargetServiceId(null); setViewParams(null); }} />;
+            case ViewType.ASSISTANT: return <AssistantView language={language} onViewChange={handleViewChange} user={user} onEarnPoints={handleEarnPoints} />;
+            case ViewType.SIMULATORS: return <SimulatorsView language={language} onViewChange={handleViewChange} initialTab={viewParams?.tab} initialParams={viewParams} onEarnPoints={handleEarnPoints} />;
+            case ViewType.JOBS: return <JobBoard language={language} isAdmin={user.role === 'admin'} user={user} onViewChange={handleViewChange} initialTab={viewParams?.tab} initialQuickFilter={viewParams?.quickFilter || (viewParams?.tab === 'pcd' ? 'pcd' : undefined)} onEarnPoints={handleEarnPoints} />;
+            case ViewType.MAP: return <LocalServicesList language={language} user={user} targetServiceId={viewParams?.id || targetServiceId} onClearTargetService={() => { setTargetServiceId(null); setViewParams(null); }} onEarnPoints={handleEarnPoints} />;
             case ViewType.LEARNING: return <LearningView courses={courses} language={language} initialArticleId={viewParams?.articleId} onNavigateToChat={() => handleViewChange(ViewType.ASSISTANT)} onEarnPoints={(pts) => handleEarnPoints(pts, 'Aprendizagem')} onNavigateToContact={() => {}} />;
             case ViewType.DOCUMENTS: 
                 console.log("MIRA_DEBUG: App.tsx rendering DOCUMENTS with viewParams =", viewParams);
@@ -1460,6 +1461,7 @@ const AppContent: React.FC = () => {
                     user={user} 
                     targetServiceId={viewParams?.id || targetServiceId} 
                     onClearTargetService={() => { setTargetServiceId(null); setViewParams(null); }} 
+                    onEarnPoints={handleEarnPoints}
                 />;
              case ViewType.DASHBOARD: 
                  if (isInitializing && !user) {

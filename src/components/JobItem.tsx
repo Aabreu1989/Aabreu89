@@ -8,6 +8,7 @@ import { getWorkTopicKey } from '../utils/categoryUtils';
 interface JobItemProps {
     job: JobPost;
     language: string;
+    onEarnPoints?: (amount: number, reason: string, actionKey?: string, entityId?: string) => void;
 }
 
 const TOPIC_THEMES: Record<string, { color: string; border: string; bg: string; iconBg: string; emoji: string }> = {
@@ -70,7 +71,7 @@ const formatFriendlyJobDate = (rawDate: string | undefined, language: string): s
     return `Há ${Math.floor(diffDays / 30)} mes.`;
 };
 
-const JobItem: React.FC<JobItemProps> = ({ job, language }) => {
+const JobItem: React.FC<JobItemProps> = ({ job, language, onEarnPoints }) => {
     const theme = TOPIC_THEMES[job.workTopic || "Outros"] || TOPIC_THEMES["Outros"];
     const displayDate = formatFriendlyJobDate((job as any).posted_at || job.datePosted, language);
 
@@ -99,6 +100,13 @@ const JobItem: React.FC<JobItemProps> = ({ job, language }) => {
                     return;
                 }
                 analytics.track('job_click', undefined, job.workTopic, { id: job.id, title: job.title });
+
+                // 🎮 Gamificação Cross-Module: Consulta de Vaga (+5 XP, 1x por vaga)
+                if (onEarnPoints && job.id) {
+                    try {
+                        onEarnPoints(5, `Consulta de Vaga: ${job.title || job.id}`, 'job_viewed', job.id);
+                    } catch (_) {}
+                }
                 
                 let finalUrl = job.sourceUrl;
                 if (!finalUrl.startsWith('http') && !finalUrl.startsWith('mailto:')) {

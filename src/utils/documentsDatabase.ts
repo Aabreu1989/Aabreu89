@@ -376,10 +376,12 @@ export const templates: DocumentTemplate[] = [
             authority: 'DGE',
             location: 'loc_escola_secundaria',
             description: 'revalidacao_diploma_equivalencia_desc',
-tips: 'nacionalidade_filhos_tips',
-        requirements: ['req_minor_birth_cert', 'req_parents_id'],
-        fields: [...standardFields, { id: 'child_name', label: 'field_child_name', placeholder: 'place_child_name', type: 'text' }]
-    },
+            explanation: 'revalidacao_diploma_equivalencia_expl',
+            purpose: 'revalidacao_diploma_equivalencia_purpose',
+            tips: 'revalidacao_diploma_equivalencia_tips',
+            requirements: ['req_minor_birth_cert', 'req_parents_id'],
+            fields: [...standardFields, { id: 'child_name', label: 'field_child_name', placeholder: 'place_child_name', type: 'text' }]
+        },
     {
         id: 'procuracao_registo', title: 'procuracao_registo', category: CATEGORIES.RIGHTS, complexity: 'Medium', authority: 'IRN', location: 'loc_notario',
         description: 'procuracao_registo_desc',

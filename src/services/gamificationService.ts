@@ -36,7 +36,12 @@ export const DEFAULT_GAMIFICATION_RULES: Record<string, number> = {
     vote_fake: 3,
     follow_user: 2,
     report_content: 1,
-    curate_guide: 15
+    curate_guide: 15,
+    // 🚀 NOVAS REGRAS CANÓNICAS CROSS-MODULE (2026)
+    simulator_completed: 10,
+    job_viewed: 5,
+    service_viewed: 10,
+    chat_daily_query: 5
 };
 
 export const gamificationService = {
@@ -62,9 +67,7 @@ export const gamificationService = {
 
     /**
      * Adiciona pontos de reputação ao utilizador de forma persistente.
-     */
-    /**
-     * Adiciona pontos de reputação ao utilizador de forma persistente com trava de idempotência.
+     * Autoridade soberana de validação, cálculo e idempotência reside no backend (/api/community).
      */
     async earnPoints(userId: string, actionKeyOrAmount: string | number, reason?: string, entityId?: string): Promise<number | null> {
         if (!userId) return null;
@@ -72,15 +75,30 @@ export const gamificationService = {
         const actionKey = typeof actionKeyOrAmount === 'string' ? actionKeyOrAmount : (reason || 'publish_post');
         const reasonText = reason || `Ação: ${actionKey}`;
 
-        // 🛡️ TRAVA DE IDEMPOTÊNCIA E ANTI-FARMING: Evitar duplicação de XP
+        // 🛡️ TRAVA DE OTIMIZAÇÃO DE UX (Client Lock): Evita requests redundantes
         try {
-            const idempotencyKey = entityId ? `xp_${userId}_${actionKey}_${entityId}` : `xp_${userId}_${actionKey}_${Math.floor(Date.now() / 10000)}`;
-            const lastAwarded = sessionStorage.getItem(idempotencyKey);
+            const lisbonDate = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Europe/Lisbon',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(new Date());
+
+            let clientLockKey = `mira_xp_${userId}_${actionKey}`;
+            if (actionKey === 'chat_daily_query') {
+                clientLockKey = `mira_xp_${userId}_chat_${lisbonDate}`;
+            } else if (actionKey === 'simulator_completed') {
+                clientLockKey = `mira_xp_${userId}_sim_${entityId || 'salary'}_${lisbonDate}`;
+            } else if (entityId) {
+                clientLockKey = `mira_xp_${userId}_${actionKey}_${entityId}`;
+            }
+
+            const lastAwarded = localStorage.getItem(clientLockKey) || sessionStorage.getItem(clientLockKey);
             if (lastAwarded) {
-                console.log(`🛡️ [MIRA Gamification] XP duplicado bloqueado pela trava de anti-farming (${idempotencyKey})`);
+                // Já registrado localmente hoje/sessão
                 return null;
             }
-            sessionStorage.setItem(idempotencyKey, new Date().toISOString());
+            localStorage.setItem(clientLockKey, new Date().toISOString());
         } catch (e) {}
 
         try {
@@ -116,7 +134,9 @@ export const gamificationService = {
 
             const data = await response.json();
             if (data.success && typeof data.reputation === 'number') {
-                analytics.track('points_earned', userId, reasonText, { pointsEarned: data.pointsEarned });
+                if (data.pointsEarned > 0) {
+                    analytics.track('points_earned', userId, reasonText, { pointsEarned: data.pointsEarned });
+                }
                 return data.reputation;
             }
 

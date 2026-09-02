@@ -114,20 +114,31 @@ export const communityService = {
   },
   
   /**
-   * 🛡️ FEED SOBERANO (Supabase PostgreSQL Real via RPC get_sovereign_community_feed_v25)
+   * 🛡️ FEED SOBERANO (Supabase PostgreSQL Real via RPC get_sovereign_community_feed_v25 reconciliado)
    */
   fetchPosts: async (_userId?: string, limit = 50, offset = 0): Promise<Post[]> => {
     try {
       const activeUserId = _userId || (await supabase.auth.getSession().catch(() => ({ data: { session: null } }))).data.session?.user?.id || null;
 
-      const { data: rpcData, error: rpcError } = await supabase.rpc('get_sovereign_community_feed_v25', {
-        p_limit: limit,
-        p_offset: offset,
-        p_user_id: activeUserId
-      });
+      const [feedResult, baselineResult] = await Promise.all([
+        supabase.rpc('get_sovereign_community_feed_v25', {
+          p_limit: limit,
+          p_offset: offset,
+          p_user_id: activeUserId
+        }),
+        supabase.from('posts').select('id, likes, likes_count')
+      ]);
+
+      const rpcData = feedResult.data;
+      const rpcError = feedResult.error;
 
       if (!rpcError && Array.isArray(rpcData)) {
-        return rpcData.map((row: any) => communityService.mapRowToPost(row));
+        const baselineMap = new Map<string, number>();
+        baselineResult.data?.forEach(b => {
+          baselineMap.set(b.id, b.likes ?? b.likes_count ?? 0);
+        });
+
+        return rpcData.map((row: any) => communityService.mapRowToPost(row, baselineMap.get(row.id) || 0));
       }
 
       if (rpcError) {
@@ -146,13 +157,16 @@ export const communityService = {
    */
   fetchPostById: async (postId: string, _userId?: string): Promise<Post | null> => {
     try {
-      const { data: rpcData, error: rpcError } = await supabase.rpc(
-        'get_sovereign_community_post_by_id_v25',
-        {
+      const [feedResult, baselineResult] = await Promise.all([
+        supabase.rpc('get_sovereign_community_post_by_id_v25', {
           p_post_id: postId,
           p_user_id: null
-        }
-      );
+        }),
+        supabase.from('posts').select('id, likes, likes_count').eq('id', postId).maybeSingle()
+      ]);
+
+      const rpcData = feedResult.data;
+      const rpcError = feedResult.error;
 
       if (rpcError) {
         console.warn(
@@ -163,7 +177,8 @@ export const communityService = {
       }
 
       if (Array.isArray(rpcData) && rpcData.length > 0) {
-        return communityService.mapRowToPost(rpcData[0]);
+        const baseLikes = baselineResult.data?.likes ?? baselineResult.data?.likes_count ?? 0;
+        return communityService.mapRowToPost(rpcData[0], baseLikes);
       }
 
       return null;
@@ -179,12 +194,17 @@ export const communityService = {
   /**
    * 🏗️ MAPEAMENTO RESILIENTE (Supabase -> TypeScript)
    */
-  mapRowToPost: (row: any): Post => {
+  mapRowToPost: (row: any, baselineLikes = 0): Post => {
     const authorData = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) || row.author || {};
     const authorNameVal = row.author_name || authorData.name || authorData.full_name || authorData.username || 'Membro MIRA';
     const authorAvatarVal = row.author_avatar || authorData.avatar_url || '';
     const authorIsVerifiedVal = row.author_is_verified ?? authorData.is_verified ?? false;
     
+    // 🛡️ RECONCILIAÇÃO CANÓNICA: Baseline histórico de posts.likes + Votos relacionais de post_votes
+    const dynamicVotes = (typeof row.likes === 'number') ? row.likes : 0;
+    const baseLikes = baselineLikes || (row.likes_count ?? 0);
+    const totalLikes = baseLikes + dynamicVotes;
+
     return {
       id: row.id,
       authorId: row.author_id || authorData.id || '',
@@ -199,7 +219,7 @@ export const communityService = {
       backgroundImage: row.background_image || row.media_url || '',
       validationStatus: row.validation_status || 'validated',
       timestamp: row.created_at || new Date().toISOString(),
-      likes: row.likes || row.likes_count || 0,
+      likes: totalLikes,
       usefulVotes: row.useful_votes || 0,
       fakeVotes: row.fake_votes || 0,
       reviewVotes: row.review_votes || 0, 

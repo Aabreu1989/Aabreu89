@@ -43,6 +43,7 @@ export interface AdminService {
     deleteSuggestion(id: string): Promise<void>;
     verifyUserProfile(userId: string, isVerified: boolean): Promise<void>;
     fetchPolicyAnalytics(): Promise<any>;
+    purgeOldJobs(): Promise<{ success: boolean; purgedCount?: number }>;
     fetchAiQueryCategorization(): Promise<{
         totalQueries: number;
         categories: any[];

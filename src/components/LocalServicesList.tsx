@@ -100,9 +100,10 @@ interface LocalServicesListProps {
     user: any;
     targetServiceId?: string | null;
     onClearTargetService?: () => void;
+    onEarnPoints?: (amount: number, reason: string, actionKey?: string, entityId?: string) => void;
 }
 
-export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, user, targetServiceId, onClearTargetService }) => {
+export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, user, targetServiceId, onClearTargetService, onEarnPoints }) => {
     const { showToast } = useToast();
     
     // ⚡ MIRA OPTIMIZATION: Load protected services synchronously by default for instant rendering (0ms)
@@ -376,6 +377,13 @@ export const LocalServicesList: React.FC<LocalServicesListProps> = ({ language, 
                 district: service.city,
                 interactionType
             });
+
+            // 🎮 Gamificação Cross-Module: Consulta de Serviço (+10 XP, 1x por serviço)
+            if (onEarnPoints && service.id) {
+                try {
+                    onEarnPoints(10, `Consulta de Serviço: ${service.title || service.id}`, 'service_viewed', service.id);
+                } catch (_) {}
+            }
         } catch (err) {}
     };
 

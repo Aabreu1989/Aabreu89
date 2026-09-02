@@ -17,6 +17,7 @@ interface SimulatorsViewProps {
   onViewChange: (view: ViewType, params?: any) => void;
   initialTab?: string;
   initialParams?: Record<string, any>;
+  onEarnPoints?: (amount: number, reason: string, actionKey?: string, entityId?: string) => void;
 }
 
 // ─── TRANSLATIONS DICTIONARY ────────────────────────────────────────────────
@@ -838,7 +839,7 @@ const DISTRICT_COST_DATA: Record<string, CostProfile> = {
   Portalegre: { rentRoom: 175, rentT1: 350, rentT2: 470, transportPass: 20, foodBase: 160, utilitiesBase: 70, tier: 'Low' }
 };
 
-export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onViewChange, initialTab, initialParams }) => {
+export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onViewChange, initialTab, initialParams, onEarnPoints }) => {
   const [activeTab, setActiveTab] = useState<'salary_outrem' | 'salary_recibos' | 'cost' | 'housing_protection' | 'aima_health' | 'small_business'>('salary_outrem');
   const [salaryRegime, setSalaryRegime] = useState<'outrem' | 'recibos'>('outrem');
 
@@ -953,7 +954,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const [bizLegalStructure, setBizLegalStructure] = useState<'eni' | 'unipessoal_lda'>('unipessoal_lda');
   const [bizProLabore, setBizProLabore] = useState<number>(1000);
 
-  // Telemetria em tempo real para o contador Navegações & Interações
+  // Telemetria em tempo real para o contador Navegações & Interações e Gamificação
   useEffect(() => {
     const timer = setTimeout(() => {
       let userId = 'guest';
@@ -965,9 +966,23 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
         }
       } catch (e) {}
       analytics.track('use_simulator', userId, 'Interação Simulador', { tab: activeTab });
+
+      // 🎮 Gamificação Cross-Module: Conclusão de Simulação (10 XP, 1x/tipo/dia em Europe/Lisbon)
+      if (userId !== 'guest' && onEarnPoints) {
+        let simCanonical = 'salary';
+        if (activeTab === 'salary_recibos') simCanonical = 'recibos';
+        else if (activeTab === 'cost') simCanonical = 'cost';
+        else if (activeTab === 'housing_protection') simCanonical = 'housing';
+        else if (activeTab === 'aima_health') simCanonical = 'aima';
+        else if (activeTab === 'small_business') simCanonical = 'business';
+
+        try {
+          onEarnPoints(10, `Simulação Concluída: ${simCanonical}`, 'simulator_completed', simCanonical);
+        } catch (_) {}
+      }
     }, 2000);
     return () => clearTimeout(timer);
-  }, [grossSalary, monthlyInvoice, district1, district2, hpMonthlyRent, aimaNetIncome, bizRevenue]);
+  }, [grossSalary, monthlyInvoice, district1, district2, hpMonthlyRent, aimaNetIncome, bizRevenue, activeTab]);
 
   // ─── CONTA DE OUTREM CALCULATION LOGIC ────────────────────────────────────
   const calculateSalaryOutrem = () => {

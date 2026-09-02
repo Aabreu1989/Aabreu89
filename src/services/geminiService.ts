@@ -1319,6 +1319,7 @@ export const generateAssistantResponseV45 = async (
     // 🤖 GEMINI PRIMARY_LLM — Tentativa prioritária
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
+    const t0 = Date.now();
     const response = await fetch(`${apiUrl}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
