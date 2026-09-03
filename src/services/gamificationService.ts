@@ -313,7 +313,7 @@ export const gamificationService = {
             if (!isEligible) continue;
 
             try {
-                // 1. Inserir na tabela user_badges se ainda não existir
+                // 1. Fast-path de verificação: se o utilizador já possui o selo, ignora imediatamente (O(1))
                 const { data: existing } = await supabase
                     .from('user_badges')
                     .select('badge_id')
@@ -321,27 +321,37 @@ export const gamificationService = {
                     .eq('badge_id', milestone.id)
                     .maybeSingle();
 
-                if (!existing) {
-                    await supabase
-                        .from('user_badges')
-                        .insert([{ user_id: userId, badge_id: milestone.id }]);
-                    newBadges.push(milestone.id);
-                    analytics.track('badge_awarded', userId, 'system', { badge_id: milestone.id });
+                if (existing) {
+                    continue; // Já possui: zero operações adicionais, zero notificações
                 }
 
-                // 2. Verificar se notificação individual para este selo já foi enviada ao utilizador
-                const { data: existingNotifs } = await supabase
-                    .from('notifications')
-                    .select('id, title, message')
-                    .eq('user_id', userId);
+                // 2. Inserção Atómica: a Primary Key (user_id, badge_id) "user_badges_pkey" garante concorrência atómica
+                const { data: inserted, error: insertError } = await supabase
+                    .from('user_badges')
+                    .insert([{ user_id: userId, badge_id: milestone.id }])
+                    .select('badge_id')
+                    .maybeSingle();
 
-                const hasNotif = (existingNotifs || []).some(n => 
-                    (n.title && n.title.includes(milestone.name)) || 
-                    (n.message && n.message.includes(milestone.name)) ||
-                    (n.title && n.title.includes(milestone.icon_emoji))
-                );
+                if (insertError) {
+                    const isDuplicate = 
+                        insertError.code === '23505' ||
+                        insertError.message?.includes('duplicate key') ||
+                        insertError.message?.includes('user_badges_pkey');
 
-                if (!hasNotif) {
+                    if (isDuplicate) {
+                        // Conflito legítimo: outro processo simultâneo já ganhou a corrida e inseriu o selo
+                        continue;
+                    }
+                    console.warn(`MIRA: Erro ao atribuir badge ${milestone.id}:`, insertError.message || insertError);
+                    continue;
+                }
+
+                // 3. Sucesso Único e Confirmado: este processo é o vencedor legítimo da atribuição
+                if (inserted) {
+                    newBadges.push(milestone.id);
+                    analytics.track('badge_awarded', userId, 'system', { badge_id: milestone.id });
+
+                    // Dispara rigorosamente UMA única notificação de conquista
                     await supabase.from('notifications').insert([{
                         user_id: userId,
                         type: 'social',

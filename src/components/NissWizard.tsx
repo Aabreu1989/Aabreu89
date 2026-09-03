@@ -8,11 +8,14 @@ import {
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { analytics } from '../services/analyticsService';
+import { ViewType } from '../types';
+import { CrossModuleNavigationHub } from './CrossModuleNavigationHub';
 
 interface NissWizardProps {
     language: string;
     onBack: () => void;
     onSelectTemplate: (templateId: string) => void;
+    onViewChange?: (view: ViewType, params?: any) => void;
 }
 
 // ─── Step Indicator Dots ─────────────────────────────────────────────────────
@@ -416,7 +419,7 @@ const SOCIAL_SUPPORTS: Record<string, Record<'pt' | 'en', SupportDetail>> = {
     }
 };
 
-export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSelectTemplate }) => {
+export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSelectTemplate, onViewChange }) => {
     const [flow, setFlow] = useState<'menu' | 'niss' | 'decl_trimestral' | 'lifehacks' | 'supports'>('menu');
     const [step, setStep] = useState(1);
     const [workerType, setWorkerType] = useState<string>('');
@@ -886,6 +889,12 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                 <ExternalLink size={18} />
                                 Solicitar NISS na Segurança Social Direta
                             </a>
+
+                            {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                            <CrossModuleNavigationHub
+                                language={language}
+                                onViewChange={onViewChange}
+                            />
                         </div>
                     )}
 
@@ -973,6 +982,12 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                     ))}
                                 </div>
                             </div>
+
+                            {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                            <CrossModuleNavigationHub
+                                language={language}
+                                onViewChange={onViewChange}
+                            />
                         </div>
                     )}
                 </div>

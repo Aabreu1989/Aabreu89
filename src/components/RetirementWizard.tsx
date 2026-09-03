@@ -4,11 +4,13 @@ import {
     ArrowLeft, ChevronRight, Sparkles, Calculator, ExternalLink,
     AlertTriangle, ShieldCheck, FileText, UserCheck, CreditCard,
     Calendar, Clock, ChevronDown, ChevronUp, TrendingUp, Award, Globe, Scale,
-    HeartHandshake, Pill, Glasses, Zap, Home, CheckCircle2, Building2, AlertCircle
+    HeartHandshake, Pill, Glasses, Zap, Home, CheckCircle2, Building2, AlertCircle,
+    Compass, ArrowRight, MapPin, Users
 } from 'lucide-react';
 import { audioService } from '../services/audioService';
 import { templates } from '../utils/documentsDatabase';
 import { t } from '../utils/translations';
+import { ViewType } from '../types';
 import {
     calculateMiraRetirement,
     MiraRetirementAssessment,
@@ -19,6 +21,7 @@ interface RetirementWizardProps {
     language: string;
     onBack: () => void;
     onSelectTemplate?: (templateId: string) => void;
+    onViewChange?: (view: ViewType, params?: any) => void;
 }
 
 // ════════════════════════ Step Indicator Dots ════════════════════════════════
@@ -592,7 +595,7 @@ const TRANS: Record<Lang, Record<string, string>> = {
 type Profile = 'standard' | 'expat' | 'long_career' | 'freelance';
 
 // ════════════════════════ Main Component ══════════════════════════════════════
-export const RetirementWizard: React.FC<RetirementWizardProps> = ({ language, onBack, onSelectTemplate }) => {
+export const RetirementWizard: React.FC<RetirementWizardProps> = ({ language, onBack, onSelectTemplate, onViewChange }) => {
     const [step, setStep] = useState(1);
     const [profile, setProfile] = useState<Profile | null>(null);
 
@@ -1220,6 +1223,102 @@ export const RetirementWizard: React.FC<RetirementWizardProps> = ({ language, on
                                                 );
                                             });
                                         })()}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                            {onViewChange && (
+                                <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm space-y-4 animate-in slide-in-from-bottom-3 duration-500">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
+                                            <Compass size={20} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                                                {t('wiz_cross_nav_title', language)}
+                                            </h4>
+                                            <p className="text-[10px] text-slate-400 font-bold leading-relaxed">
+                                                {t('wiz_cross_nav_subtitle', language)}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                                        <button
+                                            onClick={() => {
+                                                audioService.playClick();
+                                                onViewChange(ViewType.SIMULATORS);
+                                            }}
+                                            className="group flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl transition-all duration-300 hover:shadow-md hover:border-cyan-300 hover:bg-cyan-50/50 active:scale-[0.98]"
+                                        >
+                                            <div className="flex items-center gap-3.5 min-w-0">
+                                                <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-xs">
+                                                    <Calculator size={18} className="text-cyan-500" />
+                                                </div>
+                                                <div className="text-left min-w-0">
+                                                    <span className="text-xs font-black text-slate-800 uppercase tracking-tight block truncate group-hover:text-amber-500 transition-colors">
+                                                        {t('wiz_cross_nav_simulators', language)}
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-400 font-bold block truncate">
+                                                        {t('wiz_cross_nav_simulators_desc', language)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-amber-500 group-hover:border-amber-200 transition-all shrink-0 ml-2">
+                                                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                audioService.playClick();
+                                                onViewChange(ViewType.SERVICES);
+                                            }}
+                                            className="group flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl transition-all duration-300 hover:shadow-md hover:border-amber-300 hover:bg-amber-50/50 active:scale-[0.98]"
+                                        >
+                                            <div className="flex items-center gap-3.5 min-w-0">
+                                                <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-xs">
+                                                    <MapPin size={18} className="text-amber-500" />
+                                                </div>
+                                                <div className="text-left min-w-0">
+                                                    <span className="text-xs font-black text-slate-800 uppercase tracking-tight block truncate group-hover:text-amber-500 transition-colors">
+                                                        {t('wiz_cross_nav_services', language)}
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-400 font-bold block truncate">
+                                                        {t('wiz_cross_nav_services_desc', language)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-amber-500 group-hover:border-amber-200 transition-all shrink-0 ml-2">
+                                                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                audioService.playClick();
+                                                onViewChange(ViewType.COMMUNITY);
+                                            }}
+                                            className="group flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl transition-all duration-300 hover:shadow-md hover:border-purple-300 hover:bg-purple-50/50 active:scale-[0.98]"
+                                        >
+                                            <div className="flex items-center gap-3.5 min-w-0">
+                                                <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-xs">
+                                                    <Users size={18} className="text-purple-500" />
+                                                </div>
+                                                <div className="text-left min-w-0">
+                                                    <span className="text-xs font-black text-slate-800 uppercase tracking-tight block truncate group-hover:text-amber-500 transition-colors">
+                                                        {t('wiz_cross_nav_community', language)}
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-400 font-bold block truncate">
+                                                        {t('wiz_cross_nav_community_desc', language)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-amber-500 group-hover:border-amber-200 transition-all shrink-0 ml-2">
+                                                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                                            </div>
+                                        </button>
                                     </div>
                                 </div>
                             )}

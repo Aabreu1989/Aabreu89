@@ -7,11 +7,14 @@ import {
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
 import { templates } from '../utils/documentsDatabase';
+import { ViewType } from '../types';
+import { CrossModuleNavigationHub } from './CrossModuleNavigationHub';
 
 interface AccommodationWizardProps {
     language: string;
     onBack: () => void;
     onSelectTemplate: (templateId: string) => void;
+    onViewChange?: (view: ViewType, params?: any) => void;
 }
 
 // ─── Step Indicator Dots ─────────────────────────────────────────────────────
@@ -383,6 +386,7 @@ export const AccommodationWizard: React.FC<AccommodationWizardProps> = ({
     language,
     onBack,
     onSelectTemplate,
+    onViewChange,
 }) => {
     const [step, setStep] = useState(1);
     const [situation, setSituation] = useState<string>('');
@@ -932,6 +936,12 @@ export const AccommodationWizard: React.FC<AccommodationWizardProps> = ({
                                     })()
                                 )
                             )}
+
+                            {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                            <CrossModuleNavigationHub
+                                language={language}
+                                onViewChange={onViewChange}
+                            />
 
                             {/* Reset Button */}
                             {(!situation || !selectedSupport) && (

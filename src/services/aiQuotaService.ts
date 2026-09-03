@@ -8,6 +8,43 @@
  * - Protege o Free Tier através do Limite Interno de Segurança (INTERNAL_FREE_TIER_SAFETY_LIMIT).
  */
 
+import { supabase } from '../lib/supabase';
+
+export interface ModelUsageStat {
+  calls: number;
+  tokens: number;
+  errors: number;
+}
+
+export interface AiGlobalTelemetrySummary {
+  model: string;
+  provider: string;
+  geminiStatus: 'ONLINE' | 'DEGRADED' | 'LOCAL_ONLY' | 'OFFLINE';
+  totalCalls: number;
+  successfulCalls: number;
+  rateLimit429Count: number;
+  serverError5xxCount: number;
+  successRate: number;
+  errorRate: number;
+  tokensPromptObserved: number;
+  tokensCandidatesObserved: number;
+  tokensTotalObserved: number;
+  averageTokensPerRequest: number;
+  tokensToday: number;
+  tokens7Days: number;
+  tokensMonth: number;
+  lastCallTimestamp: string | null;
+  lastCallLatencyMs: number | null;
+  lastCallModel: string | null;
+  averageLatencyMs: number;
+  modelUsage: Record<string, ModelUsageStat>;
+  safetyBudgetTokens: number;
+  budgetRemaining: number;
+  budgetPercent: number;
+  safetyBudgetExceeded: boolean;
+  quotaRemainingMessage: string;
+}
+
 export interface AiUsageRecord {
   timestamp: string;
   source: 'gemini' | 'local' | 'local_fallback';
@@ -154,6 +191,124 @@ class AiQuotaService {
     }
 
     this.saveToStorage();
+  }
+
+  public computeGlobalSummary(rows: any[]): AiGlobalTelemetrySummary {
+    const now = new Date();
+    const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).getTime();
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).getTime();
+
+    let totalCalls = rows.length;
+    let successfulCalls = 0;
+    let rateLimit429Count = 0;
+    let serverError5xxCount = 0;
+    let tokensPromptObserved = 0;
+    let tokensCandidatesObserved = 0;
+    let tokensTotalObserved = 0;
+    let tokensToday = 0;
+    let tokens7Days = 0;
+    let tokensMonth = 0;
+    let totalLatency = 0;
+    let latencyCount = 0;
+
+    const modelUsage: Record<string, ModelUsageStat> = {};
+
+    for (const r of rows) {
+      const time = new Date(r.created_at).getTime();
+      const isSuccess = r.http_status === 200 && r.status === 'success';
+      if (isSuccess) successfulCalls++;
+      if (r.http_status === 429 || r.status === '429') rateLimit429Count++;
+      if (r.http_status >= 500 || r.status === '5xx' || r.status === 'exception') serverError5xxCount++;
+
+      const pTok = Number(r.prompt_tokens) || 0;
+      const cTok = Number(r.candidate_tokens) || 0;
+      const tTok = Number(r.total_tokens) || 0;
+
+      tokensPromptObserved += pTok;
+      tokensCandidatesObserved += cTok;
+      tokensTotalObserved += tTok;
+
+      if (time >= todayStart) tokensToday += tTok;
+      if (time >= sevenDaysAgo) tokens7Days += tTok;
+      if (time >= monthStart) tokensMonth += tTok;
+
+      if (r.latency_ms) {
+        totalLatency += Number(r.latency_ms);
+        latencyCount++;
+      }
+
+      const m = r.model || 'gemini-3.6-flash';
+      if (!modelUsage[m]) modelUsage[m] = { calls: 0, tokens: 0, errors: 0 };
+      modelUsage[m].calls++;
+      modelUsage[m].tokens += tTok;
+      if (!isSuccess) modelUsage[m].errors++;
+    }
+
+    const avgLatency = latencyCount > 0 ? Math.round(totalLatency / latencyCount) : 0;
+    const successRate = totalCalls > 0 ? Math.round((successfulCalls / totalCalls) * 100) : 100;
+    const errorRate = totalCalls > 0 ? Math.round(((rateLimit429Count + serverError5xxCount) / totalCalls) * 100) : 0;
+    const avgTokens = successfulCalls > 0 ? Math.round(tokensTotalObserved / successfulCalls) : 0;
+
+    const safetyBudgetTokens = this.summary.safetyBudgetTokens || 500000;
+    const budgetRemaining = Math.max(0, safetyBudgetTokens - tokensTotalObserved);
+    const budgetPercent = Math.min(100, Math.round((tokensTotalObserved / safetyBudgetTokens) * 100));
+    const safetyBudgetExceeded = tokensTotalObserved >= safetyBudgetTokens;
+
+    const lastCall = rows[0] || null;
+    let geminiStatus: 'ONLINE' | 'DEGRADED' | 'LOCAL_ONLY' | 'OFFLINE' = 'ONLINE';
+    if (safetyBudgetExceeded) geminiStatus = 'LOCAL_ONLY';
+    else if (rateLimit429Count > 0 && lastCall && (lastCall.status === '429' || lastCall.http_status === 429)) geminiStatus = 'DEGRADED';
+    else if (serverError5xxCount > 0 && lastCall && lastCall.http_status >= 500) geminiStatus = 'OFFLINE';
+
+    return {
+      model: lastCall?.model || 'gemini-3.6-flash',
+      provider: 'Google AI Studio',
+      geminiStatus,
+      totalCalls,
+      successfulCalls,
+      rateLimit429Count,
+      serverError5xxCount,
+      successRate,
+      errorRate,
+      tokensPromptObserved,
+      tokensCandidatesObserved,
+      tokensTotalObserved,
+      averageTokensPerRequest: avgTokens,
+      tokensToday,
+      tokens7Days,
+      tokensMonth,
+      lastCallTimestamp: lastCall?.created_at || null,
+      lastCallLatencyMs: lastCall?.latency_ms || null,
+      lastCallModel: lastCall?.model || null,
+      averageLatencyMs: avgLatency,
+      modelUsage,
+      safetyBudgetTokens,
+      budgetRemaining,
+      budgetPercent,
+      safetyBudgetExceeded,
+      quotaRemainingMessage: `Quota oficial restante da Google: não exposta pela API REST. Consumo observado pelo MIRA: ${tokensTotalObserved.toLocaleString('pt-PT')} tokens`
+    };
+  }
+
+  public async fetchGlobalTelemetry(): Promise<AiGlobalTelemetrySummary> {
+    try {
+      const { data, error } = await supabase
+        .from('ai_api_telemetry')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(2000);
+
+      if (error) {
+        console.warn('⚠️ [AI QUOTA] Falha ao consultar ai_api_telemetry:', error.message);
+        return this.computeGlobalSummary([]);
+      }
+
+      return this.computeGlobalSummary(data || []);
+    } catch (err: any) {
+      console.warn('⚠️ [AI QUOTA] Exceção ao consultar telemetria global:', err.message);
+      return this.computeGlobalSummary([]);
+    }
   }
 
   public getMetrics(): AiMetricsSummary {

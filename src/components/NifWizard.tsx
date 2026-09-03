@@ -8,11 +8,14 @@ import {
 import { t } from '../utils/translations';
 import { templates } from '../utils/documentsDatabase';
 import { TranslatedText } from './TranslatedText';
+import { ViewType } from '../types';
+import { CrossModuleNavigationHub } from './CrossModuleNavigationHub';
 
 interface NifWizardProps {
     language: string;
     onBack: () => void;
     onSelectTemplate: (templateId: string) => void;
+    onViewChange?: (view: ViewType, params?: any) => void;
 }
 
 // ─── Step Indicator Dots ─────────────────────────────────────────────────────
@@ -41,7 +44,7 @@ const BadgePill: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, te
     </div>
 );
 
-export const NifWizard: React.FC<NifWizardProps> = ({ language, onBack, onSelectTemplate }) => {
+export const NifWizard: React.FC<NifWizardProps> = ({ language, onBack, onSelectTemplate, onViewChange }) => {
     const [step, setStep] = useState(1);
     const [isResident, setIsResident] = useState<boolean | null>(null);
     const [isRepOpen, setIsRepOpen] = useState(false);
@@ -405,6 +408,12 @@ export const NifWizard: React.FC<NifWizardProps> = ({ language, onBack, onSelect
                                     </div>
                                 </div>
                             </div>
+
+                            {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                            <CrossModuleNavigationHub
+                                language={language}
+                                onViewChange={onViewChange}
+                            />
 
                             {/* Reset Button */}
                             <button

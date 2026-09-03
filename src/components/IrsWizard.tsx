@@ -9,11 +9,14 @@ import {
 import { templates } from '../utils/documentsDatabase';
 import { TranslatedText } from './TranslatedText';
 import { analytics } from '../services/analyticsService';
+import { ViewType } from '../types';
+import { CrossModuleNavigationHub } from './CrossModuleNavigationHub';
 
 interface IrsWizardProps {
     language: string;
     onBack: () => void;
     onSelectTemplate?: (templateId: string) => void;
+    onViewChange?: (view: ViewType, params?: any) => void;
 }
 
 // ─── Step Indicator Dots ─────────────────────────────────────────────────────
@@ -556,7 +559,7 @@ const renderContentWithLinks = (text: string, lang: string) => {
     });
 };
 
-export const IrsWizard: React.FC<IrsWizardProps> = ({ language, onBack, onSelectTemplate }) => {
+export const IrsWizard: React.FC<IrsWizardProps> = ({ language, onBack, onSelectTemplate, onViewChange }) => {
     const [step, setStep] = useState<1 | 2>(1);
     const [activeProfile, setActiveProfile] = useState<'dep' | 'ind' | 'rnh' | 'jovem' | 'pension' | 'investor' | 'expat' | null>(null);
     const lang = language.toLowerCase() === 'fr' ? 'fr' : language.toLowerCase() === 'es' ? 'es' : language.toLowerCase() === 'en' ? 'en' : 'pt';
@@ -921,6 +924,12 @@ export const IrsWizard: React.FC<IrsWizardProps> = ({ language, onBack, onSelect
                                     </div>
                                 </div>
                             )}
+
+                            {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                            <CrossModuleNavigationHub
+                                language={language}
+                                onViewChange={onViewChange}
+                            />
 
                             {/* Disclaimer */}
                             <div className="p-4 bg-red-50/50 border border-red-100 rounded-2xl">

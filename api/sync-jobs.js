@@ -22,8 +22,16 @@ export function canonicalizeUrl(url) {
   if (!url || typeof url !== 'string') return '';
   try {
     const u = new URL(url.trim());
-    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','fbclid','gclid','ref'].forEach(p => u.searchParams.delete(p));
+    const trackingParams = [
+      'utm_source','utm_medium','utm_campaign','utm_term','utm_content',
+      'fbclid','gclid','ref','source','session_id','sessionId','mc_cid',
+      'mc_eid','trk','tracking','_hsenc','_hsmi','gh_src','source_id','token'
+    ];
+    trackingParams.forEach(p => u.searchParams.delete(p));
+    u.protocol = u.protocol.toLowerCase();
+    u.hostname = u.hostname.toLowerCase();
     u.pathname = u.pathname.replace(/\/+$/, '') || '/';
+    u.hash = '';
     return u.toString();
   } catch {
     return url.trim().replace(/\/+$/, '');
@@ -627,6 +635,7 @@ export default async function handler(req, res) {
   const allNewJobs = [];
   const detailedBreakdown = [];
   const localSeenUrls = new Set();
+  const localSeenFallbacks = new Set();
   const globalStats = {
     VALID_PT_JOB: 0,
     VALID_REMOTE_PT: 0,
@@ -669,8 +678,14 @@ export default async function handler(req, res) {
         }
 
         const urlKey = canonical.toLowerCase();
-        if (!localSeenUrls.has(urlKey)) {
+        const cleanTitle = cleanTextEncoding(job.title).toLowerCase().trim();
+        const cleanSource = (job.company || job.source_name || '').toLowerCase().trim();
+        const cleanLoc = cleanTextEncoding(classificationResult.location).toLowerCase().trim();
+        const fallbackKey = `${cleanTitle}|${cleanSource}|${cleanLoc}`;
+
+        if (!localSeenUrls.has(urlKey) && !localSeenFallbacks.has(fallbackKey)) {
           localSeenUrls.add(urlKey);
+          localSeenFallbacks.add(fallbackKey);
           allNewJobs.push({
             ...job,
             title: cleanTextEncoding(job.title),
@@ -807,55 +822,89 @@ export default async function handler(req, res) {
           }
         }
 
-        // Inserção idempotente atómica em job_alert_deliveries
+        // Agrupamento de candidatos por alerta para permitir agregação por ciclo e eliminar tempestades de notificações
+        const candidatesByAlert = new Map();
         for (const cand of candidates) {
-          try {
-            const { data: delivery, error: delError } = await supabase
-              .from('job_alert_deliveries')
-              .insert({
-                alert_id: cand.alert_id,
-                job_id: cand.job_id
-              })
-              .select('id')
-              .single();
+          if (!candidatesByAlert.has(cand.alert_id)) {
+            candidatesByAlert.set(cand.alert_id, []);
+          }
+          candidatesByAlert.get(cand.alert_id).push(cand);
+        }
 
-            if (delError) {
-              const isDuplicate =
-                delError.code === '23505' ||
-                delError.message?.includes('duplicate key') ||
-                delError.message?.includes('uq_alert_job_delivery');
+        // Processar cada alerta com registo atómico em job_alert_deliveries e agregação por ciclo
+        for (const [alertId, alertCandidates] of candidatesByAlert.entries()) {
+          const newDeliveriesForAlert = [];
 
-              if (!isDuplicate) {
-                console.warn(`[SyncJobs] Erro real ao registrar delivery (${cand.alert_id}:${cand.job_id}):`, delError.message || delError);
+          for (const cand of alertCandidates) {
+            try {
+              const { data: delivery, error: delError } = await supabase
+                .from('job_alert_deliveries')
+                .insert({
+                  alert_id: cand.alert_id,
+                  job_id: cand.job_id
+                })
+                .select('id')
+                .single();
+
+              if (delError) {
+                const isDuplicate =
+                  delError.code === '23505' ||
+                  delError.message?.includes('duplicate key') ||
+                  delError.message?.includes('uq_alert_job_delivery') ||
+                  delError.message?.includes('job_alert_deliveries_pkey');
+
+                if (!isDuplicate) {
+                  console.warn(`[SyncJobs] Erro real ao registrar delivery (${cand.alert_id}:${cand.job_id}):`, delError.message || delError);
+                }
+                continue;
               }
-              continue;
-            }
 
-            // Se a entrega for NOVA:
-            if (delivery) {
-              // ⚡ Frequência Instantânea: Dispara notificação individual imediatamente
-              if (cand.frequency === 'instant') {
+              if (delivery) {
+                newDeliveriesForAlert.push(cand);
+              }
+            } catch (delErr) {
+              console.warn(`[SyncJobs] Exceção inesperada no delivery para ${cand.alert_id}:${cand.job_id}:`, delErr);
+            }
+          }
+
+          // Se nenhuma vaga deste alerta foi nova, não emite nada
+          if (newDeliveriesForAlert.length === 0) continue;
+
+          // Avaliar emissão para alertas com frequência 'instant'
+          const firstCand = newDeliveriesForAlert[0];
+          if (firstCand.frequency === 'instant') {
+            try {
+              if (newDeliveriesForAlert.length === 1) {
+                // Caso 1: Apenas 1 vaga nova no ciclo -> Notificação individual detalhada
                 const { error: notifErr } = await supabase.from('notifications').insert({
-                  user_id: cand.user_id,
+                  user_id: firstCand.user_id,
                   type: 'jobs',
-                  title: `💼 Nova Vaga Compatível: ${cand.jobTitle}`,
-                  message: `${cand.jobSource} • ${cand.jobLocation}\nCorrespondência com o teu alerta de ${cand.alertTopic}.`,
+                  title: `💼 Nova Vaga Compatível: ${firstCand.jobTitle}`,
+                  message: `${firstCand.jobSource} • ${firstCand.jobLocation}\nCorrespondência com o teu alerta de ${firstCand.alertTopic}.`,
                   is_read: false,
-                  link: `/jobs?jobId=${encodeURIComponent(cand.job_id)}`,
+                  link: `/jobs?jobId=${encodeURIComponent(firstCand.job_id)}`,
                   created_at: new Date().toISOString()
                 });
-
-                if (notifErr) {
-                  console.warn(`[SyncJobs] Erro ao registrar notificação instantânea para user ${cand.user_id}:`, notifErr.message || notifErr);
-                } else {
-                  notificationsCount++;
-                }
+                if (!notifErr) notificationsCount++;
+              } else {
+                // Caso 2: Múltiplas vagas novas no mesmo ciclo -> Notificação AGRUPADA única (Anti-Flood Soberano)
+                const count = newDeliveriesForAlert.length;
+                const { error: notifErr } = await supabase.from('notifications').insert({
+                  user_id: firstCand.user_id,
+                  type: 'jobs',
+                  title: `💼 ${count} Novas Vagas Compatíveis: ${firstCand.alertTopic}`,
+                  message: `Encontrámos ${count} novas oportunidades para o teu alerta em ${firstCand.jobLocation || 'Portugal'}.`,
+                  is_read: false,
+                  link: `/jobs?topic=${encodeURIComponent(firstCand.alertTopic)}&alertId=${encodeURIComponent(firstCand.alert_id)}`,
+                  created_at: new Date().toISOString()
+                });
+                if (!notifErr) notificationsCount++;
               }
-              // 📦 Frequências Diária e Semanal: Apenas gravam delivery, aguardando o Digest Engine abaixo
+            } catch (notifEx) {
+              console.warn(`[SyncJobs] Erro ao registrar notificação instantânea para user ${firstCand.user_id}:`, notifEx);
             }
-          } catch (delErr) {
-            console.warn(`[SyncJobs] Exceção inesperada no delivery loop:`, delErr);
           }
+          // Para daily/weekly: os deliveries já foram gravados atómicamente acima, aguardando o Digest Engine abaixo
         }
       }
 

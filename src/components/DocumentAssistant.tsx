@@ -763,6 +763,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                         setWizardChoice(undefined);
                         setActiveScreen('menu');
                     }}
+                    onViewChange={onViewChange}
                 />
             )}
 
@@ -793,6 +794,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
+                    onViewChange={onViewChange}
                 />
             )}
 
@@ -823,6 +825,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
+                    onViewChange={onViewChange}
                 />
             )}
 
@@ -838,7 +841,8 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
-                    />
+                    onViewChange={onViewChange}
+                />
             )}
 
             {activeScreen === 'utente' && (
@@ -883,6 +887,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
+                    onViewChange={onViewChange}
                 />
             )}
 
@@ -920,6 +925,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
+                    onViewChange={onViewChange}
                 />
             )}
 
@@ -935,6 +941,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
+                    onViewChange={onViewChange}
                 />
             )}
 

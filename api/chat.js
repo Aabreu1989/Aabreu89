@@ -35,6 +35,35 @@ function isValidTranslation(candidate, original) {
     return !corruptedMarkers.some(m => lower.includes(m));
 }
 
+async function recordApiTelemetry(telemetryData) {
+    if (!supabaseAdmin) return;
+    try {
+        const { error } = await supabaseAdmin
+            .from('ai_api_telemetry')
+            .insert([{
+                request_id: telemetryData.requestId,
+                user_id: telemetryData.userId || null,
+                guest_id: telemetryData.guestId || null,
+                model: telemetryData.model,
+                status: telemetryData.status,
+                prompt_tokens: telemetryData.promptTokens || 0,
+                candidate_tokens: telemetryData.candidateTokens || 0,
+                total_tokens: telemetryData.totalTokens || 0,
+                latency_ms: telemetryData.latencyMs || 0,
+                http_status: telemetryData.httpStatus,
+                error_code: telemetryData.errorCode || null,
+                error_message: telemetryData.errorMessage || null,
+                finish_reason: telemetryData.finishReason || null,
+                created_at: new Date().toISOString()
+            }]);
+        if (error) {
+            console.warn('⚠️ [MIRA TELEMETRY] Erro ao gravar ai_api_telemetry:', error.message);
+        }
+    } catch (e) {
+        console.warn('⚠️ [MIRA TELEMETRY] Exceção ao gravar ai_api_telemetry:', e.message);
+    }
+}
+
 export default async function handler(req, res) {
     const allowedOrigins = ['https://miraimigrante.pt', 'https://www.miraimigrante.pt', 'http://127.0.0.1:3333', 'http://localhost:3333', 'http://localhost:5173'];
     const origin = req.headers.origin;
@@ -109,6 +138,38 @@ export default async function handler(req, res) {
                         translatedCandidate = cand.trim();
                         translationSource = 'gemini';
                     }
+                    if (gemData?.usageMetadata) {
+                        recordApiTelemetry({
+                            requestId: 'trans_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+                            userId: null,
+                            guestId: 'translation_service',
+                            model: 'gemini-3.6-flash',
+                            status: 'success',
+                            promptTokens: gemData.usageMetadata.promptTokenCount || 0,
+                            candidateTokens: gemData.usageMetadata.candidatesTokenCount || 0,
+                            totalTokens: gemData.usageMetadata.totalTokenCount || 0,
+                            latencyMs: 0,
+                            httpStatus: 200,
+                            errorCode: null,
+                            errorMessage: null,
+                            finishReason: gemData.candidates?.[0]?.finishReason || 'STOP'
+                        }).catch(() => {});
+                    }
+                } else if (gemResponse.status === 429 || gemResponse.status >= 500) {
+                    recordApiTelemetry({
+                        requestId: 'trans_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+                        userId: null,
+                        guestId: 'translation_service',
+                        model: 'gemini-3.6-flash',
+                        status: gemResponse.status === 429 ? '429' : '5xx',
+                        promptTokens: 0,
+                        candidateTokens: 0,
+                        totalTokens: 0,
+                        latencyMs: 0,
+                        httpStatus: gemResponse.status,
+                        errorCode: gemResponse.status === 429 ? 'QUOTA_EXCEEDED' : 'SERVER_ERROR',
+                        errorMessage: 'Gemini translation error'
+                    }).catch(() => {});
                 }
             } catch (gemErr) {
                 console.warn('⚠️ [MIRA TRANSLATE] Gemini error, trying GTX fallback:', gemErr.message);
@@ -656,6 +717,10 @@ ${userProfileBlock}
     const finalHistory = processedHistory.slice(-24);
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
+    const t0 = Date.now();
+    const requestId = 'gemini_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+    const effectiveUserId = profileContext?.userId || req.body?.userId || null;
+    const effectiveGuestId = !effectiveUserId ? (req.body?.guestId || req.body?.guest_id || 'guest') : null;
     
     try {
         const response = await fetch(url, {
@@ -670,6 +735,7 @@ ${userProfileBlock}
             })
         });
 
+        const latencyMs = Date.now() - t0;
         const data = await response.json();
         
         if (!response.ok) {
@@ -680,6 +746,23 @@ ${userProfileBlock}
             else if (status === 400) errorType = 'INVALID_REQUEST';
 
             console.warn(`⚠️ [MIRA CHAT] Gemini ${status} (${errorType}): ${data.error?.message || 'Error'}, switching to local fallback`);
+
+            await recordApiTelemetry({
+                requestId,
+                userId: effectiveUserId,
+                guestId: effectiveGuestId,
+                model: modelId,
+                status: status === 429 ? '429' : (status >= 500 ? '5xx' : 'error'),
+                promptTokens: 0,
+                candidateTokens: 0,
+                totalTokens: 0,
+                latencyMs,
+                httpStatus: status,
+                errorCode: errorType,
+                errorMessage: data.error?.message || 'Gemini API Error',
+                finishReason: null
+            });
+
             return res.status(200).json({
                 success: false,
                 fallbackRequired: true,
@@ -695,9 +778,29 @@ ${userProfileBlock}
         const candidate = data.candidates?.[0];
         const textOutput = candidate?.content?.parts?.[0]?.text;
         const finishReason = candidate?.finishReason || 'STOP';
+        const promptTokens = data.usageMetadata?.promptTokenCount || 0;
+        const candidateTokens = data.usageMetadata?.candidatesTokenCount || 0;
+        const totalTokens = data.usageMetadata?.totalTokenCount || 0;
 
         if (!textOutput) {
             console.warn(`⚠️ [MIRA CHAT] Gemini empty response, switching to local fallback`);
+
+            await recordApiTelemetry({
+                requestId,
+                userId: effectiveUserId,
+                guestId: effectiveGuestId,
+                model: modelId,
+                status: 'empty_response',
+                promptTokens,
+                candidateTokens,
+                totalTokens,
+                latencyMs,
+                httpStatus: 200,
+                errorCode: 'EMPTY_RESPONSE',
+                errorMessage: 'Resposta vazia do Gemini',
+                finishReason
+            });
+
             return res.status(200).json({
                 success: false,
                 fallbackRequired: true,
@@ -710,7 +813,23 @@ ${userProfileBlock}
             });
         }
 
-        console.log(`⚡ [MIRA CHAT] source=gemini provider=google model=${modelId} status=200 finishReason=${finishReason}`);
+        await recordApiTelemetry({
+            requestId,
+            userId: effectiveUserId,
+            guestId: effectiveGuestId,
+            model: modelId,
+            status: 'success',
+            promptTokens,
+            candidateTokens,
+            totalTokens,
+            latencyMs,
+            httpStatus: 200,
+            errorCode: null,
+            errorMessage: null,
+            finishReason
+        });
+
+        console.log(`⚡ [MIRA CHAT] source=gemini provider=google model=${modelId} tokens=${totalTokens} status=200 finishReason=${finishReason}`);
         return res.status(200).json({
             text: textOutput,
             source: 'gemini',
@@ -722,7 +841,25 @@ ${userProfileBlock}
             usageMetadata: data.usageMetadata || null
         });
     } catch (err) {
+        const latencyMs = Date.now() - t0;
         console.error(`❌ [MIRA CHAT EXCEPTION]`, err.message);
+
+        await recordApiTelemetry({
+            requestId,
+            userId: effectiveUserId,
+            guestId: effectiveGuestId,
+            model: modelId,
+            status: 'exception',
+            promptTokens: 0,
+            candidateTokens: 0,
+            totalTokens: 0,
+            latencyMs,
+            httpStatus: 500,
+            errorCode: 'EXCEPTION',
+            errorMessage: err.message,
+            finishReason: null
+        });
+
         return res.status(200).json({
             success: false,
             fallbackRequired: true,

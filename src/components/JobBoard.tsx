@@ -289,7 +289,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const JOBS_PER_PAGE = 15;
   const [currentPage, setCurrentPage] = useState(1);
   const jobListTopRef = React.useRef<HTMLDivElement>(null);
-  const scannedJobIdsRef = React.useRef<Set<string>>(new Set());
 
   // 📊 SOBERANIA MIRA: Carregar distribuição real de vagas por setor direto do Supabase (Strictly <= 90 days)
   const loadTopicCounts = React.useCallback(async () => {
@@ -559,16 +558,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         .filter(job => isPortugalOrRemoteJob(job.title, job.location));
 
       setJobs(formatted);
-
-      if (formatted.length > 0) {
-        const unscanned = formatted.filter(j => !scannedJobIdsRef.current.has(j.id));
-        if (unscanned.length > 0) {
-          unscanned.forEach(j => scannedJobIdsRef.current.add(j.id));
-          setTimeout(() => {
-            jobAlertService.processJobMatching(unscanned, user?.id);
-          }, 50);
-        }
-      }
     } catch (err: any) {
       console.error('MIRA JobBoard error:', err);
       setError(err?.message || 'Erro ao carregar vagas');
