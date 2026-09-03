@@ -244,18 +244,66 @@ export const adminService: AdminService = {
     },
 
     async deleteUser(userId: string, email?: string, block: boolean = false): Promise<void> {
-        const { data, error } = await supabase.functions.invoke('mira-admin', {
-            body: { action: 'delete', userId: userId }
-        });
+        let deletedSuccessfully = false;
+        let lastErrorMsg = '';
 
-        if (error) {
-            console.error("🛑 [MIRA ADMIN] User deletion failed via Edge Function:", error);
-            throw new Error(error.message || 'Falha ao sincronizar exclusão com o servidor soberano.');
+        // 1. Tentar via API Soberana Vercel (/api/admin?action=delete-user)
+        try {
+            const session = (await supabase.auth.getSession()).data.session;
+            const sessionToken = session?.access_token;
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (sessionToken) {
+                headers['Authorization'] = `Bearer ${sessionToken}`;
+            }
+
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${apiUrl}/api/admin?action=delete-user`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ userId, email, block })
+            });
+
+            if (res.ok) {
+                const json = await res.json();
+                if (json?.success) {
+                    deletedSuccessfully = true;
+                }
+            } else {
+                const errJson = await res.json().catch(() => ({}));
+                lastErrorMsg = errJson.error || `Erro HTTP ${res.status}`;
+            }
+        } catch (apiErr: any) {
+            console.warn('[MIRA ADMIN] Falha na exclusão via /api/admin, a tentar fallback:', apiErr);
+            lastErrorMsg = apiErr.message || '';
+        }
+
+        // 2. Se a API Vercel não foi bem-sucedida, tentar fallback via Edge Function legado
+        if (!deletedSuccessfully) {
+            try {
+                const { error } = await supabase.functions.invoke('mira-admin', {
+                    body: { action: 'delete', userId: userId }
+                });
+                if (!error) {
+                    deletedSuccessfully = true;
+                } else {
+                    console.error("🛑 [MIRA ADMIN] User deletion failed via Edge Function:", error);
+                    lastErrorMsg = error.message || lastErrorMsg;
+                }
+            } catch (edgeErr: any) {
+                console.error("🛑 [MIRA ADMIN] Edge Function error:", edgeErr);
+                lastErrorMsg = edgeErr.message || lastErrorMsg;
+            }
+        }
+
+        if (!deletedSuccessfully) {
+            throw new Error(lastErrorMsg || 'Falha ao sincronizar exclusão com o servidor soberano.');
         }
 
         console.log("✅ [MIRA ADMIN] Deletion synced successfully.");
-        if (block && email) await this.blockEmail(email);
-        await this.logAdminAction('delete_user', { userId, email });
+        if (block && email) {
+            await this.blockEmail(email).catch(() => {});
+        }
+        await this.logAdminAction('delete_user', { userId, email }).catch(() => {});
     },
 
     async updateUserRole(userId: string, role: string) {
@@ -821,13 +869,20 @@ export const adminService: AdminService = {
 
             let totalLikesSum = 0;
             try {
-                const { count: postVotesLikesCount } = await supabase
-                    .from('post_votes')
-                    .select('id', { count: 'exact', head: true })
-                    .eq('vote_type', 'like');
-                totalLikesSum = postVotesLikesCount || 0;
+                const [postVotesRes, postsDataRes] = await Promise.all([
+                    supabase
+                        .from('post_votes')
+                        .select('id', { count: 'exact', head: true })
+                        .eq('vote_type', 'like'),
+                    supabase
+                        .from('posts')
+                        .select('likes, likes_count')
+                ]);
+                const postsBaselineLikes = (postsDataRes.data || []).reduce((acc: number, p: any) => acc + (p.likes ?? p.likes_count ?? 0), 0);
+                const postVotesLikesCount = postVotesRes.count || 0;
+                totalLikesSum = postsBaselineLikes + postVotesLikesCount;
             } catch (likesErr) {
-                console.warn('[MIRA] Falha ao contar likes de post_votes:', likesErr);
+                console.warn('[MIRA] Falha ao contar likes de posts e post_votes:', likesErr);
             }
 
             const docDownloadsCount = Math.max(userDocsCount || 0, docActivityCount || 0);

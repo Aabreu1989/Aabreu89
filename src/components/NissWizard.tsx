@@ -1,9 +1,10 @@
 // src/components/NissWizard.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     ArrowLeft, ChevronRight, CheckCircle2, FileText, Info,
     Shield, RotateCcw, Zap, MapPin, ExternalLink, Globe, Sparkles,
-    Calculator, Calendar, DollarSign, Lightbulb, Check, Copy, HelpCircle, AlertTriangle
+    Calculator, Calendar, DollarSign, Lightbulb, Check, Copy, HelpCircle,
+    AlertTriangle, Scale, Clock, Sliders, CheckSquare, Square
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { analytics } from '../services/analyticsService';
@@ -40,47 +41,273 @@ const BadgePill: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, te
     </div>
 );
 
-// Localized translations for the new structures
-const LOCAL_TRANS: Record<'pt' | 'en', Record<string, string>> = {
-    pt: {
-        niss_title: "Segurança Social & Jornada MIRA",
-        niss_menu_desc: "NISS, Declaração Trimestral, Simulador de Contribuição e Life Hacks para Imigrantes em Portugal.",
-        menu_get_niss: "Obter Número NISS",
-        menu_get_niss_sub: "Passo a passo e documentação oficial para obter o seu NISS.",
-        menu_decl_trimestral: "Declaração Trimestral SS",
-        menu_decl_trimestral_sub: "Guia oficial de como declarar rendimentos de Recibos Verdes na SS Direta.",
-        menu_simulador_ss: "Simulador de Contribuição SS",
-        menu_simulador_ss_sub: "Calcule quanto vai pagar por mês com opção de variação de -25% a +25%.",
-        menu_lifehacks: "Life Hacks & Dicas de Integração",
-        menu_lifehacks_sub: "Isenção no 1.º ano, Acordo de Saúde PB4/SNS, Atestado de Morada e Dicas Fiscais.",
-        menu_supports: "Apoios Sociais (Prestações)",
-        menu_supports_sub: "Consulte abonos, subsídios de desemprego, doença, RSI e mais.",
-        back_to_menu: "Voltar ao Menu",
-        support_steps_title: "Passo a Passo de Candidatura",
-        support_docs_title: "Documentos Exigidos",
-        support_apply_title: "Onde e Como Dar Entrada",
-        support_list_title: "Catálogo de Apoios Sociais",
-        support_list_sub: "Selecione um apoio para ver o procedimento passo a passo e onde aplicar."
+// ─── LOCALIZED TRANSLATIONS (5 IDIOMAS) ──────────────────────────────────────
+type Lang = 'pt' | 'br' | 'es' | 'en' | 'fr';
+const LOCAL_TRANS: Record<Lang, Record<string, string>> = {
+    "pt": {
+        "niss_title": "Segurança Social & Jornada MIRA",
+        "niss_menu_desc": "NISS, Declaração Trimestral, Simulador de Contribuição e Life Hacks para Imigrantes em Portugal.",
+        "menu_get_niss": "Obter Número NISS",
+        "menu_get_niss_sub": "Passo a passo e documentação oficial para obter o seu NISS.",
+        "menu_decl_trimestral": "Declaração Trimestral SS",
+        "menu_decl_trimestral_sub": "Guia oficial de como declarar rendimentos de Recibos Verdes na SS Direta.",
+        "menu_simulador_ss": "Simulador de Contribuição SS",
+        "menu_simulador_ss_sub": "Calcule quanto vai pagar por mês com opção de variação de -25% a +25%.",
+        "menu_lifehacks": "Life Hacks & Dicas de Integração",
+        "menu_lifehacks_sub": "Isenção no 1.º ano, Acordo de Saúde PB4/SNS, Atestado de Morada e Dicas Fiscais.",
+        "menu_supports": "Apoios Sociais (Prestações)",
+        "menu_supports_sub": "Consulte abonos, subsídios de desemprego, doença, RSI e mais.",
+        "back_to_menu": "Voltar ao Menu",
+        "support_steps_title": "Passo a Passo de Candidatura",
+        "support_docs_title": "Documentos Exigidos",
+        "support_apply_title": "Onde e Como Dar Entrada",
+        "support_list_title": "Catálogo de Apoios Sociais",
+        "support_list_sub": "Selecione um apoio para ver o procedimento passo a passo e onde aplicar.",
+        "sim_title": "Simulador de Contribuição Segurança Social",
+        "sim_subtitle": "Cálculo de Recibos Verdes & Trabalhadores Independentes (DL 110/2009 - 2026)",
+        "sim_revenue_label": "Rendimento Bruto Total do Trimestre (€):",
+        "sim_revenue_desc": "Soma de todas as faturas/recibos emitidos nos 3 meses do trimestre anterior.",
+        "sim_activity_label": "Tipo de Atividade Profissional:",
+        "sim_act_services": "💼 Prestação de Serviços (70%)",
+        "sim_act_services_sub": "Profissões Liberais, Saúde, TI, Consultoria, Engenharia",
+        "sim_act_sales": "🛍️ Vendas / Restauração (20%)",
+        "sim_act_sales_sub": "Comércio de Bens, Hotelaria, Alojamento Local e Restauração",
+        "sim_health_note": "⚖️ Nota Legal (Art. 151.º do CRC): Médicos, profissionais de saúde e profissões liberais enquadram-se na prestação de serviços com coeficiente de 70%.",
+        "sim_toggles_title": "Isenções e Condições Especiais",
+        "sim_first_year_label": "Primeiro ano de enquadramento na Segurança Social (Início de Atividade)?",
+        "sim_first_year_desc": "Beneficia de isenção facultativa nos primeiros 12 meses consecutivos de atividade.",
+        "sim_tco_label": "Acumula com contrato de trabalho (Trabalho por Conta de Outrem)?",
+        "sim_tco_salary_label": "Remuneração Mensal Bruta do Emprego Dependente (€):",
+        "sim_tco_salary_desc": "Condição de isenção cumulativa (Art. 157.º do CRC): Salário do contrato ≥ 1 IAS (€ 537,13) E Rendimento Relevante TI < 4 IAS (€ 2.148,52).",
+        "sim_variation_label": "Opção de Ajuste de Variação Trimestral (-25% a +25%):",
+        "sim_variation_desc": "Escolha em patamares de 5% o ajuste sobre a base mensal apurada.",
+        "sim_tax_rate_label": "Taxa Contributiva Oficial (Art. 168.º do CRC):",
+        "sim_rate_ti": "21,4% — Trabalhador Independente em Geral",
+        "sim_rate_eni": "25,2% — Empresário em Nome Individual (ENI)",
+        "sim_res_title": "Resultado da Simulação SS",
+        "sim_res_monthly": "Contribuição Mensal a Pagar (Fixa por 3 meses):",
+        "sim_res_declared": "Rendimento Bruto Declarado:",
+        "sim_res_relevant_avg": "Rendimento Relevante Médio Mensal (1/3):",
+        "sim_res_contributory_base": "Base de Incidência Fixada:",
+        "sim_res_quarterly_total": "Total do Trimestre (3 Prestações):",
+        "sim_badge_min": "Piso Mínimo Legal (€ 20,00/mês)",
+        "sim_badge_ceiling": "Teto Máximo Legal Atingido (12 × IAS = € 6.445,56)",
+        "sim_badge_exempt": "Isenção Legal Válida",
+        "sim_official_deadlines_title": "Prazos Oficiais da Segurança Social (Obrigatórios)",
+        "sim_deadline_declaration": "📅 Declaração Trimestral: Entregue obrigatoriamente até ao último dia dos meses de Janeiro, Abril, Julho e Outubro através da Segurança Social Direta.",
+        "sim_deadline_payment": "💳 Janela de Pagamento: Mensalmente, entre os dias 10 e 20 do mês seguinte àquele a que a contribuição respeita (ex.: contribuição de Janeiro paga entre 10 e 20 de Fevereiro)."
     },
-    en: {
-        niss_title: "Social Security & MIRA Journey",
-        niss_menu_desc: "NISS, Quarterly Declaration, Contribution Simulator and Life Hacks for Immigrants in Portugal.",
-        menu_get_niss: "Get NISS Number",
-        menu_get_niss_sub: "Official step-by-step and paperwork guide to obtain your NISS.",
-        menu_decl_trimestral: "Quarterly Declaration SS",
-        menu_decl_trimestral_sub: "Official guide on how to report Green Receipt income on Social Security Direct.",
-        menu_simulador_ss: "Social Security Simulator",
-        menu_simulador_ss_sub: "Calculate your monthly contribution with optional -25% to +25% adjustments.",
-        menu_lifehacks: "Life Hacks & Integration Tips",
-        menu_lifehacks_sub: "1st Year Exemption, PB4/SNS Health Agreement, Proof of Address & Tax Hacks.",
-        menu_supports: "Social Supports (Benefits)",
-        menu_supports_sub: "Check allowances, unemployment benefits, sickness, RSI and more.",
-        back_to_menu: "Back to Menu",
-        support_steps_title: "Step-by-Step Application Guide",
-        support_docs_title: "Required Documents",
-        support_apply_title: "Where & How to Apply",
-        support_list_title: "Social Supports Catalog",
-        support_list_sub: "Select a benefit to view the step-by-step procedure and where to apply."
+    "br": {
+        "niss_title": "Segurança Social & Jornada MIRA",
+        "niss_menu_desc": "NISS, Declaração Trimestral, Simulador de Contribuição e Dicas para Brasileiros em Portugal.",
+        "menu_get_niss": "Obter Número NISS",
+        "menu_get_niss_sub": "Passo a passo e documentação oficial para obter o seu NISS.",
+        "menu_decl_trimestral": "Declaração Trimestral SS",
+        "menu_decl_trimestral_sub": "Guia oficial de como declarar rendimentos de Recibos Verdes na SS Direta.",
+        "menu_simulador_ss": "Simulador de Contribuição SS",
+        "menu_simulador_ss_sub": "Calcule quanto vai pagar por mês com opção de variação de -25% a +25%.",
+        "menu_lifehacks": "Life Hacks & Dicas de Integração",
+        "menu_lifehacks_sub": "Isenção no 1.º ano, Acordo de Saúde PB4/SNS, Atestado de Morada e Dicas Fiscais.",
+        "menu_supports": "Benefícios Sociais",
+        "menu_supports_sub": "Consulte abonos de família, seguro-desemprego, auxílio-doença, RSI e mais.",
+        "back_to_menu": "Voltar ao Menu",
+        "support_steps_title": "Passo a Passo da Solicitação",
+        "support_docs_title": "Documentos Exigidos",
+        "support_apply_title": "Onde e Como Solicitar",
+        "support_list_title": "Catálogo de Benefícios Sociais",
+        "support_list_sub": "Selecione um benefício para ver o procedimento passo a passo e onde solicitar.",
+        "sim_title": "Simulador de Contribuição Segurança Social",
+        "sim_subtitle": "Cálculo de Recibos Verdes & Autônomos (DL 110/2009 - 2026)",
+        "sim_revenue_label": "Faturamento Bruto Total do Trimestre (€):",
+        "sim_revenue_desc": "Soma de todas as notas fiscais/recibos verdes emitidos nos 3 meses do trimestre anterior.",
+        "sim_activity_label": "Tipo de Atividade Profissional:",
+        "sim_act_services": "💼 Prestação de Serviços (70%)",
+        "sim_act_services_sub": "Profissões Liberais, Saúde, TI, Consultoria, Engenharia",
+        "sim_act_sales": "🛍️ Vendas / Restaurantes (20%)",
+        "sim_act_sales_sub": "Comércio de Bens, Hotelaria, Alojamento Local e Alimentação",
+        "sim_health_note": "⚖️ Nota Legal (Art. 151.º do CRC): Médicos, profissionais da saúde e autônomos liberais entram na prestação de serviços com coeficiente de 70%.",
+        "sim_toggles_title": "Isenções e Situações Especiais",
+        "sim_first_year_label": "Primeiro ano de cadastro na Segurança Social (Início de Atividade)?",
+        "sim_first_year_desc": "Direito à isenção facultativa nos primeiros 12 meses ininterruptos de atividade.",
+        "sim_tco_label": "Acumula com emprego de carteira assinada (Trabalho por Conta de Outrem)?",
+        "sim_tco_salary_label": "Salário Mensal Bruto do Emprego Fixo (€):",
+        "sim_tco_salary_desc": "Regra cumulativa de isenção (Art. 157.º do CRC): Salário fixo ≥ 1 IAS (€ 537,13) E Renda Relevante como autônomo < 4 IAS (€ 2.148,52).",
+        "sim_variation_label": "Opção de Ajuste de Variação Trimestral (-25% a +25%):",
+        "sim_variation_desc": "Escolha em degraus de 5% o ajuste sobre a base mensal de contribuição.",
+        "sim_tax_rate_label": "Alíquota Contributiva Oficial (Art. 168.º do CRC):",
+        "sim_rate_ti": "21,4% — Trabalhador Autônomo em Geral",
+        "sim_rate_eni": "25,2% — Empresário em Nome Individual (ENI)",
+        "sim_res_title": "Resultado da Simulação SS",
+        "sim_res_monthly": "Contribuição Mensal Fixa a Pagar (por 3 meses):",
+        "sim_res_declared": "Faturamento Bruto Declarado:",
+        "sim_res_relevant_avg": "Rendimento Relevante Mensal Médio (1/3):",
+        "sim_res_contributory_base": "Base de Cálculo Fixada:",
+        "sim_res_quarterly_total": "Total do Trimestre (3 Parcelas):",
+        "sim_badge_min": "Piso Mínimo Obrigatório (€ 20,00/mês)",
+        "sim_badge_ceiling": "Teto Máximo Legal Atingido (12 × IAS = € 6.445,56)",
+        "sim_badge_exempt": "Isenção Legal Confirmada",
+        "sim_official_deadlines_title": "Prazos Oficiais da Segurança Social (Obrigatórios)",
+        "sim_deadline_declaration": "📅 Declaração Trimestral: Entregue obrigatoriamente até o último dia de Janeiro, Abril, Julho e Outubro pela Segurança Social Direta.",
+        "sim_deadline_payment": "💳 Janela de Pagamento: Mensalmente, entre os dias 10 e 20 do mês seguinte àquele a que a contribuição se refere (ex.: contribuição de Janeiro paga entre 10 e 20 de Fevereiro)."
+    },
+    "es": {
+        "niss_title": "Seguridad Social & Guía MIRA",
+        "niss_menu_desc": "NISS, Declaración Trimestral, Simulador de Cotización y Consejos para Inmigrantes en Portugal.",
+        "menu_get_niss": "Obtener Número NISS",
+        "menu_get_niss_sub": "Paso a paso y documentación oficial para tramitar su NISS.",
+        "menu_decl_trimestral": "Declaración Trimestral SS",
+        "menu_decl_trimestral_sub": "Guía oficial para declarar ingresos de Recibos Verdes en la SS Direta.",
+        "menu_simulador_ss": "Simulador de Cotización SS",
+        "menu_simulador_ss_sub": "Calcule su cuota mensual con opción de ajuste de -25% a +25%.",
+        "menu_lifehacks": "Life Hacks & Consejos de Integración",
+        "menu_lifehacks_sub": "Exención del 1er año, Convenios de Salud, Certificado de Domicilio y Fiscalidad.",
+        "menu_supports": "Ayudas Sociales (Prestaciones)",
+        "menu_supports_sub": "Consulte asignaciones familiares, desempleo, incapacidad temporal y más.",
+        "back_to_menu": "Volver al Menú",
+        "support_steps_title": "Paso a Paso de Solicitud",
+        "support_docs_title": "Documentos Exigidos",
+        "support_apply_title": "Dónde y Cómo Solicitar",
+        "support_list_title": "Catálogo de Ayudas Sociales",
+        "support_list_sub": "Seleccione una ayuda para ver el procedimiento paso a paso.",
+        "sim_title": "Simulador de Cotización a la Seguridad Social",
+        "sim_subtitle": "Cálculo para Autónomos y Recibos Verdes (DL 110/2009 - 2026)",
+        "sim_revenue_label": "Ingresos Brutos Totales del Trimestre (€):",
+        "sim_revenue_desc": "Suma de todas las facturas/recibos emitidos en los 3 meses del trimestre anterior.",
+        "sim_activity_label": "Tipo de Actividad Profesional:",
+        "sim_act_services": "💼 Prestación de Servicios (70%)",
+        "sim_act_services_sub": "Profesiones Liberales, Salud, TI, Consultoría, Ingeniería",
+        "sim_act_sales": "🛍️ Ventas / Restauración (20%)",
+        "sim_act_sales_sub": "Comercio de Bienes, Hostelería, Alojamiento Turístico y Restauración",
+        "sim_health_note": "⚖️ Nota Legal (Art. 151.º del CRC): Los médicos, sanitarios y profesiones liberales tributan bajo servicios al 70%.",
+        "sim_toggles_title": "Exenciones y Casos Especiales",
+        "sim_first_year_label": "¿Primer año de alta en la Seguridad Social (Inicio de Actividad)?",
+        "sim_first_year_desc": "Disfruta de exención voluntaria durante los primeros 12 meses consecutivos.",
+        "sim_tco_label": "¿Pluriempleo con contrato laboral por cuenta ajena?",
+        "sim_tco_salary_label": "Salario Mensual Bruto del Empleo Asalariado (€):",
+        "sim_tco_salary_desc": "Requisitos de exención (Art. 157.º del CRC): Salario asalariado ≥ 1 IAS (€ 537,13) e Ingreso Relevante como autónomo < 4 IAS (€ 2.148,52).",
+        "sim_variation_label": "Opción de Ajuste Trimestral de Base (-25% a +25%):",
+        "sim_variation_desc": "Ajuste en tramos del 5% sobre la base de cotización mensual.",
+        "sim_tax_rate_label": "Tipo de Cotización Oficial (Art. 168.º del CRC):",
+        "sim_rate_ti": "21,4% — Trabajador Autónomo General",
+        "sim_rate_eni": "25,2% — Empresario Individual (ENI)",
+        "sim_res_title": "Resultado de la Simulación SS",
+        "sim_res_monthly": "Cuota Mensual a Pagar (fija durante 3 meses):",
+        "sim_res_declared": "Ingresos Brutos Declarados:",
+        "sim_res_relevant_avg": "Ingreso Relevante Mensual Medio (1/3):",
+        "sim_res_contributory_base": "Base de Cotización Fijada:",
+        "sim_res_quarterly_total": "Total del Trimestre (3 Cuotas):",
+        "sim_badge_min": "Cuota Mínima Obligatoria (€ 20,00/mes)",
+        "sim_badge_ceiling": "Tope Máximo Legal Alcanzado (12 × IAS = € 6.445,56)",
+        "sim_badge_exempt": "Exención Legal Válida",
+        "sim_official_deadlines_title": "Plazos Oficiales de la Seguridad Social (Obligatorios)",
+        "sim_deadline_declaration": "📅 Declaración Trimestral: Presentación obligatoria hasta el último día de Enero, Abril, Julio y Octubre en la Seguridad Social Direta.",
+        "sim_deadline_payment": "💳 Ventana de Pago: Mensualmente, entre los días 10 y 20 del mes siguiente (ej.: cuota de Enero abonada entre el 10 y el 20 de Febrero)."
+    },
+    "en": {
+        "niss_title": "Social Security & MIRA Journey",
+        "niss_menu_desc": "NISS, Quarterly Declaration, Contribution Simulator and Integration Hacks in Portugal.",
+        "menu_get_niss": "Get NISS Number",
+        "menu_get_niss_sub": "Official step-by-step and paperwork guide to obtain your NISS.",
+        "menu_decl_trimestral": "Quarterly Declaration SS",
+        "menu_decl_trimestral_sub": "Official guide on how to report Green Receipt income on Social Security Direct.",
+        "menu_simulador_ss": "Social Security Simulator",
+        "menu_simulador_ss_sub": "Calculate your monthly contribution with optional -25% to +25% adjustments.",
+        "menu_lifehacks": "Life Hacks & Integration Tips",
+        "menu_lifehacks_sub": "1st Year Exemption, PB4/SNS Health Agreement, Proof of Address & Tax Hacks.",
+        "menu_supports": "Social Supports (Benefits)",
+        "menu_supports_sub": "Check allowances, unemployment benefits, sickness, RSI and more.",
+        "back_to_menu": "Back to Menu",
+        "support_steps_title": "Step-by-Step Application Guide",
+        "support_docs_title": "Required Documents",
+        "support_apply_title": "Where & How to Apply",
+        "support_list_title": "Social Supports Catalog",
+        "support_list_sub": "Select a benefit to view the step-by-step procedure and where to apply.",
+        "sim_title": "Social Security Contribution Simulator",
+        "sim_subtitle": "Self-Employed & Green Receipts Assessment (DL 110/2009 - 2026)",
+        "sim_revenue_label": "Total Quarterly Gross Invoiced Amount (€):",
+        "sim_revenue_desc": "Total sum of all invoices/green receipts issued in the 3 months of the prior quarter.",
+        "sim_activity_label": "Professional Activity Category:",
+        "sim_act_services": "💼 Service Provision (70%)",
+        "sim_act_services_sub": "Liberal Professions, Healthcare, IT, Consulting, Engineering",
+        "sim_act_sales": "🛍️ Sales & Hospitality (20%)",
+        "sim_act_sales_sub": "Goods Trade, Hotels, Short-Term Rentals & Restaurants",
+        "sim_health_note": "⚖️ Statutory Note (CRC Art. 151): Medical and healthcare professionals fall under services with a 70% coefficient.",
+        "sim_toggles_title": "Exemptions & Special Conditions",
+        "sim_first_year_label": "First year registered with Social Security (New Business Activity)?",
+        "sim_first_year_desc": "Entitled to optional full exemption during the first 12 consecutive months of activity.",
+        "sim_tco_label": "Concurrently employed under an employment contract (Dual Status)?",
+        "sim_tco_salary_label": "Gross Monthly Salary from Employment Contract (€):",
+        "sim_tco_salary_desc": "Cumulative exemption test (CRC Art. 157): Employed salary ≥ 1 IAS (€ 537.13) AND Freelance relevant income < 4 IAS (€ 2,148.52).",
+        "sim_variation_label": "Quarterly Base Adjustment Option (-25% to +25%):",
+        "sim_variation_desc": "Select adjustment in 5% increments over the statutory average monthly base.",
+        "sim_tax_rate_label": "Statutory Contribution Rate (CRC Art. 168):",
+        "sim_rate_ti": "21.4% — Self-Employed in General",
+        "sim_rate_eni": "25.2% — Sole Proprietorship (ENI)",
+        "sim_res_title": "Social Security Simulation Results",
+        "sim_res_monthly": "Monthly Fixed Contribution (payable for 3 months):",
+        "sim_res_declared": "Gross Quarterly Invoiced:",
+        "sim_res_relevant_avg": "Average Monthly Relevant Income (1/3):",
+        "sim_res_contributory_base": "Fixed Contributory Base:",
+        "sim_res_quarterly_total": "Total Quarterly Commitment (3 Payments):",
+        "sim_badge_min": "Statutory Minimum Floor (€ 20.00/mo)",
+        "sim_badge_ceiling": "Statutory Maximum Cap Applied (12 × IAS = € 6,445.56)",
+        "sim_badge_exempt": "Full Statutory Exemption Granted",
+        "sim_official_deadlines_title": "Official Social Security Statutory Deadlines",
+        "sim_deadline_declaration": "📅 Quarterly Declaration: Mandatory submission by the last day of January, April, July, and October via Social Security Direct.",
+        "sim_deadline_payment": "💳 Payment Window: Monthly, between the 10th and 20th of the following month (e.g., January contribution paid between February 10th and 20th)."
+    },
+    "fr": {
+        "niss_title": "Sécurité Sociale & Parcours MIRA",
+        "niss_menu_desc": "NISS, Déclaration Trimestrielle, Simulateur de Cotisation et Astuces pour Expatriés au Portugal.",
+        "menu_get_niss": "Obtenir le Numéro NISS",
+        "menu_get_niss_sub": "Guide officiel étape par étape et documents requis pour votre NISS.",
+        "menu_decl_trimestral": "Déclaration Trimestrielle SS",
+        "menu_decl_trimestral_sub": "Procédure officielle pour déclarer vos revenus d'indépendant sur SS Direta.",
+        "menu_simulador_ss": "Simulateur de Cotisation SS",
+        "menu_simulador_ss_sub": "Calculez votre cotisation mensuelle avec option de variation de -25% à +25%.",
+        "menu_lifehacks": "Life Hacks & Astuces d'Intégration",
+        "menu_lifehacks_sub": "Exonération 1ère année, Accords de Santé, Justificatif de Domicile et Fiscalité.",
+        "menu_supports": "Aides Sociales (Prestations)",
+        "menu_supports_sub": "Consultez allocations familiales, chômage, maladie, RSI et autres.",
+        "back_to_menu": "Retour au Menu",
+        "support_steps_title": "Procédure Étape par Étape",
+        "support_docs_title": "Pièces Justificatives",
+        "support_apply_title": "Où et Comment Déposer",
+        "support_list_title": "Catalogue des Aides Sociales",
+        "support_list_sub": "Sélectionnez une prestation pour voir la procédure détaillée.",
+        "sim_title": "Simulateur de Cotisation à la Sécurité Sociale",
+        "sim_subtitle": "Calcul pour Travailleurs Indépendants & Reçus Verts (DL 110/2009 - 2026)",
+        "sim_revenue_label": "Chiffre d'Affaires Brut Trimestriel (€):",
+        "sim_revenue_desc": "Total des factures/reçus émis au cours des 3 mois du trimestre civil précédent.",
+        "sim_activity_label": "Catégorie d'Activité Professionnelle:",
+        "sim_act_services": "💼 Prestations de Services (70%)",
+        "sim_act_services_sub": "Professions Libérales, Santé, Informatique, Conseil, Ingénierie",
+        "sim_act_sales": "🛍️ Vente de Biens & Restauration (20%)",
+        "sim_act_sales_sub": "Commerce, Hôtellerie, Hébergement Touristique et Restauration",
+        "sim_health_note": "⚖️ Note Légale (Art. 151 du CRC): Les professions médicales et libérales relèvent des prestations de services avec un coefficient de 70%.",
+        "sim_toggles_title": "Exonérations et Régimes Dérogatoires",
+        "sim_first_year_label": "Première année d'affiliation à la Sécurité Sociale (Début d'Activité)?",
+        "sim_first_year_desc": "Droit à une exonération facultative pendant les 12 premiers mois consécutifs.",
+        "sim_tco_label": "Cumul avec une activité salariée sous contrat de travail?",
+        "sim_tco_salary_label": "Salaire Brut Mensuel de l'Emploi Salarié (€):",
+        "sim_tco_salary_desc": "Critères d'exonération cumulatifs (Art. 157 du CRC): Salaire salarié ≥ 1 IAS (€ 537,13) ET Revenu pertinent indépendant < 4 IAS (€ 2.148,52).",
+        "sim_variation_label": "Option d'Ajustement Trimestriel (-25% à +25%):",
+        "sim_variation_desc": "Modulation par paliers de 5% sur l'assiette mensuelle moyenne.",
+        "sim_tax_rate_label": "Taux de Cotisation Légal (Art. 168 du CRC):",
+        "sim_rate_ti": "21,4% — Travailleur Indépendant Général",
+        "sim_rate_eni": "25,2% — Entreprise Individuelle (ENI)",
+        "sim_res_title": "Résultats de la Simulation SS",
+        "sim_res_monthly": "Cotisation Mensuelle Fixe à Régler (pendant 3 mois):",
+        "sim_res_declared": "Revenu Brut Déclaré:",
+        "sim_res_relevant_avg": "Revenu Pertinent Mensuel Moyen (1/3):",
+        "sim_res_contributory_base": "Assiette de Cotisation Fixée:",
+        "sim_res_quarterly_total": "Total du Trimestre (3 Mensualités):",
+        "sim_badge_min": "Cotisation Minimale Obligatoire (€ 20,00/mois)",
+        "sim_badge_ceiling": "Plafond Légal Atteint (12 × IAS = € 6.445,56)",
+        "sim_badge_exempt": "Exonération Légale Accordée",
+        "sim_official_deadlines_title": "Calendrier Officiel de la Sécurité Sociale (Impératif)",
+        "sim_deadline_declaration": "📅 Déclaration Trimestrielle: Dépôt obligatoire avant le dernier jour de Janvier, Avril, Juillet et Octobre sur Segurança Social Direta.",
+        "sim_deadline_payment": "💳 Fenêtre de Paiement: Chaque mois, entre le 10 et le 20 du mois suivant (ex.: cotisation de Janvier payée entre le 10 et le 20 Février)."
     }
 };
 
@@ -190,45 +417,15 @@ const SOCIAL_SUPPORTS: Record<string, Record<'pt' | 'en', SupportDetail>> = {
 };
 
 export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSelectTemplate }) => {
-    const [flow, setFlow] = useState<'menu' | 'niss' | 'decl_trimestral' | 'simulador_ss' | 'lifehacks' | 'supports'>('menu');
+    const [flow, setFlow] = useState<'menu' | 'niss' | 'decl_trimestral' | 'lifehacks' | 'supports'>('menu');
     const [step, setStep] = useState(1);
     const [workerType, setWorkerType] = useState<string>('');
     const [selectedSupport, setSelectedSupport] = useState<string>('');
 
-    // Simulator Interactive State
-    const [simRevenue, setSimRevenue] = useState<number>(3000);
-    const [simActivity, setSimActivity] = useState<'servicos' | 'vendas' | 'saude_producao'>('servicos');
-    const [simAdjustment, setSimAdjustment] = useState<number>(0); // -0.25, 0, 0.25
-    const [simTaxRate, setSimTaxRate] = useState<number>(0.214); // 0.214 (21.4%), 0.252 (25.2%)
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-    const lang: 'pt' | 'en' = (language?.toLowerCase() === 'en' ? 'en' : 'pt');
-
-    // 🎯 MIRA TELEMETRIA: Contar entrada na página do Simulador SS
-    React.useEffect(() => {
-        if (flow === 'simulador_ss') {
-            let userId = 'guest';
-            try {
-                const currentUserStr = localStorage.getItem('mira_user');
-                if (currentUserStr) {
-                    const u = JSON.parse(currentUserStr);
-                    if (u && u.id) userId = u.id;
-                }
-            } catch (e) {}
-            analytics.track('use_simulator', userId, 'Segurança Social', {
-                simulatorId: 'ss_niss_contribution',
-                simulatorName: 'Simulador de Contribuição SS'
-            });
-        }
-    }, [flow]);
-
-    // Simulator Calculations
-    const activityCoeff = simActivity === 'servicos' ? 0.70 : simActivity === 'vendas' ? 0.20 : 0.50;
-    const relevantQuarterlyRevenue = Math.max(0, simRevenue) * activityCoeff;
-    const monthlyAverageBase = relevantQuarterlyRevenue / 3;
-    const adjustedMonthlyBase = monthlyAverageBase * (1 + simAdjustment);
-    const computedMonthlyContrib = Math.max(20, adjustedMonthlyBase * simTaxRate);
-    const computedQuarterlyTotal = computedMonthlyContrib * 3;
+    const rawLang = language?.toLowerCase() || 'pt';
+    const lang: Lang = rawLang === 'br' ? 'br' : rawLang === 'es' ? 'es' : rawLang === 'en' ? 'en' : rawLang === 'fr' ? 'fr' : 'pt';
 
     const handleBack = () => {
         if (flow !== 'menu') {
@@ -299,7 +496,7 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                     <div className="flex items-center gap-1">
                         <Sparkles size={12} className="text-blue-400 animate-pulse" />
                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20">
-                            ✦ {flow === 'menu' ? 'MENU' : flow === 'decl_trimestral' ? 'DECLARAÇÃO SS' : flow === 'simulador_ss' ? 'SIMULADOR SS' : flow === 'lifehacks' ? 'LIFE HACKS' : flow === 'niss' ? `NISS ${step}/2` : 'APOIOS'}
+                            ✦ {flow === 'menu' ? 'MENU' : flow === 'decl_trimestral' ? 'DECLARAÇÃO SS' : flow === 'lifehacks' ? 'LIFE HACKS' : flow === 'niss' ? `NISS ${step}/2` : 'APOIOS'}
                         </span>
                     </div>
                 </div>
@@ -335,17 +532,8 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                         </div>
                     )}
 
-                    {flow === 'simulador_ss' && (
-                        <div className="animate-in slide-in-from-bottom-2 duration-400">
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">
-                                Simulador de Contribuição SS
-                            </h2>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
-                                Calcule em tempo real o valor mensal a pagar com os coeficientes de variação oficiais.
-                            </p>
-                        </div>
-                    )}
-
+                    
+                    {/* ════ FLOW LIFE HACKS ═══════════════════════════════════════════ */}
                     {flow === 'lifehacks' && (
                         <div className="animate-in slide-in-from-bottom-2 duration-400">
                             <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">
@@ -424,25 +612,6 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                     </p>
                                 </div>
                                 <ChevronRight className="text-slate-300 group-hover:text-indigo-500 transition-colors" size={20} />
-                            </button>
-
-                            {/* Option 3: Simulador SS */}
-                            <button
-                                onClick={() => { setFlow('simulador_ss'); }}
-                                className="group w-full bg-white border border-slate-100 rounded-[2.25rem] p-6 text-left transition-all duration-500 hover:border-amber-400/30 hover:shadow-2xl hover:shadow-amber-500/5 active:scale-[0.98] flex items-center gap-4"
-                            >
-                                <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-100 text-amber-500 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
-                                    🧮
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight leading-tight group-hover:text-amber-500 transition-colors">
-                                        {localT('menu_simulador_ss')}
-                                    </h4>
-                                    <p className="text-[11px] text-slate-400 font-medium mt-1 leading-normal">
-                                        {localT('menu_simulador_ss_sub')}
-                                    </p>
-                                </div>
-                                <ChevronRight className="text-slate-300 group-hover:text-amber-500 transition-colors" size={20} />
                             </button>
 
                             {/* Option 4: Life Hacks & Dicas de Integração */}
@@ -582,211 +751,9 @@ export const NissWizard: React.FC<NissWizardProps> = ({ language, onBack, onSele
                                 </div>
                             </div>
 
-                            {/* Button to Open Simulator */}
-                            <button
-                                onClick={() => setFlow('simulador_ss')}
-                                className="w-full py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-indigo-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
-                            >
-                                <Calculator size={18} />
-                                Abrir Simulador Interativo de Contribuição
-                            </button>
                         </div>
                     )}
-
-                    {/* ════ FLOW SIMULADOR SEGURANÇA SOCIAL ═════════════════════════ */}
-                    {flow === 'simulador_ss' && (
-                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                            {/* Input Form Card */}
-                            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 font-black">
-                                            <Calculator size={20} />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">
-                                                Simulador de Contribuição Segurança Social
-                                            </h3>
-                                            <p className="text-xs text-slate-500 font-bold">Cálculo de Recibos Verdes & Trabalhadores Independentes (2026)</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full border border-emerald-300">
-                                        DGSS 2026
-                                    </span>
-                                </div>
-
-                                {/* Revenue Input */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
-                                        Rendimento Bruto Total do Trimestre (€):
-                                    </label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-black text-lg">€</span>
-                                        <input
-                                            type="number"
-                                            value={simRevenue}
-                                            onChange={(e) => setSimRevenue(Number(e.target.value))}
-                                            placeholder="Ex: 3000"
-                                            className="w-full pl-10 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-slate-900 font-black text-lg focus:ring-2 focus:ring-[#FF8C00] focus:border-[#FF8C00] focus:outline-none transition-all"
-                                        />
-                                    </div>
-                                    <p className="text-[11px] font-medium text-slate-600">Soma de todas as faturas/recibos emitidos nos 3 meses do trimestre anterior.</p>
-                                </div>
-
-                                {/* Activity Type */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
-                                        Tipo de Atividade Profissional:
-                                    </label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                                        <button
-                                            onClick={() => setSimActivity('servicos')}
-                                            className={`p-4 rounded-2xl border text-left text-xs font-black transition-all flex flex-col justify-between ${
-                                                simActivity === 'servicos'
-                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
-                                            }`}
-                                        >
-                                            <span className="text-sm mb-1">💼 Prestação de Serviços</span>
-                                            <span className={`text-[10px] font-bold ${simActivity === 'servicos' ? 'text-indigo-100' : 'text-slate-500'}`}>70% Base de Incidência</span>
-                                        </button>
-                                        <button
-                                            onClick={() => setSimActivity('vendas')}
-                                            className={`p-4 rounded-2xl border text-left text-xs font-black transition-all flex flex-col justify-between ${
-                                                simActivity === 'vendas'
-                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
-                                            }`}
-                                        >
-                                            <span className="text-sm mb-1">🛍️ Vendas / Comércio</span>
-                                            <span className={`text-[10px] font-bold ${simActivity === 'vendas' ? 'text-indigo-100' : 'text-slate-500'}`}>20% Base de Incidência</span>
-                                        </button>
-                                        <button
-                                            onClick={() => setSimActivity('saude_producao')}
-                                            className={`p-4 rounded-2xl border text-left text-xs font-black transition-all flex flex-col justify-between ${
-                                                simActivity === 'saude_producao'
-                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
-                                            }`}
-                                        >
-                                            <span className="text-sm mb-1">🩺 Saúde & Produção</span>
-                                            <span className={`text-[10px] font-bold ${simActivity === 'saude_producao' ? 'text-indigo-100' : 'text-slate-500'}`}>50% Base de Incidência</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Adjustment Coeff */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
-                                        Opção de Ajuste de Variação (Trimestral):
-                                    </label>
-                                    <div className="grid grid-cols-3 gap-2.5">
-                                        <button
-                                            onClick={() => setSimAdjustment(-0.25)}
-                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
-                                                simAdjustment === -0.25
-                                                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-lg shadow-emerald-500/25 scale-[1.02]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
-                                            }`}
-                                        >
-                                            📉 -25% (Reduzir)
-                                        </button>
-                                        <button
-                                            onClick={() => setSimAdjustment(0)}
-                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
-                                                simAdjustment === 0
-                                                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-lg shadow-indigo-500/25 scale-[1.02]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
-                                            }`}
-                                        >
-                                            ⚖️ 0% (Padrão)
-                                        </button>
-                                        <button
-                                            onClick={() => setSimAdjustment(0.25)}
-                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
-                                                simAdjustment === 0.25
-                                                    ? 'bg-violet-600 text-white border-violet-700 shadow-lg shadow-violet-500/25 scale-[1.02]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
-                                            }`}
-                                        >
-                                            📈 +25% (Aumentar)
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Tax Rate */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
-                                        Taxa Contributiva Aplicável:
-                                    </label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                        <button
-                                            onClick={() => setSimTaxRate(0.214)}
-                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
-                                                simTaxRate === 0.214
-                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-lg scale-[1.01]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
-                                            }`}
-                                        >
-                                            21,4% — Trabalhador Independente
-                                        </button>
-                                        <button
-                                            onClick={() => setSimTaxRate(0.252)}
-                                            className={`p-3.5 rounded-2xl border text-center text-xs font-black transition-all ${
-                                                simTaxRate === 0.252
-                                                    ? 'bg-slate-900 text-white border-slate-950 shadow-lg scale-[1.01]'
-                                                    : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
-                                            }`}
-                                        >
-                                            25,2% — Empresário Nome Individual (ENI)
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Result Card — Premium MIRA Theme */}
-                            <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-5">
-                                <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                                    <span className="text-xs font-black uppercase tracking-widest text-[#FF8C00] flex items-center gap-2">
-                                        <Calculator size={16} /> Resultado da Simulação SS
-                                    </span>
-                                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-3 py-1 rounded-full border border-emerald-500/30">
-                                        Fórmula Oficial 2026
-                                    </span>
-                                </div>
-
-                                <div className="space-y-1">
-                                    <p className="text-xs text-slate-300 font-bold uppercase tracking-wider">
-                                        Contribuição Mensal Fixa a Pagar (durante 3 meses):
-                                    </p>
-                                    <p className="text-4xl font-black text-[#FF8C00] tracking-tight">
-                                        € {computedMonthlyContrib.toFixed(2)} <span className="text-sm text-slate-400 font-bold">/ mês</span>
-                                    </p>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4 pt-3 text-xs border-t border-white/10">
-                                    <div className="p-3.5 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Rendimento Relevante Apurado:</p>
-                                        <p className="text-lg font-black text-white mt-0.5">€ {relevantQuarterlyRevenue.toFixed(2)}</p>
-                                    </div>
-                                    <div className="p-3.5 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Total do Trimestre (3 Meses):</p>
-                                        <p className="text-lg font-black text-emerald-400 mt-0.5">€ {computedQuarterlyTotal.toFixed(2)}</p>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-xs text-slate-200 space-y-1.5">
-                                    <p className="font-black text-white flex items-center gap-1.5">
-                                        <span>💡</span> Calendário de Pagamento Obrigatório:
-                                    </p>
-                                    <p className="text-slate-300 leading-relaxed">
-                                        O pagamento deve ser efetuado mensalmente entre os dias <strong className="text-amber-400 font-bold">10 e 20</strong> do mês seguinte (ex: contribuição de Janeiro paga entre 10 e 20 de Fevereiro).
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
+                    
                     {/* ════ FLOW LIFE HACKS ═══════════════════════════════════════════ */}
                     {flow === 'lifehacks' && (
                         <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">

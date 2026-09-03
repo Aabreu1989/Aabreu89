@@ -132,6 +132,7 @@ export default async function handler(req, res) {
         articleViewsRes,
         pwaLogsRes,
         postsLikesRes,
+        postsRowsRes,
         authLogsCountRes
       ] = await Promise.all([
         getCount('profiles'),
@@ -189,6 +190,7 @@ export default async function handler(req, res) {
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).or('action.eq.read_article,and(action.eq.home_module_click,metadata->>moduleId.eq.learning)').gte('created_at', TELEMETRY_CUTOFF_DATE).or(`user_id.is.null,user_id.not.in.(${ADMIN_USER_IDS.join(',')})`),
         supabaseAdmin.from('activity_logs').select('metadata').eq('action', 'pwa_install').gte('created_at', TELEMETRY_CUTOFF_DATE).or(`user_id.is.null,user_id.not.in.(${ADMIN_USER_IDS.join(',')})`),
         supabaseAdmin.from('post_votes').select('id', { count: 'exact', head: true }).eq('vote_type', 'like'),
+        supabaseAdmin.from('posts').select('likes, likes_count'),
         supabaseAdmin.from('activity_logs').select('id', { count: 'exact', head: true }).gte('created_at', TELEMETRY_CUTOFF_DATE).not('user_id', 'is', null).not('user_id', 'in', `(${ADMIN_USER_IDS.join(',')})`)
       ]);
 
@@ -202,7 +204,9 @@ export default async function handler(req, res) {
         });
       }
 
-      const totalLikesSum = postsLikesRes?.count || 0;
+      const postsBaselineLikes = (postsRowsRes?.data || []).reduce((acc, p) => acc + (p.likes ?? p.likes_count ?? 0), 0);
+      const postVotesLikesCount = postsLikesRes?.count || 0;
+      const totalLikesSum = postsBaselineLikes + postVotesLikesCount;
 
       const docDownloadsCount = Math.max(userDocsRes.count || 0, docActivityRes.count || 0);
 
@@ -475,7 +479,7 @@ export default async function handler(req, res) {
     // ── POST: delete-user ───────────────────────────────────────────────────
     if (action === 'delete-user') {
       if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-      const { userId } = req.body;
+      const { userId, email, block } = req.body;
       if (!userId) return res.status(400).json({ error: 'userId em falta.' });
 
       await Promise.allSettled([
@@ -488,10 +492,36 @@ export default async function handler(req, res) {
         supabaseAdmin.from('saved_posts').delete().eq('user_id', userId),
         supabaseAdmin.from('profile_badges').delete().eq('user_id', userId),
         supabaseAdmin.from('community_stats').delete().eq('user_id', userId),
+        supabaseAdmin.from('chat_messages').delete().eq('user_id', userId),
+        supabaseAdmin.from('chat_sessions').delete().eq('user_id', userId),
+        supabaseAdmin.from('user_documents').delete().eq('user_id', userId),
+        supabaseAdmin.from('activity_logs').delete().eq('user_id', userId),
         supabaseAdmin.from('profiles').delete().eq('id', userId),
       ]);
-      const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
-      if (authError && authError.message !== 'User not found') throw authError;
+
+      try {
+        await supabaseAdmin.from('profiles').delete().eq('id', userId);
+      } catch (pErr) {
+        console.warn('[MIRA ADMIN] Aviso ao remover perfil:', pErr?.message || pErr);
+      }
+
+      try {
+        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+        if (authError && authError.message !== 'User not found') {
+          console.warn('[MIRA ADMIN] Aviso ao remover auth user:', authError.message);
+        }
+      } catch (authErr) {
+        console.warn('[MIRA ADMIN] Exceção ao remover auth user:', authErr?.message || authErr);
+      }
+
+      if (block && email) {
+        try {
+          await supabaseAdmin.from('denied_emails').insert([{ email: String(email).toLowerCase().trim() }]);
+        } catch (deniedErr) {
+          console.warn('[MIRA ADMIN] Aviso ao registar denied_emails:', deniedErr?.message || deniedErr);
+        }
+      }
+
       return res.status(200).json({ success: true, message: 'Utilizador eliminado com sucesso.' });
     }
 

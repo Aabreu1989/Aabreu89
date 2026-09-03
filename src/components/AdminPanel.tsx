@@ -992,7 +992,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                                 <Award size={14} />
                                                             </button>
                                                             <button
-                                                                onClick={() => handleAction(() => adminService.deleteUser(u.id, u.email, true), `del-${u.id}`, () => setUsers(prev => prev.filter(x => x.id !== u.id)))}
+                                                                onClick={() => confirmAction(`Tem a certeza que deseja eliminar o utilizador ${u.name || u.email}? Esta ação é irreversível e remove todos os dados associados.`) && handleAction(() => adminService.deleteUser(u.id, u.email, true), `del-${u.id}`, () => setUsers(prev => prev.filter(x => x.id !== u.id)))}
                                                                 title="Eliminar"
                                                                 className="p-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/15 hover:bg-red-500 hover:text-white transition-all"
                                                             >
@@ -1079,7 +1079,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                                     <Award size={14} />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleAction(() => adminService.deleteUser(u.id, u.email, true), `del-${u.id}`, () => setUsers(prev => prev.filter(x => x.id !== u.id)))}
+                                                    onClick={() => confirmAction(`Tem a certeza que deseja eliminar o utilizador ${u.name || u.email}? Esta ação é irreversível e remove todos os dados associados.`) && handleAction(() => adminService.deleteUser(u.id, u.email, true), `del-${u.id}`, () => setUsers(prev => prev.filter(x => x.id !== u.id)))}
                                                     className="p-3 rounded-2xl bg-red-500/10 text-red-400 border border-red-500/15 hover:bg-red-500 hover:text-white transition-all"
                                                 >
                                                     <Trash2 size={14} />

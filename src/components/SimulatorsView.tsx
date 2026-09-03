@@ -11,6 +11,8 @@ import { NORMATIVE_2026 } from '../config/normativeRules2026';
 import { TaxCalculationService } from '../services/taxCalculationService';
 import { SocialSecurityCalculationService } from '../services/socialSecurityCalculationService';
 import { LegalDeadlineService, PROCEDIMENTOS_CATALOGO, ProcedimentoTipo } from '../services/legalDeadlineService';
+import { RetirementWizard } from './RetirementWizard';
+import { SocialSecuritySimulator } from './SocialSecuritySimulator';
 
 interface SimulatorsViewProps {
   language: string;
@@ -27,10 +29,12 @@ const translations: Record<string, Record<string, string>> = {
     subtitle: 'Métricas e Indicadores Financeiros Oficiais (2026)',
     tab_1_salary: '💰 1. Salário Líquido',
     tab_2_recibos: '💼 2. Recibos Verdes',
-    tab_3_cost: '🗺️ 3. Custo de Vida',
-    tab_4_housing: '🏠 4. Proteção à Habitação',
-    tab_5_aima: '🩺 5. Requisitos AIMA',
-    tab_6_business: '🏢 6. Pequeno Empreendedor',
+    tab_3_ss: '🛡️ 3. Seg. Social (TI)',
+    tab_4_reforma: '🏛️ 4. Reforma & CSI',
+    tab_5_cost: '🗺️ 5. Custo de Vida',
+    tab_6_housing: '🏠 6. Habitação',
+    tab_7_aima: '🩺 7. Requisitos AIMA',
+    tab_8_business: '🏢 8. Empreendedor',
     tab_salary: 'Salário Líquido',
     tab_cost: 'Custo de Vida',
     tab_health: 'Saúde Financeira',
@@ -222,11 +226,13 @@ const translations: Record<string, Record<string, string>> = {
     title: 'MIRA Economic Simulators',
     subtitle: 'Official Financial Metrics & Indicators (2026)',
     tab_1_salary: '💰 1. Net Salary',
-    tab_2_recibos: '💼 2. Freelancer (Recibos Verdes)',
-    tab_3_cost: '🗺️ 3. Cost of Living',
-    tab_4_housing: '🏠 4. Housing Protection',
-    tab_5_aima: '🩺 5. AIMA Requirements',
-    tab_6_business: '🏢 6. Small Business',
+    tab_2_recibos: '💼 2. Green Receipts',
+    tab_3_ss: '🛡️ 3. Social Security',
+    tab_4_reforma: '🏛️ 4. Pension & CSI',
+    tab_5_cost: '🗺️ 5. Cost of Living',
+    tab_6_housing: '🏠 6. Housing',
+    tab_7_aima: '🩺 7. AIMA Health',
+    tab_8_business: '🏢 8. Business',
     tab_salary: 'Net Income',
     tab_cost: 'Cost of Living',
     tab_health: 'Financial Health',
@@ -418,11 +424,13 @@ const translations: Record<string, Record<string, string>> = {
     title: 'Simuladores Económicos MIRA',
     subtitle: 'Métricas e Indicadores Financieros Oficiales (2026)',
     tab_1_salary: '💰 1. Salario Neto',
-    tab_2_recibos: '💼 2. Recibos Verdes (Autónomo)',
-    tab_3_cost: '🗺️ 3. Coste de Vida',
-    tab_4_housing: '🏠 4. Protección de Vivienda',
-    tab_5_aima: '🩺 5. Requisitos AIMA',
-    tab_6_business: '🏢 6. Pequeño Emprendedor y PME',
+    tab_2_recibos: '💼 2. Autónomos',
+    tab_3_ss: '🛡️ 3. Seg. Social',
+    tab_4_reforma: '🏛️ 4. Jubilación & CSI',
+    tab_5_cost: '🗺️ 5. Coste de Vida',
+    tab_6_housing: '🏠 6. Vivienda',
+    tab_7_aima: '🩺 7. Requisitos AIMA',
+    tab_8_business: '🏢 8. Emprendedor',
     tab_salary: 'Salario Neto',
     tab_cost: 'Coste de Vida',
     tab_health: 'Salud Financiera',
@@ -613,11 +621,13 @@ const translations: Record<string, Record<string, string>> = {
     title: 'Simulateurs Économiques MIRA',
     subtitle: 'Indicateurs Financiers Officiels (2026)',
     tab_1_salary: '💰 1. Salaire Net',
-    tab_2_recibos: '💼 2. Recibos Verdes (Indépendant)',
-    tab_3_cost: '🗺️ 3. Coût de la Vie',
-    tab_4_housing: '🏠 4. Protection Logement',
-    tab_5_aima: '🩺 5. Exigences AIMA',
-    tab_6_business: '🏢 6. Petit Entrepreneur & PME',
+    tab_2_recibos: '💼 2. Reçus Verts',
+    tab_3_ss: '🛡️ 3. Sécurité Sociale',
+    tab_4_reforma: '🏛️ 4. Retraite & CSI',
+    tab_5_cost: '🗺️ 5. Coût de la Vie',
+    tab_6_housing: '🏠 6. Logement',
+    tab_7_aima: '🩺 7. Exigences AIMA',
+    tab_8_business: '🏢 8. Entreprise',
     tab_salary: 'Salaire Net',
     tab_cost: 'Coût de la Vie',
     tab_health: 'Santé Financière',
@@ -840,7 +850,17 @@ const DISTRICT_COST_DATA: Record<string, CostProfile> = {
 };
 
 export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onViewChange, initialTab, initialParams, onEarnPoints }) => {
-  const [activeTab, setActiveTab] = useState<'salary_outrem' | 'salary_recibos' | 'cost' | 'housing_protection' | 'aima_health' | 'small_business'>('salary_outrem');
+  type SimulatorTab = 
+    | 'salary_outrem' 
+    | 'salary_recibos' 
+    | 'ss_contributions' 
+    | 'reforma' 
+    | 'cost' 
+    | 'housing_protection' 
+    | 'aima_health' 
+    | 'small_business';
+
+  const [activeTab, setActiveTab] = useState<SimulatorTab>('salary_outrem');
   const [salaryRegime, setSalaryRegime] = useState<'outrem' | 'recibos'>('outrem');
 
   const normLang = (language || 'PT').toUpperCase().split('-')[0];
@@ -856,6 +876,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
       } else if (tabKey === 'recibos' || tabKey === 'salary_recibos') {
         setActiveTab('salary_recibos');
         setSalaryRegime('recibos');
+      } else if (tabKey === 'ss' || tabKey === 'ss_contributions' || tabKey === 'seguranca_social' || tabKey === 'niss_sim') {
+        setActiveTab('ss_contributions');
+      } else if (tabKey === 'reforma' || tabKey === 'retirement' || tabKey === 'aposentadoria' || tabKey === 'csi') {
+        setActiveTab('reforma');
       } else if (tabKey === 'custo_vida' || tabKey === 'cost') {
         setActiveTab('cost');
       } else if (tabKey === 'habitacao' || tabKey === 'housing' || tabKey === 'housing_protection') {
@@ -1234,9 +1258,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
         </div>
       </div>
 
-      {/* ── TAB BAR FOR ALL 6 CORE SIMULATORS (RESPONSIVE GRID — ZERO HORIZONTAL SCROLL) ───────────────────────────── */}
+{/* ── TAB BAR FOR ALL 8 CORE SIMULATORS (RESPONSIVE GRID — ZERO HORIZONTAL SCROLL) ───────────────────────────── */}
       <div className="p-2.5 sm:p-3 bg-white border-b border-slate-200/80 relative z-10 shrink-0 shadow-xs">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 sm:gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5 sm:gap-2">
           {/* Tab 1 */}
           <button
             type="button"
@@ -1263,7 +1287,33 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
             <span className="truncate">{tLocal('tab_2_recibos')}</span>
           </button>
 
-          {/* Tab 3 */}
+          {/* Tab 3: Segurança Social */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('ss_contributions')}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'ss_contributions' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_3_ss')}</span>
+          </button>
+
+          {/* Tab 4: Reforma & CSI */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('reforma')}
+            className={`w-full py-2.5 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-center transition-all duration-200 flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer touch-manipulation border ${
+              activeTab === 'reforma' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm shadow-slate-900/20 ring-2 ring-[#FF8C00]/40' 
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
+            }`}
+          >
+            <span className="truncate">{tLocal('tab_4_reforma')}</span>
+          </button>
+
+          {/* Tab 5: Custo de Vida */}
           <button
             type="button"
             onClick={() => setActiveTab('cost')}
@@ -1273,10 +1323,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
             }`}
           >
-            <span className="truncate">{tLocal('tab_3_cost')}</span>
+            <span className="truncate">{tLocal('tab_5_cost')}</span>
           </button>
 
-          {/* Tab 4 */}
+          {/* Tab 6: Habitação */}
           <button
             type="button"
             onClick={() => setActiveTab('housing_protection')}
@@ -1286,10 +1336,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
             }`}
           >
-            <span className="truncate">{tLocal('tab_4_housing')}</span>
+            <span className="truncate">{tLocal('tab_6_housing')}</span>
           </button>
 
-          {/* Tab 5 */}
+          {/* Tab 7: Requisitos AIMA */}
           <button
             type="button"
             onClick={() => setActiveTab('aima_health')}
@@ -1299,10 +1349,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
             }`}
           >
-            <span className="truncate">{tLocal('tab_5_aima')}</span>
+            <span className="truncate">{tLocal('tab_7_aima')}</span>
           </button>
 
-          {/* Tab 6 */}
+          {/* Tab 8: Pequeno Empreendedor */}
           <button
             type="button"
             onClick={() => setActiveTab('small_business')}
@@ -1312,7 +1362,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/70 hover:border-slate-300'
             }`}
           >
-            <span className="truncate">{tLocal('tab_6_business')}</span>
+            <span className="truncate">{tLocal('tab_8_business')}</span>
           </button>
         </div>
       </div>
@@ -2059,6 +2109,29 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 </div>
 
               </div>
+            </div>
+          )}
+
+          {/* ════ TAB 3: SEGURANÇA SOCIAL (TRABALHADOR INDEPENDENTE) ═════════ */}
+          {activeTab === 'ss_contributions' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <SocialSecuritySimulator
+                language={language}
+                onViewChange={onViewChange}
+              />
+            </div>
+          )}
+
+          {/* ════ TAB 4: REFORMA & CSI (DL 187/2007) ═════════════════════════ */}
+          {activeTab === 'reforma' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <RetirementWizard
+                language={language}
+                onBack={() => setActiveTab('salary_outrem')}
+                onSelectTemplate={(templateId) => {
+                  onViewChange(ViewType.DOCUMENTS, { templateId });
+                }}
+              />
             </div>
           )}
 

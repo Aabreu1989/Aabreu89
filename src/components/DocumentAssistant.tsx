@@ -600,8 +600,8 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-950 transition-colors" />
                         </button>
 
-                        {/* Passo 13: Aposentadoria em Portugal */}
-                        <button onClick={() => setActiveScreen('retirement_local')} className="w-full p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-xl hover:border-amber-450 transition-all group text-left active:scale-[0.98] flex items-center gap-4">
+                        {/* Passo 13: Aposentadoria em Portugal (Módulo de Simuladores) */}
+                        <button onClick={() => onViewChange(ViewType.SIMULATORS, { tab: 'reforma' })} className="w-full p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-xl hover:border-amber-450 transition-all group text-left active:scale-[0.98] flex items-center gap-4">
                             <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform font-bold text-xl">13</div>
                             <div className="flex-1 min-w-0">
                                 <span className="text-[8px] font-black text-amber-600 uppercase tracking-wider bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/10">
@@ -838,7 +838,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
-                />
+                    />
             )}
 
             {activeScreen === 'utente' && (
