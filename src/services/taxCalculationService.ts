@@ -9,6 +9,7 @@
  */
 
 import { NORMATIVE_2026, IrsEscalaoNormativo } from '../config/normativeRules2026';
+import { calculateNetSalary, MaritalStatus, TaxRegion } from './miraSalaryEngine';
 
 export interface SalaryOutremInputs {
   grossSalary: number;
@@ -61,113 +62,55 @@ export class TaxCalculationService {
    * segundo a Circular n.º 1/2026 da Autoridade Tributária.
    */
   public static calculateSalaryOutrem(inputs: SalaryOutremInputs): SalaryOutremResult {
-    const grossSalary = Math.max(0, inputs.grossSalary);
-    const dependents = Math.max(0, inputs.dependents);
-    const region = inputs.fiscalRegion || 'continent';
-    const mealAllowanceDaily = Math.max(0, inputs.mealAllowanceDaily || 0);
-    const mealType = inputs.mealType || 'card';
-    const workDays = Math.max(0, inputs.workDays || 22);
+    const maritalStatusMap: Record<string, MaritalStatus> = {
+      married_1: 'married_1_holder',
+      married_2: 'married_2_holders',
+      single: 'single'
+    };
+    const regionMap: Record<string, TaxRegion> = {
+      continent: 'continente',
+      madeira: 'madeira',
+      azores: 'acores'
+    };
 
-    // 1. Segurança Social (Trabalhador: 11%)
-    const ssRate = NORMATIVE_2026.SOCIAL_SECURITY.TCO_TRABALHADOR;
-    const ssDeduction = grossSalary * ssRate;
+    const res = calculateNetSalary({
+      grossSalary: inputs.grossSalary,
+      maritalStatus: maritalStatusMap[inputs.familyStatus] || 'single',
+      dependentsCount: inputs.dependents || 0,
+      taxRegion: regionMap[inputs.fiscalRegion || 'continent'] || 'continente',
+      mealAllowanceDaily: inputs.mealAllowanceDaily || 0,
+      mealAllowanceType: inputs.mealType || 'card',
+      workingDays: inputs.workDays || 22,
+      irsJovemYear: inputs.isIrsJovem ? inputs.irsJovemYear : 0,
+      duodecimosMode: 'none',
+    });
 
-    // 2. Determinação da Tabela Oficial da AT (2026)
     let tableKey: 'TABELA_I' | 'TABELA_II' | 'TABELA_III' = 'TABELA_I';
     if (inputs.familyStatus === 'married_1') {
-      tableKey = 'TABELA_III'; // Casado, único titular
-    } else if (inputs.familyStatus === 'single' && dependents > 0) {
-      tableKey = 'TABELA_II'; // Não casado com um ou mais dependentes
-    } else {
-      tableKey = 'TABELA_I'; // Não casado sem dependentes ou casado 2 titulares
+      tableKey = 'TABELA_III';
+    } else if (inputs.familyStatus === 'single' && (inputs.dependents || 0) > 0) {
+      tableKey = 'TABELA_II';
     }
 
-    const table = NORMATIVE_2026.IRS_TABLES_2026[tableKey];
-
-    // 3. Enquadramento no Escalão Oficial
-    let selectedEscalao: IrsEscalaoNormativo = table[0];
-    for (const esc of table) {
-      selectedEscalao = esc;
-      if (grossSalary <= esc.limiteSuperior) {
-        break;
-      }
-    }
-
-    // 4. Apuramento da Parcela a Abater Oficial
-    let parcelaAbater = 0;
-    if (selectedEscalao.tipoFormulaParcela === 'dinamica_1') {
-      // Escalão até €1.042: 12,50% × 2,60 × (1.273,85 − R)
-      parcelaAbater = 0.125 * 2.60 * Math.max(0, 1273.85 - grossSalary);
-    } else if (selectedEscalao.tipoFormulaParcela === 'dinamica_2') {
-      // Escalão até €1.108: 15,70% × 1,35 × (1.554,83 − R)
-      parcelaAbater = 0.157 * 1.35 * Math.max(0, 1554.83 - grossSalary);
-    } else {
-      parcelaAbater = selectedEscalao.parcelaFixa || 0;
-    }
-
-    // 5. Parcela adicional por dependente
-    const depDeductionPerUnit = selectedEscalao.parcelaAdicionalPorDependente || 0;
-    const totalDepDeduction = dependents * depDeductionPerUnit;
-
-    // 6. Cálculo da Retenção Bruta antes de benefícios regionais/jovem
-    let irsWithholding = 0;
-    if (selectedEscalao.taxaMarginal > 0) {
-      irsWithholding = (grossSalary * selectedEscalao.taxaMarginal) - parcelaAbater - totalDepDeduction;
-    }
-    irsWithholding = Math.max(0, irsWithholding);
-
-    // 7. Ajuste para Regiões Autónomas (Madeira -20%, Açores -30%)
-    if (region === 'madeira') {
-      irsWithholding = irsWithholding * 0.80;
-    } else if (region === 'azores') {
-      irsWithholding = irsWithholding * 0.70;
-    }
-
-    // 8. Benefício do IRS Jovem (Art. 12.º-B do CIRS)
-    if (inputs.isIrsJovem && inputs.irsJovemYear) {
-      const year = Math.min(10, Math.max(1, inputs.irsJovemYear));
-      const exemptionPct = NORMATIVE_2026.IRS_JOVEM.ISENCOES_POR_ANO[year] || 0.25;
-      irsWithholding = irsWithholding * (1 - exemptionPct);
-    }
-
-    irsWithholding = Math.max(0, Math.round(irsWithholding * 100) / 100);
-
-    // 9. Subsídio de Refeição
-    const mealCap = mealType === 'card' 
-      ? NORMATIVE_2026.MEAL_ALLOWANCE_CAPS.CARD 
-      : NORMATIVE_2026.MEAL_ALLOWANCE_CAPS.CASH;
-    const totalMealAllowance = mealAllowanceDaily * workDays;
-    
-    let mealExempt = 0;
-    let mealTaxed = 0;
-    if (mealAllowanceDaily <= mealCap) {
-      mealExempt = totalMealAllowance;
-      mealTaxed = 0;
-    } else {
-      mealExempt = mealCap * workDays;
-      mealTaxed = (mealAllowanceDaily - mealCap) * workDays;
-    }
-
-    // 10. Salário Líquido Final
-    const netSalary = grossSalary - ssDeduction - irsWithholding + totalMealAllowance;
-    const totalTaxLoad = ssDeduction + irsWithholding;
-    const irsWithholdingEffectiveRate = grossSalary > 0 ? (irsWithholding / grossSalary) * 100 : 0;
-    const totalTaxLoadEffectiveRate = grossSalary > 0 ? (totalTaxLoad / grossSalary) * 100 : 0;
+    const totalTaxLoad = res.socialSecurityEmployee + res.irsWithholdingTax;
+    const totalTaxLoadEffectiveRate = res.grossTotal > 0 
+      ? Math.round((totalTaxLoad / res.grossTotal) * 10000) / 100 
+      : 0;
 
     return {
-      grossSalary,
-      socialSecurityDeduction: Math.round(ssDeduction * 100) / 100,
-      socialSecurityRate: ssRate * 100,
-      irsWithholdingDeduction: irsWithholding,
-      irsWithholdingEffectiveRate: Math.round(irsWithholdingEffectiveRate * 100) / 100,
-      irsWithholdingMarginalRate: selectedEscalao.taxaMarginal * 100,
-      irsEscalaoNumero: selectedEscalao.escalao,
-      mealAllowanceTotal: Math.round(totalMealAllowance * 100) / 100,
-      mealAllowanceExempt: Math.round(mealExempt * 100) / 100,
-      mealAllowanceTaxed: Math.round(mealTaxed * 100) / 100,
-      netSalary: Math.round(netSalary * 100) / 100,
-      totalTaxLoad: Math.round(totalTaxLoad * 100) / 100,
-      totalTaxLoadEffectiveRate: Math.round(totalTaxLoadEffectiveRate * 100) / 100,
+      grossSalary: inputs.grossSalary,
+      socialSecurityDeduction: res.socialSecurityEmployee,
+      socialSecurityRate: 11.0,
+      irsWithholdingDeduction: res.irsWithholdingTax,
+      irsWithholdingEffectiveRate: res.irsEffectiveRate,
+      irsWithholdingMarginalRate: res.breakdown.marginalTaxRate,
+      irsEscalaoNumero: 0,
+      mealAllowanceTotal: res.mealAllowanceTotal,
+      mealAllowanceExempt: res.mealAllowanceExempt,
+      mealAllowanceTaxed: res.mealAllowanceTaxable,
+      netSalary: res.netMonthlyIncome,
+      totalTaxLoad,
+      totalTaxLoadEffectiveRate,
       applicableTable: tableKey,
     };
   }

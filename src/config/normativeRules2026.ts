@@ -41,9 +41,10 @@ export const NORMATIVE_2026 = {
   TWELVE_IAS: 6445.56, // Teto Máximo Mensal de Incidência de Segurança Social
 
   // ─── SUBSÍDIO DE REFEIÇÃO (LIMITES DE ISENÇÃO FISCAL 2026) ───────────────
+  // Portaria n.º 51-B/2026 (Fixação no setor público) e CIRS / CRCSPSS (+70% em cartão/vale refeição)
   MEAL_ALLOWANCE_CAPS: {
-    CASH: 6.00,  // Dinheiro / Transferência Bancária
-    CARD: 9.60,  // Cartão / Vales de Refeição
+    CASH: 6.15,  // Dinheiro / Transferência Bancária (€6,15/dia)
+    CARD: 10.46, // Cartão / Vales de Refeição (€6,15 + 70% = €10,455 -> €10,46/dia)
   },
 
   // ─── IRS JOVEM (ART. 12.º-B DO CIRS) ──────────────────────────────────────

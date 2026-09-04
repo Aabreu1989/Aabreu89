@@ -13,6 +13,14 @@ import { SocialSecurityCalculationService } from '../services/socialSecurityCalc
 import { LegalDeadlineService, PROCEDIMENTOS_CATALOGO, ProcedimentoTipo } from '../services/legalDeadlineService';
 import { RetirementWizard } from './RetirementWizard';
 import { SocialSecuritySimulator } from './SocialSecuritySimulator';
+import { 
+  calculateNetSalary, 
+  DuodecimosMode, 
+  MaritalStatus, 
+  TaxRegion,
+  MEAL_CAP_CASH_2026,
+  MEAL_CAP_CARD_2026
+} from '../services/miraSalaryEngine';
 
 interface SimulatorsViewProps {
   language: string;
@@ -65,8 +73,8 @@ const translations: Record<string, Record<string, string>> = {
     dependents: 'Número de Dependentes',
     region: 'Região Fiscal',
     continent: 'Portugal Continental',
-    madeira: 'Região Aut. da Madeira (-20% IRS)',
-    azores: 'Região Aut. dos Açores (-30% IRS)',
+    madeira: 'Região Aut. da Madeira (Tabelas Regionais 2026)',
+    azores: 'Região Aut. dos Açores (Despacho n.º 1179/2026)',
     irs_jovem: 'Regime IRS Jovem (Art. 12.º-B CIRS)',
     irs_jovem_active: 'Aplicar Benefício IRS Jovem (18-35 Anos)',
     irs_jovem_year: 'Ano do Benefício',
@@ -76,8 +84,18 @@ const translations: Record<string, Record<string, string>> = {
     years_8_10: '8.º ao 10.º Ano (25% Isenção)',
     meal_allowance: 'Subsídio de Alimentação (Diário)',
     meal_type: 'Método de Pagamento',
-    cash: 'Dinheiro / Transferência (Teto Isento 6,00€)',
-    card: 'Cartão de Refeição (Teto Isento 9,60€)',
+    cash: 'Dinheiro / Transferência (Teto Isento 6,15€)',
+    card: 'Cartão de Refeição (Teto Isento 10,46€)',
+    duodecimos_title: 'Regime de Duodécimos (Subsídios de Férias e Natal)',
+    duodecimos_none: 'Sem Duodécimos (Padrão 14 Meses)',
+    duodecimos_half_vac: '50% Subsídio de Férias em 12 Meses',
+    duodecimos_half_xmas: '50% Subsídio de Natal em 12 Meses',
+    duodecimos_half_both: '50% de Férias e Natal em 12 Meses',
+    duodecimos_full_both: '100% de Ambos os Subsídios (12 Meses)',
+    employer_cost_title: 'Custo Total para a Entidade Empregadora',
+    tsu_company: 'TSU Patronal (23,75%)',
+    irs_jovem_badge_saved: 'Desconto IRS Jovem (Poupado)',
+    meal_taxable_warning: 'Atenção: O excedente diário de subsídio de refeição sofrerá retenção de 11% de Segurança Social e IRS.',
     work_days: 'Dias de Trabalho (Mês)',
     results: 'Resultados da Simulação',
     net_salary_total: 'Salário Líquido Mensal Estimado',
@@ -263,8 +281,8 @@ const translations: Record<string, Record<string, string>> = {
     dependents: 'Number of Dependents',
     region: 'Tax Region',
     continent: 'Mainland Portugal',
-    madeira: 'Madeira Aut. Region (-20% IRS)',
-    azores: 'Azores Aut. Region (-30% IRS)',
+    madeira: 'Madeira Aut. Region (Official Tables 2026)',
+    azores: 'Azores Aut. Region (Order 1179/2026)',
     irs_jovem: 'IRS Jovem Regime (Art. 12-B CIRS)',
     irs_jovem_active: 'Apply IRS Jovem Benefit (Ages 18-35)',
     irs_jovem_year: 'Benefit Year',
@@ -274,8 +292,18 @@ const translations: Record<string, Record<string, string>> = {
     years_8_10: '8th to 10th Year (25% Exemption)',
     meal_allowance: 'Meal Allowance (Daily)',
     meal_type: 'Payment Method',
-    cash: 'Cash / Transfer (€6.00 Tax-Free Cap)',
-    card: 'Meal Card (€9.60 Tax-Free Cap)',
+    cash: 'Cash / Transfer (€6.15 Tax-Free Cap)',
+    card: 'Meal Card (€10.46 Tax-Free Cap)',
+    duodecimos_title: 'Holiday & Christmas Bonus Installments (Duodécimos)',
+    duodecimos_none: 'Standard 14 Months (No Duodécimos)',
+    duodecimos_half_vac: '50% Vacation Bonus across 12 Months',
+    duodecimos_half_xmas: '50% Christmas Bonus across 12 Months',
+    duodecimos_half_both: '50% of Both Bonuses across 12 Months',
+    duodecimos_full_both: '100% of Both Bonuses across 12 Months',
+    employer_cost_title: 'Total Cost to Employer',
+    tsu_company: 'Employer Social Security (23.75%)',
+    irs_jovem_badge_saved: 'IRS Jovem Benefit Saved',
+    meal_taxable_warning: 'Warning: The daily meal allowance excess is subject to 11% Social Security and IRS tax.',
     work_days: 'Working Days (Month)',
     results: 'Simulation Results',
     net_salary_total: 'Estimated Monthly Net Salary',
@@ -461,8 +489,8 @@ const translations: Record<string, Record<string, string>> = {
     dependents: 'Número de Dependientes',
     region: 'Región Fiscal',
     continent: 'Portugal Continental',
-    madeira: 'Región Autónoma de Madeira (-20% IRS)',
-    azores: 'Región Autónoma de Azores (-30% IRS)',
+    madeira: 'Región Autónoma de Madeira (Tablas Regionales 2026)',
+    azores: 'Región Autónoma de Azores (Orden 1179/2026)',
     irs_jovem: 'Régimen IRS Jovem (Art. 12-B CIRS)',
     irs_jovem_active: 'Aplicar Beneficio IRS Jovem (18-35 Años)',
     irs_jovem_year: 'Año del Beneficio',
@@ -472,8 +500,18 @@ const translations: Record<string, Record<string, string>> = {
     years_8_10: '8.º a 10.º Año (25% Exención)',
     meal_allowance: 'Subsidio de Alimentación (Diario)',
     meal_type: 'Método de Pago',
-    cash: 'Efectivo / Transferencia (Tope Exento 6,00€)',
-    card: 'Tarjeta de Comida (Tope Exento 9,60€)',
+    cash: 'Efectivo / Transferencia (Tope Exento 6,15€)',
+    card: 'Tarjeta de Comida (Tope Exento 10,46€)',
+    duodecimos_title: 'Régimen de Duodécimas (Pagas Extraordinarias)',
+    duodecimos_none: 'Sin Duodécimas (Estándar 14 Meses)',
+    duodecimos_half_vac: '50% Paga de Vacaciones en 12 Meses',
+    duodecimos_half_xmas: '50% Paga de Navidad en 12 Meses',
+    duodecimos_half_both: '50% de Ambas Pagas en 12 Meses',
+    duodecimos_full_both: '100% de Ambas Pagas (12 Meses)',
+    employer_cost_title: 'Coste Total para la Empresa',
+    tsu_company: 'Seguridad Social Empresa (23,75%)',
+    irs_jovem_badge_saved: 'Ahorro IRS Jovem',
+    meal_taxable_warning: 'Atención: El exceso diario de subsidio de comida tributará el 11% de Seguridad Social e IRS.',
     work_days: 'Días de Trabajo (Mes)',
     results: 'Resultados de la Simulación',
     net_salary_total: 'Salario Neto Mensual Estimado',
@@ -658,8 +696,8 @@ const translations: Record<string, Record<string, string>> = {
     dependents: 'Nombre de Dépendants',
     region: 'Région Fiscale',
     continent: 'Portugal Continental',
-    madeira: 'Région Autonome de Madère (-20% IRS)',
-    azores: 'Région Autonome des Açores (-30% IRS)',
+    madeira: 'Région Autonome de Madère (Barèmes Régionaux 2026)',
+    azores: 'Région Autonome des Açores (Arrêté 1179/2026)',
     irs_jovem: 'Régime IRS Jovem (Art. 12-B CIRS)',
     irs_jovem_active: 'Appliquer le Bénéfice IRS Jovem (18-35 Ans)',
     irs_jovem_year: 'Année du Bénéfice',
@@ -669,8 +707,18 @@ const translations: Record<string, Record<string, string>> = {
     years_8_10: '8ème à 10ème Année (25% Exonération)',
     meal_allowance: 'Indemnité Repas (Journalière)',
     meal_type: 'Mode de Paiement',
-    cash: 'Espèces / Virement (Plafond Exonéré 6,00€)',
-    card: 'Carte Repas (Plafond Exonéré 9,60€)',
+    cash: 'Espèces / Virement (Plafond Exonéré 6,15€)',
+    card: 'Carte Repas (Plafond Exonéré 10,46€)',
+    duodecimos_title: 'Régime de Douzièmes (Primes Vacances & Noël)',
+    duodecimos_none: 'Sans Douzièmes (Standard 14 Mois)',
+    duodecimos_half_vac: '50% Prime Vacances sur 12 Mois',
+    duodecimos_half_xmas: '50% Prime Noël sur 12 Mois',
+    duodecimos_half_both: '50% des Deux Primes sur 12 Mois',
+    duodecimos_full_both: '100% des Deux Primes (12 Mois)',
+    employer_cost_title: 'Coût Total pour l\'Employeur',
+    tsu_company: 'Sécurité Sociale Patronale (23,75%)',
+    irs_jovem_badge_saved: 'Économie IRS Jovem',
+    meal_taxable_warning: 'Attention: L\'excédent quotidien d\'indemnité repas est soumis à 11% de Sécurité Sociale et IRS.',
     work_days: 'Jours de Travail (Mois)',
     results: 'Résultats de la Simulation',
     net_salary_total: 'Salaire Net Mensuel Estimé',
@@ -929,15 +977,16 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   }, [activeTab, salaryRegime]);
 
   // ─── CONTA DE OUTREM SIMULATOR STATE ──────────────────────────────────────
-  const [grossSalary, setGrossSalary] = useState<number>(1050);
+  const [grossSalary, setGrossSalary] = useState<number>(1500);
   const [familyStatus, setFamilyStatus] = useState<string>('single');
   const [dependents, setDependents] = useState<number>(0);
   const [fiscalRegion, setFiscalRegion] = useState<string>('continent');
-  const [mealAllowance, setMealAllowance] = useState<number>(7.63);
+  const [mealAllowance, setMealAllowance] = useState<number>(10.46);
   const [mealType, setMealType] = useState<string>('card');
   const [workDays, setWorkDays] = useState<number>(22);
   const [isIrsJovem, setIsIrsJovem] = useState<boolean>(false);
   const [irsJovemYear, setIrsJovemYear] = useState<number>(1);
+  const [duodecimosMode, setDuodecimosMode] = useState<DuodecimosMode>('none');
 
   // ─── RECIBOS VERDES SIMULATOR STATE (INDEPENDENT) ─────────────────────────
   const [monthlyInvoice, setMonthlyInvoice] = useState<number>(1500);
@@ -1010,28 +1059,46 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
   // ─── CONTA DE OUTREM CALCULATION LOGIC ────────────────────────────────────
   const calculateSalaryOutrem = () => {
-    const res = TaxCalculationService.calculateSalaryOutrem({
+    const maritalStatusMap: Record<string, MaritalStatus> = {
+      married_1: 'married_1_holder',
+      married_2: 'married_2_holders',
+      single: 'single'
+    };
+    const regionMap: Record<string, TaxRegion> = {
+      continent: 'continente',
+      madeira: 'madeira',
+      azores: 'acores'
+    };
+
+    const res = calculateNetSalary({
       grossSalary,
-      familyStatus: familyStatus as 'single' | 'married_1' | 'married_2',
-      dependents,
-      fiscalRegion: fiscalRegion as 'continent' | 'madeira' | 'azores',
+      maritalStatus: maritalStatusMap[familyStatus] || 'single',
+      dependentsCount: dependents,
+      taxRegion: regionMap[fiscalRegion] || 'continente',
       mealAllowanceDaily: mealAllowance,
-      mealType: mealType as 'cash' | 'card',
-      workDays,
-      isIrsJovem,
-      irsJovemYear,
+      mealAllowanceType: mealType as 'cash' | 'card',
+      workingDays: workDays,
+      irsJovemYear: isIrsJovem ? irsJovemYear : 0,
+      duodecimosMode,
     });
 
     return {
-      netSalary: res.netSalary,
-      ssDeduction: res.socialSecurityDeduction,
-      irsDeduction: res.irsWithholdingDeduction,
+      netSalary: res.netMonthlyIncome,
+      grossTotal: res.grossTotal,
+      ssDeduction: res.socialSecurityEmployee,
+      ssCompany: res.socialSecurityCompany,
+      irsDeduction: res.irsWithholdingTax,
+      irsJovemDiscount: res.breakdown.irsJovemDiscount,
       mealExempt: res.mealAllowanceExempt,
-      mealTaxed: res.mealAllowanceTaxed,
+      mealTaxed: res.mealAllowanceTaxable,
       totalMeal: res.mealAllowanceTotal,
-      totalDeductions: res.totalTaxLoad,
-      effectiveRate: res.totalTaxLoadEffectiveRate,
-      marginalRate: res.irsWithholdingMarginalRate,
+      vacationDuodecimo: res.vacationDuodecimoAmount,
+      christmasDuodecimo: res.christmasDuodecimoAmount,
+      duodecimosAmount: res.duodecimosAmount,
+      totalDeductions: Math.round((res.socialSecurityEmployee + res.irsWithholdingTax) * 100) / 100,
+      effectiveRate: res.irsEffectiveRate,
+      marginalRate: res.breakdown.marginalTaxRate,
+      employerTotalCost: Math.round((res.grossTotal + res.socialSecurityCompany + res.mealAllowanceExempt) * 100) / 100,
     };
   };
 
@@ -1466,6 +1533,27 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 </div>
 
+                {/* Duodécimos Selector */}
+                <div className="space-y-2 border-t border-slate-100 pt-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('duodecimos_title')}
+                    </label>
+                    <span className="text-[9px] font-bold text-slate-400">13.º e 14.º Mês</span>
+                  </div>
+                  <select
+                    value={duodecimosMode}
+                    onChange={(e) => setDuodecimosMode(e.target.value as DuodecimosMode)}
+                    className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                  >
+                    <option value="none">{tLocal('duodecimos_none')}</option>
+                    <option value="half_vacation">{tLocal('duodecimos_half_vac')}</option>
+                    <option value="half_christmas">{tLocal('duodecimos_half_xmas')}</option>
+                    <option value="half_both">{tLocal('duodecimos_half_both')}</option>
+                    <option value="full_both">{tLocal('duodecimos_full_both')}</option>
+                  </select>
+                </div>
+
                 {/* IRS Jovem Section */}
                 <div className="border-t border-slate-100 pt-4 space-y-3">
                   <div className="flex items-center justify-between">
@@ -1476,7 +1564,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           Regime IRS Jovem (Art. 12.º-B CIRS)
                         </label>
                         <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                          Isenção parcial de IRS nos primeiros 10 anos de trabalho (até 35 anos).
+                          Isenção parcial nos primeiros 10 anos de atividade (até 35 anos). Teto anual: 55 × IAS (€ 29.542,15).
                         </p>
                       </div>
                     </div>
@@ -1491,73 +1579,94 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   {isIrsJovem && (
                     <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl space-y-3 animate-in fade-in duration-300">
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[9px] font-black uppercase text-amber-900 text-center">
-                        <div className="p-2 bg-white/70 rounded-xl">
-                          <span className="block text-sm font-black text-amber-600">100%</span>
+                        <div className={`p-2 rounded-xl transition-all ${irsJovemYear === 1 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
+                          <span className={`block text-sm font-black ${irsJovemYear === 1 ? 'text-white' : 'text-amber-600'}`}>100%</span>
                           <span>1.º Ano</span>
                         </div>
-                        <div className="p-2 bg-white/70 rounded-xl">
-                          <span className="block text-sm font-black text-amber-600">75%</span>
+                        <div className={`p-2 rounded-xl transition-all ${irsJovemYear >= 2 && irsJovemYear <= 4 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
+                          <span className={`block text-sm font-black ${irsJovemYear >= 2 && irsJovemYear <= 4 ? 'text-white' : 'text-amber-600'}`}>75%</span>
                           <span>2.º–4.º Anos</span>
                         </div>
-                        <div className="p-2 bg-white/70 rounded-xl">
-                          <span className="block text-sm font-black text-amber-600">50%</span>
+                        <div className={`p-2 rounded-xl transition-all ${irsJovemYear >= 5 && irsJovemYear <= 7 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
+                          <span className={`block text-sm font-black ${irsJovemYear >= 5 && irsJovemYear <= 7 ? 'text-white' : 'text-amber-600'}`}>50%</span>
                           <span>5.º–7.º Anos</span>
                         </div>
-                        <div className="p-2 bg-white/70 rounded-xl">
-                          <span className="block text-sm font-black text-amber-600">25%</span>
+                        <div className={`p-2 rounded-xl transition-all ${irsJovemYear >= 8 && irsJovemYear <= 10 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
+                          <span className={`block text-sm font-black ${irsJovemYear >= 8 && irsJovemYear <= 10 ? 'text-white' : 'text-amber-600'}`}>25%</span>
                           <span>8.º–10.º Anos</span>
                         </div>
                       </div>
 
                       <div>
                         <label className="text-[9px] font-black text-amber-800 uppercase tracking-widest block mb-1">
-                          {tLocal('irs_jovem_year')}
+                          {tLocal('irs_jovem_year')} (1 a 10)
                         </label>
                         <select
                           value={irsJovemYear}
                           onChange={(e) => setIrsJovemYear(Number(e.target.value))}
                           className="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none"
                         >
-                          <option value={1}>{tLocal('year_1')}</option>
-                          <option value={2}>{tLocal('years_2_4')}</option>
-                          <option value={5}>{tLocal('years_5_7')}</option>
-                          <option value={8}>{tLocal('years_8_10')}</option>
+                          <option value={1}>1.º Ano (100% Isenção)</option>
+                          <option value={2}>2.º Ano (75% Isenção)</option>
+                          <option value={3}>3.º Ano (75% Isenção)</option>
+                          <option value={4}>4.º Ano (75% Isenção)</option>
+                          <option value={5}>5.º Ano (50% Isenção)</option>
+                          <option value={6}>6.º Ano (50% Isenção)</option>
+                          <option value={7}>7.º Ano (50% Isenção)</option>
+                          <option value={8}>8.º Ano (25% Isenção)</option>
+                          <option value={9}>9.º Ano (25% Isenção)</option>
+                          <option value={10}>10.º Ano (25% Isenção)</option>
                         </select>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="border-t border-slate-100 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      {tLocal('meal_allowance')}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={mealAllowance}
-                        onChange={(e) => setMealAllowance(Number(e.target.value))}
-                        className="w-full pl-4 pr-10 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
-                      />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-slate-400 text-xs">€</span>
+                <div className="border-t border-slate-100 pt-4 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                        {tLocal('meal_allowance')}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={mealAllowance}
+                          onChange={(e) => setMealAllowance(Number(e.target.value))}
+                          className="w-full pl-4 pr-10 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-slate-400 text-xs">€</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                        {tLocal('meal_type')}
+                      </label>
+                      <select
+                        value={mealType}
+                        onChange={(e) => setMealType(e.target.value)}
+                        className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                      >
+                        <option value="cash">{tLocal('cash')}</option>
+                        <option value="card">{tLocal('card')}</option>
+                      </select>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      {tLocal('meal_type')}
-                    </label>
-                    <select
-                      value={mealType}
-                      onChange={(e) => setMealType(e.target.value)}
-                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
-                    >
-                      <option value="cash">{tLocal('cash')}</option>
-                      <option value="card">{tLocal('card')}</option>
-                    </select>
-                  </div>
+                  {/* Alerta Visual de Subsídio Tributável */}
+                  {mealAllowance > (mealType === 'card' ? MEAL_CAP_CARD_2026 : MEAL_CAP_CASH_2026) && (
+                    <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-2.5 text-amber-900 text-xs animate-in fade-in duration-200">
+                      <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block">Atenção: Subsídio de Refeição Tributável</span>
+                        <span className="text-amber-800 text-[11px] leading-relaxed">
+                          O excedente diário de {(mealAllowance - (mealType === 'card' ? MEAL_CAP_CARD_2026 : MEAL_CAP_CASH_2026)).toFixed(2)}€/dia (acima do teto isento de {mealType === 'card' ? '10,46€' : '6,15€'}) sofrerá retenção de 11% de Segurança Social e IRS.
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1568,10 +1677,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-6">
                     <div className="flex items-center justify-between pb-3 border-b border-white/10">
                       <h3 className="text-xs font-black uppercase tracking-widest text-[#FF8C00]">
-                        Resultado do Cálculo
+                        Resultado do Cálculo (2026)
                       </h3>
                       <span className="text-[9px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
-                        Taxa Efetiva de Imposto: {res.effectiveRate}%
+                        Taxa Efetiva de IRS: {res.effectiveRate}%
                       </span>
                     </div>
 
@@ -1588,31 +1697,66 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <div className="flex items-center gap-3 px-1">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FF8C00]" />
                         <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Descontos Oficiais & Retenções
+                          Discriminação do Recibo de Vencimento
                         </h4>
                       </div>
 
                       <div className="space-y-3 bg-white/5 border border-white/5 rounded-3xl p-5">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-300">Segurança Social (11%)</span>
-                          <span className="font-extrabold text-red-400">-{res.ssDeduction}€</span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-300">Retenção de IRS (Tabela AT)</span>
-                          <span className="font-extrabold text-red-400">-{res.irsDeduction}€</span>
+                        <div className="flex justify-between items-center text-xs pb-2 border-b border-white/5">
+                          <span className="font-bold text-slate-300">Remuneração Bruta Sujeita</span>
+                          <span className="font-extrabold text-white">{res.grossTotal.toFixed(2)}€</span>
                         </div>
 
-                        <div className="border-t border-white/5 pt-3 space-y-2">
+                        {res.duodecimosAmount > 0 && (
+                          <div className="space-y-1 pl-2 text-[11px] text-slate-400 pb-2 border-b border-white/5">
+                            {res.vacationDuodecimo > 0 && (
+                              <div className="flex justify-between">
+                                <span>• Duodécimo Subsídio de Férias:</span>
+                                <span className="text-slate-200">+{res.vacationDuodecimo.toFixed(2)}€</span>
+                              </div>
+                            )}
+                            {res.christmasDuodecimo > 0 && (
+                              <div className="flex justify-between">
+                                <span>• Duodécimo Subsídio de Natal:</span>
+                                <span className="text-slate-200">+{res.christmasDuodecimo.toFixed(2)}€</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-bold text-slate-300">Segurança Social Trabalhador (11%)</span>
+                          <span className="font-extrabold text-red-400">-{res.ssDeduction.toFixed(2)}€</span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-slate-300">Retenção na Fonte de IRS</span>
+                            {res.irsJovemDiscount > 0 && (
+                              <span className="text-[8px] font-black px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded-md border border-amber-500/30">
+                                IRS Jovem: -{res.irsJovemDiscount.toFixed(2)}€
+                              </span>
+                            )}
+                          </div>
+                          <span className="font-extrabold text-red-400">-{res.irsDeduction.toFixed(2)}€</span>
+                        </div>
+
+                        <div className="border-t border-white/5 pt-3 space-y-1.5">
                           <div className="flex justify-between items-center text-[11px]">
                             <span className="font-semibold text-slate-400">Subsídio Alimentação Isento</span>
-                            <span className="font-bold text-emerald-400">+{res.mealExempt}€</span>
+                            <span className="font-bold text-emerald-400">+{res.mealExempt.toFixed(2)}€</span>
                           </div>
                           {res.mealTaxed > 0 && (
                             <div className="flex justify-between items-center text-[11px]">
-                              <span className="font-semibold text-slate-400">Subsídio Alimentação Tributado</span>
-                              <span className="font-bold text-red-400">+{res.mealTaxed}€</span>
+                              <span className="font-semibold text-amber-400">Subsídio Alimentação Tributado (no bruto)</span>
+                              <span className="font-bold text-amber-300">+{res.mealTaxed.toFixed(2)}€</span>
                             </div>
                           )}
+                        </div>
+
+                        <div className="border-t border-white/5 pt-3 flex justify-between items-center text-[10px] text-slate-400">
+                          <span>{tLocal('employer_cost_title')} ({tLocal('tsu_company')})</span>
+                          <span className="font-black text-slate-200">{res.employerTotalCost.toFixed(2)}€</span>
                         </div>
                       </div>
                     </div>
@@ -1620,7 +1764,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="flex items-start gap-2 text-[10px] text-slate-300 bg-white/5 border border-white/5 rounded-2xl p-4">
                       <Info size={14} className="shrink-0 mt-0.5 text-[#FF8C00]" />
                       <span className="leading-relaxed">
-                        Cálculo efetuado com base na Segurança Social dos trabalhadores dependentes (11%) e nas Tabelas de Retenção na Fonte da Autoridade Tributária. O subsídio de alimentação é isento até 9,60€/dia em cartão ou 6,00€ em dinheiro.
+                        Cálculo efetuado com base no Modelo Marginal Oficial da Autoridade Tributária (2026), Segurança Social TCO (11%) e limites de refeição da Portaria n.º 51-B/2026 (isento até 10,46€/dia em cartão ou 6,15€ em dinheiro).
                       </span>
                     </div>
                   </div>
