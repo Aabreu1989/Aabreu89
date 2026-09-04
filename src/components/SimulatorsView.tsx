@@ -21,6 +21,21 @@ import {
   MEAL_CAP_CASH_2026,
   MEAL_CAP_CARD_2026
 } from '../services/miraSalaryEngine';
+import {
+  DISTRICT_COST_DATA,
+  HousingType,
+  FoodStyle,
+  TransportOption,
+  calculateCostOfLiving as calculateCostOfLivingEngine,
+  calculateFinancialSufficiency,
+  calculateLegalSubsistenceReference,
+  normalizeDemographics,
+  CostOfLivingAssessment,
+  OWN_CAR_MONTHLY_BENCHMARK,
+  RAIL_PASS_COST_2026,
+  TELECOM_FIXED_HOUSEHOLD,
+  RMMG_2026 as COST_RMMG_2026
+} from '../services/miraCostOfLivingEngine';
 
 interface SimulatorsViewProps {
   language: string;
@@ -131,6 +146,18 @@ const translations: Record<string, Record<string, string>> = {
     cost_transport: 'Transportes',
     cost_utilities: 'Utilidades e Extras',
     cost_total: 'Custo Total Estimado',
+    t0_apartment: 'Estúdio / Apartamento T0',
+    t3_apartment: 'Apartamento T3 (Família)',
+    rail_pass: 'Passe Ferroviário Verde (CP - 20€)',
+    adults_label: 'Adultos (≥ 18 anos)',
+    youth_label: 'Jovens (14 a 17 anos)',
+    children_label: 'Crianças (< 14 anos)',
+    telecom: 'Telecomunicações (Fibra + Móvel)',
+    health_personal: 'Saúde, Higiene e Cuidados',
+    provenance_badge: 'Benchmark de Mercado MIRA 2026 (INE m² + Portais)',
+    mira_financial_health: 'Suficiência Financeira & Prudência MIRA',
+    legal_subsistence_title: 'Referência Geral da Portaria n.º 1563/2007',
+    use_net_salary: 'Usar Salário Líquido Calculado',
     savings_calc: 'Diferença Mensal Estimada',
     savings_text: 'Ao escolher {d1} em vez de {d2}, pode poupar cerca de {val}€ por mês!',
     note_title: 'Fontes Oficiais Verificadas',
@@ -547,6 +574,18 @@ const translations: Record<string, Record<string, string>> = {
     cost_transport: 'Transportes',
     cost_utilities: 'Servicios y Extras',
     cost_total: 'Coste Total Estimado',
+    t0_apartment: 'Estudio / Apartamento T0',
+    t3_apartment: 'Apartamento T3 (Familia)',
+    rail_pass: 'Abono Ferroviario Verde (CP - 20€)',
+    adults_label: 'Adultos (≥ 18 años)',
+    youth_label: 'Jóvenes (14 a 17 años)',
+    children_label: 'Niños (< 14 años)',
+    telecom: 'Telecomunicaciones (Fibra + Móvil)',
+    health_personal: 'Salud, Higiene y Cuidados',
+    provenance_badge: 'Benchmark de Mercado MIRA 2026 (INE m² + Portales)',
+    mira_financial_health: 'Suficiencia Financiera y Prudencia MIRA',
+    legal_subsistence_title: 'Referencia General Orden 1563/2007',
+    use_net_salary: 'Usar Salario Neto Calculado',
     savings_calc: 'Ahorro Mensual Estimado',
     savings_text: '¡Al elegir {d1} en lugar de {d2}, puede ahorrar cerca de {val}€ al mes!',
     note_title: 'Fuentes Oficiales Verificadas',
@@ -754,6 +793,18 @@ const translations: Record<string, Record<string, string>> = {
     cost_transport: 'Transports',
     cost_utilities: 'Charges & Extras',
     cost_total: 'Coût Total Estimé',
+    t0_apartment: 'Studio / Appartement T0',
+    t3_apartment: 'Appartement T3 (Famille)',
+    rail_pass: 'Pass Ferroviaire Vert (CP - 20€)',
+    adults_label: 'Adultes (≥ 18 ans)',
+    youth_label: 'Jeunes (14 à 17 ans)',
+    children_label: 'Enfants (< 14 ans)',
+    telecom: 'Télécoms (Fibre + Mobile)',
+    health_personal: 'Santé, Hygiène et Soins',
+    provenance_badge: 'Benchmark Marché MIRA 2026 (INE m² + Portails)',
+    mira_financial_health: 'Suffisance Financière & Prudence MIRA',
+    legal_subsistence_title: 'Référence Générale Arrêté 1563/2007',
+    use_net_salary: 'Utiliser Salaire Net Calculé',
     savings_calc: 'Économie Mensuelle Estimée',
     savings_text: 'En choisissant {d1} au lieu de {d2}, vous pouvez économiser environ {val}€ par mois !',
     note_title: 'Sources Officielles Vérifiées',
@@ -864,38 +915,6 @@ const translations: Record<string, Record<string, string>> = {
   }
 };
 
-interface CostProfile {
-  rentRoom: number;
-  rentT1: number;
-  rentT2: number;
-  transportPass: number;
-  foodBase: number;
-  utilitiesBase: number;
-  tier: 'High' | 'Medium' | 'Low';
-}
-
-const DISTRICT_COST_DATA: Record<string, CostProfile> = {
-  Lisboa: { rentRoom: 450, rentT1: 950, rentT2: 1350, transportPass: 40, foodBase: 220, utilitiesBase: 100, tier: 'High' },
-  Porto: { rentRoom: 380, rentT1: 780, rentT2: 1100, transportPass: 40, foodBase: 210, utilitiesBase: 95, tier: 'High' },
-  Faro: { rentRoom: 370, rentT1: 750, rentT2: 1050, transportPass: 35, foodBase: 215, utilitiesBase: 95, tier: 'High' },
-  Setúbal: { rentRoom: 340, rentT1: 700, rentT2: 980, transportPass: 40, foodBase: 210, utilitiesBase: 90, tier: 'High' },
-  Braga: { rentRoom: 290, rentT1: 600, rentT2: 820, transportPass: 30, foodBase: 190, utilitiesBase: 85, tier: 'Medium' },
-  Coimbra: { rentRoom: 270, rentT1: 550, rentT2: 780, transportPass: 30, foodBase: 185, utilitiesBase: 85, tier: 'Medium' },
-  Aveiro: { rentRoom: 300, rentT1: 620, rentT2: 850, transportPass: 30, foodBase: 195, utilitiesBase: 85, tier: 'Medium' },
-  Leiria: { rentRoom: 260, rentT1: 520, rentT2: 750, transportPass: 30, foodBase: 185, utilitiesBase: 80, tier: 'Medium' },
-  Santarém: { rentRoom: 240, rentT1: 480, rentT2: 680, transportPass: 30, foodBase: 180, utilitiesBase: 80, tier: 'Medium' },
-  'Funchal (Madeira)': { rentRoom: 350, rentT1: 720, rentT2: 980, transportPass: 30, foodBase: 220, utilitiesBase: 90, tier: 'Medium' },
-  'Ponta Delgada (Açores)': { rentRoom: 280, rentT1: 560, rentT2: 780, transportPass: 30, foodBase: 205, utilitiesBase: 85, tier: 'Medium' },
-  Évora: { rentRoom: 240, rentT1: 480, rentT2: 680, transportPass: 28, foodBase: 180, utilitiesBase: 80, tier: 'Low' },
-  Viseu: { rentRoom: 220, rentT1: 450, rentT2: 620, transportPass: 28, foodBase: 175, utilitiesBase: 78, tier: 'Low' },
-  'Viana do Castelo': { rentRoom: 230, rentT1: 470, rentT2: 650, transportPass: 28, foodBase: 180, utilitiesBase: 78, tier: 'Low' },
-  'Vila Real': { rentRoom: 200, rentT1: 400, rentT2: 550, transportPass: 25, foodBase: 170, utilitiesBase: 75, tier: 'Low' },
-  'Castelo Branco': { rentRoom: 190, rentT1: 390, rentT2: 520, transportPass: 25, foodBase: 168, utilitiesBase: 75, tier: 'Low' },
-  Beja: { rentRoom: 210, rentT1: 410, rentT2: 580, transportPass: 25, foodBase: 170, utilitiesBase: 75, tier: 'Low' },
-  Guarda: { rentRoom: 180, rentT1: 360, rentT2: 480, transportPass: 22, foodBase: 165, utilitiesBase: 70, tier: 'Low' },
-  Bragança: { rentRoom: 185, rentT1: 370, rentT2: 500, transportPass: 24, foodBase: 165, utilitiesBase: 70, tier: 'Low' },
-  Portalegre: { rentRoom: 175, rentT1: 350, rentT2: 470, transportPass: 20, foodBase: 160, utilitiesBase: 70, tier: 'Low' }
-};
 
 export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onViewChange, initialTab, initialParams, onEarnPoints }) => {
   type SimulatorTab = 
@@ -998,15 +1017,18 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const [rvIsIrsJovem, setRvIsIrsJovem] = useState<boolean>(false);
   const [rvIrsJovemYear, setRvIrsJovemYear] = useState<number>(1);
 
-  // ─── COST OF LIVING STATE ──────────────────────────────────────────────────
+  // ─── COST OF LIVING STATE (U-COST-01 CANONICAL 2026) ────────────────────────
   const [district1, setDistrict1] = useState<string>('Lisboa');
   const [district2, setDistrict2] = useState<string>('Bragança');
   const [isComparing, setIsComparing] = useState<boolean>(true);
-  const [housingType, setHousingType] = useState<string>('t1_apartment');
-  const [foodStyle, setFoodStyle] = useState<string>('mixed');
-  const [transportOption, setTransportOption] = useState<string>('public_pass');
-  const [utilitiesTier, setUtilitiesTier] = useState<string>('utilities_basic');
-  const [householdSize, setHouseholdSize] = useState<number>(1);
+  const [housingType, setHousingType] = useState<HousingType>('t1');
+  const [foodStyle, setFoodStyle] = useState<FoodStyle>('balanced');
+  const [transportOption, setTransportOption] = useState<TransportOption>('public_pass');
+  const [adultsCount, setAdultsCount] = useState<number>(1);
+  const [youthCount, setYouthCount] = useState<number>(0);
+  const [childrenCount, setChildrenCount] = useState<number>(0);
+  const [colNetSalaryCustom, setColNetSalaryCustom] = useState<number>(0);
+  const householdSize = adultsCount + youthCount + childrenCount;
 
   // ─── HOUSING PROTECTION STATE (INDEPENDENT) ────────────────────────────────
   const [hpNetIncome, setHpNetIncome] = useState<number>(1050);
@@ -1154,97 +1176,63 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
   const salaryResults = salaryRegime === 'outrem' ? calculateSalaryOutrem() : calculateSalaryRecibos();
 
-  // ─── COST OF LIVING CALCULATION LOGIC ──────────────────────────────────────
-  const calculateCostOfLiving = (districtName: string) => {
-    const profile = DISTRICT_COST_DATA[districtName] || DISTRICT_COST_DATA['Lisboa'];
-    
-    let housingCost = profile.rentT1;
-    if (housingType === 'shared_room') housingCost = profile.rentRoom;
-    else if (housingType === 't2_apartment') housingCost = profile.rentT2;
+  // ─── COST OF LIVING CALCULATION LOGIC (U-COST-01 DELEGATED TO ENGINE) ───────
+  const activeNetIncome = colNetSalaryCustom > 0 ? colNetSalaryCustom : salaryResults.netSalary;
 
-    let foodCost = profile.foodBase;
-    if (foodStyle === 'cook_home') foodCost = profile.foodBase * 0.85;
-    else if (foodStyle === 'eat_out') foodCost = profile.foodBase * 1.8;
+  const colAssessment: CostOfLivingAssessment = calculateCostOfLivingEngine({
+    destinationDistrict: district1,
+    comparisonDistrict: isComparing ? district2 : undefined,
+    housingType,
+    foodStyle,
+    transportOption,
+    demographics: {
+      adultsCount,
+      youth14To17Count: youthCount,
+      childrenUnder14Count: childrenCount
+    },
+    netMonthlyIncome: activeNetIncome
+  });
 
-    let transportCost = profile.transportPass;
-    if (transportOption === 'own_car') transportCost = 155;
-
-    let utilitiesCost = profile.utilitiesBase;
-    
-    let utilitiesMultiplier = 1.0;
-    if (householdSize === 2) utilitiesMultiplier = 1.4;
-    else if (householdSize === 3) utilitiesMultiplier = 1.7;
-    else if (householdSize === 4) utilitiesMultiplier = 1.9;
-    else if (householdSize >= 5) utilitiesMultiplier = 2.15;
-    
-    utilitiesCost = utilitiesCost * utilitiesMultiplier;
-    
-    if (utilitiesTier === 'utilities_active') utilitiesCost = utilitiesCost * 1.6;
-
-    const totalCost = housingCost + foodCost + transportCost + utilitiesCost;
-
-    return {
-      housing: Math.round(housingCost),
-      food: Math.round(foodCost),
-      transport: Math.round(transportCost),
-      utilities: Math.round(utilitiesCost),
-      utilitiesPerPerson: Math.round(utilitiesCost / householdSize),
-      total: Math.round(totalCost)
-    };
+  const col1 = {
+    housing: colAssessment.destination.housing,
+    food: colAssessment.destination.food,
+    transport: colAssessment.destination.transport,
+    utilities: colAssessment.destination.utilities,
+    telecom: colAssessment.destination.telecom,
+    healthAndPersonal: colAssessment.destination.healthAndPersonal,
+    utilitiesPerPerson: Math.round(colAssessment.destination.utilities / Math.max(1, householdSize)),
+    total: colAssessment.destination.totalMonthlyCost,
+    tier: colAssessment.destination.tier
   };
 
-  const col1 = calculateCostOfLiving(district1);
-  const col2 = calculateCostOfLiving(district2);
-  const costDifference = Math.abs(col1.total - col2.total);
-  const cheaperDistrict = col1.total < col2.total ? district1 : district2;
-  const expensiveDistrict = col1.total > col2.total ? district1 : district2;
+  const col2 = colAssessment.comparison ? {
+    housing: colAssessment.comparison.housing,
+    food: colAssessment.comparison.food,
+    transport: colAssessment.comparison.transport,
+    utilities: colAssessment.comparison.utilities,
+    telecom: colAssessment.comparison.telecom,
+    healthAndPersonal: colAssessment.comparison.healthAndPersonal,
+    utilitiesPerPerson: Math.round(colAssessment.comparison.utilities / Math.max(1, householdSize)),
+    total: colAssessment.comparison.totalMonthlyCost,
+    tier: colAssessment.comparison.tier
+  } : col1;
 
-  // ─── FINANCIAL HEALTH & EFFORT RATE (BANCO DE PORTUGAL & AIMA GUIDELINES) ──
-  const calculateFinancialHealth = () => {
-    const net = salaryResults.netSalary;
-    const rent = col1.housing;
-    const totalExp = col1.total;
+  const costDifference = colAssessment.differenceBetweenDistricts?.monthlySavingsDiff || 0;
+  const cheaperDistrict = colAssessment.differenceBetweenDistricts?.cheaperDistrict || district1;
+  const expensiveDistrict = colAssessment.differenceBetweenDistricts?.expensiveDistrict || district2;
 
-    const effortRate = net > 0 ? Math.round((rent / net) * 100) : 0;
-    const netSavings = Math.round(net - totalExp);
-    const savingsRate = net > 0 ? Math.round((netSavings / net) * 100) : 0;
-    
-    const setupCapital = Math.round((rent * 3) + (totalExp * 3));
-    const emergencyFund = Math.round(totalExp * 3);
-
-    // Requisito Legal AIMA 2026 (Subsistência): RMMG 920€ titular + 276€ por dependente (30%)
-    const baseSubsistence = NORMATIVE_2026.RMMG_2026;
-    const extraDependents = Math.max(0, householdSize - 1) * Math.round(NORMATIVE_2026.RMMG_2026 * 0.30);
-    const totalAimaRequirement = Math.round(baseSubsistence + extraDependents);
-    const meetsAimaReq = net >= totalAimaRequirement;
-
-    // Pontuação de Saúde Financeira MIRA (0 a 100)
-    let score = 100;
-    if (effortRate > 35) score -= Math.min(45, Math.round((effortRate - 35) * 2.2));
-    if (netSavings < 0) score -= 35;
-    else if (savingsRate < 10) score -= 15;
-    else if (savingsRate >= 20) score += 5;
-
-    score = Math.max(10, Math.min(100, Math.round(score)));
-
-    let status: 'healthy' | 'warning' | 'critical' = 'healthy';
-    if (effortRate > 50 || score < 50) status = 'critical';
-    else if (effortRate > 35 || score < 75) status = 'warning';
-
-    return {
-      effortRate,
-      netSavings,
-      savingsRate,
-      setupCapital,
-      emergencyFund,
-      totalAimaRequirement,
-      meetsAimaReq,
-      score,
-      status
-    };
+  // Retrocompatibilidade para finHealth se referenciado
+  const finHealth = {
+    effortRate: colAssessment.financialSufficiency?.effortRateHousingPct || 0,
+    netSavings: colAssessment.financialSufficiency?.netMonthlySavings || 0,
+    savingsRate: activeNetIncome > 0 ? Math.round(((colAssessment.financialSufficiency?.netMonthlySavings || 0) / activeNetIncome) * 100) : 0,
+    setupCapital: Math.round((col1.housing * 3) + (col1.total * 3)),
+    emergencyFund: colAssessment.financialSufficiency?.emergencyFund3Months || Math.round(col1.total * 3),
+    totalAimaRequirement: colAssessment.legalSubsistenceReference?.calculatedReference || 920,
+    meetsAimaReq: activeNetIncome >= (colAssessment.legalSubsistenceReference?.calculatedReference || 920),
+    score: colAssessment.financialSufficiency?.effortRateStatus === 'sustainable' ? 90 : colAssessment.financialSufficiency?.effortRateStatus === 'moderate_risk' ? 65 : 40,
+    status: colAssessment.financialSufficiency?.effortRateStatus === 'sustainable' ? ('healthy' as const) : colAssessment.financialSufficiency?.effortRateStatus === 'moderate_risk' ? ('warning' as const) : ('critical' as const)
   };
-
-  const finHealth = calculateFinancialHealth();
 
   // ─── PEQUENO EMPREENDEDOR / MICROEMPRESA CALCULATION LOGIC ───────────────
   const calculateSmallBusiness = () => {
@@ -2279,17 +2267,22 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
             </div>
           )}
 
-          {/* ════ TAB 2: COST OF LIVING ══════════════════════════════════ */}
+          {/* ════ TAB 5: COST OF LIVING (U-COST-01 CANONICAL 2026) ═══════════ */}
           {activeTab === 'cost' && (
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* Controls Card */}
               <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-5">
-                <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-                  <TrendingUp className="text-[#FF8C00] shrink-0" size={18} />
-                  <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                    {tLocal('tab_cost')}
-                  </h3>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="text-[#FF8C00] shrink-0" size={18} />
+                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                      {tLocal('tab_cost')}
+                    </h3>
+                  </div>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60">
+                    {tLocal('provenance_badge')}
+                  </span>
                 </div>
 
                 {/* District Selectors */}
@@ -2302,10 +2295,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <select
                         value={district1}
                         onChange={(e) => setDistrict1(e.target.value)}
-                        className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
                       >
                         {Object.keys(DISTRICT_COST_DATA).map(d => (
-                          <option key={d} value={d}>{d}</option>
+                          <option key={d} value={d}>{d} (Tier {DISTRICT_COST_DATA[d].tier})</option>
                         ))}
                       </select>
                     </div>
@@ -2316,10 +2309,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           {tLocal('compare_with')}
                         </label>
                         <button 
+                          type="button"
                           onClick={() => setIsComparing(!isComparing)}
-                          className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded border transition-colors ${
+                          className={`text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded border transition-colors cursor-pointer ${
                             isComparing 
-                              ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' 
+                              ? 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' 
                               : 'bg-slate-100 text-slate-400 border-slate-200'
                           }`}
                         >
@@ -2330,17 +2324,17 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         value={district2}
                         disabled={!isComparing}
                         onChange={(e) => setDistrict2(e.target.value)}
-                        className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00] disabled:opacity-50"
+                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00] disabled:opacity-50"
                       >
                         {Object.keys(DISTRICT_COST_DATA).map(d => (
-                          <option key={d} value={d} disabled={d === district1}>{d}</option>
+                          <option key={d} value={d} disabled={d === district1}>{d} (Tier {DISTRICT_COST_DATA[d].tier})</option>
                         ))}
                       </select>
                     </div>
                   </div>
                 </div>
 
-                {/* Selectors: Housing, Food, Transport */}
+                {/* Tipologia Habitacional (5 opções canónicas) & Estilo Alimentar */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
@@ -2348,12 +2342,14 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     </label>
                     <select
                       value={housingType}
-                      onChange={(e) => setHousingType(e.target.value)}
-                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-755 focus:outline-none focus:border-[#FF8C00]"
+                      onChange={(e) => setHousingType(e.target.value as HousingType)}
+                      className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
                     >
-                      <option value="shared_room">{tLocal('shared_room')}</option>
-                      <option value="t1_apartment">{tLocal('t1_apartment')}</option>
-                      <option value="t2_apartment">{tLocal('t2_apartment')}</option>
+                      <option value="room">{tLocal('shared_room')}</option>
+                      <option value="t0">{tLocal('t0_apartment')}</option>
+                      <option value="t1">{tLocal('t1_apartment')}</option>
+                      <option value="t2">{tLocal('t2_apartment')}</option>
+                      <option value="t3">{tLocal('t3_apartment')}</option>
                     </select>
                   </div>
 
@@ -2363,61 +2359,121 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     </label>
                     <select
                       value={foodStyle}
-                      onChange={(e) => setFoodStyle(e.target.value)}
-                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-755 focus:outline-none focus:border-[#FF8C00]"
+                      onChange={(e) => setFoodStyle(e.target.value as FoodStyle)}
+                      className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
                     >
                       <option value="cook_home">{tLocal('cook_home')}</option>
-                      <option value="mixed">{tLocal('mixed')}</option>
+                      <option value="balanced">{tLocal('mixed')}</option>
                       <option value="eat_out">{tLocal('eat_out')}</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
-                      {tLocal('transport')}
-                    </label>
-                    <select
-                      value={transportOption}
-                      onChange={(e) => setTransportOption(e.target.value)}
-                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-755 focus:outline-none focus:border-[#FF8C00]"
-                    >
-                      <option value="public_pass">{tLocal('public_pass')}</option>
-                      <option value="own_car">{tLocal('own_car')}</option>
-                    </select>
+                {/* Modalidade de Transporte & Demografia Familiar com Escala OCDE */}
+                <div className="space-y-3 border-t border-slate-100 pt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div className="space-y-2 sm:col-span-1">
+                      <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
+                        {tLocal('transport')}
+                      </label>
+                      <select
+                        value={transportOption}
+                        onChange={(e) => setTransportOption(e.target.value as TransportOption)}
+                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                      >
+                        <option value="public_pass">{tLocal('public_pass')}</option>
+                        <option value="rail_pass">{tLocal('rail_pass')}</option>
+                        <option value="own_car">{tLocal('own_car')}</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
+                        {tLocal('adults_label')}
+                      </label>
+                      <select
+                        value={adultsCount}
+                        onChange={(e) => setAdultsCount(Number(e.target.value))}
+                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                      >
+                        <option value="1">1 {tLocal('person')}</option>
+                        <option value="2">2 {tLocal('people')}</option>
+                        <option value="3">3 {tLocal('people')}</option>
+                        <option value="4">4 {tLocal('people')}</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
+                        {tLocal('youth_label')}
+                      </label>
+                      <select
+                        value={youthCount}
+                        onChange={(e) => setYouthCount(Number(e.target.value))}
+                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                      >
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
+                        {tLocal('children_label')}
+                      </label>
+                      <select
+                        value={childrenCount}
+                        onChange={(e) => setChildrenCount(Number(e.target.value))}
+                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                      >
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
-                      {tLocal('utilities_leisure')}
-                    </label>
-                    <select
-                      value={utilitiesTier}
-                      onChange={(e) => setUtilitiesTier(e.target.value)}
-                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-755 focus:outline-none focus:border-[#FF8C00]"
-                    >
-                      <option value="utilities_basic">{tLocal('utilities_basic')}</option>
-                      <option value="utilities_active">{tLocal('utilities_active')}</option>
-                    </select>
+                  {/* Badge Explicativo do Fator OCDE */}
+                  <div className="flex items-center justify-between bg-slate-50 border border-slate-200/70 rounded-xl px-4 py-2 text-[10px] text-slate-600 font-medium">
+                    <span>
+                      <strong>Escala OCDE:</strong> Fator de equivalência familiar <strong>{colAssessment.familyScaleFactors.ocdeScaleFactor}×</strong> aplicado à alimentação e utilidades.
+                    </span>
+                    <span className="text-slate-400 font-bold">
+                      Agregado: {householdSize} {householdSize === 1 ? tLocal('person') : tLocal('people')}
+                    </span>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
-                      {tLocal('household_size')}
+                {/* Input de Rendimento Líquido do Agregado para Cálculo de Esforço */}
+                <div className="border-t border-slate-100 pt-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black text-slate-550 uppercase tracking-widest block">
+                      Rendimento Líquido Mensal do Agregado (€)
                     </label>
-                    <select
-                      value={householdSize}
-                      onChange={(e) => setHouseholdSize(Number(e.target.value))}
-                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-755 focus:outline-none focus:border-[#FF8C00]"
-                    >
-                      <option value="1">1 {tLocal('person')}</option>
-                      <option value="2">2 {tLocal('people')}</option>
-                      <option value="3">3 {tLocal('people')}</option>
-                      <option value="4">4 {tLocal('people')}</option>
-                      <option value="5">5+ {tLocal('people')}</option>
-                    </select>
+                    {salaryResults.netSalary > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setColNetSalaryCustom(salaryResults.netSalary)}
+                        className="text-[9px] font-black uppercase tracking-wider text-[#FF8C00] hover:underline cursor-pointer"
+                      >
+                        {tLocal('use_net_salary')} ({salaryResults.netSalary}€)
+                      </button>
+                    )}
                   </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="50"
+                    value={colNetSalaryCustom || ''}
+                    placeholder={salaryResults.netSalary > 0 ? `Ex: ${salaryResults.netSalary}€ (da Tab 1)` : 'Ex: 1500'}
+                    onChange={(e) => setColNetSalaryCustom(Math.max(0, Number(e.target.value)))}
+                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                  />
                 </div>
               </div>
 
@@ -2431,11 +2487,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <h4 className="text-sm font-black uppercase text-white">{district1}</h4>
                     </div>
                     <span className="text-[8px] font-black uppercase tracking-wider text-slate-300 bg-white/5 px-2.5 py-0.5 rounded border border-white/10">
-                      Tier: {DISTRICT_COST_DATA[district1]?.tier}
+                      Tier: {col1.tier}
                     </span>
                   </div>
 
-                  <div className="space-y-3 pt-2 text-xs">
+                  <div className="space-y-2.5 pt-2 text-xs">
                     <div className="flex justify-between items-center text-slate-300">
                       <span>{tLocal('cost_housing')}</span>
                       <span className="font-extrabold text-white">{col1.housing}€</span>
@@ -2448,16 +2504,17 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <span>{tLocal('cost_transport')}</span>
                       <span className="font-extrabold text-white">{col1.transport}€</span>
                     </div>
-                    <div className="flex justify-between items-start text-slate-300">
-                      <div className="flex flex-col">
-                        <span>{tLocal('cost_utilities')}</span>
-                        {householdSize > 1 && (
-                          <span className="text-[9px] text-slate-400 font-bold">
-                            {tLocal('utilities_per_person').replace('{val}', col1.utilitiesPerPerson.toString())}
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex justify-between items-center text-slate-300">
+                      <span>{tLocal('cost_utilities')}</span>
                       <span className="font-extrabold text-white">{col1.utilities}€</span>
+                    </div>
+                    <div className="flex justify-between items-center text-slate-300">
+                      <span>{tLocal('telecom')}</span>
+                      <span className="font-extrabold text-white">{col1.telecom}€</span>
+                    </div>
+                    <div className="flex justify-between items-center text-slate-300">
+                      <span>{tLocal('health_personal')}</span>
+                      <span className="font-extrabold text-white">{col1.healthAndPersonal}€</span>
                     </div>
                     <div className="border-t border-white/10 pt-3 flex justify-between items-center font-black text-sm text-[#FF8C00]">
                       <span>{tLocal('cost_total')}</span>
@@ -2475,11 +2532,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <h4 className="text-sm font-black uppercase text-white">{district2}</h4>
                       </div>
                       <span className="text-[8px] font-black uppercase tracking-wider text-slate-300 bg-white/5 px-2.5 py-0.5 rounded border border-white/10">
-                        Tier: {DISTRICT_COST_DATA[district2]?.tier}
+                        Tier: {col2.tier}
                       </span>
                     </div>
 
-                    <div className="space-y-3 pt-2 text-xs">
+                    <div className="space-y-2.5 pt-2 text-xs">
                       <div className="flex justify-between items-center text-slate-300">
                         <span>{tLocal('cost_housing')}</span>
                         <span className="font-extrabold text-white">{col2.housing}€</span>
@@ -2492,16 +2549,17 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <span>{tLocal('cost_transport')}</span>
                         <span className="font-extrabold text-white">{col2.transport}€</span>
                       </div>
-                      <div className="flex justify-between items-start text-slate-300">
-                        <div className="flex flex-col">
-                          <span>{tLocal('cost_utilities')}</span>
-                          {householdSize > 1 && (
-                            <span className="text-[9px] text-slate-400 font-bold">
-                              {tLocal('utilities_per_person').replace('{val}', col2.utilitiesPerPerson.toString())}
-                            </span>
-                          )}
-                        </div>
+                      <div className="flex justify-between items-center text-slate-300">
+                        <span>{tLocal('cost_utilities')}</span>
                         <span className="font-extrabold text-white">{col2.utilities}€</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-300">
+                        <span>{tLocal('telecom')}</span>
+                        <span className="font-extrabold text-white">{col2.telecom}€</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-300">
+                        <span>{tLocal('health_personal')}</span>
+                        <span className="font-extrabold text-white">{col2.healthAndPersonal}€</span>
                       </div>
                       <div className="border-t border-white/10 pt-3 flex justify-between items-center font-black text-sm text-indigo-400">
                         <span>{tLocal('cost_total')}</span>
@@ -2531,6 +2589,98 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 </div>
               )}
+
+              {/* ── PAINEL DE SUFICIÊNCIA FINANCEIRA & PRUDÊNCIA MIRA ────────────────── */}
+              {colAssessment.financialSufficiency && (
+                <div className="bg-white border border-slate-200/80 rounded-[2.25rem] p-6 shadow-sm space-y-5">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="text-[#FF8C00]" size={18} />
+                      <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                        {tLocal('mira_financial_health')}
+                      </h4>
+                    </div>
+                    <span className={`text-[8px] font-black uppercase px-2.5 py-1 rounded-full border ${
+                      colAssessment.financialSufficiency.effortRateStatus === 'sustainable'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : colAssessment.financialSufficiency.effortRateStatus === 'moderate_risk'
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
+                    }`}>
+                      {colAssessment.financialSufficiency.effortRateStatus === 'sustainable' ? 'Sustentável (≤ 35%)' :
+                       colAssessment.financialSufficiency.effortRateStatus === 'moderate_risk' ? 'Risco Moderado (36-50%)' :
+                       'Sobre-esforço Crítico (> 50%)'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {/* Taxa de Esforço */}
+                    <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Taxa de Esforço Habitacional
+                      </span>
+                      <div className="text-xl font-black text-slate-900">
+                        {colAssessment.financialSufficiency.effortRateHousingPct}%
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-medium">
+                        Renda ({col1.housing}€) face ao Rendimento ({colAssessment.financialSufficiency.netMonthlyIncome}€)
+                      </p>
+                    </div>
+
+                    {/* Saldo Mensal Estimado */}
+                    <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Saldo Mensal Estimado
+                      </span>
+                      <div className={`text-xl font-black ${colAssessment.financialSufficiency.isDeficit ? 'text-rose-600' : 'text-emerald-600'}`}>
+                        {colAssessment.financialSufficiency.netMonthlySavings > 0 ? `+${colAssessment.financialSufficiency.netMonthlySavings}€` : `${colAssessment.financialSufficiency.netMonthlySavings}€`}
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-medium">
+                        {colAssessment.financialSufficiency.isDeficit ? 'Défice mensal estimado no distrito' : 'Margem de poupança mensal'}
+                      </p>
+                    </div>
+
+                    {/* Alvo de Reserva de Emergência */}
+                    <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Reserva MIRA Recomendada
+                      </span>
+                      <div className="text-xl font-black text-indigo-600">
+                        {colAssessment.financialSufficiency.emergencyFund6Months}€
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-medium">
+                        Alvo de 6 meses de segurança (3 meses: {colAssessment.financialSufficiency.emergencyFund3Months}€)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── PAINEL DE REFERÊNCIA GERAL DA PORTARIA N.º 1563/2007 ─────────────────── */}
+              {colAssessment.legalSubsistenceReference && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-[2.25rem] p-5 space-y-3 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Landmark size={16} className="text-amber-700" />
+                      <h4 className="text-[10px] font-black text-amber-800 uppercase tracking-widest">
+                        {tLocal('legal_subsistence_title')}
+                      </h4>
+                    </div>
+                    <span className="text-[9px] font-extrabold text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded border border-amber-300">
+                      Referência: {colAssessment.legalSubsistenceReference.calculatedReference}€ / mês
+                    </span>
+                  </div>
+
+                  <p className="text-[10px] text-amber-900/80 font-medium leading-relaxed">
+                    <strong>Fórmula Teórica da Portaria:</strong> {colAssessment.legalSubsistenceReference.formulaDescription}.
+                  </p>
+
+                  <div className="bg-white/70 border border-amber-200 rounded-xl p-3 text-[9px] text-amber-950 font-medium leading-normal">
+                    ⚠️ <strong>Nota de Governança e Blindagem Jurídica:</strong> {colAssessment.legalSubsistenceReference.disclaimer}
+                  </div>
+                </div>
+              )}
+
             </div>
           )}
 
