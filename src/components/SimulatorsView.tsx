@@ -36,6 +36,14 @@ import {
   TELECOM_FIXED_HOUSEHOLD,
   RMMG_2026 as COST_RMMG_2026
 } from '../services/miraCostOfLivingEngine';
+import {
+  HousingTypology,
+  getTerritorialIntelligence,
+  calculateRentalAffordability,
+  calculatePurchaseAffordability,
+  TERRITORIAL_SEEDS,
+  IMT_JOVEM_2026
+} from '../services/miraHousingEngine';
 
 interface SimulatorsViewProps {
   language: string;
@@ -1031,9 +1039,24 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const householdSize = adultsCount + youthCount + childrenCount;
 
   // ─── HOUSING PROTECTION STATE (INDEPENDENT) ────────────────────────────────
-  const [hpNetIncome, setHpNetIncome] = useState<number>(1050);
-  const [hpMonthlyRent, setHpMonthlyRent] = useState<number>(600);
-  const [hpTotalExpenses, setHpTotalExpenses] = useState<number>(900);
+  const [hpHousingMode, setHpHousingMode] = useState<'rent' | 'buy'>('rent');
+  const [hpTerritoryId, setHpTerritoryId] = useState<string>('lisboa-concelho');
+  const [hpTypology, setHpTypology] = useState<HousingTypology>('t2');
+  const [hpNetIncome, setHpNetIncome] = useState<number>(1800);
+  const [hpGrossIncome, setHpGrossIncome] = useState<number>(2300);
+  const [hpMonthlyRent, setHpMonthlyRent] = useState<number>(0); // 0 = usa benchmark
+  const [hpTotalExpenses, setHpTotalExpenses] = useState<number>(1100);
+  const [hpCandidateAge, setHpCandidateAge] = useState<number>(29);
+
+  // Compra state
+  const [hpAcquisitionPrice, setHpAcquisitionPrice] = useState<number>(250000);
+  const [hpAppraisalValue, setHpAppraisalValue] = useState<number>(250000);
+  const [hpOwnCapital, setHpOwnCapital] = useState<number>(25000);
+  const [hpOtherDebts, setHpOtherDebts] = useState<number>(0);
+  const [hpIsFirstHpp, setHpIsFirstHpp] = useState<boolean>(true);
+  const [hpOwnsProperty, setHpOwnsProperty] = useState<boolean>(false);
+  const [hpOwnsPropertyLast3Years, setHpOwnsPropertyLast3Years] = useState<boolean>(false);
+  const [hpYouthGuarantee, setHpYouthGuarantee] = useState<boolean>(true);
 
   // ─── AIMA REQUISITES STATE (INDEPENDENT) ───────────────────────────────────
   const [aimaNetIncome, setAimaNetIncome] = useState<number>(1000);
@@ -2684,170 +2707,635 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
             </div>
           )}
 
-          {/* ════ TAB 4: PROTEÇÃO À HABITAÇÃO (INDEPENDENTE) ═══════════════ */}
-          {activeTab === 'housing_protection' && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              
-              {/* Form Card */}
-              <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-5">
-                <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-                  <Home className="text-[#FF8C00] shrink-0" size={18} />
-                  <div>
-                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                      Indicadores de Proteção à Habitação (Banco de Portugal)
-                    </h3>
-                    <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                      Insira os seus dados de rendimento e custos de habitação para avaliar a taxa de esforço e liquidez
-                    </p>
-                  </div>
-                </div>
+          {/* ════ TAB 4: MIRA HOUSING INTELLIGENCE & AFFORDABILITY 2026 ═══════════════ */}
+          {activeTab === 'housing_protection' && (() => {
+            const territoryIntel = getTerritorialIntelligence(hpTerritoryId);
+            const rentalAffordability = calculateRentalAffordability({
+              territoryId: hpTerritoryId,
+              typology: hpTypology,
+              contractRentMonthly: hpMonthlyRent > 0 ? hpMonthlyRent : undefined,
+              netMonthlyHouseholdIncome: hpNetIncome,
+              grossMonthlyHouseholdIncome: hpGrossIncome,
+              candidateAges: [hpCandidateAge],
+              otherMonthlyDebtPayments: 0
+            });
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      💰 Rendimento Líquido Mensal (€)
-                    </label>
-                    <p className="text-[8px] text-slate-400 font-medium">O valor que recebe na conta após descontos de SS e IRS.</p>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        value={hpNetIncome}
-                        onChange={(e) => setHpNetIncome(Number(e.target.value))}
-                        className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00] focus:ring-1 focus:ring-[#FF8C00]"
-                      />
-                      <span className="absolute right-5 top-1/2 -translate-y-1/2 font-black text-slate-400 text-sm">€</span>
-                    </div>
-                  </div>
+            const purchaseAffordability = calculatePurchaseAffordability({
+              territoryId: hpTerritoryId,
+              acquisitionPrice: hpAcquisitionPrice,
+              appraisalValue: hpAppraisalValue > 0 ? hpAppraisalValue : hpAcquisitionPrice,
+              ownCapitalAvailable: hpOwnCapital,
+              netMonthlyIncome: hpNetIncome,
+              otherMonthlyDebtPayments: hpOtherDebts,
+              borrowers: [{ age: hpCandidateAge }],
+              isFirstHpp: hpIsFirstHpp,
+              ownsResidentialProperty: hpOwnsProperty,
+              ownsResidentialPropertyLast3Years: hpOwnsPropertyLast3Years,
+              isYouthGuaranteeRequested: hpYouthGuarantee
+            });
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      🏠 Renda / Prestação Mensal (€)
-                    </label>
-                    <p className="text-[8px] text-slate-400 font-medium">Valor pago mensalmente por habitação (arrendamento ou crédito).</p>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        value={hpMonthlyRent}
-                        onChange={(e) => setHpMonthlyRent(Number(e.target.value))}
-                        className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00] focus:ring-1 focus:ring-[#FF8C00]"
-                      />
-                      <span className="absolute right-5 top-1/2 -translate-y-1/2 font-black text-slate-400 text-sm">€</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2 border-t border-slate-100 pt-4">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                    🛒 Total de Despesas Mensais (€)
-                  </label>
-                  <p className="text-[8px] text-slate-400 font-medium">Renda + alimentação + transportes + serviços + outros gastos.</p>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={hpTotalExpenses}
-                      onChange={(e) => setHpTotalExpenses(Number(e.target.value))}
-                      className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00] focus:ring-1 focus:ring-[#FF8C00]"
-                    />
-                    <span className="absolute right-5 top-1/2 -translate-y-1/2 font-black text-slate-400 text-sm">€</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Results Panel */}
-              {(() => {
-                const effortRate = hpNetIncome > 0 ? Math.round((hpMonthlyRent / hpNetIncome) * 100) : 0;
-                const netSavings = Math.round(hpNetIncome - hpTotalExpenses);
-                const emergencyFund = Math.round(hpTotalExpenses * 3);
-                const setupCapital = Math.round(hpMonthlyRent * 3);
-                const status = effortRate > 50 ? 'critical' : effortRate > 35 ? 'warning' : 'healthy';
-
-                return (
-                  <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-5">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <h3 className="text-xs font-black uppercase tracking-widest text-[#FF8C00]">Resultados do Diagnóstico</h3>
-                      <span className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-full border ${
-                        status === 'healthy' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
-                        status === 'warning' ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' :
-                        'border-red-500/40 bg-red-500/10 text-red-300'
-                      }`}>
-                        {status === 'healthy' ? '✓ Taxa de Esforço OK' : status === 'warning' ? '⚠️ Esforço Elevado' : '🔴 Risco Crítico'}
-                      </span>
-                    </div>
-
-                    {/* Effort Rate Meter */}
-                    <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="text-xs font-black text-white uppercase tracking-tight">Taxa de Esforço na Habitação</h4>
-                          <p className="text-[9px] text-slate-400 font-bold leading-tight mt-0.5">
-                            Rácio: Renda ÷ Rendimento Líquido &middot; Banco de Portugal recomenda máx. 35%
-                          </p>
-                        </div>
-                        <span className={`text-3xl font-black ${
-                          status === 'healthy' ? 'text-emerald-400' :
-                          status === 'warning' ? 'text-amber-400' : 'text-red-400'
-                        }`}>{effortRate}%</span>
+            return (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                
+                {/* Header Card with Mode Toggle */}
+                <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-[#FF8C00]/10 flex items-center justify-center text-[#FF8C00]">
+                        <Home size={20} />
                       </div>
-                      <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-700 ${
-                            status === 'healthy' ? 'bg-emerald-500' :
-                            status === 'warning' ? 'bg-amber-500' : 'bg-red-500'
-                          }`}
-                          style={{ width: `${Math.min(100, effortRate)}%` }}
+                      <div>
+                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                          MIRA Housing Intelligence & Affordability 2026
+                        </h3>
+                        <p className="text-[10px] text-slate-400 font-medium">
+                          Observatório Territorial (INE vs Portais) e Simuladores Regulatórios de Arrendamento e Aquisição
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Mode Toggle */}
+                    <div className="flex bg-slate-100 p-1 rounded-2xl shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setHpHousingMode('rent')}
+                        className={`px-4 py-2 text-xs font-black rounded-xl transition-all ${
+                          hpHousingMode === 'rent'
+                            ? 'bg-white text-slate-900 shadow-sm'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        🏠 Arrendamento & Porta 65
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHpHousingMode('buy')}
+                        className={`px-4 py-2 text-xs font-black rounded-xl transition-all ${
+                          hpHousingMode === 'buy'
+                            ? 'bg-white text-slate-900 shadow-sm'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        🏦 Compra & Crédito à Habitação
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Territory & Core Parameters */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                        📍 Unidade Territorial / Concelho
+                      </label>
+                      <select
+                        value={hpTerritoryId}
+                        onChange={(e) => setHpTerritoryId(e.target.value)}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                      >
+                        {TERRITORIAL_SEEDS.map((seed) => (
+                          <option key={seed.id} value={seed.id}>
+                            {seed.name} {seed.level === 'municipality' ? '(Concelho / INE Oficial)' : '(Distrito / Agregação MIRA)'}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {hpHousingMode === 'rent' ? (
+                      <>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                            📐 Tipologia Habitacional
+                          </label>
+                          <select
+                            value={hpTypology}
+                            onChange={(e) => setHpTypology(e.target.value as HousingTypology)}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                          >
+                            <option value="room">Quarto Individual (Room)</option>
+                            <option value="t0">Apartamento T0 / Estúdio</option>
+                            <option value="t1">Apartamento T1</option>
+                            <option value="t2">Apartamento T2</option>
+                            <option value="t3">Apartamento T3</option>
+                            <option value="t4_plus">Apartamento T4 ou Superior (T4+)</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                            🎂 Idade do Candidato (Anos)
+                          </label>
+                          <input
+                            type="number"
+                            value={hpCandidateAge}
+                            onChange={(e) => setHpCandidateAge(Number(e.target.value))}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                            🎂 Idade do Mutuário mais Velho
+                          </label>
+                          <input
+                            type="number"
+                            value={hpCandidateAge}
+                            onChange={(e) => setHpCandidateAge(Number(e.target.value))}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-6">
+                          <input
+                            type="checkbox"
+                            id="youthGuaranteeToggle"
+                            checked={hpYouthGuarantee}
+                            onChange={(e) => setHpYouthGuarantee(e.target.checked)}
+                            className="w-4 h-4 text-[#FF8C00] rounded focus:ring-[#FF8C00]"
+                          />
+                          <label htmlFor="youthGuaranteeToggle" className="text-xs font-bold text-slate-700">
+                            Garantia Pública Jovem (DL 44/2024)
+                          </label>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* ══ MODO ARRENDAMENTO ══ */}
+                {hpHousingMode === 'rent' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Inputs Card */}
+                    <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-4">
+                      <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider pb-2 border-b border-slate-100">
+                        Dados de Rendimento & Contrato
+                      </h4>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          💰 Rendimento Líquido Mensal (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpNetIncome}
+                          onChange={(e) => setHpNetIncome(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                        <p className="text-[9px] text-slate-400 font-medium">Usado na taxa de esforço e prudência MIRA.</p>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          💼 Rendimento Bruto Mensal (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpGrossIncome}
+                          onChange={(e) => setHpGrossIncome(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                        <p className="text-[9px] text-slate-400 font-medium">Obrigatório para aferir a regra de esforço bruto ≤ 60% do Porta 65.</p>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          🏠 Renda Mensal Pretendida (€)
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            value={hpMonthlyRent || ''}
+                            placeholder={`Benchmark MIRA: ${territoryIntel?.askingBenchmark.medianRentEurMonthly ?? 850} €`}
+                            onChange={(e) => setHpMonthlyRent(Number(e.target.value))}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                          />
+                        </div>
+                        <p className="text-[9px] text-slate-400 font-medium">Deixe 0 ou vazio para usar o benchmark apurado de mercado.</p>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          🛒 Total de Outras Despesas Mensais (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpTotalExpenses}
+                          onChange={(e) => setHpTotalExpenses(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
                         />
                       </div>
-                      <div className="flex justify-between text-[8px] font-black text-slate-500">
-                        <span>0%</span>
-                        <span className="text-emerald-400">35% (Limite Máximo)</span>
-                        <span className="text-red-400">50% (Crítico)</span>
-                        <span>100%</span>
-                      </div>
                     </div>
 
-                    {/* Metrics Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-1">
-                        <div className="flex items-center gap-1.5">
-                          <Wallet size={14} className="text-emerald-400" />
-                          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Saldo Mensal</span>
+                    {/* Results & Intelligence Cards */}
+                    <div className="lg:col-span-2 space-y-6">
+                      
+                      {/* Asking vs Contracted Observatory Banner */}
+                      <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white space-y-4 shadow-xl">
+                        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                          <div>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-[#FF8C00]">Observatório Territorial MIRA</span>
+                            <h4 className="text-sm font-black text-white">Asking vs. Contracted — {territoryIntel?.territoryName}</h4>
+                          </div>
+                          <span className="text-[10px] font-black px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10">
+                            Spread: +{territoryIntel?.askingVsContractedSpreadPct}%
+                          </span>
                         </div>
-                        <h2 className={`text-2xl font-black tracking-tight ${netSavings >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                          {netSavings >= 0 ? `+${netSavings}€` : `${netSavings}€`}
-                        </h2>
-                        <p className="text-[8px] text-slate-400 font-medium">Rendimento − Total Despesas</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">INE Contratado</span>
+                            <div className="text-xl font-black text-emerald-400">
+                              {territoryIntel?.contractedMarket.medianRentEurPerM2} €/m²
+                            </div>
+                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
+                              territoryIntel?.contractedMarket.dataStatus === 'official' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'
+                            }`}>
+                              {territoryIntel?.contractedMarket.dataStatus}
+                            </span>
+                          </div>
+
+                          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Portais Anunciado</span>
+                            <div className="text-xl font-black text-amber-400">
+                              {rentalAffordability.monthlyRentUsed} €/mês
+                            </div>
+                            <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">
+                              MIRA Benchmark (DERIVED)
+                            </span>
+                          </div>
+
+                          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Ágio de Oferta</span>
+                            <div className="text-xl font-black text-red-400">
+                              +{territoryIntel?.askingVsContractedSpreadPct}%
+                            </div>
+                            <span className="text-[8px] text-slate-400 font-medium leading-none block">
+                              Pressão de proprietários face aos novos contratos AT
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-[9px] text-slate-400 bg-white/5 p-3 rounded-xl border border-white/5 flex items-center gap-2">
+                          <Info size={14} className="text-[#FF8C00] shrink-0" />
+                          <span>{territoryIntel?.temporalTrends.trendNotice}</span>
+                        </div>
                       </div>
 
-                      <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-1">
-                        <div className="flex items-center gap-1.5">
-                          <PiggyBank size={14} className="text-amber-400" />
-                          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Fundo Emergência</span>
+                      {/* Diagnostic & CC 1076 & Porta 65 Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Capital Inicial Art. 1076.º CC */}
+                        <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
+                          <div className="flex items-center gap-2">
+                            <Building2 size={16} className="text-indigo-600" />
+                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Capital Inicial (Art. 1076.º CC)</h5>
+                          </div>
+                          
+                          <div className="text-3xl font-black text-slate-900">
+                            {rentalAffordability.legalInitialCapitalCC1076.maxAdmissibleTotalEur} €
+                          </div>
+
+                          <div className="text-[9px] text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div className="flex justify-between font-bold">
+                              <span>1.ª Renda de Entrada:</span>
+                              <span>{rentalAffordability.legalInitialCapitalCC1076.firstMonthRent} €</span>
+                            </div>
+                            <div className="flex justify-between font-bold">
+                              <span>Adiantamento (até 2 meses):</span>
+                              <span>{rentalAffordability.legalInitialCapitalCC1076.maxAdvanceRentEur} €</span>
+                            </div>
+                            <div className="flex justify-between font-bold">
+                              <span>Caução (até 2 meses):</span>
+                              <span>{rentalAffordability.legalInitialCapitalCC1076.maxSecurityDepositEur} €</span>
+                            </div>
+                          </div>
+
+                          <p className="text-[8px] text-slate-400 font-medium leading-tight">
+                            {rentalAffordability.legalInitialCapitalCC1076.label}: teto legal máximo admissível (5 rendas), não sendo compulsório caso o senhorio acorde montante inferior.
+                          </p>
                         </div>
-                        <h2 className="text-2xl font-black text-amber-400 tracking-tight">{emergencyFund}€</h2>
-                        <p className="text-[8px] text-slate-400 font-medium">3 meses de despesas totais</p>
+
+                        {/* Triagem Porta 65 Jovem */}
+                        <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <ShieldCheck size={16} className="text-emerald-600" />
+                              <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Triagem Porta 65 Jovem</h5>
+                            </div>
+                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
+                              rentalAffordability.porta65JovemScreening.screeningStatus === 'preliminary_pass'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {rentalAffordability.porta65JovemScreening.screeningStatus === 'preliminary_pass' ? '✓ Pré-Aprovado' : 'Rejeitado na Triagem'}
+                            </span>
+                          </div>
+
+                          <div className="text-[9px] text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div className="flex justify-between">
+                              <span>RMA Concelhia ({hpTypology.toUpperCase()}):</span>
+                              <span className="font-bold">{rentalAffordability.porta65JovemScreening.municipalRmaEur} €</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Teto 4× RMA Concelho:</span>
+                              <span className="font-bold">{rentalAffordability.porta65JovemScreening.incomeEligibility.maxByReferenceRent} €</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Teto 4× RMMG 2026:</span>
+                              <span className="font-bold">{rentalAffordability.porta65JovemScreening.incomeEligibility.maxByRMMG} €</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Esforço Bruto (máx. 60%):</span>
+                              <span className="font-bold">{rentalAffordability.porta65JovemScreening.incomeEligibility.grossEffortRatePct}%</span>
+                            </div>
+                          </div>
+
+                          <p className="text-[8px] text-slate-400 font-medium leading-tight">
+                            {rentalAffordability.porta65JovemScreening.contractStatusNotice}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="p-5 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl space-y-1">
-                        <div className="flex items-center gap-1.5">
-                          <Building2 size={14} className="text-indigo-400" />
-                          <span className="text-[9px] font-black uppercase tracking-widest text-indigo-300">Capital Entrada</span>
+                      {/* Effort Rate Status Bar */}
+                      <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Taxa de Esforço Habitacional MIRA</h5>
+                          <span className={`text-xs font-black px-2.5 py-1 rounded-full ${
+                            rentalAffordability.miraPrudenceStatus === 'sustainable' ? 'bg-emerald-100 text-emerald-800' :
+                            rentalAffordability.miraPrudenceStatus === 'moderate_risk' ? 'bg-amber-100 text-amber-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {rentalAffordability.effortRateHousingPct}% — {rentalAffordability.miraPrudenceStatus.toUpperCase()}
+                          </span>
                         </div>
-                        <h2 className="text-2xl font-black text-white tracking-tight">{setupCapital}€</h2>
-                        <p className="text-[8px] text-indigo-300 font-medium">2 Cauções + 1 Renda Adiantada</p>
+                        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-500 ${
+                              rentalAffordability.miraPrudenceStatus === 'sustainable' ? 'bg-emerald-500' :
+                              rentalAffordability.miraPrudenceStatus === 'moderate_risk' ? 'bg-amber-500' : 'bg-red-500'
+                            }`}
+                            style={{ width: `${Math.min(100, rentalAffordability.effortRateHousingPct)}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[9px] text-slate-400 font-bold">
+                          <span>0%</span>
+                          <span>≤35% Diretriz Prudencial MIRA</span>
+                          <span>&gt;50% Risco Crítico</span>
+                          <span>100%</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-start gap-2 text-[9px] text-slate-400 bg-white/5 border border-white/5 rounded-2xl p-4">
-                      <Info size={14} className="shrink-0 mt-0.5 text-[#FF8C00]" />
-                      <span className="leading-relaxed font-medium">
-                        O Banco de Portugal recomenda que a taxa de esforço não ultrapasse <strong className="text-white">35% do rendimento líquido</strong> do agregado. O capital de entrada reflete a exigência legal standard em Portugal: <strong className="text-white">2 meses de caução + 1 mês adiantado</strong>.
-                      </span>
                     </div>
                   </div>
-                );
-              })()}
-            </div>
-          )}
+                )}
+
+                {/* ══ MODO COMPRA DE HABITAÇÃO ══ */}
+                {hpHousingMode === 'buy' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Inputs Card */}
+                    <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-4">
+                      <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider pb-2 border-b border-slate-100">
+                        Dados do Imóvel & Financiamento
+                      </h4>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          🏷️ Preço de Aquisição do Imóvel (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpAcquisitionPrice}
+                          onChange={(e) => setHpAcquisitionPrice(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          🔍 Valor de Avaliação Bancária (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpAppraisalValue}
+                          onChange={(e) => setHpAppraisalValue(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                        <p className="text-[9px] text-slate-400 font-medium">O Banco de Portugal exige o cálculo sobre min(preço, avaliação).</p>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          💰 Capitais Próprios Disponíveis (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpOwnCapital}
+                          onChange={(e) => setHpOwnCapital(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          💳 Rendimento Líquido do Agregado (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpNetIncome}
+                          onChange={(e) => setHpNetIncome(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                          🧾 Outras Prestações / Créditos Atuais (€)
+                        </label>
+                        <input
+                          type="number"
+                          value={hpOtherDebts}
+                          onChange={(e) => setHpOtherDebts(Number(e.target.value))}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
+                        />
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="firstHppToggle"
+                            checked={hpIsFirstHpp}
+                            onChange={(e) => setHpIsFirstHpp(e.target.checked)}
+                            className="w-4 h-4 text-[#FF8C00] rounded"
+                          />
+                          <label htmlFor="firstHppToggle" className="text-[10px] font-bold text-slate-700">
+                            1.ª Habitação Própria Permanente (HPP)
+                          </label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="ownsPropertyToggle"
+                            checked={hpOwnsProperty}
+                            onChange={(e) => setHpOwnsProperty(e.target.checked)}
+                            className="w-4 h-4 text-[#FF8C00] rounded"
+                          />
+                          <label htmlFor="ownsPropertyToggle" className="text-[10px] font-bold text-slate-700">
+                            É atualmente proprietário de habitação?
+                          </label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="ownsLast3YearsToggle"
+                            checked={hpOwnsPropertyLast3Years}
+                            onChange={(e) => setHpOwnsPropertyLast3Years(e.target.checked)}
+                            className="w-4 h-4 text-[#FF8C00] rounded"
+                          />
+                          <label htmlFor="ownsLast3YearsToggle" className="text-[10px] font-bold text-slate-700">
+                            Foi proprietário nos últimos 3 anos? (IMT Jovem)
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Results & Regulatory Cards */}
+                    <div className="lg:col-span-2 space-y-6">
+
+                      {/* Main Financing Metrics Card */}
+                      <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white space-y-5 shadow-xl">
+                        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                          <div>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-[#FF8C00]">Enquadramento de Financiamento</span>
+                            <h4 className="text-sm font-black text-white">LTV, Financiamento & Prestação Mensal</h4>
+                          </div>
+                          <span className="text-[10px] font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            LTV Máx: {purchaseAffordability.financing.maxLtvAllowedPct}%
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Base Elegível min(P,A)</span>
+                            <div className="text-xl font-black text-white">
+                              {purchaseAffordability.eligiblePropertyValue.toLocaleString('pt-PT')} €
+                            </div>
+                            <span className="text-[8px] text-slate-400 font-medium">Preço vs Avaliação</span>
+                          </div>
+
+                          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Montante Financiado</span>
+                            <div className="text-xl font-black text-emerald-400">
+                              {purchaseAffordability.financing.loanAmount.toLocaleString('pt-PT')} €
+                            </div>
+                            <span className="text-[8px] text-slate-400 font-medium">LTV Efetivo: {purchaseAffordability.financing.effectiveLtvPct}%</span>
+                          </div>
+
+                          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Prestação Estimada</span>
+                            <div className="text-xl font-black text-amber-400">
+                              {purchaseAffordability.financing.estimatedMonthlyMortgageEur.toLocaleString('pt-PT')} €/mês
+                            </div>
+                            <span className="text-[8px] text-slate-400 font-medium">{purchaseAffordability.financing.maxMaturityYears} anos (Regulado BdP)</span>
+                          </div>
+                        </div>
+
+                        {/* DSTI Macroprudential Meter */}
+                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-black uppercase text-slate-200">
+                              {purchaseAffordability.dstiMacroprudential.statusLabel}
+                            </span>
+                            <span className={`text-sm font-black ${
+                              purchaseAffordability.dstiMacroprudential.dstiStatus === 'within_macroprudential_reference'
+                                ? 'text-emerald-400'
+                                : purchaseAffordability.dstiMacroprudential.dstiStatus === 'above_reference_with_possible_exception'
+                                ? 'text-amber-400'
+                                : 'text-red-400'
+                            }`}>
+                              DSTI: {purchaseAffordability.dstiMacroprudential.dstiTotalPct}%
+                            </span>
+                          </div>
+                          <p className="text-[9px] text-slate-400 font-medium leading-relaxed">
+                            {purchaseAffordability.dstiMacroprudential.explanation}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* IMT Jovem & Garantia Pública Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* IMT Jovem DL 48-A/2024 */}
+                        <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">IMT Jovem (DL 48-A/2024)</h5>
+                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
+                              purchaseAffordability.fiscalTaxes.imtJovemApplied ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {purchaseAffordability.fiscalTaxes.imtJovemApplied ? '✓ Isenção Aplicada' : 'Tributação Normal'}
+                            </span>
+                          </div>
+
+                          <div className="text-2xl font-black text-slate-900">
+                            {purchaseAffordability.fiscalTaxes.payableImtEur.toLocaleString('pt-PT')} € <span className="text-xs text-slate-400 font-bold">de IMT</span>
+                          </div>
+
+                          <div className="text-[9px] text-emerald-950 bg-emerald-50 p-3 rounded-xl border border-emerald-200 space-y-0.5 font-medium">
+                            <div><strong>Poupança de IMT:</strong> {purchaseAffordability.fiscalTaxes.imtJovemSavingsEur.toLocaleString('pt-PT')} €</div>
+                            <div><strong>Poupança Imposto de Selo:</strong> {purchaseAffordability.fiscalTaxes.stampDutySavingsEur.toLocaleString('pt-PT')} €</div>
+                          </div>
+
+                          <p className="text-[8px] text-slate-400 font-medium leading-tight">
+                            Regime fiscal de 2026 ancorado no Ofício-Circulado n.º 40019/2024 da AT. Isenção total até 316.772 € e parcial até 633.453 €.
+                          </p>
+                        </div>
+
+                        {/* Garantia Pública Jovem DL 44/2024 */}
+                        <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Garantia Pública (DL 44/2024)</h5>
+                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
+                              purchaseAffordability.publicGuaranteeDL44.eligibleByRules ? 'bg-indigo-100 text-indigo-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                              {purchaseAffordability.publicGuaranteeDL44.eligibleByRules ? '✓ Elegível' : 'Inelegível'}
+                            </span>
+                          </div>
+
+                          <div className="text-2xl font-black text-indigo-600">
+                            {purchaseAffordability.publicGuaranteeDL44.maxGuaranteeAmountEur.toLocaleString('pt-PT')} €
+                          </div>
+
+                          <p className="text-[9px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 font-medium">
+                            Garantia pessoal do Estado até 15% de min(preço, avaliação), permitindo financiamento bancário até 100% em transações até 450.000 €.
+                          </p>
+
+                          <p className="text-[8px] text-slate-400 font-medium leading-tight">
+                            {purchaseAffordability.publicGuaranteeDL44.bankApprovalNotice}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Total Disbursement Required */}
+                      <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm flex items-center justify-between">
+                        <div>
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Capital Inicial Total Estimado</span>
+                          <h4 className="text-sm font-black text-slate-800">Entrada + Impostos + Notário</h4>
+                        </div>
+                        <div className="text-2xl font-black text-slate-900">
+                          {purchaseAffordability.totalInitialDisbursementRequiredEur.toLocaleString('pt-PT')} €
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            );
+          })()}
 
           {/* ════ TAB 5: DIAGNÓSTICO AIMA & SAÚDE FINANCEIRA (INDEPENDENTE) ══ */}
           {activeTab === 'aima_health' && (
