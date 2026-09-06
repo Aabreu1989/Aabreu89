@@ -36,7 +36,7 @@ O menu principal é o teu ponto de partida para explorar todo o ecossistema MIRA
 
 👥 Comunidade (MIRA HUB): A maior rede de apoio entre imigrantes em Portugal. Partilha relatos, tira dúvidas com tradução instantânea em 4 idiomas e participa no Fact-Checking Comunitário (votação de veracidade para combater fraudes e esquemas).
 
-💼 Empregos (JobBoard): Mais de 18.200 vagas de emprego reais atualizadas diariamente (IEFP, Net-Empregos, Jooble e Indeed), com filtros por distrito e área de atuação.
+💼 Empregos (JobBoard): Vagas de emprego reais atualizadas diariamente na plataforma (IEFP, Net-Empregos, Jooble e Indeed), com filtros por distrito e área de atuação.
 
 📍 Serviços Locais & Apoio: Diretório completo e geolocalizado de 225+ serviços essenciais em Portugal (AIMA, CNAIM, CLAIM, Lojas do Cidadão, Centros de Saúde/SNS, Segurança Social, Finanças, Associações de Imigrantes e Apoio a PCD), com moradas completas, contactos oficiais e filtros por distrito.
 
@@ -147,7 +147,7 @@ The main navigation menu is your starting point to explore the full MIRA ecosyst
 
 👥 Community (MIRA HUB): The largest support network for immigrants in Portugal. Share experiences, get answers with instant 4-language translation, and participate in Community Fact-Checking (veracity voting to combat scams).
 
-💼 Jobs (JobBoard): Over 18,200 real job openings updated daily (IEFP, Net-Empregos, Jooble, Indeed), with filters by district and field.
+💼 Jobs (JobBoard): Real job vacancies updated daily on the platform (IEFP, Net-Empregos, Jooble, Indeed), with filters by district and field.
 
 📍 Local Services & Support: Comprehensive and geolocated directory of 225+ essential public and community services in Portugal (AIMA, CNAIM, CLAIM, Citizen Shops, Health Centers/SNS, Social Security, Tax Authority, Immigrant Associations, and Disability Support), with full addresses, official contacts, and district filters.
 
@@ -251,7 +251,7 @@ El menú principal es tu punto de partida para explorar todo el ecosistema MIRA:
 
 👥 Comunidad (MIRA HUB): La mayor red de apoyo entre inmigrantes en Portugal. Comparte experiencias, resuelve dudas con traducción instantánea en 4 idiomas y participa en el Fact-Checking Comunitario (votación de veracidad para combatir estafas).
 
-💼 Empleos (JobBoard): Más de 18.200 ofertas de trabajo reales actualizadas diariamente (IEFP, Net-Empregos, Jooble e Indeed), con filtros por distrito y área profesional.
+💼 Empleos (JobBoard): Vacantes de empleo reales actualizadas diariamente en la plataforma (IEFP, Net-Empregos, Jooble e Indeed), con filtros por distrito y área profesional.
 
 📍 Servicios Locales y Apoyo: Directorio completo y geolocalizado de 225+ servicios esenciales en Portugal (AIMA, CNAIM, CLAIM, Tiendas del Ciudadano, Centros de Salud/SNS, Seguridad Social, Hacienda, Asociaciones de Inmigrantes y Apoyo a PCD), con direcciones completas, contactos oficiales y filtros por distrito.
 
@@ -357,7 +357,7 @@ Le menu principal est ton point de départ pour explorer tout l'écosystème MIR
 
 👥 Communauté (MIRA HUB) : Le plus grand réseau d'entraide entre immigrés au Portugal. Partage tes expériences, pose des questions avec traduction instantanée en 4 langues et participe au Fact-Checking Communautaire (vote de véracité pour contrer les fraudes).
 
-💼 Emplois (JobBoard) : Plus de 18 200 offres d'emploi réelles mises à jour quotidiennement (IEFP, Net-Empregos, Jooble, Indeed), avec filtres par district et secteur.
+💼 Emplois (JobBoard) : Offres d'emploi réelles mises à jour quotidiennement sur la plateforme (IEFP, Net-Empregos, Jooble, Indeed), avec filtres par district et secteur.
 
 📍 Services Locaux & Soutien : Répertoire complet et géolocalisé de 225+ services essentiels au Portugal (AIMA, CNAIM, CLAIM, Boutiques du Citoyen, Centres de Santé/SNS, Sécurité Sociale, Finances, Associations et Soutien aux Personnes en Situation de Handicap), avec adresses complètes, contacts officiels et filtres par district.
 

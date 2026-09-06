@@ -1182,7 +1182,7 @@ export const RetirementWizard: React.FC<RetirementWizardProps> = ({ language, on
                             {onSelectTemplate && (
                                 <div className="space-y-3 mt-8">
                                     <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-l-4 border-amber-500 pl-3">
-                                        {language === 'pt' ? 'Minutas e Documentos Disponíveis' : (language === 'es' ? 'Minutas y Documentos Disponibles' : language === 'fr' ? 'Modèles et Documents Disponibles' : 'Available Templates & Documents')}
+                                        {lang === 'pt' ? 'Minutas e Documentos Disponíveis' : (lang === 'es' ? 'Minutas y Documentos Disponibles' : lang === 'fr' ? 'Modèles et Documents Disponibles' : 'Available Templates & Documents')}
                                     </h3>
                                     <div className="grid gap-3">
                                         {(() => {
@@ -1209,7 +1209,7 @@ export const RetirementWizard: React.FC<RetirementWizardProps> = ({ language, on
                                                             </div>
                                                             <div className="flex flex-col gap-0.5 min-w-0">
                                                                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                                                                    {language === 'pt' ? 'Preencher Documento' : (language === 'es' ? 'Rellenar Documento' : language === 'fr' ? 'Remplir le document' : 'Fill Document')}
+                                                                    {lang === 'pt' ? 'Preencher Documento' : (lang === 'es' ? 'Rellenar Documento' : lang === 'fr' ? 'Remplir le document' : 'Fill Document')}
                                                                 </span>
                                                                 <span className="text-[10px] font-extrabold text-slate-700 uppercase tracking-tight whitespace-normal break-words leading-tight group-hover:text-amber-500 transition-colors">
                                                                     {t(template.id, language) !== template.id ? t(template.id, language) : (t(template.title, language) !== template.title ? t(template.title, language) : template.title)}

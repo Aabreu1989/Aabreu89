@@ -1,17 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { JobPost, WORK_TOPICS, CATEGORIES, ViewType } from '../types';
-import { Search, Briefcase, ExternalLink, MapPin, Building2, TrendingUp, TrendingDown, Minus, ChevronDown, Filter, X, SlidersHorizontal, Map as MapIcon, Globe, FileText, RefreshCcw, AlertTriangle, Volume2, AlertCircle, Activity, CheckCircle2, Sparkles, ChevronRight, ChevronLeft, Bell } from 'lucide-react';
+import { Search, Briefcase, ExternalLink, MapPin, Building2, ChevronDown, Filter, X, SlidersHorizontal, Map as MapIcon, Globe, FileText, RefreshCcw, AlertCircle, Sparkles, ChevronRight, ChevronLeft, Bell, TrendingUp, Activity } from 'lucide-react';
 import { analytics } from '../services/analyticsService';
 import { supabase } from '../lib/supabase';
 import { t } from '../utils/translations';
-import { PROTECTED_JOBS } from '../utils/protectedData';
 import { getImageUrl } from '../utils/imageUtils';
 import { normalizeCategory, normalizeWorkTopic, getWorkTopicKey } from '../utils/categoryUtils';
 import JobItem from './JobItem';
 import { JobAlertModal } from './JobAlertModal';
 import { jobAlertService } from '../services/jobAlertService';
 import { isPortugalOrRemoteJob } from '../utils/jobLocationHelper';
+import { fetchMarketIntelligence, MarketIntelligence, SectorIntelligence } from '../services/jobMarketAnalytics';
 
 export function decodeJobText(str: string | undefined | null): string {
   if (!str) return '';
@@ -135,7 +135,7 @@ interface JobBoardProps {
   isAdmin?: boolean;
   user?: any;
   onViewChange?: (view: ViewType, params?: any) => void;
-  initialTab?: 'jobs' | 'trends' | string;
+  initialTab?: string;
   initialQuickFilter?: string;
   onEarnPoints?: (amount: number, reason: string, actionKey?: string, entityId?: string) => void;
 }
@@ -164,52 +164,276 @@ const TOPIC_DETAILS: Record<string, { emoji: string; color: string; bg: string; 
   "Outros": { emoji: "💼", color: "#64748b", bg: "bg-slate-50/80 hover:bg-slate-100/90", text: "text-slate-600 border-slate-200", ring: "focus:ring-slate-500/20" }
 };
 
-const JOB_TRENDS = (lang: string) => [
-  { 
-    id: 1, 
-    name: t('jobs_trend_turismo', lang), 
-    description: t('jobs_trend_turismo_desc', lang), 
-    demandLevel: t('jobs_demand_vhigh', lang), 
-    averageSalary: '850 - 1.200', 
-    growth: '+15%' 
-  },
-  { 
-    id: 2, 
-    name: t('jobs_trend_tech', lang), 
-    description: t('jobs_trend_tech_desc', lang),
-    demandLevel: t('jobs_demand_high', lang), 
-    averageSalary: '1.200 - 3.500', 
-    growth: '+22%' 
-  },
-  { 
-    id: 3, 
-    name: t('jobs_trend_const', lang), 
-    description: t('jobs_trend_const_desc', lang),
-    demandLevel: t('jobs_demand_vhigh', lang), 
-    averageSalary: '900 - 1.500', 
-    growth: '+10%' 
-  },
-  { 
-    id: 4, 
-    name: t('jobs_trend_energy', lang), 
-    description: t('jobs_trend_energy_desc', lang),
-    demandLevel: t('jobs_demand_med', lang), 
-    averageSalary: '1.100 - 2.000', 
-    growth: '+30%' 
-  },
-  { 
-    id: 5, 
-    name: t('jobs_trend_health', lang), 
-    description: t('jobs_trend_health_desc', lang),
-    demandLevel: t('jobs_demand_high', lang), 
-    averageSalary: '1.000 - 1.800', 
-    growth: '+12%' 
-  },
-];
-
 const LOCATIONS = (lang: string) => [
   t('jobs_all_districts', lang), "Lisboa", "Porto", "Braga", "Setúbal", "Faro", "Coimbra", "Aveiro", "Remoto", "Leiria", "Santarém", "Viseu", "Évora"
 ];
+
+// 📍 Melhores cidades e polos regionais por setor (Recuperação canónica de insights do MIRA)
+const SECTOR_TOP_CITIES: Record<string, { pt: string; en: string; es: string; fr: string }> = {
+  "Tecnologia, Dados & IA": {
+    pt: "Lisboa, Porto, Braga, Coimbra e Remoto",
+    en: "Lisbon, Porto, Braga, Coimbra, and Remote",
+    es: "Lisboa, Oporto, Braga, Coímbra y Remoto",
+    fr: "Lisbonne, Porto, Braga, Coimbra et Télétravail"
+  },
+  "Saúde & Cuidados Continuados": {
+    pt: "Lisboa, Porto, Coimbra (polos hospitalares) e Faro",
+    en: "Lisbon, Porto, Coimbra (hospital hubs), and Faro",
+    es: "Lisboa, Oporto, Coímbra (polos hospitalarios) y Faro",
+    fr: "Lisbonne, Porto, Coimbra (pôles hospitaliers) et Faro"
+  },
+  "Construção Civil & Engenharia": {
+    pt: "Lisboa, Porto, Braga e Setúbal",
+    en: "Lisbon, Porto, Braga, and Setúbal",
+    es: "Lisboa, Oporto, Braga y Setúbal",
+    fr: "Lisbonne, Porto, Braga et Setúbal"
+  },
+  "Turismo, Hotelaria & Restauração": {
+    pt: "Algarve (Faro, Albufeira), Lisboa, Porto e Funchal (Madeira)",
+    en: "Algarve (Faro, Albufeira), Lisbon, Porto, and Funchal (Madeira)",
+    es: "Algarve (Faro, Albufeira), Lisboa, Oporto y Funchal (Madeira)",
+    fr: "Algarve (Faro, Albufeira), Lisbonne, Porto et Funchal (Madère)"
+  },
+  "Indústria, Produção & Manufatura": {
+    pt: "Aveiro, Braga, Leiria, Setúbal e Porto",
+    en: "Aveiro, Braga, Leiria, Setúbal, and Porto",
+    es: "Aveiro, Braga, Leiria, Setúbal y Oporto",
+    fr: "Aveiro, Braga, Leiria, Setúbal et Porto"
+  },
+  "Logística, Transportes & Armazém": {
+    pt: "Lisboa (Azambuja, Loures), Setúbal, Porto e Santarém",
+    en: "Lisbon (Azambuja, Loures), Setúbal, Porto, and Santarém",
+    es: "Lisboa (Azambuja, Loures), Setúbal, Oporto y Santarém",
+    fr: "Lisbonne (Azambuja, Loures), Setúbal, Porto et Santarém"
+  },
+  "Comércio, Vendas & Retalho": {
+    pt: "Lisboa, Porto, Braga, Coimbra e Setúbal",
+    en: "Lisbon, Porto, Braga, Coimbra, and Setúbal",
+    es: "Lisboa, Oporto, Braga, Coímbra y Setúbal",
+    fr: "Lisbonne, Porto, Braga, Coimbra et Setúbal"
+  },
+  "Administrativo, Gestão & RH": {
+    pt: "Lisboa, Porto, Oeiras, Braga e Coimbra",
+    en: "Lisbon, Porto, Oeiras, Braga, and Coimbra",
+    es: "Lisboa, Oporto, Oeiras, Braga y Coímbra",
+    fr: "Lisbonne, Porto, Oeiras, Braga et Coimbra"
+  },
+  "Apoio ao Cliente": {
+    pt: "Lisboa, Porto, Braga e regimes Remoto/Híbrido",
+    en: "Lisbon, Porto, Braga, and Remote/Hybrid",
+    es: "Lisboa, Oporto, Braga y Remoto/Híbrido",
+    fr: "Lisbonne, Porto, Braga et Télétravail/Hybride"
+  },
+  "Técnicos e Consultores": {
+    pt: "Lisboa, Porto, Aveiro, Coimbra e Braga",
+    en: "Lisbon, Porto, Aveiro, Coimbra, and Braga",
+    es: "Lisboa, Oporto, Aveiro, Coímbra y Braga",
+    fr: "Lisbonne, Porto, Aveiro, Coimbra et Braga"
+  },
+  "Design, Marketing e Media": {
+    pt: "Lisboa, Porto, Braga e Remoto",
+    en: "Lisbon, Porto, Braga, and Remote",
+    es: "Lisboa, Oporto, Braga y Remoto",
+    fr: "Lisbonne, Porto, Braga et Télétravail"
+  },
+  "Gestão de Equipas e Negócios": {
+    pt: "Lisboa, Porto, Oeiras, Cascais e Braga",
+    en: "Lisbon, Porto, Oeiras, Cascais, and Braga",
+    es: "Lisboa, Oporto, Oeiras, Cascais y Braga",
+    fr: "Lisbonne, Porto, Oeiras, Cascais et Braga"
+  },
+  "Limpeza, Segurança & Facility Management": {
+    pt: "Lisboa, Porto, Faro (Algarve), Setúbal e Braga",
+    en: "Lisbon, Porto, Faro (Algarve), Setúbal, and Braga",
+    es: "Lisboa, Oporto, Faro (Algarve), Setúbal y Braga",
+    fr: "Lisbonne, Porto, Faro (Algarve), Setúbal et Braga"
+  },
+  "Agricultura, Pesca & Pecuária": {
+    pt: "Beja, Évora (Alentejo), Santarém (Ribatejo) e Faro",
+    en: "Beja, Évora (Alentejo), Santarém (Ribatejo), and Faro",
+    es: "Beja, Évora (Alentejo), Santarém (Ribatejo) y Faro",
+    fr: "Beja, Évora (Alentejo), Santarém (Ribatejo) et Faro"
+  },
+  "Apoio Social & Terceiro Setor": {
+    pt: "Lisboa, Porto, Coimbra, Braga e Setúbal",
+    en: "Lisbon, Porto, Coimbra, Braga, and Setúbal",
+    es: "Lisboa, Oporto, Coímbra, Braga y Setúbal",
+    fr: "Lisbonne, Porto, Coimbra, Braga et Setúbal"
+  },
+  "Energia & Sustentabilidade": {
+    pt: "Sines, Évora, Coimbra, Castelo Branco e Lisboa",
+    en: "Sines, Évora, Coimbra, Castelo Branco, and Lisbon",
+    es: "Sines, Évora, Coímbra, Castelo Branco y Lisboa",
+    fr: "Sines, Évora, Coimbra, Castelo Branco et Lisbonne"
+  },
+  "Educação, Ensino & Formação": {
+    pt: "Lisboa, Porto, Coimbra, Braga e Évora",
+    en: "Lisbon, Porto, Coimbra, Braga, and Évora",
+    es: "Lisboa, Oporto, Coímbra, Braga y Évora",
+    fr: "Lisbonne, Porto, Coimbra, Braga et Évora"
+  },
+  "Automóvel, Mecânica & Reparação": {
+    pt: "Setúbal (Palmela), Porto, Leiria, Aveiro e Lisboa",
+    en: "Setúbal (Palmela), Porto, Leiria, Aveiro, and Lisbon",
+    es: "Setúbal (Palmela), Oporto, Leiria, Aveiro y Lisboa",
+    fr: "Setúbal (Palmela), Porto, Leiria, Aveiro et Lisbonne"
+  },
+  "Trabalho Remoto & Freelancing": {
+    pt: "Todo o País (Polos Nómadas: Madeira, Lisboa, Porto, Algarve)",
+    en: "Nationwide (Nomad Hubs: Madeira, Lisbon, Porto, Algarve)",
+    es: "Todo el País (Polos Nómadas: Madeira, Lisboa, Oporto, Algarve)",
+    fr: "Tout le Pays (Pôles Nomades : Madère, Lisbonne, Porto, Algarve)"
+  },
+  "Outros": {
+    pt: "Lisboa, Porto, Braga, Setúbal e Faro",
+    en: "Lisbon, Porto, Braga, Setúbal, and Faro",
+    es: "Lisboa, Oporto, Braga, Setúbal y Faro",
+    fr: "Lisbonne, Porto, Braga, Setúbal et Faro"
+  }
+};
+
+function getSectorTopCities(topicName: string, language: string): string {
+  const lang = (language || 'pt').toLowerCase();
+  const entry = SECTOR_TOP_CITIES[topicName] || SECTOR_TOP_CITIES['Outros'];
+  if (lang === 'en') return entry.en;
+  if (lang === 'es') return entry.es;
+  if (lang === 'fr') return entry.fr;
+  return entry.pt;
+}
+
+// 🌐 Nomes oficiais dos 18 setores localizados nas 4 línguas oficiais do MIRA
+const SECTOR_NAMES: Record<string, { pt: string; en: string; es: string; fr: string }> = {
+  "Tecnologia, Dados & IA": {
+    pt: "Tecnologia, Dados & IA",
+    en: "Technology, Data & AI",
+    es: "Tecnología, Datos e IA",
+    fr: "Technologie, Données & IA"
+  },
+  "Saúde & Cuidados Continuados": {
+    pt: "Saúde & Cuidados Continuados",
+    en: "Healthcare & Caregiving",
+    es: "Salud y Cuidados Continuados",
+    fr: "Santé & Soins Continus"
+  },
+  "Construção Civil & Engenharia": {
+    pt: "Construção Civil & Engenharia",
+    en: "Civil Construction & Engineering",
+    es: "Construcción Civil e Ingeniería",
+    fr: "BTP & Ingénierie"
+  },
+  "Turismo, Hotelaria & Restauração": {
+    pt: "Turismo, Hotelaria & Restauração",
+    en: "Tourism, Hospitality & Catering",
+    es: "Turismo, Hostelería y Restauración",
+    fr: "Tourisme, Hôtellerie & Restauration"
+  },
+  "Indústria, Produção & Manufatura": {
+    pt: "Indústria, Produção & Manufatura",
+    en: "Industry, Production & Manufacturing",
+    es: "Industria, Producción y Fabricación",
+    fr: "Industrie, Production & Fabrication"
+  },
+  "Logística, Transportes & Armazém": {
+    pt: "Logística, Transportes & Armazém",
+    en: "Logistics, Transport & Warehousing",
+    es: "Logística, Transporte y Almacén",
+    fr: "Logistique, Transport & Entreposage"
+  },
+  "Comércio, Vendas & Retalho": {
+    pt: "Comércio, Vendas & Retalho",
+    en: "Commerce, Sales & Retail",
+    es: "Comercio, Ventas y Retail",
+    fr: "Commerce, Vente & Distribution"
+  },
+  "Administrativo, Gestão & RH": {
+    pt: "Administrativo, Gestão & RH",
+    en: "Administration, Management & HR",
+    es: "Administración, Gestión y RRHH",
+    fr: "Administration, Gestion & RH"
+  },
+  "Apoio ao Cliente": {
+    pt: "Apoio ao Cliente",
+    en: "Customer Support & Call Center",
+    es: "Atención al Cliente",
+    fr: "Service Client & Support"
+  },
+  "Técnicos e Consultores": {
+    pt: "Técnicos e Consultores",
+    en: "Technicians & Consultants",
+    es: "Técnicos y Consultores",
+    fr: "Techniciens et Consultants"
+  },
+  "Design, Marketing e Media": {
+    pt: "Design, Marketing e Media",
+    en: "Design, Marketing & Media",
+    es: "Diseño, Marketing y Medios",
+    fr: "Design, Marketing & Médias"
+  },
+  "Gestão de Equipas e Negócios": {
+    pt: "Gestão de Equipas e Negócios",
+    en: "Team Management & Business",
+    es: "Gestión de Equipos y Negocios",
+    fr: "Management d'Équipes & Affaires"
+  },
+  "Limpeza, Segurança & Facility Management": {
+    pt: "Limpeza, Segurança & Facility Management",
+    en: "Cleaning, Security & Facilities",
+    es: "Limpieza, Seguridad y Servicios",
+    fr: "Nettoyage, Sécurité & Services"
+  },
+  "Agricultura, Pesca & Pecuária": {
+    pt: "Agricultura, Pesca & Pecuária",
+    en: "Agriculture, Fishing & Livestock",
+    es: "Agricultura, Pesca y Ganadería",
+    fr: "Agriculture, Pêche & Élevage"
+  },
+  "Apoio Social & Terceiro Setor": {
+    pt: "Apoio Social & Terceiro Setor",
+    en: "Social Support & Third Sector",
+    es: "Apoyo Social y Tercer Sector",
+    fr: "Action Sociale & Troisième Secteur"
+  },
+  "Energia & Sustentabilidade": {
+    pt: "Energia & Sustentabilidade",
+    en: "Energy & Sustainability",
+    es: "Energía y Sostenibilidad",
+    fr: "Énergie & Développement Durable"
+  },
+  "Educação, Ensino & Formação": {
+    pt: "Educação, Ensino & Formação",
+    en: "Education, Teaching & Training",
+    es: "Educación, Enseñanza y Formación",
+    fr: "Éducation, Enseignement & Formation"
+  },
+  "Automóvel, Mecânica & Reparação": {
+    pt: "Automóvel, Mecânica & Reparação",
+    en: "Automotive, Mechanics & Repair",
+    es: "Automóvil, Mecánica y Reparación",
+    fr: "Automobile, Mécanique & Réparation"
+  },
+  "Trabalho Remoto & Freelancing": {
+    pt: "Trabalho Remoto & Freelancing",
+    en: "Remote Work & Freelancing",
+    es: "Trabajo Remoto y Freelance",
+    fr: "Télétravail & Freelance"
+  },
+  "Outros": {
+    pt: "Outros Setores",
+    en: "Other Sectors",
+    es: "Otros Sectores",
+    fr: "Autres Secteurs"
+  }
+};
+
+function getSectorDisplayName(topicName: string, language: string): string {
+  const lang = (language || 'pt').toLowerCase();
+  const entry = SECTOR_NAMES[topicName] || SECTOR_NAMES['Outros'];
+  if (!entry) return topicName;
+  if (lang === 'en') return entry.en;
+  if (lang === 'es') return entry.es;
+  if (lang === 'fr') return entry.fr;
+  return entry.pt;
+}
 
 
 
@@ -233,8 +457,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState(t('jobs_all_districts', language));
   const [selectedWorkTopic, setSelectedWorkTopic] = useState('Todos');
-  const [selectedDateRange, setSelectedDateRange] = useState('all');
-  const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(initialQuickFilter || (initialTab === 'pcd' ? 'pcd' : null));
+  const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(initialQuickFilter || null);
 
   // Debounce search query to prevent rapid re-fetching and race conditions
   useEffect(() => {
@@ -247,73 +470,49 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   // Reset to first page when search or any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchQuery, selectedCity, selectedWorkTopic, selectedDateRange, selectedQuickFilter]);
-  // ⚡ MIRA OPTIMIZATION: Load protected jobs synchronously by default for instant rendering (0ms) - Strictly <= 90 days
-  const initialJobs = React.useMemo(() => {
-    const nowMs = Date.now();
-    return ((PROTECTED_JOBS as any[]) || [])
-      .filter(pj => {
-        const url = pj.source_url || pj.sourceUrl;
-        const dateStr = pj.created_at || pj.posted_at || pj.date_posted;
-        return url && url !== '#' && pj.title && !isSpamOrBlog(pj.title, url) && isWithin90Days(dateStr) && isPortugalOrRemoteJob(pj.title, pj.location);
-      })
-      .map((pj, idx) => {
-        // Distribute protected job timestamps dynamically across recent active hours (0h - 48h)
-        const offsetHours = (idx % 36) * 1.2;
-        const dynamicISO = new Date(nowMs - offsetHours * 60 * 60 * 1000).toISOString();
-        return {
-          id: pj.id,
-          title: pj.title || t('jobs_no_title', language),
-          location: pj.location || 'Portugal',
-          sourceName: pj.source_name || pj.sourceName || 'MIRA',
-          sourceUrl: pj.source_url || pj.sourceUrl,
-          datePosted: dynamicISO,
-          posted_at: dynamicISO,
-          tags: Array.isArray(pj.tags) ? pj.tags : (pj.title && pj.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
-          category: normalizeCategory(pj.category || 'Trabalho & Carreira'),
-          workTopic: normalizeWorkTopic(pj.work_topic || pj.workTopic, pj.title)
-        } as any;
-      });
-  }, [language]);
+  }, [debouncedSearchQuery, selectedCity, selectedWorkTopic, selectedQuickFilter]);
 
   const [jobs, setJobs] = useState<JobPost[]>([]);
   const [totalPlatformJobs, setTotalPlatformJobs] = useState<number | null>(null);
   const [filteredTotalCount, setFilteredTotalCount] = useState<number | null>(null);
   const [topicCounts, setTopicCounts] = useState<Record<string, number>>({});
-  const [jobsGrowth, setJobsGrowth] = useState<{ percentage: number; trend: 'up' | 'down' | 'neutral' } | null>(null);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts(user?.id).filter(a => a.isActive).length);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  const JOBS_PER_PAGE = 15;
-  const [currentPage, setCurrentPage] = useState(1);
-  const jobListTopRef = React.useRef<HTMLDivElement>(null);
 
-  // 📊 SOBERANIA MIRA: Carregar distribuição real de vagas por setor direto do Supabase (Strictly <= 90 days)
-  const loadTopicCounts = React.useCallback(async () => {
+  // 📊 SOBERANIA MIRA: Inteligência de mercado 100% real calculada a partir do Supabase
+  const [marketData, setMarketData] = useState<MarketIntelligence | null>(null);
+  const [marketLoading, setMarketLoading] = useState(false);
+  const [marketError, setMarketError] = useState<string | null>(null);
+
+  const loadMarketData = React.useCallback(async () => {
+    setMarketLoading(true);
+    setMarketError(null);
     try {
-      const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-      const results = await Promise.all(
-        WORK_TOPICS.map(async (topic) => {
-          const { count } = await supabase
-            .from('job_posts')
-            .select('id', { count: 'exact', head: true })
-            .eq('is_active', true)
-            .gte('created_at', ninetyDaysAgo)
-            .eq('work_topic', topic);
-          return [topic, count || 0];
-        })
-      );
-      setTopicCounts(Object.fromEntries(results));
-    } catch (e) {
-      console.warn('MIRA: Erro ao carregar contagens por setor:', e);
+      const data = await fetchMarketIntelligence(supabase);
+      setMarketData(data);
+      setTotalPlatformJobs(data.activeJobsCount);
+      const counts: Record<string, number> = {};
+      for (const sec of data.sectors) {
+        counts[sec.name] = sec.activeJobsCount;
+      }
+      setTopicCounts(counts);
+    } catch (err: any) {
+      console.error('MIRA: Erro ao carregar inteligência de mercado:', err);
+      setMarketError(err?.message || 'Falha ao carregar dados de mercado');
+    } finally {
+      setMarketLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadTopicCounts();
-  }, [loadTopicCounts]);
+    loadMarketData();
+  }, [loadMarketData]);
+  
+  const JOBS_PER_PAGE = 15;
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobListTopRef = React.useRef<HTMLDivElement>(null);
 
   const refreshAlertsCount = React.useCallback(async () => {
     const alerts = await jobAlertService.getAlertsAsync(user?.id);
@@ -331,85 +530,10 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     };
   }, [user?.id, refreshAlertsCount]);
 
-  const dynamicTrends = React.useMemo(() => {
-    const sectors = [
-      {
-        id: 1,
-        name: t('jobs_trend_turismo', language),
-        description: t('jobs_trend_turismo_desc', language),
-        topics: ['Turismo, Hotelaria & Restauração', 'Turismo', 'Hotelaria'],
-        baseMin: 850,
-        baseMax: 1200,
-        color: 'indigo'
-      },
-      {
-        id: 2,
-        name: t('jobs_trend_tech', language),
-        description: t('jobs_trend_tech_desc', language),
-        topics: ['Tecnologia, Dados & IA', 'TI', 'IT', 'Tecnologia'],
-        baseMin: 1200,
-        baseMax: 3500,
-        color: 'sky'
-      },
-      {
-        id: 3,
-        name: t('jobs_trend_const', language),
-        description: t('jobs_trend_const_desc', language),
-        topics: ['Construção Civil & Engenharia', 'Construção'],
-        baseMin: 900,
-        baseMax: 1500,
-        color: 'amber'
-      },
-      {
-        id: 4,
-        name: t('jobs_trend_energy', language),
-        description: t('jobs_trend_energy_desc', language),
-        topics: ['Energias Renováveis', 'Energia'],
-        baseMin: 1100,
-        baseMax: 2000,
-        color: 'emerald'
-      },
-      {
-        id: 5,
-        name: t('jobs_trend_health', language),
-        description: t('jobs_trend_health_desc', language),
-        topics: ['Saúde & Cuidados Continuados', 'Saúde'],
-        baseMin: 1000,
-        baseMax: 1800,
-        color: 'rose'
-      }
-    ];
-
-    return sectors.map(sec => {
-      const count = (jobs || []).filter(j => {
-        const topic = j.workTopic;
-        return topic && sec.topics.some(t => topic.toLowerCase().includes(t.toLowerCase()));
-      }).length;
-
-      const demandLevel = count > 5 ? t('jobs_demand_vhigh', language) : count > 2 ? t('jobs_demand_high', language) : t('jobs_demand_med', language);
-      const averageSalary = `${sec.baseMin.toLocaleString('pt-PT')} - ${sec.baseMax.toLocaleString('pt-PT')}`;
-
-      return {
-        id: sec.id,
-        name: sec.name,
-        description: sec.description,
-        demandLevel,
-        averageSalary,
-        growth: '+12%',
-        color: sec.color,
-        width: '65%',
-        count
-      };
-    });
-  }, [jobs, language]);
-
-  const overallAvgSalary = '1.450';
-
   const hasActiveFilters = Boolean(
     searchQuery.trim() ||
     selectedCity !== t('jobs_all_districts', language) ||
     selectedWorkTopic !== 'Todos' ||
-    selectedDateRange !== 'all' ||
     selectedQuickFilter
   );
 
@@ -420,29 +544,16 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     try {
       const now = new Date();
       const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString();
-      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
-      const [
-        { count: totalCount },
-        { count: recentCount },
-        { count: prevCount }
-      ] = await Promise.all([
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', ninetyDaysAgo),
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', sevenDaysAgo),
-        supabase.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', fourteenDaysAgo).lt('created_at', sevenDaysAgo)
-      ]);
+      // Contagem real das vagas ativas da plataforma
+      const { count: totalCount } = await supabase
+        .from('job_posts')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .gte('created_at', ninetyDaysAgo);
 
       if (totalCount !== null && totalCount !== undefined) {
         setTotalPlatformJobs(totalCount);
-      }
-
-      if (recentCount !== null && prevCount !== null) {
-        const diff = prevCount === 0 ? (recentCount > 0 ? 100 : 0) : ((recentCount - prevCount) / prevCount) * 100;
-        setJobsGrowth({
-          percentage: Math.abs(Math.round(diff)),
-          trend: diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral'
-        });
       }
 
       let query = supabase
@@ -490,19 +601,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         }
       }
 
-      if (selectedDateRange === '24h') {
-        const d = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        query = query.gte('created_at', d);
-      } else if (selectedDateRange === '7d') {
-        const d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        query = query.gte('created_at', d);
-      } else if (selectedDateRange === '30d') {
-        const d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-        query = query.gte('created_at', d);
-      } else {
-        // Regra Inviolável MIRA: Máximo de 90 dias de antiguidade para qualquer vaga ativa
-        query = query.gte('created_at', ninetyDaysAgo);
-      }
+      // Regra Inviolável MIRA: Máximo de 90 dias de antiguidade para qualquer vaga ativa
+      query = query.gte('created_at', ninetyDaysAgo);
 
       if (selectedQuickFilter === 'english') {
         query = query.or('title.ilike.%english%,title.ilike.%inglês%,title.ilike.%ingles%,title.ilike.%speaker%,title.ilike.%bilingual%,title.ilike.%bilingue%,title.ilike.%international%,title.ilike.%internacional%,title.ilike.%developer%,title.ilike.%engineer%,title.ilike.%consultant%');
@@ -568,7 +668,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
   useEffect(() => {
     fetchJobs();
-  }, [debouncedSearchQuery, selectedCity, selectedWorkTopic, selectedDateRange, selectedQuickFilter, currentPage]);
+  }, [debouncedSearchQuery, selectedCity, selectedWorkTopic, selectedQuickFilter, currentPage]);
 
   const totalEffectiveCount = filteredTotalCount !== null ? filteredTotalCount : (totalPlatformJobs || 0);
   const totalPages = Math.max(1, Math.ceil(totalEffectiveCount / JOBS_PER_PAGE));
@@ -602,7 +702,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     setSearchQuery('');
     setSelectedCity(t('jobs_all_districts', language));
     setSelectedWorkTopic('Todos');
-    setSelectedDateRange('all');
     setSelectedQuickFilter(null);
     setCurrentPage(1);
   };
@@ -643,7 +742,12 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
             <button
               onClick={() => fetchJobs(true)}
               disabled={loading}
-              title={language === 'en' ? 'Refresh Job Offers' : 'Atualizar Vagas em Tempo Real'}
+              title={
+                language === 'EN' ? 'Refresh Job Offers in Real-Time' :
+                language === 'ES' ? 'Actualizar Ofertas de Empleo en Tiempo Real' :
+                language === 'FR' ? 'Actualiser les Offres d\'Emploi en Temps Réel' :
+                'Atualizar Vagas em Tempo Real'
+              }
               className="p-2 sm:p-3 bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded-xl sm:rounded-2xl transition-all border border-slate-200 shrink-0"
             >
               <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
@@ -651,23 +755,33 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           </div>
         </div>
 
-        {/* Tab Switcher - LIGHT/DARK DYNAMIC STYLING */}
+        {/* Tab Switcher - NO TOPO COM DESIGN E RESPONSIVIDADE ORIGINAL */}
         <div className="flex bg-slate-100/90 p-1 rounded-2xl w-full border border-slate-200/80 shadow-inner relative overflow-hidden">
           <button
+            type="button"
             onClick={() => setActiveTab('jobs')}
-            className={`flex-1 py-2.5 sm:py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${activeTab === 'jobs' ? 'bg-[#0A0A0A] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`flex-1 py-2.5 sm:py-3 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 cursor-pointer ${
+              activeTab === 'jobs' ? 'bg-[#0A0A0A] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'
+            }`}
           >
-            <Briefcase size={14} className={activeTab === 'jobs' ? 'animate-mira-blink-modern' : ''} /> {t('nav_vagas', language)}
+            <Briefcase size={14} className={activeTab === 'jobs' ? 'animate-mira-blink-modern' : ''} />
+            {t('nav_vagas', language)}
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('trends')}
-            className={`flex-1 py-2.5 sm:py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${activeTab === 'trends' ? 'bg-[#0A0A0A] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`flex-1 py-2.5 sm:py-3 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 relative z-10 cursor-pointer ${
+              activeTab === 'trends' ? 'bg-[#0A0A0A] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'
+            }`}
           >
-            <Activity size={14} className={activeTab === 'trends' ? 'animate-mira-blink-modern' : ''} /> {t('jobs_insight_title', language)}
+            <Activity size={14} className={activeTab === 'trends' ? 'animate-mira-blink-modern' : ''} />
+            {t('jobs_insight_title', language)}
           </button>
         </div>
       </div>
-        
+
+      <div className="px-4 sm:px-6 py-5 space-y-6 flex-1">
+        {/* Quick Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
           <button
             onClick={() => setIsAlertModalOpen(true)}
@@ -699,26 +813,96 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           </button>
         </div>
 
-        {activeTab === 'jobs' && (
+        {activeTab === 'jobs' ? (
           <div className="space-y-6 animate-in fade-in duration-500">
             {/* 📊 SOBERANIA MIRA: Metrics Dashboard (Market & Platform Analytics) */}
-            <div className="grid grid-cols-2 gap-3 bg-slate-50 p-2.5 rounded-[2rem] border border-slate-100/50 shadow-inner">
-              {/* Metric 1: Total Active Jobs */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm relative overflow-hidden group">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50 p-2 sm:p-2.5 rounded-2xl sm:rounded-[2rem] border border-slate-200/60 shadow-inner">
+              {/* Card 1: Vagas Ativas */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-sky-500" />
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Briefcase size={10} className="text-sky-500" /> {t('jobs_active_title', language)}</span>
-                {totalPlatformJobs !== null ? (
-                  <span className="text-xl font-black font-mono text-slate-800 tracking-tighter mt-1">+{totalPlatformJobs.toLocaleString('pt-PT')}</span>
-                ) : (
-                  <span className="text-xl font-black font-mono text-slate-400 tracking-tighter mt-1 animate-pulse">••••</span>
-                )}
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600 shrink-0">
+                    <Briefcase size={20} />
+                  </div>
+                  <div className="space-y-0.5 min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest block">
+                      {language === 'EN' ? 'ACTIVE VACANCIES' :
+                       language === 'ES' ? 'VACANTES ACTIVAS' :
+                       language === 'FR' ? 'OFFRES ACTIVES' :
+                       'VAGAS ATIVAS'}
+                    </span>
+                    <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">
+                      {language === 'EN' ? 'Verified active job vacancies available today' :
+                       language === 'ES' ? 'Vacantes activas verificadas disponibles hoy' :
+                       language === 'FR' ? 'Offres actives vérifiées disponibles aujourd\'hui' :
+                       'Vagas ativas verificadas disponíveis hoje'}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  {marketData ? (
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                      {marketData.activeJobsCount.toLocaleString('pt-PT')}
+                    </span>
+                  ) : totalPlatformJobs !== null ? (
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                      {totalPlatformJobs.toLocaleString('pt-PT')}
+                    </span>
+                  ) : (
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-300 tracking-tight animate-pulse">
+                      ••••
+                    </span>
+                  )}
+                </div>
               </div>
-              
-              {/* Metric 2: Average Estimated Salary */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm relative overflow-hidden group">
+
+              {/* Card 2: Salário Médio Real */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-emerald-500" />
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><TrendingUp size={10} className="text-emerald-500" /> {t('jobs_avg_salary_title', language)}</span>
-                <span className="text-xl font-black font-mono text-slate-800 tracking-tighter mt-1">{overallAvgSalary}€</span>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                    <TrendingUp size={20} />
+                  </div>
+                  <div className="space-y-0.5 min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest block">
+                      {language === 'EN' ? 'REAL AVERAGE SALARY' :
+                       language === 'ES' ? 'SALARIO MEDIO REAL' :
+                       language === 'FR' ? 'SALAIRE MOYEN RÉEL' :
+                       'SALÁRIO MÉDIO REAL'}
+                    </span>
+                    <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">
+                      {marketData?.salary?.declaredJobsCount ? (
+                        language === 'EN' ? `Based on ${marketData.salary.declaredJobsCount.toLocaleString('en-US')} verified salary offers` :
+                        language === 'ES' ? `Basado en ${marketData.salary.declaredJobsCount.toLocaleString('es-ES')} ofertas verificadas` :
+                        language === 'FR' ? `Basé sur ${marketData.salary.declaredJobsCount.toLocaleString('fr-FR')} offres vérifiées` :
+                        `Apurado de ${marketData.salary.declaredJobsCount.toLocaleString('pt-PT')} vagas com remuneração em EUR`
+                      ) : (
+                        language === 'EN' ? 'Computed from active verified offers' :
+                        language === 'ES' ? 'Calculado a partir de ofertas verificadas' :
+                        language === 'FR' ? 'Calculé à partir des offres vérifiées' :
+                        'Calculado a partir das vagas com salário declarado'
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  {marketData?.salary?.averageEur !== null && marketData?.salary?.averageEur !== undefined ? (
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                      {marketData.salary.averageEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
+                    </span>
+                  ) : marketLoading ? (
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-300 tracking-tight animate-pulse">
+                      ••••
+                    </span>
+                  ) : (
+                    <span className="text-xs font-black uppercase text-amber-600">
+                      {language === 'EN' ? 'Unavailable' :
+                       language === 'ES' ? 'No disponible' :
+                       language === 'FR' ? 'Indisponible' :
+                       'Indisponível'}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -880,10 +1064,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                 </div>
               </div>
             </div>
-          </div>
-        )}
 
-      <div className="px-6 space-y-6 pb-10 mt-4">
+        {/* Results Area */}
         {loading && jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-6 animate-pulse">
             <div className="w-20 h-20 bg-slate-50 rounded-[2.5rem] flex items-center justify-center text-slate-200">
@@ -900,318 +1082,420 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
             <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{error}</p>
             <button onClick={() => fetchJobs(true)} className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest">{t('jobs_btn_try_again', language)}</button>
           </div>
-        ) : activeTab === 'jobs' ? (
-          paginatedJobs.length > 0 ? (
-            <div className="space-y-5">
-              <div ref={jobListTopRef} className="scroll-mt-6" />
+        ) : paginatedJobs.length > 0 ? (
+          <div className="space-y-5">
+            <div ref={jobListTopRef} className="scroll-mt-6" />
 
-              {/* 📊 Responsive Results Counter Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50 border border-slate-200/70 px-4 sm:px-5 py-3 rounded-2xl">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <span className="text-xs font-bold text-slate-700">
-                    {language === 'EN'
-                      ? `Showing ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} of ${totalEffectiveCount.toLocaleString()} jobs`
-                      : language === 'ES'
-                      ? `Mostrando ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} de ${totalEffectiveCount.toLocaleString()} ofertas`
-                      : language === 'FR'
-                      ? `Affichage de ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} sur ${totalEffectiveCount.toLocaleString()} offres`
-                      : `A mostrar ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} de ${totalEffectiveCount.toLocaleString('pt-PT')} vagas`}
-                  </span>
-                </div>
-                <span className="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest self-end sm:self-auto">
-                  {language === 'EN' ? `Page ${currentPage} of ${totalPages}` : language === 'ES' ? `Pág. ${currentPage} de ${totalPages}` : language === 'FR' ? `Page ${currentPage} sur ${totalPages}` : `Página ${currentPage} de ${totalPages}`}
+            {/* 📊 Responsive Results Counter Bar with Exact Real Counts */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50 border border-slate-200/70 px-4 sm:px-5 py-3 rounded-2xl">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="text-xs font-bold text-slate-700">
+                  {language === 'EN'
+                    ? `Showing ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} of ${totalEffectiveCount.toLocaleString()} jobs`
+                    : language === 'ES'
+                    ? `Mostrando ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} de ${totalEffectiveCount.toLocaleString()} ofertas`
+                    : language === 'FR'
+                    ? `Affichage de ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} sur ${totalEffectiveCount.toLocaleString()} offres`
+                    : `A mostrar ${(currentPage - 1) * JOBS_PER_PAGE + 1}–${Math.min(currentPage * JOBS_PER_PAGE, totalEffectiveCount)} de ${totalEffectiveCount.toLocaleString('pt-PT')} vagas`}
                 </span>
               </div>
+              <span className="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest self-end sm:self-auto">
+                {language === 'EN' ? `Page ${currentPage} of ${totalPages}` : language === 'ES' ? `Pág. ${currentPage} de ${totalPages}` : language === 'FR' ? `Page ${currentPage} sur ${totalPages}` : `Página ${currentPage} de ${totalPages}`}
+              </span>
+            </div>
 
-              {/* 📋 Paginated Jobs Grid */}
-              <div className="grid grid-cols-1 gap-5">
-                {paginatedJobs.map(job => (
-                  <JobItem key={job.id} job={job} language={language} onEarnPoints={onEarnPoints} />
+            {/* 📋 Paginated Jobs Grid */}
+            <div className="grid grid-cols-1 gap-5">
+              {paginatedJobs.map(job => (
+                <JobItem key={job.id} job={job} language={language} onEarnPoints={onEarnPoints} />
+              ))}
+            </div>
+
+            {/* 📱 Mobile & Desktop Sovereign Responsive Pagination Bar */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 pb-2 border-t border-slate-100">
+                {/* Mobile Quick Page Selector */}
+                <div className="flex items-center justify-between w-full sm:w-auto gap-3 text-xs font-bold text-slate-500">
+                  <span>
+                    {language === 'EN' ? 'Jump to page:' : language === 'ES' ? 'Ir a la página:' : language === 'FR' ? 'Aller à la page :' : 'Ir para página:'}
+                  </span>
+                  <select
+                    value={currentPage}
+                    onChange={(e) => handlePageChange(Number(e.target.value))}
+                    aria-label="Selecionar página"
+                    className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-mira-orange/30 cursor-pointer"
+                  >
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      <option key={p} value={p}>
+                        {p} / {totalPages}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    aria-label="Página anterior"
+                    className="flex items-center gap-1 px-3.5 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-95 touch-manipulation"
+                  >
+                    <ChevronLeft size={16} />
+                    <span className="hidden sm:inline">{language === 'EN' ? 'Prev' : language === 'ES' ? 'Ant.' : language === 'FR' ? 'Préc.' : 'Anterior'}</span>
+                  </button>
+
+                  {/* Numeric buttons on desktop/tablet */}
+                  <div className="flex items-center gap-1">
+                    {getPageNumbers().map((p, idx) => {
+                      if (p === '...') {
+                        return (
+                          <span key={`ellipsis-${idx}`} className="w-7 sm:w-8 text-center text-slate-400 font-black text-xs">
+                            …
+                          </span>
+                        );
+                      }
+                      const isActive = p === currentPage;
+                      return (
+                        <button
+                          key={`page-${p}`}
+                          type="button"
+                          onClick={() => handlePageChange(Number(p))}
+                          className={`h-9 min-w-[34px] sm:min-w-[38px] px-2 rounded-xl text-xs font-black transition-all active:scale-95 touch-manipulation ${
+                            isActive
+                              ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20'
+                              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    aria-label="Página seguinte"
+                    className="flex items-center gap-1 px-3.5 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-95 touch-manipulation"
+                  >
+                    <span className="hidden sm:inline">{language === 'EN' ? 'Next' : language === 'ES' ? 'Sig.' : language === 'FR' ? 'Suiv.' : 'Seguinte'}</span>
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
+            <div className="w-24 h-24 bg-slate-100 rounded-[3rem] flex items-center justify-center text-slate-200 border border-slate-100">
+              <Search size={48} />
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t('jobs_empty_title', language)}</p>
+              <p className="text-sm font-medium text-slate-500 px-10 leading-relaxed">{t('jobs_empty_desc', language)}</p>
+            </div>
+            <button
+              onClick={() => { setSelectedCity('Todos'); setSelectedWorkTopic('Todos'); setSearchQuery(''); }}
+              className="px-8 py-3 bg-white text-slate-400 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
+            >
+              {t('jobs_reset_filters_btn', language)}
+            </button>
+          </div>
+        )}
+          </div>
+        ) : (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            {/* 3 Summary Cards */}
+            {marketData ? (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {/* Card A: Salário Médio Geral */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-emerald-500" />
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-2">
+                    <TrendingUp size={12} className="text-emerald-500" />
+                    {language === 'EN' ? 'REAL AVERAGE SALARY' :
+                     language === 'ES' ? 'SALARIO MEDIO REAL' :
+                     language === 'FR' ? 'SALAIRE MOYEN RÉEL' :
+                     'SALÁRIO MÉDIO REAL'}
+                  </span>
+                  <div className="space-y-1">
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                      {marketData.salary.averageEur ? `${marketData.salary.averageEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€` : (
+                        language === 'EN' ? 'Unavailable' :
+                        language === 'ES' ? 'No disponible' :
+                        language === 'FR' ? 'Indisponible' :
+                        'Indisponível'
+                      )}
+                    </span>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      {marketData.salary.minEur && marketData.salary.maxEur
+                        ? (language === 'EN'
+                            ? `Range: ${marketData.salary.minEur.toLocaleString('en-US')}€ – ${marketData.salary.maxEur.toLocaleString('en-US')}€ (${marketData.salary.declaredJobsCount.toLocaleString('en-US')} offers)`
+                            : language === 'ES'
+                            ? `Rango: ${marketData.salary.minEur.toLocaleString('es-ES')}€ – ${marketData.salary.maxEur.toLocaleString('es-ES')}€ (${marketData.salary.declaredJobsCount.toLocaleString('es-ES')} ofertas)`
+                            : language === 'FR'
+                            ? `Fourchette : ${marketData.salary.minEur.toLocaleString('fr-FR')}€ – ${marketData.salary.maxEur.toLocaleString('fr-FR')}€ (${marketData.salary.declaredJobsCount.toLocaleString('fr-FR')} offres)`
+                            : `Faixa: ${marketData.salary.minEur.toLocaleString('pt-PT')}€ – ${marketData.salary.maxEur.toLocaleString('pt-PT')}€ (${marketData.salary.declaredJobsCount.toLocaleString('pt-PT')} ofertas)`)
+                        : (language === 'EN'
+                            ? `Base: ${marketData.salary.declaredJobsCount.toLocaleString('en-US')} offers analyzed`
+                            : language === 'ES'
+                            ? `Base: ${marketData.salary.declaredJobsCount.toLocaleString('es-ES')} ofertas analizadas`
+                            : language === 'FR'
+                            ? `Base : ${marketData.salary.declaredJobsCount.toLocaleString('fr-FR')} offres analysées`
+                            : `Base: ${marketData.salary.declaredJobsCount.toLocaleString('pt-PT')} ofertas analisadas`)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Card B: Ofertas Ativas */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-sky-500" />
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-2">
+                    <Briefcase size={12} className="text-sky-500" />
+                    {language === 'EN' ? 'ACTIVE VACANCIES' :
+                     language === 'ES' ? 'VACANTES ACTIVAS' :
+                     language === 'FR' ? 'OFFRES ACTIVES' :
+                     'VAGAS ATIVAS'}
+                  </span>
+                  <div className="space-y-1">
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                      {marketData.activeJobsCount.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}
+                    </span>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      {language === 'EN' ? 'Total verified jobs today' :
+                       language === 'ES' ? 'Vacantes activas hoy en la plataforma' :
+                       language === 'FR' ? 'Offres actives aujourd\'hui sur la plateforme' :
+                       'Vagas ativas hoje na plataforma'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Card C: Crescimento Semanal */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-amber-500" />
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-2">
+                    <Activity size={12} className="text-amber-500" />
+                    {language === 'EN' ? 'WEEKLY GROWTH' :
+                     language === 'ES' ? 'CRECIMIENTO SEMANAL' :
+                     language === 'FR' ? 'CROISSANCE HEBDOMADAIRE' :
+                     'CRESCIMENTO SEMANAL'}
+                  </span>
+                  <div className="space-y-1">
+                    <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-1 rounded-lg text-lg sm:text-xl font-black font-mono">
+                      <TrendingUp size={16} className="text-emerald-500" />
+                      {marketData.weeklyGrowth.growthPct >= 0 ? `+${marketData.weeklyGrowth.growthPct}%` : `${marketData.weeklyGrowth.growthPct}%`}
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      {language === 'EN'
+                        ? `${marketData.weeklyGrowth.currentPeriodJobs.toLocaleString('en-US')} new offers in 7 days`
+                        : language === 'ES'
+                        ? `${marketData.weeklyGrowth.currentPeriodJobs.toLocaleString('es-ES')} nuevas vacantes en 7 días`
+                        : language === 'FR'
+                        ? `${marketData.weeklyGrowth.currentPeriodJobs.toLocaleString('fr-FR')} nouvelles offres en 7 jours`
+                        : `${marketData.weeklyGrowth.currentPeriodJobs.toLocaleString('pt-PT')} novas vagas em 7 dias`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : marketLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm h-28 animate-pulse flex flex-col justify-between">
+                    <div className="h-3 w-20 bg-slate-200 rounded" />
+                    <div className="h-8 w-32 bg-slate-200 rounded" />
+                  </div>
                 ))}
               </div>
-
-              {/* 📱 Mobile & Desktop Sovereign Responsive Pagination Bar */}
-              {totalPages > 1 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 pb-2 border-t border-slate-100">
-                  {/* Mobile Quick Page Selector */}
-                  <div className="flex items-center justify-between w-full sm:w-auto gap-3 text-xs font-bold text-slate-500">
-                    <span>
-                      {language === 'EN' ? 'Jump to page:' : language === 'ES' ? 'Ir a la página:' : language === 'FR' ? 'Aller à la page :' : 'Ir para página:'}
-                    </span>
-                    <select
-                      value={currentPage}
-                      onChange={(e) => handlePageChange(Number(e.target.value))}
-                      aria-label="Selecionar página"
-                      className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-mira-orange/30 cursor-pointer"
-                    >
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                        <option key={p} value={p}>
-                          {p} / {totalPages}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Navigation Buttons (Touch Optimized) */}
-                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto">
-                    <button
-                      type="button"
-                      disabled={currentPage === 1}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      aria-label="Página anterior"
-                      className="flex items-center gap-1 px-3.5 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-95 touch-manipulation"
-                    >
-                      <ChevronLeft size={16} />
-                      <span className="hidden sm:inline">{language === 'EN' ? 'Prev' : language === 'ES' ? 'Ant.' : language === 'FR' ? 'Préc.' : 'Anterior'}</span>
-                    </button>
-
-                    {/* Numeric buttons on desktop/tablet */}
-                    <div className="flex items-center gap-1">
-                      {getPageNumbers().map((p, idx) => {
-                        if (p === '...') {
-                          return (
-                            <span key={`ellipsis-${idx}`} className="w-7 sm:w-8 text-center text-slate-400 font-black text-xs">
-                              …
-                            </span>
-                          );
-                        }
-                        const isActive = p === currentPage;
-                        return (
-                          <button
-                            key={`page-${p}`}
-                            type="button"
-                            onClick={() => handlePageChange(Number(p))}
-                            className={`h-9 min-w-[34px] sm:min-w-[38px] px-2 rounded-xl text-xs font-black transition-all active:scale-95 touch-manipulation ${
-                              isActive
-                                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20'
-                                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
-                            }`}
-                          >
-                            {p}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      type="button"
-                      disabled={currentPage === totalPages}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      aria-label="Página seguinte"
-                      className="flex items-center gap-1 px-3.5 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-95 touch-manipulation"
-                    >
-                      <span className="hidden sm:inline">{language === 'EN' ? 'Next' : language === 'ES' ? 'Sig.' : language === 'FR' ? 'Suiv.' : 'Seguinte'}</span>
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center space-y-6">
-              <div className="w-24 h-24 bg-slate-100 rounded-[3rem] flex items-center justify-center text-slate-200 border border-slate-100">
-                <Search size={48} />
+            ) : (
+              <div className="bg-white p-6 rounded-2xl border border-red-100 text-center space-y-3">
+                <p className="text-xs font-black uppercase tracking-wider text-red-500">
+                  {marketError || (
+                    language === 'EN' ? 'Market data unavailable' :
+                    language === 'ES' ? 'Datos de mercado no disponibles' :
+                    language === 'FR' ? 'Données de marché indisponibles' :
+                    'Dados de mercado indisponíveis'
+                  )}
+                </p>
+                <button
+                  onClick={loadMarketData}
+                  className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-slate-800 cursor-pointer active:scale-95"
+                >
+                  {language === 'EN' ? 'Try Again' :
+                   language === 'ES' ? 'Reintentar' :
+                   language === 'FR' ? 'Réessayer' :
+                   'Tentar Novamente'}
+                </button>
               </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t('jobs_empty_title', language)}</p>
-                <p className="text-sm font-medium text-slate-500 px-10 leading-relaxed">{t('jobs_empty_desc', language).replace('total', jobs.length.toString())}</p>
-              </div>
-              <button
-                onClick={() => { setSelectedCity('Todos'); setSelectedWorkTopic('Todos'); setSearchQuery(''); }}
-                className="px-8 py-3 bg-white text-slate-400 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
-              >
-                {t('jobs_reset_filters_btn', language)}
-              </button>
-            </div>
-          )
-        ) : (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Market Insights Hero Card - Upgraded Clean High-Tech Glass */}
-            <div className="p-8 sm:p-10 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md">
-              {/* Subtle grid backdrop for tech aesthetic */}
-              <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.01)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
-              
-              {/* Soft radial background decorations (Sky Blue, Orange) */}
-              <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/5 rounded-full blur-[80px] pointer-events-none" />
-              <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-mira-orange/5 rounded-full blur-[80px] pointer-events-none" />
-              
-              <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="space-y-4 max-w-xl">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-200/80 rounded-full">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-mira-orange opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-mira-orange"></span>
-                    </span>
-                    <span className="text-[9px] font-mono font-bold tracking-widest text-slate-500 uppercase">
-                      {t('jobs_insight_title', language)}
-                    </span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-black tracking-tight uppercase leading-snug text-slate-800">
-                    {t('jobs_growth_desc', language)}
+            )}
+
+            {/* Sector Intelligence List */}
+            {marketData && (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-slate-800">
+                    {language === 'EN' ? 'MARKET INTELLIGENCE BY SECTOR' :
+                     language === 'ES' ? 'INTELIGENCIA DE MERCADO POR SECTOR' :
+                     language === 'FR' ? 'INTELLIGENCE DU MARCHÉ PAR SECTEUR' :
+                     'INTELIGÊNCIA DE MERCADO POR SETOR'}
                   </h3>
-                  <p className="text-xs text-slate-500 font-semibold leading-relaxed">
-                    {t('jobs_insight_desc_card', language)}
+                  <p className="text-[11px] font-semibold text-slate-400">
+                    {language === 'EN' ? 'Salary metrics and job volumes computed dynamically from active offers in Portugal' :
+                     language === 'ES' ? 'Métricas salariales y volumen de vacantes calculados dinámicamente de las ofertas en Portugal' :
+                     language === 'FR' ? 'Métriques salariales et volume d\'emplois calculés dynamiquement à partir des offres actives au Portugal' :
+                     'Métricas salariais e volume de vagas calculados dinamicamente a partir das ofertas ativas em Portugal'}
                   </p>
                 </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full sm:w-auto">
-                  <div className="flex-1 sm:flex-none bg-slate-50 border border-slate-200/60 px-5 py-4 rounded-2xl flex flex-col justify-center min-w-[120px] sm:min-w-[130px] relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-sky-400" />
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">{t('jobs_avg_salary', language)}</span>
-                    <span className="text-xl font-black font-mono text-slate-800 leading-none tracking-tighter">{overallAvgSalary}€</span>
-                  </div>
-                  <div className="flex-1 sm:flex-none bg-slate-50 border border-slate-200/60 px-5 py-4 rounded-2xl flex flex-col justify-center min-w-[120px] sm:min-w-[130px] relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-mira-orange" />
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">{t('jobs_active_offers', language)}</span>
-                    {totalPlatformJobs !== null ? (
-                      <span className="text-xl font-black font-mono text-slate-800 leading-none tracking-tighter">+{totalPlatformJobs.toLocaleString('pt-PT')}</span>
-                    ) : (
-                      <span className="text-xl font-black font-mono text-slate-400 leading-none tracking-tighter animate-pulse">••••</span>
-                    )}
-                    {jobsGrowth && (
-                        <div className={`mt-2 text-[9px] font-black flex items-center gap-1 ${jobsGrowth.trend === 'up' ? 'text-emerald-500' : jobsGrowth.trend === 'down' ? 'text-rose-500' : 'text-slate-500'}`}>
-                            {jobsGrowth.trend === 'up' ? <TrendingUp size={10} strokeWidth={3} /> : jobsGrowth.trend === 'down' ? <TrendingDown size={10} strokeWidth={3} /> : <Minus size={10} strokeWidth={3} />}
-                            {jobsGrowth.trend === 'up' ? '+' : jobsGrowth.trend === 'down' ? '-' : ''}{jobsGrowth.percentage}% {t('jobs_new_offers_count', language)}
+
+                <div className="grid grid-cols-1 gap-4">
+                  {marketData.sectors.map(sector => {
+                    const details = TOPIC_DETAILS[sector.name] || TOPIC_DETAILS['Outros'];
+                    const isVeryHigh = sector.demandLevel === 'very_high';
+                    const isHigh = sector.demandLevel === 'high';
+                    const isMed = sector.demandLevel === 'medium';
+                    const demandStyle = isVeryHigh
+                      ? 'bg-rose-50 text-rose-700 border-rose-200/80'
+                      : isHigh
+                      ? 'bg-amber-50 text-amber-700 border-amber-200/80'
+                      : isMed
+                      ? 'bg-sky-50 text-sky-700 border-sky-200/80'
+                      : 'bg-slate-50 text-slate-600 border-slate-200/80';
+
+                    const demandText = isVeryHigh
+                      ? t('jobs_demand_vhigh', language)
+                      : isHigh
+                      ? t('jobs_demand_high', language)
+                      : isMed
+                      ? t('jobs_demand_med', language)
+                      : (language === 'EN' ? 'MODERATE DEMAND' :
+                         language === 'ES' ? 'DEMANDA MODERADA' :
+                         language === 'FR' ? 'DEMANDE MODÉRÉE' :
+                         'PROCURA MODERADA');
+
+                    return (
+                      <div
+                        key={sector.id}
+                        className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 hover:shadow-md transition-all relative overflow-hidden"
+                      >
+                        {/* Left strip */}
+                        <div className="absolute left-0 top-4 bottom-4 w-1.5 rounded-r-full" style={{ backgroundColor: details.color }} />
+
+                        {/* Left Details */}
+                        <div className="flex items-start gap-4 min-w-0 flex-1 pl-2">
+                          <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${details.bg} border border-slate-200/50 shadow-sm`}>
+                            {details.emoji}
+                          </div>
+                          <div className="space-y-1.5 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h4 className="font-extrabold text-slate-900 text-sm sm:text-base uppercase tracking-tight">
+                                {getSectorDisplayName(sector.name, language)}
+                              </h4>
+                              <span className={`text-[8px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${demandStyle}`}>
+                                {demandText}
+                              </span>
+                            </div>
+
+                            {/* 📍 Melhores Cidades / Polos de Contratação */}
+                            <div className="flex items-start sm:items-center gap-1.5 text-xs text-slate-600">
+                              <MapPin size={13} className="text-mira-orange shrink-0 mt-0.5 sm:mt-0" />
+                              <div className="text-xs text-slate-600 font-medium leading-tight">
+                                <span className="font-bold text-slate-700 mr-1">
+                                  {language === 'EN' ? 'Best cities:' :
+                                   language === 'ES' ? 'Mejores ciudades:' :
+                                   language === 'FR' ? 'Meilleures villes :' :
+                                   'Melhores cidades:'}
+                                </span>
+                                <span className="text-slate-600 font-semibold">
+                                  {getSectorTopCities(sector.name, language)}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Faixa salarial real apurada */}
+                            <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                              {sector.salaryDeclaredJobsCount > 0 ? (
+                                <>
+                                  <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                    {language === 'EN' ? 'Salary Range:' : language === 'ES' ? 'Rango Salarial:' : language === 'FR' ? 'Fourchette :' : 'Faixa salarial:'}
+                                  </span>{' '}
+                                  <strong className="text-slate-800">
+                                    {sector.minSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€ – {sector.maxSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
+                                  </strong> • <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                                    {language === 'FR' ? 'Base :' : 'Base:'}
+                                  </span> {sector.salaryDeclaredJobsCount.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}{' '}
+                                  {sector.salaryDeclaredJobsCount === 1
+                                    ? (language === 'EN' ? 'offer analyzed' : language === 'ES' ? 'oferta analizada' : language === 'FR' ? 'offre analysée' : 'vaga analisada')
+                                    : (language === 'EN' ? 'offers analyzed' : language === 'ES' ? 'ofertas analizadas' : language === 'FR' ? 'offres analysées' : 'vagas analisadas')}
+                                </>
+                              ) : (
+                                <span className="text-slate-400 italic">
+                                  {language === 'EN' ? 'Salary under consultation / No declared EUR data' :
+                                   language === 'ES' ? 'Bajo consulta / Sin datos declarados en EUR' :
+                                   language === 'FR' ? 'Sur demande / Sans données déclarées en EUR' :
+                                   'Sob consulta / Sem dados declarados em EUR'}
+                                </span>
+                              )}
+                            </p>
+                          </div>
                         </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* List of Insights / Trends */}
-            <div className="grid grid-cols-1 gap-5">
-              {(() => {
-                const getIconAndColor = (id: number) => {
-                  switch (id) {
-                    case 1: return { 
-                      icon: '🏨', 
-                      color: 'indigo',
-                      accentBorder: 'hover:border-indigo-200', 
-                      borderIndicator: 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]',
-                      bg: 'bg-indigo-50/60 border-indigo-100', 
-                      bar: 'bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.5)]'
-                    };
-                    case 2: return { 
-                      icon: '💻', 
-                      color: 'sky',
-                      accentBorder: 'hover:border-sky-200', 
-                      borderIndicator: 'bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]',
-                      bg: 'bg-sky-50/60 border-sky-100', 
-                      bar: 'bg-sky-500 shadow-[0_0_4px_rgba(14,165,233,0.5)]'
-                    };
-                    case 3: return { 
-                      icon: '🏗️', 
-                      color: 'amber',
-                      accentBorder: 'hover:border-amber-200', 
-                      borderIndicator: 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]',
-                      bg: 'bg-amber-50/60 border-amber-100', 
-                      bar: 'bg-amber-500 shadow-[0_0_4px_rgba(245,158,11,0.5)]'
-                    };
-                    case 4: return { 
-                      icon: '⚡', 
-                      color: 'emerald',
-                      accentBorder: 'hover:border-emerald-200', 
-                      borderIndicator: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-                      bg: 'bg-emerald-50/60 border-emerald-100', 
-                      bar: 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]'
-                    };
-                    case 5: return { 
-                      icon: '🩺', 
-                      color: 'rose',
-                      accentBorder: 'hover:border-rose-200', 
-                      borderIndicator: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
-                      bg: 'bg-rose-50/60 border-rose-100', 
-                      bar: 'bg-rose-500 shadow-[0_0_4px_rgba(244,63,94,0.5)]'
-                    };
-                    default: return { 
-                      icon: '💼', 
-                      color: 'slate',
-                      accentBorder: 'hover:border-slate-200', 
-                      borderIndicator: 'bg-slate-500',
-                      bg: 'bg-slate-50/60 border-slate-100', 
-                      bar: 'bg-slate-500'
-                    };
-                  }
-                };
+                        {/* Right Stats */}
+                        <div className="flex items-center justify-between md:justify-end gap-x-8 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100 shrink-0">
+                          {/* Salary Box */}
+                          <div className="flex flex-col min-w-[110px]">
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                              {t('jobs_avg_salary', language)}
+                            </span>
+                            <span className="text-sm sm:text-base font-black font-mono text-slate-900">
+                              {sector.averageSalaryEur ? `${sector.averageSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€` : (
+                                language === 'EN' ? 'Under consultation' :
+                                language === 'ES' ? 'Bajo consulta' :
+                                language === 'FR' ? 'Sur demande' :
+                                'Sob consulta'
+                              )}
+                            </span>
+                            {/* Visual Proportion Bar (Relative to leader) */}
+                            <div className="w-28 h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{
+                                  width: `${sector.visualProportionPct}%`,
+                                  backgroundColor: details.color
+                                }}
+                              />
+                            </div>
+                          </div>
 
-                return dynamicTrends.map(trend => {
-                  const style = getIconAndColor(trend.id);
-                  const isHighDemand = trend.demandLevel.includes('Alta') || trend.demandLevel.includes('High') || trend.demandLevel.includes('Élevée');
-                  const demandStyle = isHighDemand 
-                    ? 'bg-rose-500/10 text-rose-600 border border-rose-500/20' 
-                    : 'bg-amber-500/10 text-amber-600 border border-amber-500/20';
-
-                  return (
-                    <div 
-                      key={trend.id} 
-                      className={`
-                        bg-white p-6 rounded-[2.25rem] border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300
-                        hover:shadow-xl hover:shadow-slate-100 ${style.accentBorder} hover:-translate-y-1 active:scale-[0.99] relative overflow-hidden
-                      `}
-                    >
-                      {/* Left color strip indicator for visual premium touch */}
-                      <div className={`absolute left-0 top-6 bottom-6 w-1 rounded-r-full ${style.borderIndicator}`} />
-
-                      {/* Left: Icon and Details */}
-                      <div className="flex items-start gap-4 min-w-0 flex-1 pl-2">
-                        {/* Icon Box */}
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${style.bg} border relative`}>
-                          <span className="relative z-10">{style.icon}</span>
-                        </div>
-                        
-                        {/* Content */}
-                        <div className="space-y-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h4 className="font-extrabold text-slate-800 text-base uppercase tracking-tight">
-                              {trend.name}
-                            </h4>
-                            <span className={`text-[8px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full ${demandStyle}`}>
-                              {trend.demandLevel}
+                          {/* Volume Box */}
+                          <div className="flex flex-col text-right min-w-[110px]">
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                              {language === 'EN' ? 'ACTIVE VACANCIES' :
+                               language === 'ES' ? 'VACANTES ACTIVAS' :
+                               language === 'FR' ? 'OFFRES ACTIVES' :
+                               'VAGAS ATIVAS'}
+                            </span>
+                            <span className="text-sm sm:text-base font-black font-mono text-slate-900">
+                              {sector.activeJobsCount.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}
+                            </span>
+                            <span className="text-[9px] font-bold text-slate-400 mt-1">
+                              {sector.marketSharePct}% {
+                                language === 'EN' ? 'of market' :
+                                language === 'ES' ? 'del mercado' :
+                                language === 'FR' ? 'du marché' :
+                                'do mercado'
+                              }
                             </span>
                           </div>
-                          <p className="text-xs text-slate-500 font-semibold leading-relaxed">
-                            {trend.description}
-                          </p>
                         </div>
                       </div>
-
-                      {/* Right: Salary & Growth Stats */}
-                      <div className="flex items-center justify-between md:justify-end gap-x-8 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100">
-                        {/* Salary Visual Box */}
-                        <div className="flex flex-col min-w-[100px]">
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                            {t('jobs_avg_salary', language)}
-                          </span>
-                          <span className="text-sm font-black font-mono text-slate-800">
-                            {trend.averageSalary}€
-                          </span>
-                          {/* Mini Progress Bar representation */}
-                          <div className="w-24 h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
-                            <div 
-                              className={`h-full rounded-full ${style.bar}`} 
-                              style={{ width: trend.width }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Growth Box */}
-                        <div className="flex flex-col text-right">
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                            {t('jobs_growth', language)}
-                          </span>
-                          <div className="inline-flex items-center gap-1 self-end bg-emerald-50 text-emerald-600 border border-emerald-100 px-2.5 py-1 rounded-lg text-xs font-black font-mono">
-                            <TrendingUp size={10} className="text-emerald-500" />
-                            {trend.growth}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                });
-              })()}
-            </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

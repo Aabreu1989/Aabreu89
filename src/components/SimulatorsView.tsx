@@ -56,6 +56,239 @@ interface SimulatorsViewProps {
 // ─── TRANSLATIONS DICTIONARY ────────────────────────────────────────────────
 const translations: Record<string, Record<string, string>> = {
   PT: {
+    adults_label: "Adultos (≥ 18 anos)",
+    youth_label: "Jovens (14 a 17 anos)",
+    children_label: "Crianças (< 14 anos)",
+    telecom: "Telecomunicações (Fibra + Móvel)",
+    health_personal: "Saúde, Higiene e Cuidados Pessoais",
+    provenance_badge: "Benchmark de Mercado MIRA 2026 (INE m² + Portais Oficiais)",
+    mira_financial_health: "Suficiência Financeira & Prudência MIRA",
+    legal_subsistence_title: "Referência Geral Portaria n.º 1563/2007",
+    reference_label: "Referência:",
+    use_net_salary: "Usar Salário Líquido Calculado",
+    rail_pass: "Passe Ferroviário Verde (CP - 20€)",
+    t0_apartment: "Estúdio / Apartamento T0",
+    t3_apartment: "Apartamento T3 (Família)",
+    room_single: "Quarto Individual (Room)",
+    t4_apartment: "Apartamento T4 ou Superior (T4+)",
+    ocde_scale_label: "Escala OCDE:",
+    ocde_scale_sub: "Fator de equivalência familiar",
+    applied_food_utilities: "aplicado à alimentação e utilidades.",
+    portaria_formula_label: "Fórmula Teórica da Portaria:",
+    governance_note_title: "Nota de Governança e Blindagem Jurídica:",
+    household_net_income: "Rendimento Líquido Mensal do Agregado (€)",
+    effort_sustainable_tag: "Sustentável (≤ 35%)",
+    effort_moderate_tag: "Risco Moderado (36-50%)",
+    effort_critical_tag: "Sobre-esforço Crítico (> 50%)",
+    effort_rate_housing: "Taxa de Esforço Habitacional",
+    rent_vs_income_label: "Renda ({rent}€) face ao Rendimento ({income}€)",
+    estimated_monthly_balance: "Saldo Mensal Estimado",
+    deficit_estimated_desc: "Défice mensal estimado no distrito",
+    savings_margin_desc: "Margem de poupança mensal",
+    mira_recommended_reserve: "Reserva MIRA Recomendada",
+    reserve_target_desc: "Alvo de 6 meses de segurança (3 meses: {val3}€)",
+    compare_off: "Desligado",
+    placeholder_ex_from_tab1: "Ex: {val}€ (da Tab 1)",
+    placeholder_ex_1500: "Ex: 1500",
+    so_sim_title: "Simulador de Salário Líquido (Trabalhador por Conta de Outrem / Contrato)",
+    so_sim_subtitle: "Cálculo com tabelas oficiais de retenção na fonte de IRS (2026) & Segurança Social (11%)",
+    duodecimos_badge_13_14: "13.º e 14.º Mês",
+    irs_jovem_desc_field: "Isenção parcial nos primeiros 10 anos de atividade (até 35 anos). Teto anual: 55 × IAS (€ 29.542,15).",
+    irs_jovem_y1: "1.º Ano",
+    irs_jovem_y2_4: "2.º–4.º Anos",
+    irs_jovem_y5_7: "5.º–7.º Anos",
+    irs_jovem_y8_10: "8.º–10.º Anos",
+    irs_jovem_opt_1: "1.º Ano (100% Isenção)",
+    irs_jovem_opt_2: "2.º Ano (75% Isenção)",
+    irs_jovem_opt_3: "3.º Ano (75% Isenção)",
+    irs_jovem_opt_4: "4.º Ano (75% Isenção)",
+    irs_jovem_opt_5: "5.º Ano (50% Isenção)",
+    irs_jovem_opt_6: "6.º Ano (50% Isenção)",
+    irs_jovem_opt_7: "7.º Ano (50% Isenção)",
+    irs_jovem_opt_8: "8.º Ano (25% Isenção)",
+    irs_jovem_opt_9: "9.º Ano (25% Isenção)",
+    irs_jovem_opt_10: "10.º Ano (25% Isenção)",
+    meal_taxable_alert: "Atenção: Subsídio de Refeição Tributável",
+    meal_taxable_sub: "O excedente diário de {excess}€/dia (acima do teto isento de {cap}) sofrerá retenção de 11% de Segurança Social e IRS.",
+    calc_result_2026: "Resultado do Cálculo (2026)",
+    calc_result_title: "Resultado do Cálculo",
+    effective_irs_rate: "Taxa Efetiva de IRS",
+    effective_tax_rate: "Taxa Efetiva de Imposto",
+    net_income_available: "Rendimento Líquido Mensal Disponível",
+    payslip_breakdown: "Discriminação do Recibo de Vencimento",
+    remun_bruta_sujeita: "Remuneração Bruta Sujeita",
+    duodecimo_vac_line: "• Duodécimo Subsídio de Férias:",
+    duodecimo_xmas_line: "• Duodécimo Subsídio de Natal:",
+    ss_worker_11: "Segurança Social Trabalhador (11%)",
+    irs_withholding_line: "Retenção na Fonte de IRS",
+    meal_exempt_line: "Subsídio Alimentação Isento",
+    meal_taxed_line: "Subsídio Alimentação Tributado (no bruto)",
+    salary_legal_basis_note: "Cálculo efetuado com base no Modelo Marginal Oficial da Autoridade Tributária (2026), Segurança Social TCO (11%) e limites de refeição da Portaria n.º 51-B/2026 (isento até 10,46€/dia em cartão ou 6,15€ em dinheiro).",
+    rv_sim_title: "Simulador de Recibos Verdes (Trabalhador Independente / Freelancer)",
+    rv_sim_subtitle: "Cálculo de Segurança Social (21,4% sobre 70% base) & Retenção na fonte de IRS por Categoria B",
+    rv_irs_jovem_title: "IRS Jovem (Art. 12.º-B CIRS) para Categoria B",
+    rv_irs_jovem_desc: "Aplicável a trabalhadores independentes até 35 anos com grau de ensino superior.",
+    rv_deductions_title: "Contribuições & Impostos Retidos",
+    ss_ti_line: "Segurança Social (21,4% sobre 70% Base)",
+    ss_var_0_short: "0% Padrão",
+    rv_legal_note: "Os Recibos Verdes calculam a Segurança Social incidente sobre 70% da faturação bruta em serviços (ou 20% em vendas de produtos) com taxa de 21,4% (Trabalhador Independente) ou 25,2% (ENI).",
+    hp_title: "MIRA Housing Intelligence & Affordability 2026",
+    hp_subtitle: "Observatório Territorial (INE vs Portais) e Simuladores Regulatórios de Arrendamento e Aquisição",
+    hp_mode_rent: "🏠 Arrendamento & Porta 65",
+    hp_mode_buy: "🏦 Compra & Crédito à Habitação",
+    hp_territory_label: "📍 Unidade Territorial / Concelho",
+    hp_municipality_tag: "(Concelho / INE Oficial)",
+    hp_district_tag: "(Distrito / Agregação MIRA)",
+    hp_typology_label: "📐 Tipologia Habitacional",
+    hp_age_label: "🎂 Idade do Candidato (Anos)",
+    hp_buyer_age_label: "🎂 Idade do Mutuário mais Velho",
+    hp_youth_guarantee_toggle: "Garantia Pública Jovem (DL 44/2024)",
+    hp_rent_inputs_title: "Dados de Rendimento & Contrato",
+    hp_net_income_label: "💰 Rendimento Líquido Mensal (€)",
+    hp_net_income_help: "Usado na taxa de esforço e prudência MIRA.",
+    hp_gross_income_label: "💼 Rendimento Bruto Mensal (€)",
+    hp_gross_income_help: "Obrigatório para aferir a regra de esforço bruto ≤ 60% do Porta 65.",
+    hp_rent_label: "🏠 Renda Mensal Pretendida (€)",
+    hp_rent_help: "Deixe 0 ou vazio para usar o benchmark apurado de mercado.",
+    hp_expenses_label: "🛒 Total de Outras Despesas Mensais (€)",
+    hp_territorial_obs_title: "Observatório Territorial MIRA",
+    hp_ine_contracted: "INE Contratado",
+    hp_portals_asking: "Portais Anunciado",
+    hp_asking_spread: "Ágio de Oferta",
+    hp_spread_help: "Pressão de proprietários face aos novos contratos AT",
+    hp_initial_capital_title: "Capital Inicial (Art. 1076.º CC)",
+    hp_first_month_rent: "1.ª Renda de Entrada:",
+    hp_advance_rent: "Adiantamento (até 2 meses):",
+    hp_security_deposit: "Caução (até 2 meses):",
+    hp_cc1076_legal_note: "teto legal máximo admissível (5 rendas), não sendo compulsório caso o senhorio acorde montante inferior.",
+    hp_porta65_title: "Triagem Porta 65 Jovem",
+    hp_porta65_pre_pass: "✓ Pré-Aprovado",
+    hp_porta65_rejected: "Rejeitado na Triagem",
+    hp_porta65_rma_label: "RMA Concelhia",
+    hp_porta65_cap_rma: "Teto 4× RMA Concelho:",
+    hp_porta65_cap_rmmg: "Teto 4× RMMG 2026:",
+    hp_porta65_gross_effort: "Esforço Bruto (máx. 60%):",
+    hp_effort_rate_title: "Taxa de Esforço Habitacional MIRA",
+    hp_effort_mira_guide: "≤35% Diretriz Prudencial MIRA",
+    hp_effort_critical_risk: ">50% Risco Crítico",
+    hp_buy_inputs_title: "Dados do Imóvel & Financiamento",
+    hp_buy_price_label: "🏷️ Preço de Aquisição do Imóvel (€)",
+    hp_appraisal_label: "🔍 Valor de Avaliação Bancária (€)",
+    hp_appraisal_help: "O Banco de Portugal exige o cálculo sobre min(preço, avaliação).",
+    hp_own_capital_label: "💰 Capitais Próprios Disponíveis (€)",
+    hp_buyer_net_income_label: "💳 Rendimento Líquido do Agregado (€)",
+    hp_other_debts_label: "🧾 Outras Prestações / Créditos Atuais (€)",
+    hp_first_hpp_toggle: "1.ª Habitação Própria Permanente (HPP)",
+    hp_owns_prop_toggle: "É atualmente proprietário de habitação?",
+    hp_owns_last3y_toggle: "Foi proprietário nos últimos 3 anos? (IMT Jovem)",
+    hp_financing_title: "Enquadramento de Financiamento",
+    hp_financing_sub: "LTV, Financiamento & Prestação Mensal",
+    hp_max_ltv: "LTV Máx:",
+    hp_eligible_base: "Base Elegível min(P,A)",
+    hp_price_vs_appraisal: "Preço vs Avaliação",
+    hp_loan_amount: "Montante Financiado",
+    hp_effective_ltv: "LTV Efetivo:",
+    hp_monthly_mortgage: "Prestação Estimada",
+    hp_bdp_regulated_years: "anos (Regulado BdP)",
+    hp_imt_jovem_title: "IMT Jovem (DL 48-A/2024)",
+    hp_imt_jovem_applied: "✓ Isenção Aplicada",
+    hp_imt_jovem_normal: "Tributação Normal",
+    hp_imt_tax_suffix: "de IMT",
+    hp_imt_jovem_savings: "Poupança de IMT:",
+    hp_stamp_duty_savings: "Poupança Imposto de Selo:",
+    hp_imt_jovem_legal_basis: "Regime fiscal de 2026 ancorado no Ofício-Circulado n.º 40019/2024 da AT. Isenção total até 316.772 € e parcial até 633.453 €.",
+    hp_guarantee_title: "Garantia Pública (DL 44/2024)",
+    hp_guarantee_eligible: "✓ Elegível",
+    hp_guarantee_ineligible: "Inelegível",
+    hp_guarantee_explanation: "Garantia pessoal do Estado até 15% de min(preço, avaliação), permitindo financiamento bancário até 100% em transações até 450.000 €.",
+    hp_total_initial_capital: "Capital Inicial Total Estimado",
+    hp_downpayment_taxes_notary: "Entrada + Impostos + Notário",
+    aima_diag_title: "Diagnóstico AIMA & Saúde Financeira 2026",
+    aima_diag_subtitle: "Verifica se o seu rendimento cumpre os limiares mínimos exigidos para a Autorização de Residência em Portugal",
+    aima_portaria_badge: "Portaria 1563/2007 de 11/12",
+    aima_lei_badge: "Lei 23/2007 — Lei Estrangeiros",
+    aima_rmmg_badge: "RMMG 2026: 920€ / mês",
+    aima_data_title: "Os Seus Dados de Rendimento",
+    aima_data_sub: "Preencha os campos com os seus valores reais para verificar o cumprimento AIMA",
+    aima_net_label: "💰 Rendimento Líquido Mensal (€)",
+    aima_net_help: "O valor que recebe na conta após todos os descontos de SS e IRS.",
+    aima_dep_label: "👨‍👩‍👧 Nº de Dependentes no Agregado",
+    aima_dep_help: "Cônjuge sem rendimentos, filhos menores ou ascendentes a cargo.",
+    aima_no_dep: "(Sem dependentes)",
+    aima_one_dep: "dependente",
+    aima_multi_dep: "dependentes",
+    aima_rent_label: "🏠 Renda Mensal (€)",
+    aima_rent_help: "Valor pago por mês pela habitação.",
+    aima_exp_label: "🛒 Total de Despesas Mensais (€)",
+    aima_exp_help: "Inclui renda + alimentação + transportes + utilidades.",
+    aima_ss_label: "🛡️ Nível de Contribuição Registado na Segurança Social (ISS)",
+    aima_ss_help: "O regime e valor que declara mensalmente no seu extrato da Segurança Social.",
+    aima_ss_outrem: "Trabalhador por Conta de Outrem (Desconto integral 11% sobre Salário Bruto)",
+    aima_ss_recibos: "Recibos Verdes Geral (21,4% SS sobre 70% Faturação Real)",
+    aima_ss_reduced: "Recibos Verdes com Opção de Redução de Base (-25%)",
+    aima_ss_min: "⚠️ Contribuição Mínima Simbólica (20€ / mês)",
+    aima_res_title: "Resultados do Diagnóstico AIMA",
+    aima_viability_index: "Índice de Viabilidade AIMA",
+    aima_score_high: "🟢 Excelente & Sustentável",
+    aima_score_med: "🟡 Estável com Atenção",
+    aima_score_low: "🔴 Risco de Notificação / Indeferimento",
+    aima_est_ss: "Retenção SS Estimada",
+    aima_ss_alert_title: "⚠️ Alerta de Risco Grave AIMA: Discrepância na Segurança Social",
+    aima_ss_alert_desc: "A AIMA cruza os extratos de remuneração da Segurança Social (ISS) em tempo real. Declarar um rendimento para cumprir o limiar de subsistência, mas contribuir apenas o mínimo simbólico (20€/mês) ou forçar a redução de -25%, gera uma incoerência fiscal grave. A AIMA presume ausência de rendimentos reais e emite Intenção de Indeferimento (Audiência Prévia).",
+    aima_legal_subsistence_check: "Verificação de Subsistência Legal AIMA",
+    aima_meets_threshold: "✓ Cumpre Limiar Mínimo",
+    aima_threshold_warn: "⚠️ Atenção / Risco de Incoerência",
+    aima_net_income: "Rendimento Líquido",
+    per_month: "por mês",
+    aima_min_threshold: "Limiar Mínimo AIMA",
+    difference: "Diferença",
+    above_threshold: "acima do limiar",
+    below_threshold: "abaixo do limiar",
+    aima_legal_basis_note: "Segundo a Portaria n.º 1563/2007 de 11 de Dezembro, os meios de subsistência exigidos para concessão e renovação de Autorização de Residência são calculados com base no Retribuição Mínima Mensal Garantida (RMMG 2026 = 920€): 100% RMMG (920€) para o primeiro adulto + 30% RMMG (276€) por cada dependente adicional (cônjuge sem rendimentos, filhos menores ou ascendentes a cargo).",
+    aima_net_balance: "Saldo Mensal Disponível",
+    aima_income_minus_expenses: "Rendimento − Total Despesas",
+    aima_recommended_stability: "Recomendado para estabilidade",
+    aima_setup_capital_title: "Capital Entrada Arrendamento",
+    aima_setup_capital_desc: "2 Cauções + 1 Renda Adiantada",
+    pe_sim_title: "Simulador para Pequenos Empreendedores & Microempresas",
+    pe_sim_subtitle: "Estimativa de rentabilidade, impostos (IRC 15% PME / IRS Simplificado) e liquidez para ENI e Sociedade Unipessoal Lda (2026)",
+    pe_badge_irc: "IRC Reduzido PME: 15.0% (1.ºs 50k€)",
+    pe_badge_tsu: "Gerente MOE: TSU 34.75%",
+    pe_badge_breakeven: "Break-Even Automático",
+    pe_form_title: "Dados Financeiros da Empresa / Negócio",
+    pe_revenue_label: "💰 Faturação Mensal Bruta (Volume de Negócios) (€)",
+    pe_revenue_help: "Total cobrado a clientes por mês (sem IVA).",
+    pe_expenses_label: "📦 Despesas Operacionais Mensais (€)",
+    pe_expenses_help: "Renda de espaço, fornecedores, contabilista, licenças, utilidades.",
+    pe_sector_label: "🏷️ Setor de Atividade",
+    pe_opt_services: "Prestação de Serviços / Tecnologia (Coef. 0.75)",
+    pe_opt_commerce: "Comércio / Lojas / Restauração (Coef. 0.15)",
+    pe_opt_hospitality: "Alojamento Local / Turismo (Coef. 0.35)",
+    pe_opt_industry: "Indústria / Oficina / Artesanato (Coef. 0.35)",
+    pe_structure_label: "🏛️ Estrutura Jurídica da Empresa",
+    pe_opt_lda: "Sociedade Unipessoal Lda / Microempresa PME (IRC 15%)",
+    pe_opt_eni: "Empresário em Nome Individual — ENI (IRS Simplificado)",
+    pe_prolabore_label: "👔 Pró-Labore / Salário do Gerente (€/mês)",
+    pe_prolabore_help: "Remuneração mensal fixa atribuída ao sócio-gerente (sujeita a TSU de 34,75% — Art. 69.º CRC).",
+    pe_res_title: "Resultado Financeiro do Negócio",
+    pe_margin_label: "Margem Líquida",
+    pe_net_profit_title: "Lucro Líquido Mensal Disponível da Empresa",
+    pe_net_profit_calc: "Faturação Mensal ({bizRevenue}€) − Despesas ({bizExpenses}€) − Impostos/SS ({res.totalTaxes}€)",
+    pe_gross_op_profit: "Lucro Bruto Operacional",
+    pe_before_taxes: "Antes de impostos e SS",
+    pe_estimated_taxes: "Impostos Estimados",
+    pe_tax_label_irc: "IRC 15% PME",
+    pe_tax_label_irs: "IRS Simplificado",
+    pe_ss_tsu_label: "Segurança Social / TSU",
+    pe_ss_label_tsu: "TSU MOE (34,75%)",
+    pe_ss_label_eni: "SS ENI (25,2%)",
+    pe_breakeven_title: "Ponto de Equilíbrio (Break-Even Mensal)",
+    pe_breakeven_sub: "Faturação mínima necessária por mês para cobrir todas as despesas e impostos sem prejuízo",
+    pe_edu_note: "Em Portugal, as PMEs qualificadas no continente beneficiam de uma taxa reduzida de IRC de 15,0% sobre os primeiros 50.000€ de matéria coletável e 19,0% no excedente (Art. 87.º CIRC / OE 2026). Os gerentes de Sociedades Unipessoais descontam TSU estatutária de 34,75% (23,75% empresa + 11,0% gerente — Art. 69.º, n.º 2 CRC) sobre a remuneração fixada.",
+    badge_at: "AT (IRS 2026)",
+    badge_ine: "INE (Preços Rendas)",
+    badge_iss: "ISS (Seg. Social TI)",
+    badge_bdp: "Banco de Portugal",
     title: 'Simuladores MIRA Económicos',
     subtitle: 'Métricas e Indicadores Financeiros Oficiais (2026)',
     tab_1_salary: '💰 1. Salário Líquido',
@@ -154,18 +387,6 @@ const translations: Record<string, Record<string, string>> = {
     cost_transport: 'Transportes',
     cost_utilities: 'Utilidades e Extras',
     cost_total: 'Custo Total Estimado',
-    t0_apartment: 'Estúdio / Apartamento T0',
-    t3_apartment: 'Apartamento T3 (Família)',
-    rail_pass: 'Passe Ferroviário Verde (CP - 20€)',
-    adults_label: 'Adultos (≥ 18 anos)',
-    youth_label: 'Jovens (14 a 17 anos)',
-    children_label: 'Crianças (< 14 anos)',
-    telecom: 'Telecomunicações (Fibra + Móvel)',
-    health_personal: 'Saúde, Higiene e Cuidados',
-    provenance_badge: 'Benchmark de Mercado MIRA 2026 (INE m² + Portais)',
-    mira_financial_health: 'Suficiência Financeira & Prudência MIRA',
-    legal_subsistence_title: 'Referência Geral da Portaria n.º 1563/2007',
-    use_net_salary: 'Usar Salário Líquido Calculado',
     savings_calc: 'Diferença Mensal Estimada',
     savings_text: 'Ao escolher {d1} em vez de {d2}, pode poupar cerca de {val}€ por mês!',
     note_title: 'Fontes Oficiais Verificadas',
@@ -276,6 +497,239 @@ const translations: Record<string, Record<string, string>> = {
     pe_breakeven_desc: "Representa o valor mensal mínimo que a sua empresa tem de faturar para cobrir exatamente todas as despesas operacionais, salários e impostos sem entrar em prejuízo financeiro.",
   },
   EN: {
+    adults_label: "Adults (≥ 18 years)",
+    youth_label: "Youth (14 to 17 years)",
+    children_label: "Children (< 14 years)",
+    telecom: "Telecommunications (Fiber + Mobile)",
+    health_personal: "Health, Hygiene & Personal Care",
+    provenance_badge: "MIRA Market Benchmark 2026 (INE m² + Official Portals)",
+    mira_financial_health: "Financial Sufficiency & MIRA Prudence Indicators",
+    legal_subsistence_title: "General Legal Reference Ordinance 1563/2007",
+    reference_label: "Reference:",
+    use_net_salary: "Use Calculated Net Salary",
+    rail_pass: "Green Rail Pass (CP - €20)",
+    t0_apartment: "Studio / T0 Apartment",
+    t3_apartment: "T3 Apartment (Family)",
+    room_single: "Single Room (Private Room)",
+    t4_apartment: "T4 Apartment or Larger (T4+)",
+    ocde_scale_label: "OECD Scale:",
+    ocde_scale_sub: "Family equivalence factor",
+    applied_food_utilities: "applied to food and utility costs.",
+    portaria_formula_label: "Theoretical Formula of Ordinance:",
+    governance_note_title: "Governance & Legal Shielding Note:",
+    household_net_income: "Household Monthly Net Available Income (€)",
+    effort_sustainable_tag: "Sustainable (≤ 35%)",
+    effort_moderate_tag: "Moderate Risk (36-50%)",
+    effort_critical_tag: "Critical Overburden (> 50%)",
+    effort_rate_housing: "Housing Effort Rate",
+    rent_vs_income_label: "Rent ({rent}€) vs Net Income ({income}€)",
+    estimated_monthly_balance: "Estimated Monthly Balance",
+    deficit_estimated_desc: "Estimated monthly deficit in district",
+    savings_margin_desc: "Monthly savings margin",
+    mira_recommended_reserve: "Recommended MIRA Reserve",
+    reserve_target_desc: "6-month security target (3 months: {val3}€)",
+    compare_off: "Off",
+    placeholder_ex_from_tab1: "Ex: {val}€ (from Tab 1)",
+    placeholder_ex_1500: "Ex: 1500",
+    so_sim_title: "Net Salary Simulator (Employed / Standard Contract)",
+    so_sim_subtitle: "Calculations based on 2026 official AT withholding tables & Social Security (11%)",
+    duodecimos_badge_13_14: "13th & 14th Month",
+    irs_jovem_desc_field: "Partial exemption for first 10 years of activity (up to 35 years). Annual cap: 55 × IAS (€29,542.15).",
+    irs_jovem_y1: "1st Year",
+    irs_jovem_y2_4: "2nd–4th Years",
+    irs_jovem_y5_7: "5th–7th Years",
+    irs_jovem_y8_10: "8th–10th Years",
+    irs_jovem_opt_1: "1st Year (100% Exemption)",
+    irs_jovem_opt_2: "2nd Year (75% Exemption)",
+    irs_jovem_opt_3: "3rd Year (75% Exemption)",
+    irs_jovem_opt_4: "4th Year (75% Exemption)",
+    irs_jovem_opt_5: "5th Year (50% Exemption)",
+    irs_jovem_opt_6: "6th Year (50% Exemption)",
+    irs_jovem_opt_7: "7th Year (50% Exemption)",
+    irs_jovem_opt_8: "8th Year (25% Exemption)",
+    irs_jovem_opt_9: "9th Year (25% Exemption)",
+    irs_jovem_opt_10: "10th Year (25% Exemption)",
+    meal_taxable_alert: "Warning: Taxable Meal Allowance",
+    meal_taxable_sub: "The daily excess of {excess}€/day (above the tax-exempt cap of {cap}) will be subject to 11% Social Security and IRS withholding.",
+    calc_result_2026: "Calculation Result (2026)",
+    calc_result_title: "Calculation Result",
+    effective_irs_rate: "Effective IRS Rate",
+    effective_tax_rate: "Effective Tax Rate",
+    net_income_available: "Monthly Available Net Income",
+    payslip_breakdown: "Monthly Payslip Breakdown",
+    remun_bruta_sujeita: "Gross Taxable Remuneration",
+    duodecimo_vac_line: "• Holiday Allowance Duodecimo:",
+    duodecimo_xmas_line: "• Christmas Allowance Duodecimo:",
+    ss_worker_11: "Worker Social Security (11%)",
+    irs_withholding_line: "IRS Withholding Tax",
+    meal_exempt_line: "Tax-Exempt Meal Allowance",
+    meal_taxed_line: "Taxable Meal Allowance (in gross)",
+    salary_legal_basis_note: "Calculated under the Official Marginal Model of the Portuguese Tax Authority (2026), Social Security TCO (11%) and meal allowance thresholds (Ordinance 51-B/2026: exempt up to €10.46/day on card or €6.15 in cash).",
+    rv_sim_title: "Green Receipts Simulator (Sole Proprietor / Freelancer)",
+    rv_sim_subtitle: "Social Security (21.4% on 70% base) & Category B IRS withholding calculation",
+    rv_irs_jovem_title: "Youth IRS (Art. 12-B CIRS) for Category B",
+    rv_irs_jovem_desc: "Applicable to self-employed workers under 35 with higher education degree.",
+    rv_deductions_title: "Deductions & Withholdings",
+    ss_ti_line: "Social Security (21.4% on 70% Base)",
+    ss_var_0_short: "0% Standard",
+    rv_legal_note: "Green Receipts calculate Social Security on 70% of gross services revenue (or 20% on product sales) at 21.4% (General Self-Employed) or 25.2% (ENI).",
+    hp_title: "MIRA Housing Intelligence & Affordability 2026",
+    hp_subtitle: "Territorial Observatory (INE vs Portals) and Regulatory Rental & Purchase Simulators",
+    hp_mode_rent: "🏠 Rental & Porta 65",
+    hp_mode_buy: "🏦 Purchase & Mortgage Loan",
+    hp_territory_label: "📍 Territorial Unit / Municipality",
+    hp_municipality_tag: "(Municipality / Official INE)",
+    hp_district_tag: "(District / MIRA Aggregate)",
+    hp_typology_label: "📐 Housing Typology",
+    hp_age_label: "🎂 Candidate Age (Years)",
+    hp_buyer_age_label: "🎂 Oldest Borrower Age (Years)",
+    hp_youth_guarantee_toggle: "Public Guarantee for Youth (DL 44/2024)",
+    hp_rent_inputs_title: "Income & Lease Contract Details",
+    hp_net_income_label: "💰 Net Monthly Available Income (€)",
+    hp_net_income_help: "Used for effort rate and MIRA financial prudence.",
+    hp_gross_income_label: "💼 Household Monthly Gross Income (€)",
+    hp_gross_income_help: "Mandatory to verify gross effort rate ≤ 60% rule under Porta 65.",
+    hp_rent_label: "🏠 Target Monthly Rent (€)",
+    hp_rent_help: "Leave 0 or blank to use the official market benchmark.",
+    hp_expenses_label: "🛒 Other Monthly Living Expenses (€)",
+    hp_territorial_obs_title: "MIRA Territorial Observatory",
+    hp_ine_contracted: "INE Contracted",
+    hp_portals_asking: "Portals Asking",
+    hp_asking_spread: "Asking Spread",
+    hp_spread_help: "Landlord premium over new AT registered contracts",
+    hp_initial_capital_title: "Initial Capital (Art. 1076 Civil Code)",
+    hp_first_month_rent: "1st Month Rent Advance:",
+    hp_advance_rent: "Rent Advance (up to 2 months):",
+    hp_security_deposit: "Security Deposit (up to 2 months):",
+    hp_cc1076_legal_note: "maximum statutory ceiling (5 rents total); not mandatory if landlord agrees to lower amount.",
+    hp_porta65_title: "Porta 65 Youth Rental Screening",
+    hp_porta65_pre_pass: "✓ Pre-Approved",
+    hp_porta65_rejected: "Rejected in Screening",
+    hp_porta65_rma_label: "Municipal RMA",
+    hp_porta65_cap_rma: "Cap 4× Municipal RMA:",
+    hp_porta65_cap_rmmg: "Cap 4× 2026 RMMG:",
+    hp_porta65_gross_effort: "Gross Effort Rate (max 60%):",
+    hp_effort_rate_title: "MIRA Housing Effort Rate",
+    hp_effort_mira_guide: "≤35% MIRA Prudential Guideline",
+    hp_effort_critical_risk: ">50% Critical Risk",
+    hp_buy_inputs_title: "Property & Financing Data",
+    hp_buy_price_label: "🏷️ Property Acquisition Price (€)",
+    hp_appraisal_label: "🔍 Bank Appraisal Value (€)",
+    hp_appraisal_help: "Banco de Portugal regulations mandate loan base as min(price, appraisal).",
+    hp_own_capital_label: "💰 Available Down Payment Capital (€)",
+    hp_buyer_net_income_label: "💳 Household Net Monthly Income (€)",
+    hp_other_debts_label: "🧾 Other Current Loan Payments (€)",
+    hp_first_hpp_toggle: "1st Permanent Own Residence (HPP)",
+    hp_owns_prop_toggle: "Do you currently own a residential property?",
+    hp_owns_last3y_toggle: "Have you owned property in the last 3 years? (Youth IMT)",
+    hp_financing_title: "Mortgage Financing Framework",
+    hp_financing_sub: "LTV, Loan Amount & Monthly Payment",
+    hp_max_ltv: "Max LTV:",
+    hp_eligible_base: "Eligible Base min(P,A)",
+    hp_price_vs_appraisal: "Price vs Appraisal",
+    hp_loan_amount: "Loan Amount",
+    hp_effective_ltv: "Effective LTV:",
+    hp_monthly_mortgage: "Estimated Monthly Payment",
+    hp_bdp_regulated_years: "years (BdP Regulated)",
+    hp_imt_jovem_title: "Youth IMT (DL 48-A/2024)",
+    hp_imt_jovem_applied: "✓ Exemption Applied",
+    hp_imt_jovem_normal: "Standard Taxation",
+    hp_imt_tax_suffix: "IMT Tax",
+    hp_imt_jovem_savings: "IMT Tax Savings:",
+    hp_stamp_duty_savings: "Stamp Duty Savings:",
+    hp_imt_jovem_legal_basis: "2026 tax framework anchored in AT Circular 40019/2024. Full exemption up to €316,772 and partial up to €633,453.",
+    hp_guarantee_title: "State Public Guarantee (DL 44/2024)",
+    hp_guarantee_eligible: "✓ Eligible",
+    hp_guarantee_ineligible: "Ineligible",
+    hp_guarantee_explanation: "State personal guarantee up to 15% of min(price, appraisal), enabling up to 100% bank financing on purchases up to €450,000.",
+    hp_total_initial_capital: "Total Estimated Initial Capital",
+    hp_downpayment_taxes_notary: "Down Payment + Taxes + Notary Fees",
+    aima_diag_title: "AIMA Subsistence & Financial Health Diagnostics 2026",
+    aima_diag_subtitle: "Verifies whether your income meets the statutory thresholds required for Portuguese Residence Permits",
+    aima_portaria_badge: "Ordinance 1563/2007 of 11/12",
+    aima_lei_badge: "Law 23/2007 — Foreigners Act",
+    aima_rmmg_badge: "RMMG 2026: €920 / month",
+    aima_data_title: "Your Income & Household Data",
+    aima_data_sub: "Enter your actual figures to verify legal compliance with AIMA guidelines",
+    aima_net_label: "💰 Net Monthly Income (€)",
+    aima_net_help: "The actual net amount deposited in your account after all SS and IRS deductions.",
+    aima_dep_label: "👨‍👩‍👧 Number of Dependents in Household",
+    aima_dep_help: "Non-earning spouse, minor children, or dependent parents.",
+    aima_no_dep: "(No dependents)",
+    aima_one_dep: "dependent",
+    aima_multi_dep: "dependents",
+    aima_rent_label: "🏠 Monthly Rent (€)",
+    aima_rent_help: "Monthly amount paid for housing lease.",
+    aima_exp_label: "🛒 Total Monthly Living Expenses (€)",
+    aima_exp_help: "Includes rent + food + transportation + utilities.",
+    aima_ss_label: "🛡️ Social Security Contribution Level (ISS)",
+    aima_ss_help: "The regime and amount reported monthly on your Social Security statement.",
+    aima_ss_outrem: "Employed Contract (Full 11% deduction on Gross Salary)",
+    aima_ss_recibos: "General Green Receipts (21.4% SS on 70% Real Billing)",
+    aima_ss_reduced: "Green Receipts with Reduced Base Option (-25%)",
+    aima_ss_min: "⚠️ Minimal Symbolic Contribution (€20 / month)",
+    aima_res_title: "AIMA Diagnostic Results",
+    aima_viability_index: "AIMA Viability Index",
+    aima_score_high: "🟢 Excellent & Sustainable",
+    aima_score_med: "🟡 Stable with Caution",
+    aima_score_low: "🔴 Risk of Notice / Refusal",
+    aima_est_ss: "Estimated SS Withholding",
+    aima_ss_alert_title: "⚠️ Severe AIMA Risk Alert: Social Security Discrepancy",
+    aima_ss_alert_desc: "AIMA crosses Social Security (ISS) remuneration statements in real-time. Declaring sufficient income for subsistence but only paying the minimum €20/month contribution or forcing -25% creates a severe fiscal inconsistency. AIMA presumes lack of genuine income and issues an Intention of Rejection.",
+    aima_legal_subsistence_check: "AIMA Statutory Subsistence Verification",
+    aima_meets_threshold: "✓ Meets Minimum Threshold",
+    aima_threshold_warn: "⚠️ Warning / Inconsistency Risk",
+    aima_net_income: "Net Income",
+    per_month: "per month",
+    aima_min_threshold: "AIMA Minimum Threshold",
+    difference: "Difference",
+    above_threshold: "above threshold",
+    below_threshold: "below threshold",
+    aima_legal_basis_note: "Under Ordinance no. 1563/2007 of December 11, the means of subsistence required for granting and renewing Residence Permits are computed from the Guaranteed Minimum Monthly Wage (RMMG 2026 = €920): 100% RMMG (€920) for the primary adult + 30% RMMG (€276) per additional dependent.",
+    aima_net_balance: "Available Monthly Balance",
+    aima_income_minus_expenses: "Income − Total Expenses",
+    aima_recommended_stability: "Recommended for financial stability",
+    aima_setup_capital_title: "Rental Move-In Capital",
+    aima_setup_capital_desc: "2 Security Deposits + 1 Advance Rent",
+    pe_sim_title: "Small Business & Entrepreneur Simulator",
+    pe_sim_subtitle: "Profitability estimate, taxes (15% SME CIT / Simplified IRS), and cashflow for Sole Proprietors and Single-Member LLCs (2026)",
+    pe_badge_irc: "Reduced SME CIT: 15.0% (1st €50k)",
+    pe_badge_tsu: "MOE Manager: TSU 34.75%",
+    pe_badge_breakeven: "Automatic Break-Even",
+    pe_form_title: "Business Financial Figures",
+    pe_revenue_label: "💰 Gross Monthly Turnover / Revenue (€)",
+    pe_revenue_help: "Total billed to clients per month (excluding VAT).",
+    pe_expenses_label: "📦 Monthly Operating Expenses (€)",
+    pe_expenses_help: "Premises rent, suppliers, accountant, licenses, utilities.",
+    pe_sector_label: "🏷️ Activity Sector",
+    pe_opt_services: "Services Provision & Tech (Coeff. 0.75)",
+    pe_opt_commerce: "Retail / Stores & Dining (Coeff. 0.15)",
+    pe_opt_hospitality: "Short-Term Rentals & Tourism (Coeff. 0.35)",
+    pe_opt_industry: "Manufacturing / Workshop / Crafts (Coeff. 0.35)",
+    pe_structure_label: "🏛️ Legal Business Structure",
+    pe_opt_lda: "Single-Member LLC / SME Company (15% CIT)",
+    pe_opt_eni: "Sole Proprietor — ENI (Simplified IRS)",
+    pe_prolabore_label: "👔 Manager Salary / Compensation (€/mo)",
+    pe_prolabore_help: "Fixed monthly salary paid to managing partner (subject to 34.75% TSU — CRC Art. 69).",
+    pe_res_title: "Business Financial Performance",
+    pe_margin_label: "Net Margin",
+    pe_net_profit_title: "Monthly Net Available Business Profit",
+    pe_net_profit_calc: "Monthly Revenue ({bizRevenue}€) − Expenses ({bizExpenses}€) − Taxes/SS ({res.totalTaxes}€)",
+    pe_gross_op_profit: "Gross Operating Profit",
+    pe_before_taxes: "Before taxes and Social Security",
+    pe_estimated_taxes: "Estimated Taxes",
+    pe_tax_label_irc: "SME 15% CIT",
+    pe_tax_label_irs: "Simplified IRS",
+    pe_ss_tsu_label: "Social Security / TSU",
+    pe_ss_label_tsu: "MOE TSU (34.75%)",
+    pe_ss_label_eni: "Sole Proprietor SS (25.2%)",
+    pe_breakeven_title: "Monthly Break-Even Point",
+    pe_breakeven_sub: "Minimum monthly revenue required to cover all operating costs, salaries, and taxes without loss",
+    pe_edu_note: "In Portugal, qualified mainland SMEs benefit from a reduced Corporate Income Tax (IRC) rate of 15.0% on the first €50,000 of taxable profit and 19.0% on the excess (CIRC Art. 87 / 2026 State Budget). Managing partners of single-member LLCs pay statutory 34.75% TSU (23.75% employer + 11.0% manager — CRC Art. 69(2)) on fixed remuneration.",
+    badge_at: "AT (IRS 2026)",
+    badge_ine: "INE (Rental Prices)",
+    badge_iss: "ISS (Social Security TI)",
+    badge_bdp: "Banco de Portugal",
     title: 'MIRA Economic Simulators',
     subtitle: 'Official Financial Metrics & Indicators (2026)',
     tab_1_salary: '💰 1. Net Salary',
@@ -484,6 +938,239 @@ const translations: Record<string, Record<string, string>> = {
     pe_breakeven_desc: "The exact monthly revenue required to cover 100% of operating expenses, salaries, and corporate taxes without incurring financial loss.",
   },
   ES: {
+    adults_label: "Adultos (≥ 18 años)",
+    youth_label: "Jóvenes (14 a 17 años)",
+    children_label: "Niños (< 14 años)",
+    telecom: "Telecomunicaciones (Fibra + Móvil)",
+    health_personal: "Salud, Higiene y Cuidados",
+    provenance_badge: "Benchmark de Mercado MIRA 2026 (INE m² + Portales)",
+    mira_financial_health: "Suficiencia Financiera y Prudencia MIRA",
+    legal_subsistence_title: "Referencia General Orden 1563/2007",
+    reference_label: "Referencia:",
+    use_net_salary: "Usar Salario Neto Calculado",
+    rail_pass: "Abono Ferroviario Verde (CP - 20€)",
+    t0_apartment: "Estudio / Apartamento T0",
+    t3_apartment: "Apartamento T3 (Familia)",
+    room_single: "Habitación Individual (Room)",
+    t4_apartment: "Apartamento T4 o Superior (T4+)",
+    ocde_scale_label: "Escala OCDE:",
+    ocde_scale_sub: "Factor de equivalencia familiar",
+    applied_food_utilities: "aplicado a alimentación y suministros.",
+    portaria_formula_label: "Fórmula Teórica de la Orden:",
+    governance_note_title: "Nota de Gobernanza y Blindaje Jurídico:",
+    household_net_income: "Ingreso Neto Mensual Familiar (€)",
+    effort_sustainable_tag: "Sostenible (≤ 35%)",
+    effort_moderate_tag: "Riesgo Moderado (36-50%)",
+    effort_critical_tag: "Sobreesfuerzo Crítico (> 50%)",
+    effort_rate_housing: "Tasa de Esfuerzo en Vivienda",
+    rent_vs_income_label: "Alquiler ({rent}€) frente a Ingreso ({income}€)",
+    estimated_monthly_balance: "Saldo Mensual Estimado",
+    deficit_estimated_desc: "Déficit mensual estimado en el distrito",
+    savings_margin_desc: "Margen de ahorro mensual",
+    mira_recommended_reserve: "Reserva MIRA Recomendada",
+    reserve_target_desc: "Objetivo de 6 meses de seguridad (3 meses: {val3}€)",
+    compare_off: "Desactivado",
+    placeholder_ex_from_tab1: "Ej: {val}€ (de Tab 1)",
+    placeholder_ex_1500: "Ej: 1500",
+    so_sim_title: "Simulador de Salario Neto (Empleado por Cuenta Ajena / Contrato)",
+    so_sim_subtitle: "Cálculo según tablas oficiales de retención de IRS (2026) y Seguridad Social (11%)",
+    duodecimos_badge_13_14: "Pagas 13.ª y 14.ª",
+    irs_jovem_desc_field: "Exención parcial durante los primeros 10 años de actividad (hasta 35 años). Límite anual: 55 × IAS (29.542,15 €).",
+    irs_jovem_y1: "1.er Año",
+    irs_jovem_y2_4: "2.º–4.º Años",
+    irs_jovem_y5_7: "5.º–7.º Años",
+    irs_jovem_y8_10: "8.º–10.º Años",
+    irs_jovem_opt_1: "1.er Año (100% Exención)",
+    irs_jovem_opt_2: "2.º Año (75% Exención)",
+    irs_jovem_opt_3: "3.er Año (75% Exención)",
+    irs_jovem_opt_4: "4.º Año (75% Exención)",
+    irs_jovem_opt_5: "5.º Año (50% Exención)",
+    irs_jovem_opt_6: "6.º Año (50% Exención)",
+    irs_jovem_opt_7: "7.º Año (50% Exención)",
+    irs_jovem_opt_8: "8.º Año (25% Exención)",
+    irs_jovem_opt_9: "9.º Año (25% Exención)",
+    irs_jovem_opt_10: "10.º Año (25% Exención)",
+    meal_taxable_alert: "Atención: Subsidio de Comida Gravado",
+    meal_taxable_sub: "El excedente diario de {excess}€/día (por encima del límite exento de {cap}) tributará el 11% de Seguridad Social e IRS.",
+    calc_result_2026: "Resultado del Cálculo (2026)",
+    calc_result_title: "Resultado del Cálculo",
+    effective_irs_rate: "Tasa Efectiva de IRS",
+    effective_tax_rate: "Tasa Efectiva de Impuesto",
+    net_income_available: "Ingreso Neto Mensual Disponible",
+    payslip_breakdown: "Desglose de Nómina Mensual",
+    remun_bruta_sujeita: "Retribución Bruta Sujeta",
+    duodecimo_vac_line: "• Duodécima Paga Vacaciones:",
+    duodecimo_xmas_line: "• Duodécima Paga Navidad:",
+    ss_worker_11: "Seguridad Social Trabajador (11%)",
+    irs_withholding_line: "Retención en la Fuente de IRS",
+    meal_exempt_line: "Subsidio Comida Exento",
+    meal_taxed_line: "Subsidio Comida Gravado (en bruto)",
+    salary_legal_basis_note: "Cálculo realizado según el Modelo Marginal Oficial de Hacienda de Portugal (AT 2026), Seguridad Social (11%) y límites exentos de manutención (Orden 51-B/2026: hasta 10,46 €/día en tarjeta o 6,15 € en efectivo).",
+    rv_sim_title: "Simulador de Autónomos / Recibos Verdes",
+    rv_sim_subtitle: "Cálculo de Seguridad Social (21,4% sobre 70% base) y retención en factura de IRS (Cat. B)",
+    rv_irs_jovem_title: "IRS Jovem (Art. 12-B CIRS) para Categoría B",
+    rv_irs_jovem_desc: "Aplicable a trabajadores autónomos hasta 35 años con título universitario o superior.",
+    rv_deductions_title: "Retenciones y Cotizaciones",
+    ss_ti_line: "Seguridad Social (21,4% sobre 70% Base)",
+    ss_var_0_short: "0% Estándar",
+    rv_legal_note: "Los Recibos Verdes cotizan a la Seguridad Social sobre el 70% de la facturación en servicios (o 20% en venta de productos) al tipo del 21,4% (Autónomo) o 25,2% (ENI).",
+    hp_title: "MIRA Housing Intelligence & Affordability 2026",
+    hp_subtitle: "Observatorio Territorial (INE vs Portales) y Simuladores Regulatorios de Alquiler y Compra",
+    hp_mode_rent: "🏠 Alquiler y Porta 65",
+    hp_mode_buy: "🏦 Compra e Hipoteca",
+    hp_territory_label: "📍 Unidad Territorial / Municipio",
+    hp_municipality_tag: "(Municipio / INE Oficial)",
+    hp_district_tag: "(Distrito / Agregación MIRA)",
+    hp_typology_label: "📐 Tipología de Vivienda",
+    hp_age_label: "🎂 Edad del Candidato (Años)",
+    hp_buyer_age_label: "🎂 Edad del Titular Mayor",
+    hp_youth_guarantee_toggle: "Garantía Pública Joven (DL 44/2024)",
+    hp_rent_inputs_title: "Datos de Ingresos y Contrato de Alquiler",
+    hp_net_income_label: "💰 Ingresos Netos Mensuales Disponibles (€)",
+    hp_net_income_help: "Utilizado para la tasa de esfuerzo y prudencia MIRA.",
+    hp_gross_income_label: "💼 Ingreso Bruto Mensual Familiar (€)",
+    hp_gross_income_help: "Obligatorio para verificar la regla de esfuerzo bruto ≤ 60% en Porta 65.",
+    hp_rent_label: "🏠 Renta Mensual Deseada (€)",
+    hp_rent_help: "Deje 0 o vacío para utilizar el benchmark de mercado.",
+    hp_expenses_label: "🛒 Total de Otros Gastos Mensuales (€)",
+    hp_territorial_obs_title: "Observatorio Territorial MIRA",
+    hp_ine_contracted: "INE Contratado",
+    hp_portals_asking: "Portales Anunciado",
+    hp_asking_spread: "Sobreprecio de Oferta",
+    hp_spread_help: "Presión de propietarios respecto a los nuevos contratos de Hacienda",
+    hp_initial_capital_title: "Capital Inicial (Art. 1076 Código Civil)",
+    hp_first_month_rent: "1.ª Renta de Entrada:",
+    hp_advance_rent: "Adelanto (hasta 2 meses):",
+    hp_security_deposit: "Fianza (hasta 2 meses):",
+    hp_cc1076_legal_note: "tope legal máximo admisible (5 mensualidades en total); no vinculante si el arrendador pacta un importe menor.",
+    hp_porta65_title: "Cribado Porta 65 Joven",
+    hp_porta65_pre_pass: "✓ Pre-Aprobado",
+    hp_porta65_rejected: "Rechazado en Cribado",
+    hp_porta65_rma_label: "RMA Municipal",
+    hp_porta65_cap_rma: "Tope 4× RMA Municipal:",
+    hp_porta65_cap_rmmg: "Tope 4× SMI 2026:",
+    hp_porta65_gross_effort: "Esfuerzo Bruto (máx. 60%):",
+    hp_effort_rate_title: "Tasa de Esfuerzo Habitacional MIRA",
+    hp_effort_mira_guide: "≤35% Directriz Prudencial MIRA",
+    hp_effort_critical_risk: ">50% Riesgo Crítico",
+    hp_buy_inputs_title: "Datos del Inmueble y Financiación",
+    hp_buy_price_label: "🏷️ Precio de Compra del Inmueble (€)",
+    hp_appraisal_label: "🔍 Valor de Tasación Bancaria (€)",
+    hp_appraisal_help: "El Banco de Portugal exige el cálculo sobre min(precio, tasación).",
+    hp_own_capital_label: "💰 Capital Propio para Entrada (€)",
+    hp_buyer_net_income_label: "💳 Ingreso Neto Mensual Familiar (€)",
+    hp_other_debts_label: "🧾 Otras Cuotas de Créditos Actuales (€)",
+    hp_first_hpp_toggle: "1.ª Vivienda Propia y Permanente (HPP)",
+    hp_owns_prop_toggle: "¿Es actualmente propietario de una vivienda?",
+    hp_owns_last3y_toggle: "¿Fue propietario en los últimos 3 años? (IMT Jovem)",
+    hp_financing_title: "Marco de Financiación Hipotecaria",
+    hp_financing_sub: "LTV, Financiación y Cuota Mensual",
+    hp_max_ltv: "LTV Máx:",
+    hp_eligible_base: "Base Elegible min(P,T)",
+    hp_price_vs_appraisal: "Precio vs Tasación",
+    hp_loan_amount: "Importe Financiado",
+    hp_effective_ltv: "LTV Efectivo:",
+    hp_monthly_mortgage: "Cuota Estimada",
+    hp_bdp_regulated_years: "años (Regulado BdP)",
+    hp_imt_jovem_title: "IMT Jovem (DL 48-A/2024)",
+    hp_imt_jovem_applied: "✓ Exención Aplicada",
+    hp_imt_jovem_normal: "Tributación Ordinaria",
+    hp_imt_tax_suffix: "de IMT",
+    hp_imt_jovem_savings: "Ahorro de IMT:",
+    hp_stamp_duty_savings: "Ahorro Impuesto de Actos Jurídicos:",
+    hp_imt_jovem_legal_basis: "Régimen fiscal de 2026 según Circular 40019/2024 de Hacienda. Exención total hasta 316.772 € y parcial hasta 633.453 €.",
+    hp_guarantee_title: "Garantía Pública (DL 44/2024)",
+    hp_guarantee_eligible: "✓ Elegible",
+    hp_guarantee_ineligible: "No Elegible",
+    hp_guarantee_explanation: "Garantía personal del Estado hasta el 15% de min(precio, tasación), posibilitando financiación hipotecaria de hasta el 100% en compras de hasta 450.000 €.",
+    hp_total_initial_capital: "Capital Inicial Total Estimado",
+    hp_downpayment_taxes_notary: "Entrada + Impuestos + Gastos de Notaría",
+    aima_diag_title: "Diagnóstico AIMA y Salud Financiera 2026",
+    aima_diag_subtitle: "Verifica si sus ingresos cumplen los umbrales mínimos legales exigidos para el Permiso de Residencia en Portugal",
+    aima_portaria_badge: "Orden 1563/2007 de 11/12",
+    aima_lei_badge: "Ley 23/2007 — Ley de Extranjería",
+    aima_rmmg_badge: "SMI 2026: 920€ / mes",
+    aima_data_title: "Sus Datos de Ingresos y Hogar",
+    aima_data_sub: "Rellene los campos con sus importes reales para verificar el cumplimiento legal ante AIMA",
+    aima_net_label: "💰 Ingreso Neto Mensual (€)",
+    aima_net_help: "El importe neto percibido tras deducciones de Seguridad Social e IRPF.",
+    aima_dep_label: "👨‍👩‍👧 N.º de Familiares a Cargo",
+    aima_dep_help: "Cónyuge sin ingresos, hijos menores o ascendientes a cargo.",
+    aima_no_dep: "(Sin dependientes)",
+    aima_one_dep: "dependiente",
+    aima_multi_dep: "dependientes",
+    aima_rent_label: "🏠 Alquiler Mensual (€)",
+    aima_rent_help: "Importe pagado mensualmente por el alquiler de la vivienda.",
+    aima_exp_label: "🛒 Total de Gastos Mensuales (€)",
+    aima_exp_help: "Incluye alquiler + comida + transporte + suministros.",
+    aima_ss_label: "🛡️ Nivel de Cotización en Seguridad Social (ISS)",
+    aima_ss_help: "El régimen e importe que declara en su informe oficial de Seguridad Social.",
+    aima_ss_outrem: "Cuenta Ajena (Descuento íntegro del 11% sobre Salario Bruto)",
+    aima_ss_recibos: "Autónomos General (21,4% SS sobre 70% Facturación Real)",
+    aima_ss_reduced: "Autónomos con Opción de Reducción de Base (-25%)",
+    aima_ss_min: "⚠️ Cotización Mínima Simbólica (20€ / mes)",
+    aima_res_title: "Resultados del Diagnóstico AIMA",
+    aima_viability_index: "Índice de Viabilidade AIMA",
+    aima_score_high: "🟢 Excelente y Sostenible",
+    aima_score_med: "🟡 Estable con Precaución",
+    aima_score_low: "🔴 Riesgo de Notificación / Denegación",
+    aima_est_ss: "Retención SS Estimada",
+    aima_ss_alert_title: "⚠️ Alerta de Riesgo Grave AIMA: Discrepancia en Seguridad Social",
+    aima_ss_alert_desc: "La AIMA cruza los extractos de cotización de la Seguridad Social en tiempo real. Declarar ingresos suficientes pero cotizar solo el mínimo simbólico (20€/mes) o reducir un -25% genera una incoherencia fiscal grave. La AIMA presume ausencia de ingresos reales y emite Audiencia Previa de Denegación.",
+    aima_legal_subsistence_check: "Verificación de Subsistencia Legal AIMA",
+    aima_meets_threshold: "✓ Cumple Umbral Mínimo",
+    aima_threshold_warn: "⚠️ Atención / Riesgo de Incoerencia",
+    aima_net_income: "Ingreso Neto",
+    per_month: "al mes",
+    aima_min_threshold: "Umbral Mínimo AIMA",
+    difference: "Diferencia",
+    above_threshold: "por encima del umbral",
+    below_threshold: "por debajo del umbral",
+    aima_legal_basis_note: "Según la Orden n.º 1563/2007 de 11 de diciembre, los medios de subsistencia para la concesión y renovación de Residencia se calculan sobre el SMI de Portugal (RMMG 2026 = 920€): 100% SMI (920€) para el primer adulto + 30% SMI (276€) por cada familiar adicional.",
+    aima_net_balance: "Saldo Mensual Disponible",
+    aima_income_minus_expenses: "Ingresos − Total Gastos",
+    aima_recommended_stability: "Recomendado para estabilidad financiera",
+    aima_setup_capital_title: "Capital de Entrada al Alquiler",
+    aima_setup_capital_desc: "2 Fianzas + 1 Mensualidad por Adelantado",
+    pe_sim_title: "Simulador para Emprendedores y Microempresas",
+    pe_sim_subtitle: "Estimación de rentabilidad, impuestos (IRC 15% Pyme / IRPF Simplificado) y liquidez para Autónomo y Sociedad Unipersonal (2026)",
+    pe_badge_irc: "IRC Reduzido Pyme: 15,0% (1.ºs 50k€)",
+    pe_badge_tsu: "Administrador: TSU 34,75%",
+    pe_badge_breakeven: "Punto de Equilibrio Automático",
+    pe_form_title: "Datos Financieros del Negocio",
+    pe_revenue_label: "💰 Facturación Mensual Bruta (Volumen de Negocio) (€)",
+    pe_revenue_help: "Total cobrado a clientes al mes (sin IVA).",
+    pe_expenses_label: "📦 Gastos Operativos Mensuales (€)",
+    pe_expenses_help: "Alquiler, proveedores, contable, licencias, suministros.",
+    pe_sector_label: "🏷️ Sector de Actividad",
+    pe_opt_services: "Prestación de Servicios y Tecnología (Coef. 0.75)",
+    pe_opt_commerce: "Comercio / Tiendas / Restauración (Coef. 0.15)",
+    pe_opt_hospitality: "Alquiler Vacacional y Turismo (Coef. 0.35)",
+    pe_opt_industry: "Industria / Taller / Artesanía (Coef. 0.35)",
+    pe_structure_label: "🏛️ Estructura Jurídica",
+    pe_opt_lda: "Sociedad Unipersonal Lda / Pyme (IRC 15%)",
+    pe_opt_eni: "Empresario Individual — ENI (IRPF Simplificado)",
+    pe_prolabore_label: "👔 Sueldo del Administrador (€/mes)",
+    pe_prolabore_help: "Remuneración mensual asignada al administrador (sujeta a TSU del 34,75% — Art. 69 CRC).",
+    pe_res_title: "Rendimiento Financiero del Negocio",
+    pe_margin_label: "Margen Neto",
+    pe_net_profit_title: "Beneficio Neto Mensual Disponible",
+    pe_net_profit_calc: "Facturación Mensual ({bizRevenue}€) − Gastos ({bizExpenses}€) − Impuestos/SS ({res.totalTaxes}€)",
+    pe_gross_op_profit: "Beneficio Bruto Operativo",
+    pe_before_taxes: "Antes de impuestos y SS",
+    pe_estimated_taxes: "Impuestos Estimados",
+    pe_tax_label_irc: "IRC 15% Pyme",
+    pe_tax_label_irs: "IRPF Simplificado",
+    pe_ss_tsu_label: "Seguridad Social / TSU",
+    pe_ss_label_tsu: "TSU Administrador (34,75%)",
+    pe_ss_label_eni: "SS Autónomo (25,2%)",
+    pe_breakeven_title: "Punto de Equilibrio (Break-Even Mensual)",
+    pe_breakeven_sub: "Facturación mensual mínima para cubrir todos los gastos fijos e impuestos sin pérdidas",
+    pe_edu_note: "En Portugal, las pymes cualificadas en el continente disfrutan de un tipo reducido de Impuesto sobre Sociedades (IRC) del 15,0% sobre los primeros 50.000€ de base imponible y del 19,0% en el excedente (Art. 87 CIRC / Presupuestos 2026). Los administradores cotizan una TSU estatutaria del 34,75% (23,75% empresa + 11,0% administrador — Art. 69.º/2 CRC).",
+    badge_at: "AT (IRS 2026)",
+    badge_ine: "INE (Precios Alquiler)",
+    badge_iss: "ISS (Seg. Social Autónomos)",
+    badge_bdp: "Banco de Portugal",
     title: 'Simuladores Económicos MIRA',
     subtitle: 'Métricas e Indicadores Financieros Oficiales (2026)',
     tab_1_salary: '💰 1. Salario Neto',
@@ -582,18 +1269,6 @@ const translations: Record<string, Record<string, string>> = {
     cost_transport: 'Transportes',
     cost_utilities: 'Servicios y Extras',
     cost_total: 'Coste Total Estimado',
-    t0_apartment: 'Estudio / Apartamento T0',
-    t3_apartment: 'Apartamento T3 (Familia)',
-    rail_pass: 'Abono Ferroviario Verde (CP - 20€)',
-    adults_label: 'Adultos (≥ 18 años)',
-    youth_label: 'Jóvenes (14 a 17 años)',
-    children_label: 'Niños (< 14 años)',
-    telecom: 'Telecomunicaciones (Fibra + Móvil)',
-    health_personal: 'Salud, Higiene y Cuidados',
-    provenance_badge: 'Benchmark de Mercado MIRA 2026 (INE m² + Portales)',
-    mira_financial_health: 'Suficiencia Financiera y Prudencia MIRA',
-    legal_subsistence_title: 'Referencia General Orden 1563/2007',
-    use_net_salary: 'Usar Salario Neto Calculado',
     savings_calc: 'Ahorro Mensual Estimado',
     savings_text: '¡Al elegir {d1} en lugar de {d2}, puede ahorrar cerca de {val}€ al mes!',
     note_title: 'Fuentes Oficiales Verificadas',
@@ -703,6 +1378,239 @@ const translations: Record<string, Record<string, string>> = {
     pe_breakeven_desc: "La facturación mínima necesaria cada mes para cubrir exactamente todos los costes fijos, sueldos e impuestos sin entrar en pérdidas.",
   },
   FR: {
+    adults_label: "Adultes (≥ 18 ans)",
+    youth_label: "Jeunes (14 à 17 ans)",
+    children_label: "Enfants (< 14 ans)",
+    telecom: "Télécoms (Fibre + Mobile)",
+    health_personal: "Santé, Hygiène et Soins",
+    provenance_badge: "Benchmark Marché MIRA 2026 (INE m² + Portails)",
+    mira_financial_health: "Suffisance Financière & Prudence MIRA",
+    legal_subsistence_title: "Référence Générale Arrêté 1563/2007",
+    reference_label: "Référence :",
+    use_net_salary: "Utiliser Salaire Net Calculé",
+    rail_pass: "Pass Ferroviaire Vert (CP - 20€)",
+    t0_apartment: "Studio / Appartement T0",
+    t3_apartment: "Appartement T3 (Famille)",
+    room_single: "Chambre Individuelle (Room)",
+    t4_apartment: "Appartement T4 ou Supérieur (T4+)",
+    ocde_scale_label: "Échelle OCDE :",
+    ocde_scale_sub: "Facteur d'équivalence familiale",
+    applied_food_utilities: "appliqué à l'alimentation et aux charges.",
+    portaria_formula_label: "Formule Théorique de l'Arrêté :",
+    governance_note_title: "Note de Gouvernance et Sécurisation Juridique :",
+    household_net_income: "Revenu Net Mensuel du Foyer (€)",
+    effort_sustainable_tag: "Durable (≤ 35%)",
+    effort_moderate_tag: "Risque Modéré (36-50%)",
+    effort_critical_tag: "Effort Excessif Critique (> 50%)",
+    effort_rate_housing: "Taux d'Effort pour le Logement",
+    rent_vs_income_label: "Loyer ({rent}€) par rapport au Revenu ({income}€)",
+    estimated_monthly_balance: "Solde Mensuel Estimé",
+    deficit_estimated_desc: "Déficit mensuel estimé dans le district",
+    savings_margin_desc: "Marge d'épargne mensuelle",
+    mira_recommended_reserve: "Réserve MIRA Recommandée",
+    reserve_target_desc: "Objectif de 6 mois de sécurité (3 mois: {val3}€)",
+    compare_off: "Désactivé",
+    placeholder_ex_from_tab1: "Ex: {val}€ (de Tab 1)",
+    placeholder_ex_1500: "Ex: 1500",
+    so_sim_title: "Simulateur de Salaire Net (Salarié / Contrat Standard)",
+    so_sim_subtitle: "Calcul selon les barèmes officiels de retenue IRS (2026) & Sécurité Sociale (11%)",
+    duodecimos_badge_13_14: "13e et 14e Mois",
+    irs_jovem_desc_field: "Exonération partielle pendant les 10 premières années d'activité (jusqu'à 35 ans). Plafond annuel: 55 × IAS (29.542,15 €).",
+    irs_jovem_y1: "1ère Année",
+    irs_jovem_y2_4: "2e–4e Années",
+    irs_jovem_y5_7: "5e–7e Années",
+    irs_jovem_y8_10: "8e–10e Années",
+    irs_jovem_opt_1: "1ère Année (100% Exonération)",
+    irs_jovem_opt_2: "2ème Année (75% Exonération)",
+    irs_jovem_opt_3: "3ème Année (75% Exonération)",
+    irs_jovem_opt_4: "4ème Année (75% Exonération)",
+    irs_jovem_opt_5: "5ème Année (50% Exonération)",
+    irs_jovem_opt_6: "6ème Année (50% Exonération)",
+    irs_jovem_opt_7: "7ème Année (50% Exonération)",
+    irs_jovem_opt_8: "8ème Année (25% Exonération)",
+    irs_jovem_opt_9: "9ème Année (25% Exonération)",
+    irs_jovem_opt_10: "10ème Année (25% Exonération)",
+    meal_taxable_alert: "Attention : Indemnité Repas Imposable",
+    meal_taxable_sub: "L'excédent quotidien de {excess}€/jour (au-dessus du plafond exonéré de {cap}) sera soumis à 11% de Sécurité Sociale et IRS.",
+    calc_result_2026: "Résultat du Calcul (2026)",
+    calc_result_title: "Résultat du Calcul",
+    effective_irs_rate: "Taux Effectif IRS",
+    effective_tax_rate: "Taux Effectif d'Imposition",
+    net_income_available: "Revenu Net Mensuel Disponible",
+    payslip_breakdown: "Ventilation de la Fiche de Paie",
+    remun_bruta_sujeita: "Rémunération Brute Imposable",
+    duodecimo_vac_line: "• Douzième Prime Vacances :",
+    duodecimo_xmas_line: "• Douzième Prime Noël :",
+    ss_worker_11: "Sécurité Sociale Salarié (11%)",
+    irs_withholding_line: "Retenue à la Source IRS",
+    meal_exempt_line: "Prime de Repas Exonérée",
+    meal_taxed_line: "Prime de Repas Imposée (au brut)",
+    salary_legal_basis_note: "Calcul basé sur le Modèle Marginal Officiel du Fisc portugais (AT 2026), Sécurité Sociale (11%) et plafonds légaux de panier-repas (Arrêté 51-B/2026 : exonéré jusqu'à 10,46 €/jour sur carte ou 6,15 € en espèces).",
+    rv_sim_title: "Simulateur Reçus Verts (Indépendant / Freelance)",
+    rv_sim_subtitle: "Cotisations Sécurité Sociale (21,4% sur 70% de base) & retenue d'impôt Catégorie B",
+    rv_irs_jovem_title: "IRS Jovem (Art. 12-B CIRS) pour Catégorie B",
+    rv_irs_jovem_desc: "Applicable aux travailleurs indépendants jusqu'à 35 ans titulaires d'un diplôme d'études supérieures.",
+    rv_deductions_title: "Retenues et Cotisations",
+    ss_ti_line: "Sécurité Sociale (21,4% sur 70% Base)",
+    ss_var_0_short: "0% Standard",
+    rv_legal_note: "Les Recibos Verdes calculent la Sécurité Sociale sur 70% de la facturation brute en services (ou 20% en ventes) au taux de 21,4% (Indépendant Général) ou 25,2% (ENI).",
+    hp_title: "MIRA Housing Intelligence & Affordability 2026",
+    hp_subtitle: "Observatoire Territorial (INE vs Portais) et Simulateurs Réglementaires de Location et d'Acquisition",
+    hp_mode_rent: "🏠 Location & Porta 65",
+    hp_mode_buy: "🏦 Achat & Prêt Immobilier",
+    hp_territory_label: "📍 Unité Territoriale / Municipalité",
+    hp_municipality_tag: "(Municipalité / INE Officiel)",
+    hp_district_tag: "(District / Agrégation MIRA)",
+    hp_typology_label: "📐 Typologie de Logement",
+    hp_age_label: "🎂 Âge du Candidat (Ans)",
+    hp_buyer_age_label: "🎂 Âge de l'Emprunteur le Plus Âgé",
+    hp_youth_guarantee_toggle: "Garantie Publique Jeunes (DL 44/2024)",
+    hp_rent_inputs_title: "Données de Revenus & Bail",
+    hp_net_income_label: "💰 Revenu Net Mensuel Disponible (€)",
+    hp_net_income_help: "Utilisé pour le taux d'effort et la prudence MIRA.",
+    hp_gross_income_label: "💼 Revenu Brut Mensuel du Foyer (€)",
+    hp_gross_income_help: "Obligatoire pour vérifier la règle du taux d'effort brut ≤ 60% pour Porta 65.",
+    hp_rent_label: "🏠 Loyer Mensuel Visé (€)",
+    hp_rent_help: "Laissez 0 ou vide pour utiliser la référence officielle du marché.",
+    hp_expenses_label: "🛒 Total des Autres Dépenses Mensuelles (€)",
+    hp_territorial_obs_title: "Observatoire Territorial MIRA",
+    hp_ine_contracted: "INE Enregistré",
+    hp_portals_asking: "Portails Affiché",
+    hp_asking_spread: "Écart d'Offre",
+    hp_spread_help: "Pression des bailleurs face aux nouveaux baux déclarés au fisc",
+    hp_initial_capital_title: "Capital Initial (Art. 1076 Code Civil)",
+    hp_first_month_rent: "1er Loyer d'Entrée :",
+    hp_advance_rent: "Avance de Loyer (jusqu'à 2 mois) :",
+    hp_security_deposit: "Caution (jusqu'à 2 mois) :",
+    hp_cc1076_legal_note: "plafond légal maximal autorisé (5 loyers au total) ; non obligatoire si le propriétaire accepte un montant inférieur.",
+    hp_porta65_title: "Sélection Porta 65 Jeunes",
+    hp_porta65_pre_pass: "✓ Pré-Approuvé",
+    hp_porta65_rejected: "Refusé à la Sélection",
+    hp_porta65_rma_label: "RMA Municipale",
+    hp_porta65_cap_rma: "Plafond 4× RMA Municipale :",
+    hp_porta65_cap_rmmg: "Plafond 4× SMIC 2026 :",
+    hp_porta65_gross_effort: "Effort Brut (max 60%) :",
+    hp_effort_rate_title: "Taux d'Effort pour le Logement MIRA",
+    hp_effort_mira_guide: "≤35% Directive Prudentielle MIRA",
+    hp_effort_critical_risk: ">50% Risque Critique",
+    hp_buy_inputs_title: "Données du Bien & Financement",
+    hp_buy_price_label: "🏷️ Prix d'Acquisition du Bien (€)",
+    hp_appraisal_label: "🔍 Valeur d'Évaluation Bancaire (€)",
+    hp_appraisal_help: "La Banque du Portugal impose le calcul sur min(prix, évaluation).",
+    hp_own_capital_label: "💰 Apport Personnel Disponible (€)",
+    hp_buyer_net_income_label: "💳 Revenu Net Mensuel du Foyer (€)",
+    hp_other_debts_label: "🧾 Autres Mensualités de Crédits Actuels (€)",
+    hp_first_hpp_toggle: "1ère Résidence Principale Permanente (HPP)",
+    hp_owns_prop_toggle: "Êtes-vous actuellement propriétaire d'un logement ?",
+    hp_owns_last3y_toggle: "Étiez-vous propriétaire au cours des 3 dernières années ? (IMT Jeune)",
+    hp_financing_title: "Cadre de Financement Immobilier",
+    hp_financing_sub: "LTV, Montant Financé & Mensualité",
+    hp_max_ltv: "LTV Max :",
+    hp_eligible_base: "Base Éligible min(Prix,Éval)",
+    hp_price_vs_appraisal: "Prix vs Évaluation",
+    hp_loan_amount: "Montant Financé",
+    hp_effective_ltv: "LTV Effectif :",
+    hp_monthly_mortgage: "Mensualité Estimée",
+    hp_bdp_regulated_years: "ans (Réglementation BdP)",
+    hp_imt_jovem_title: "IMT Jeune (DL 48-A/2024)",
+    hp_imt_jovem_applied: "✓ Exonération Appliquée",
+    hp_imt_jovem_normal: "Imposition Ordinaire",
+    hp_imt_tax_suffix: "d'IMT",
+    hp_imt_jovem_savings: "Économie d'IMT :",
+    hp_stamp_duty_savings: "Économie Droit de Timbre :",
+    hp_imt_jovem_legal_basis: "Régime fiscal 2026 fondé sur l'Instruction 40019/2024 du fisc. Exonération intégrale jusqu'à 316.772 € et partielle jusqu'à 633.453 €.",
+    hp_guarantee_title: "Garantie Publique de l'État (DL 44/2024)",
+    hp_guarantee_eligible: "✓ Éligible",
+    hp_guarantee_ineligible: "Inéligible",
+    hp_guarantee_explanation: "Garantie de l'État jusqu'à 15% de min(prix, évaluation), autorisant un crédit bancaire jusqu'à 100% pour les transactions jusqu'à 450.000 €.",
+    hp_total_initial_capital: "Capital Initial Total Estimé",
+    hp_downpayment_taxes_notary: "Apport + Impôts + Frais Notariés",
+    aima_diag_title: "Diagnostic AIMA & Santé Financière 2026",
+    aima_diag_subtitle: "Vérifie si vos revenus respectent les seuils légaux minimaux exigés pour le Titre de Séjour au Portugal",
+    aima_portaria_badge: "Arrêté 1563/2007 du 11/12",
+    aima_lei_badge: "Loi 23/2007 — Loi sur les Étrangers",
+    aima_rmmg_badge: "SMIC 2026: 920€ / mois",
+    aima_data_title: "Vos Données de Revenus et Ménage",
+    aima_data_sub: "Remplissez les champs avec vos chiffres réels pour vérifier la conformité AIMA",
+    aima_net_label: "💰 Revenu Net Mensuel (€)",
+    aima_net_help: "Le montant net perçu après toutes cotisations sociales et retenues IRS.",
+    aima_dep_label: "👨‍👩‍👧 Nbre de Personnes à Charge dans le Foyer",
+    aima_dep_help: "Conjoint sans revenus, enfants mineurs ou ascendants à charge.",
+    aima_no_dep: "(Sans dépendants)",
+    aima_one_dep: "dépendant",
+    aima_multi_dep: "dépendants",
+    aima_rent_label: "🏠 Loyer Mensuel (€)",
+    aima_rent_help: "Montant mensuel payé pour le logement.",
+    aima_exp_label: "🛒 Total des Dépenses Mensuelles (€)",
+    aima_exp_help: "Comprend loyer + nourriture + transports + factures.",
+    aima_ss_label: "🛡️ Niveau de Cotisation à la Sécurité Sociale (ISS)",
+    aima_ss_help: "Le régime et montant déclarés sur votre relevé de Sécurité Sociale.",
+    aima_ss_outrem: "Salarié (Déduction intégrale de 11% sur Salaire Brut)",
+    aima_ss_recibos: "Indépendant Général (21,4% SS sur 70% Facturation Réelle)",
+    aima_ss_reduced: "Indépendant avec Option d'Assiette Réduite (-25%)",
+    aima_ss_min: "⚠️ Cotisation Minimale Symbolique (20€ / mois)",
+    aima_res_title: "Résultats du Diagnostic AIMA",
+    aima_viability_index: "Indice de Viabilité AIMA",
+    aima_score_high: "🟢 Excellent & Durable",
+    aima_score_med: "🟡 Stable avec Vigilance",
+    aima_score_low: "🔴 Risque de Notification / Refus",
+    aima_est_ss: "Retenue SS Estimée",
+    aima_ss_alert_title: "⚠️ Alerte Risque Grave AIMA : Incohérence Sécurité Sociale",
+    aima_ss_alert_desc: "L'AIMA croise les relevés de rémunération de la Sécurité Sociale en temps réel. Déclarer des revenus suffisants pour les seuils de subsistance mais ne verser que le plancher de 20€/mois ou forcer une réduction de -25% génère une grave incohérence fiscale. L'AIMA présume l'absence de revenus réels et émet une Intention de Rejet.",
+    aima_legal_subsistence_check: "Vérification de Subsistance Légale AIMA",
+    aima_meets_threshold: "✓ Respecte le Seuil Minimal",
+    aima_threshold_warn: "⚠️ Attention / Risque d'Incohérence",
+    aima_net_income: "Revenu Net",
+    per_month: "par mois",
+    aima_min_threshold: "Seuil Légal Minimal AIMA",
+    difference: "Différence",
+    above_threshold: "au-dessus du seuil",
+    below_threshold: "en dessous du seuil",
+    aima_legal_basis_note: "Selon l'Arrêté n° 1563/2007 du 11 décembre, les moyens de subsistance requis pour la délivrance et le renouvellement du Titre de Séjour sont calculés sur le SMIC portugais (RMMG 2026 = 920€) : 100% SMIC (920€) pour le premier adulte + 30% SMIC (276€) par dépendant supplémentaire.",
+    aima_net_balance: "Solde Mensuel Disponible",
+    aima_income_minus_expenses: "Revenus − Total Dépenses",
+    aima_recommended_stability: "Recommandé pour la stabilité financière",
+    aima_setup_capital_title: "Capital d'Installation Logement",
+    aima_setup_capital_desc: "2 Cautions + 1 Loyer d'Avance",
+    pe_sim_title: "Simulateur pour Entrepreneurs & Micro-entreprises",
+    pe_sim_subtitle: "Estimation de rentabilité, fiscalité (IS 15% PME / IRS Simplifié) et trésorerie pour ENI et SARL Unipersonnelle (2026)",
+    pe_badge_irc: "IS Réduit PME : 15,0% (1ers 50k€)",
+    pe_badge_tsu: "Gérant : TSU 34,75%",
+    pe_badge_breakeven: "Seuil de Rentabilité Automatique",
+    pe_form_title: "Données Financières de l'Entreprise",
+    pe_revenue_label: "💰 Chiffre d'Affaires Mensuel Brut (€)",
+    pe_revenue_help: "Total facturé aux clients par mois (hors TVA).",
+    pe_expenses_label: "📦 Dépenses Opérationnelles Mensuelles (€)",
+    pe_expenses_help: "Loyer des locaux, fournisseurs, comptable, licences, charges.",
+    pe_sector_label: "🏷️ Secteur d'Activité",
+    pe_opt_services: "Prestations de Services & Tech (Coeff. 0.75)",
+    pe_opt_commerce: "Commerce / Boutiques / Restauration (Coeff. 0.15)",
+    pe_opt_hospitality: "Meublés Touristiques & Tourisme (Coeff. 0.35)",
+    pe_opt_industry: "Industrie / Atelier / Artisanat (Coeff. 0.35)",
+    pe_structure_label: "🏛️ Forme Juridique",
+    pe_opt_lda: "Société Unipersonnelle Lda / PME (IS 15%)",
+    pe_opt_eni: "Entrepreneur Individuel — ENI (IRS Simplifié)",
+    pe_prolabore_label: "👔 Rémunération du Gérant (€/mois)",
+    pe_prolabore_help: "Rémunération mensuelle fixe du gérant (soumise à 34,75% TSU — Art. 69 CRC).",
+    pe_res_title: "Performance Financière de l'Activité",
+    pe_margin_label: "Marge Nette",
+    pe_net_profit_title: "Bénéfice Net Mensuel Disponible",
+    pe_net_profit_calc: "Chiffre d'Affaires ({bizRevenue}€) − Dépenses ({bizExpenses}€) − Impôts/SS ({res.totalTaxes}€)",
+    pe_gross_op_profit: "Bénéfice Brut d'Exploitation",
+    pe_before_taxes: "Avant impôts et cotisations",
+    pe_estimated_taxes: "Impôts Estimés",
+    pe_tax_label_irc: "IS 15% PME",
+    pe_tax_label_irs: "IRS Simplifié",
+    pe_ss_tsu_label: "Sécurité Sociale / TSU",
+    pe_ss_label_tsu: "TSU Gérant (34,75%)",
+    pe_ss_label_eni: "Sécurité Sociale ENI (25,2%)",
+    pe_breakeven_title: "Seuil de Rentabilité (Break-Even Mensuel)",
+    pe_breakeven_sub: "Chiffre d'affaires mensuel minimal pour couvrir toutes les charges et impôts sans perte",
+    pe_edu_note: "Au Portugal, les PME éligibles sur le continent bénéficient d'un taux réduit d'impôt sur les sociétés (IRC) de 15,0% sur les premiers 50.000€ de bénéfice imposable et de 19,0% au-delà (Art. 87 CIRC / Loi de Finances 2026). Les gérants de sociétés unipersonnelles s'acquittent d'une TSU statutaire de 34,75% (23,75% employeur + 11,0% gérant — Art. 69/2 CRC).",
+    badge_at: "AT (IRS 2026)",
+    badge_ine: "INE (Prix Loyers)",
+    badge_iss: "ISS (Sécurité Sociale TI)",
+    badge_bdp: "Banque du Portugal",
     title: 'Simulateurs Économiques MIRA',
     subtitle: 'Indicateurs Financiers Officiels (2026)',
     tab_1_salary: '💰 1. Salaire Net',
@@ -801,18 +1709,6 @@ const translations: Record<string, Record<string, string>> = {
     cost_transport: 'Transports',
     cost_utilities: 'Charges & Extras',
     cost_total: 'Coût Total Estimé',
-    t0_apartment: 'Studio / Appartement T0',
-    t3_apartment: 'Appartement T3 (Famille)',
-    rail_pass: 'Pass Ferroviaire Vert (CP - 20€)',
-    adults_label: 'Adultes (≥ 18 ans)',
-    youth_label: 'Jeunes (14 à 17 ans)',
-    children_label: 'Enfants (< 14 ans)',
-    telecom: 'Télécoms (Fibre + Mobile)',
-    health_personal: 'Santé, Hygiène et Soins',
-    provenance_badge: 'Benchmark Marché MIRA 2026 (INE m² + Portails)',
-    mira_financial_health: 'Suffisance Financière & Prudence MIRA',
-    legal_subsistence_title: 'Référence Générale Arrêté 1563/2007',
-    use_net_salary: 'Utiliser Salaire Net Calculé',
     savings_calc: 'Économie Mensuelle Estimée',
     savings_text: 'En choisissant {d1} au lieu de {d2}, vous pouvez économiser environ {val}€ par mois !',
     note_title: 'Sources Officielles Vérifiées',
@@ -1459,11 +2355,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <Coins className="text-[#FF8C00] shrink-0" size={18} />
                   <div>
                     <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                      Simulador de Salário Líquido (Trabalhador por Conta de Outrem / Contrato)
-                    </h3>
-                    <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                      Cálculo com tabelas oficiais de retenção na fonte de IRS (2026) & Segurança Social (11%)
-                    </p>
+                    {tLocal('so_sim_title')}
+                  </h3>
+                  <p className="text-[9px] text-slate-400 font-medium mt-0.5">
+                    {tLocal('so_sim_subtitle')}
+                  </p>
                   </div>
                 </div>
 
@@ -1550,7 +2446,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
                       {tLocal('duodecimos_title')}
                     </label>
-                    <span className="text-[9px] font-bold text-slate-400">13.º e 14.º Mês</span>
+                    <span className="text-[9px] font-bold text-slate-400">{tLocal('duodecimos_badge_13_14')}</span>
                   </div>
                   <select
                     value={duodecimosMode}
@@ -1572,10 +2468,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <Sparkles size={16} className="text-amber-500 shrink-0" />
                       <div>
                         <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
-                          Regime IRS Jovem (Art. 12.º-B CIRS)
+                          {tLocal('irs_jovem')}
                         </label>
                         <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                          Isenção parcial nos primeiros 10 anos de atividade (até 35 anos). Teto anual: 55 × IAS (€ 29.542,15).
+                          {tLocal('irs_jovem_desc_field')}
                         </p>
                       </div>
                     </div>
@@ -1592,19 +2488,19 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[9px] font-black uppercase text-amber-900 text-center">
                         <div className={`p-2 rounded-xl transition-all ${irsJovemYear === 1 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
                           <span className={`block text-sm font-black ${irsJovemYear === 1 ? 'text-white' : 'text-amber-600'}`}>100%</span>
-                          <span>1.º Ano</span>
+                          <span>{tLocal('irs_jovem_y1')}</span>
                         </div>
                         <div className={`p-2 rounded-xl transition-all ${irsJovemYear >= 2 && irsJovemYear <= 4 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
                           <span className={`block text-sm font-black ${irsJovemYear >= 2 && irsJovemYear <= 4 ? 'text-white' : 'text-amber-600'}`}>75%</span>
-                          <span>2.º–4.º Anos</span>
+                          <span>{tLocal('irs_jovem_y2_4')}</span>
                         </div>
                         <div className={`p-2 rounded-xl transition-all ${irsJovemYear >= 5 && irsJovemYear <= 7 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
                           <span className={`block text-sm font-black ${irsJovemYear >= 5 && irsJovemYear <= 7 ? 'text-white' : 'text-amber-600'}`}>50%</span>
-                          <span>5.º–7.º Anos</span>
+                          <span>{tLocal('irs_jovem_y5_7')}</span>
                         </div>
                         <div className={`p-2 rounded-xl transition-all ${irsJovemYear >= 8 && irsJovemYear <= 10 ? 'bg-amber-500 text-white shadow-xs' : 'bg-white/70'}`}>
                           <span className={`block text-sm font-black ${irsJovemYear >= 8 && irsJovemYear <= 10 ? 'text-white' : 'text-amber-600'}`}>25%</span>
-                          <span>8.º–10.º Anos</span>
+                          <span>{tLocal('irs_jovem_y8_10')}</span>
                         </div>
                       </div>
 
@@ -1617,16 +2513,16 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           onChange={(e) => setIrsJovemYear(Number(e.target.value))}
                           className="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none"
                         >
-                          <option value={1}>1.º Ano (100% Isenção)</option>
-                          <option value={2}>2.º Ano (75% Isenção)</option>
-                          <option value={3}>3.º Ano (75% Isenção)</option>
-                          <option value={4}>4.º Ano (75% Isenção)</option>
-                          <option value={5}>5.º Ano (50% Isenção)</option>
-                          <option value={6}>6.º Ano (50% Isenção)</option>
-                          <option value={7}>7.º Ano (50% Isenção)</option>
-                          <option value={8}>8.º Ano (25% Isenção)</option>
-                          <option value={9}>9.º Ano (25% Isenção)</option>
-                          <option value={10}>10.º Ano (25% Isenção)</option>
+                          <option value={1}>{tLocal('irs_jovem_opt_1')}</option>
+                          <option value={2}>{tLocal('irs_jovem_opt_2')}</option>
+                          <option value={3}>{tLocal('irs_jovem_opt_3')}</option>
+                          <option value={4}>{tLocal('irs_jovem_opt_4')}</option>
+                          <option value={5}>{tLocal('irs_jovem_opt_5')}</option>
+                          <option value={6}>{tLocal('irs_jovem_opt_6')}</option>
+                          <option value={7}>{tLocal('irs_jovem_opt_7')}</option>
+                          <option value={8}>{tLocal('irs_jovem_opt_8')}</option>
+                          <option value={9}>{tLocal('irs_jovem_opt_9')}</option>
+                          <option value={10}>{tLocal('irs_jovem_opt_10')}</option>
                         </select>
                       </div>
                     </div>
@@ -1671,9 +2567,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-2.5 text-amber-900 text-xs animate-in fade-in duration-200">
                       <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold block">Atenção: Subsídio de Refeição Tributável</span>
+                        <span className="font-bold block">{tLocal('meal_taxable_alert')}</span>
                         <span className="text-amber-800 text-[11px] leading-relaxed">
-                          O excedente diário de {(mealAllowance - (mealType === 'card' ? MEAL_CAP_CARD_2026 : MEAL_CAP_CASH_2026)).toFixed(2)}€/dia (acima do teto isento de {mealType === 'card' ? '10,46€' : '6,15€'}) sofrerá retenção de 11% de Segurança Social e IRS.
+                          {tLocal('meal_taxable_sub').replace('{excess}', (mealAllowance - (mealType === 'card' ? MEAL_CAP_CARD_2026 : MEAL_CAP_CASH_2026)).toFixed(2)).replace('{cap}', mealType === 'card' ? '10,46€' : '6,15€')}
                         </span>
                       </div>
                     </div>
@@ -1688,17 +2584,17 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-6">
                     <div className="flex items-center justify-between pb-3 border-b border-white/10">
                       <h3 className="text-xs font-black uppercase tracking-widest text-[#FF8C00]">
-                        Resultado do Cálculo (2026)
-                      </h3>
-                      <span className="text-[9px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
-                        Taxa Efetiva de IRS: {res.effectiveRate}%
-                      </span>
+                      {tLocal('calc_result_2026')}
+                    </h3>
+                    <span className="text-[9px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
+                      {tLocal('effective_irs_rate')}: {res.effectiveRate}%
+                    </span>
                     </div>
 
                     <div className="text-center space-y-2 py-4">
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        Rendimento Líquido Mensal Disponível
-                      </p>
+                      {tLocal('net_income_available')}
+                    </p>
                       <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
                         {res.netSalary.toLocaleString('pt', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€
                       </h1>
@@ -1708,13 +2604,13 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <div className="flex items-center gap-3 px-1">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FF8C00]" />
                         <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Discriminação do Recibo de Vencimento
+                          {tLocal('payslip_breakdown')}
                         </h4>
                       </div>
 
                       <div className="space-y-3 bg-white/5 border border-white/5 rounded-3xl p-5">
                         <div className="flex justify-between items-center text-xs pb-2 border-b border-white/5">
-                          <span className="font-bold text-slate-300">Remuneração Bruta Sujeita</span>
+                          <span className="font-bold text-slate-300">{tLocal('remun_bruta_sujeita')}</span>
                           <span className="font-extrabold text-white">{res.grossTotal.toFixed(2)}€</span>
                         </div>
 
@@ -1722,13 +2618,13 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           <div className="space-y-1 pl-2 text-[11px] text-slate-400 pb-2 border-b border-white/5">
                             {res.vacationDuodecimo > 0 && (
                               <div className="flex justify-between">
-                                <span>• Duodécimo Subsídio de Férias:</span>
+                                <span>{tLocal('duodecimo_vac_line')}</span>
                                 <span className="text-slate-200">+{res.vacationDuodecimo.toFixed(2)}€</span>
                               </div>
                             )}
                             {res.christmasDuodecimo > 0 && (
                               <div className="flex justify-between">
-                                <span>• Duodécimo Subsídio de Natal:</span>
+                                <span>{tLocal('duodecimo_xmas_line')}</span>
                                 <span className="text-slate-200">+{res.christmasDuodecimo.toFixed(2)}€</span>
                               </div>
                             )}
@@ -1736,13 +2632,13 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         )}
 
                         <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-300">Segurança Social Trabalhador (11%)</span>
+                          <span className="font-bold text-slate-300">{tLocal('ss_worker_11')}</span>
                           <span className="font-extrabold text-red-400">-{res.ssDeduction.toFixed(2)}€</span>
                         </div>
 
                         <div className="flex justify-between items-center text-xs">
                           <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-slate-300">Retenção na Fonte de IRS</span>
+                            <span className="font-bold text-slate-300">{tLocal('irs_withholding_line')}</span>
                             {res.irsJovemDiscount > 0 && (
                               <span className="text-[8px] font-black px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded-md border border-amber-500/30">
                                 IRS Jovem: -{res.irsJovemDiscount.toFixed(2)}€
@@ -1754,12 +2650,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                         <div className="border-t border-white/5 pt-3 space-y-1.5">
                           <div className="flex justify-between items-center text-[11px]">
-                            <span className="font-semibold text-slate-400">Subsídio Alimentação Isento</span>
+                            <span className="font-semibold text-slate-400">{tLocal('meal_exempt_line')}</span>
                             <span className="font-bold text-emerald-400">+{res.mealExempt.toFixed(2)}€</span>
                           </div>
                           {res.mealTaxed > 0 && (
                             <div className="flex justify-between items-center text-[11px]">
-                              <span className="font-semibold text-amber-400">Subsídio Alimentação Tributado (no bruto)</span>
+                              <span className="font-semibold text-amber-400">{tLocal('meal_taxed_line')}</span>
                               <span className="font-bold text-amber-300">+{res.mealTaxed.toFixed(2)}€</span>
                             </div>
                           )}
@@ -1775,7 +2671,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="flex items-start gap-2 text-[10px] text-slate-300 bg-white/5 border border-white/5 rounded-2xl p-4">
                       <Info size={14} className="shrink-0 mt-0.5 text-[#FF8C00]" />
                       <span className="leading-relaxed">
-                        Cálculo efetuado com base no Modelo Marginal Oficial da Autoridade Tributária (2026), Segurança Social TCO (11%) e limites de refeição da Portaria n.º 51-B/2026 (isento até 10,46€/dia em cartão ou 6,15€ em dinheiro).
+                        {tLocal('salary_legal_basis_note')}
                       </span>
                     </div>
                   </div>
@@ -1880,11 +2776,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <Briefcase className="text-[#FF8C00] shrink-0" size={18} />
                   <div>
                     <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                      Simulador de Recibos Verdes (Trabalhador Independente / Freelancer)
-                    </h3>
-                    <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                      Cálculo de Segurança Social (21,4% sobre 70% base) & Retenção na fonte de IRS por Categoria B
-                    </p>
+                    {tLocal('rv_sim_title')}
+                  </h3>
+                  <p className="text-[9px] text-slate-400 font-medium mt-0.5">
+                    {tLocal('rv_sim_subtitle')}
+                  </p>
                   </div>
                 </div>
 
@@ -1991,10 +2887,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <Sparkles size={16} className="text-amber-500 shrink-0" />
                       <div>
                         <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
-                          IRS Jovem (Art. 12.º-B CIRS) para Categoria B
+                          {tLocal('rv_irs_jovem_title')}
                         </label>
                         <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                          Aplicável a trabalhadores independentes até 35 anos com grau de ensino superior.
+                          {tLocal('rv_irs_jovem_desc')}
                         </p>
                       </div>
                     </div>
@@ -2016,10 +2912,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         onChange={(e) => setRvIrsJovemYear(Number(e.target.value))}
                         className="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none"
                       >
-                        <option value={1}>{tLocal('year_1')} — 100% Isenção</option>
-                        <option value={2}>{tLocal('years_2_4')} — 75% Isenção</option>
-                        <option value={3}>{tLocal('years_5_7')} — 50% Isenção</option>
-                        <option value={5}>{tLocal('years_8_10')} — 25% Isenção</option>
+                        <option value={1}>{tLocal('year_1')}</option>
+                        <option value={2}>{tLocal('years_2_4')}</option>
+                        <option value={3}>{tLocal('years_5_7')}</option>
+                        <option value={5}>{tLocal('years_8_10')}</option>
                       </select>
                     </div>
                   )}
@@ -2033,17 +2929,17 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-6">
                     <div className="flex items-center justify-between pb-3 border-b border-white/10">
                       <h3 className="text-xs font-black uppercase tracking-widest text-[#FF8C00]">
-                        Resultado do Cálculo
-                      </h3>
-                      <span className="text-[9px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
-                        Taxa Efetiva de Imposto: {res.effectiveRate}%
-                      </span>
+                      {tLocal('calc_result_title')}
+                    </h3>
+                    <span className="text-[9px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
+                      {tLocal('effective_tax_rate')}: {res.effectiveRate}%
+                    </span>
                     </div>
 
                     <div className="text-center space-y-2 py-4">
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        Rendimento Líquido Mensal Disponível (Recibos Verdes)
-                      </p>
+                      {tLocal('net_income_recibos')}
+                    </p>
                       <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
                         {res.netSalary.toLocaleString('pt', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€
                       </h1>
@@ -2053,17 +2949,17 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <div className="flex items-center gap-3 px-1">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FF8C00]" />
                         <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Contribuições & Impostos Retidos
+                          {tLocal('rv_deductions_title')}
                         </h4>
                       </div>
 
                       <div className="space-y-3 bg-white/5 border border-white/5 rounded-3xl p-5">
                         <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-300">Segurança Social (21,4% sobre 70% Base)</span>
+                          <span className="font-bold text-slate-300">{tLocal('ss_ti_line')}</span>
                           <span className="font-extrabold text-red-400">-{res.ssDeduction}€</span>
                         </div>
                         <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-300">Retenção na Fonte de IRS</span>
+                          <span className="font-bold text-slate-300">{tLocal('irs_withholding_line')}</span>
                           <span className="font-extrabold text-red-400">-{res.irsDeduction}€</span>
                         </div>
                       </div>
@@ -2072,7 +2968,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="flex items-start gap-2 text-[10px] text-slate-300 bg-white/5 border border-white/5 rounded-2xl p-4">
                       <Info size={14} className="shrink-0 mt-0.5 text-[#FF8C00]" />
                       <span className="leading-relaxed">
-                        Os Recibos Verdes calculam a Segurança Social incidente sobre 70% da faturação bruta em serviços (ou 20% em vendas de produtos) com taxa de 21,4% (Trabalhador Independente) ou 25,2% (ENI).
+                        {tLocal('rv_legal_note')}
                       </span>
                     </div>
                   </div>
@@ -2190,7 +3086,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-700">{tLocal('rv_var_0_name')}</span>
-                        <span className="text-[9px] font-extrabold text-slate-600 bg-slate-200/60 px-2 py-0.5 rounded-full">0% Padrão</span>
+                        <span className="text-[9px] font-extrabold text-slate-600 bg-slate-200/60 px-2 py-0.5 rounded-full">{tLocal('ss_var_0_short')}</span>
                       </div>
                       <p className="text-[10px] text-slate-600 leading-relaxed">
                         {tLocal('rv_var_0_desc')}
@@ -2340,7 +3236,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                               : 'bg-slate-100 text-slate-400 border-slate-200'
                           }`}
                         >
-                          {isComparing ? tLocal('active_comparison') : 'Off'}
+                          {isComparing ? tLocal('active_comparison') : tLocal('compare_off')}
                         </button>
                       </div>
                       <select
@@ -2464,7 +3360,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   {/* Badge Explicativo do Fator OCDE */}
                   <div className="flex items-center justify-between bg-slate-50 border border-slate-200/70 rounded-xl px-4 py-2 text-[10px] text-slate-600 font-medium">
                     <span>
-                      <strong>Escala OCDE:</strong> Fator de equivalência familiar <strong>{colAssessment.familyScaleFactors.ocdeScaleFactor}×</strong> aplicado à alimentação e utilidades.
+                      <strong>{tLocal('ocde_scale_label')}</strong> {tLocal('ocde_scale_sub')} <strong>{colAssessment.familyScaleFactors.ocdeScaleFactor}×</strong> {tLocal('applied_food_utilities')}
                     </span>
                     <span className="text-slate-400 font-bold">
                       Agregado: {householdSize} {householdSize === 1 ? tLocal('person') : tLocal('people')}
@@ -2476,7 +3372,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 <div className="border-t border-slate-100 pt-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-black text-slate-550 uppercase tracking-widest block">
-                      Rendimento Líquido Mensal do Agregado (€)
+                      {tLocal('household_net_income')}
                     </label>
                     {salaryResults.netSalary > 0 && (
                       <button
@@ -2493,7 +3389,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     min="0"
                     step="50"
                     value={colNetSalaryCustom || ''}
-                    placeholder={salaryResults.netSalary > 0 ? `Ex: ${salaryResults.netSalary}€ (da Tab 1)` : 'Ex: 1500'}
+                    placeholder={salaryResults.netSalary > 0 ? tLocal('placeholder_ex_from_tab1').replace('{val}', salaryResults.netSalary.toString()) : tLocal('placeholder_ex_1500')}
                     onChange={(e) => setColNetSalaryCustom(Math.max(0, Number(e.target.value)))}
                     className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
                   />
@@ -2630,9 +3526,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         ? 'bg-amber-50 text-amber-700 border-amber-200'
                         : 'bg-rose-50 text-rose-700 border-rose-200'
                     }`}>
-                      {colAssessment.financialSufficiency.effortRateStatus === 'sustainable' ? 'Sustentável (≤ 35%)' :
-                       colAssessment.financialSufficiency.effortRateStatus === 'moderate_risk' ? 'Risco Moderado (36-50%)' :
-                       'Sobre-esforço Crítico (> 50%)'}
+                      {colAssessment.financialSufficiency.effortRateStatus === 'sustainable' ? tLocal('effort_sustainable_tag') :
+                       colAssessment.financialSufficiency.effortRateStatus === 'moderate_risk' ? tLocal('effort_moderate_tag') :
+                       tLocal('effort_critical_tag')}
                     </span>
                   </div>
 
@@ -2640,39 +3536,39 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     {/* Taxa de Esforço */}
                     <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-1">
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
-                        Taxa de Esforço Habitacional
+                        {tLocal('effort_rate_housing')}
                       </span>
                       <div className="text-xl font-black text-slate-900">
                         {colAssessment.financialSufficiency.effortRateHousingPct}%
                       </div>
                       <p className="text-[10px] text-slate-500 font-medium">
-                        Renda ({col1.housing}€) face ao Rendimento ({colAssessment.financialSufficiency.netMonthlyIncome}€)
+                        {tLocal('rent_vs_income_label').replace('{rent}', col1.housing.toString()).replace('{income}', colAssessment.financialSufficiency.netMonthlyIncome.toString())}
                       </p>
                     </div>
 
                     {/* Saldo Mensal Estimado */}
                     <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-1">
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
-                        Saldo Mensal Estimado
+                        {tLocal('estimated_monthly_balance')}
                       </span>
                       <div className={`text-xl font-black ${colAssessment.financialSufficiency.isDeficit ? 'text-rose-600' : 'text-emerald-600'}`}>
                         {colAssessment.financialSufficiency.netMonthlySavings > 0 ? `+${colAssessment.financialSufficiency.netMonthlySavings}€` : `${colAssessment.financialSufficiency.netMonthlySavings}€`}
                       </div>
                       <p className="text-[10px] text-slate-500 font-medium">
-                        {colAssessment.financialSufficiency.isDeficit ? 'Défice mensal estimado no distrito' : 'Margem de poupança mensal'}
+                        {colAssessment.financialSufficiency.isDeficit ? tLocal('deficit_estimated_desc') : tLocal('savings_margin_desc')}
                       </p>
                     </div>
 
                     {/* Alvo de Reserva de Emergência */}
                     <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-1">
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
-                        Reserva MIRA Recomendada
+                        {tLocal('mira_recommended_reserve')}
                       </span>
                       <div className="text-xl font-black text-indigo-600">
                         {colAssessment.financialSufficiency.emergencyFund6Months}€
                       </div>
                       <p className="text-[10px] text-slate-500 font-medium">
-                        Alvo de 6 meses de segurança (3 meses: {colAssessment.financialSufficiency.emergencyFund3Months}€)
+                        {tLocal('reserve_target_desc').replace('{val3}', colAssessment.financialSufficiency.emergencyFund3Months.toString())}
                       </p>
                     </div>
                   </div>
@@ -2690,16 +3586,16 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       </h4>
                     </div>
                     <span className="text-[9px] font-extrabold text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded border border-amber-300">
-                      Referência: {colAssessment.legalSubsistenceReference.calculatedReference}€ / mês
+                      {tLocal('reference_label')} {colAssessment.legalSubsistenceReference.calculatedReference}€ / {tLocal('per_month')}
                     </span>
                   </div>
 
                   <p className="text-[10px] text-amber-900/80 font-medium leading-relaxed">
-                    <strong>Fórmula Teórica da Portaria:</strong> {colAssessment.legalSubsistenceReference.formulaDescription}.
+                    <strong>{tLocal('portaria_formula_label')}</strong> {colAssessment.legalSubsistenceReference.formulaDescription}.
                   </p>
 
                   <div className="bg-white/70 border border-amber-200 rounded-xl p-3 text-[9px] text-amber-950 font-medium leading-normal">
-                    ⚠️ <strong>Nota de Governança e Blindagem Jurídica:</strong> {colAssessment.legalSubsistenceReference.disclaimer}
+                    ⚠️ <strong>{tLocal('governance_note_title')}</strong> {colAssessment.legalSubsistenceReference.disclaimer}
                   </div>
                 </div>
               )}
@@ -2746,10 +3642,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       </div>
                       <div>
                         <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
-                          MIRA Housing Intelligence & Affordability 2026
+                          {tLocal('hp_title')}
                         </h3>
                         <p className="text-[10px] text-slate-400 font-medium">
-                          Observatório Territorial (INE vs Portais) e Simuladores Regulatórios de Arrendamento e Aquisição
+                          {tLocal('hp_subtitle')}
                         </p>
                       </div>
                     </div>
@@ -2765,7 +3661,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                             : 'text-slate-500 hover:text-slate-800'
                         }`}
                       >
-                        🏠 Arrendamento & Porta 65
+                        {tLocal('hp_mode_rent')}
                       </button>
                       <button
                         type="button"
@@ -2776,7 +3672,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                             : 'text-slate-500 hover:text-slate-800'
                         }`}
                       >
-                        🏦 Compra & Crédito à Habitação
+                        {tLocal('hp_mode_buy')}
                       </button>
                     </div>
                   </div>
@@ -2785,7 +3681,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                        📍 Unidade Territorial / Concelho
+                        {tLocal('hp_territory_label')}
                       </label>
                       <select
                         value={hpTerritoryId}
@@ -2794,7 +3690,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       >
                         {TERRITORIAL_SEEDS.map((seed) => (
                           <option key={seed.id} value={seed.id}>
-                            {seed.name} {seed.level === 'municipality' ? '(Concelho / INE Oficial)' : '(Distrito / Agregação MIRA)'}
+                            {seed.name} {seed.level === 'municipality' ? tLocal('hp_municipality_tag') : tLocal('hp_district_tag')}
                           </option>
                         ))}
                       </select>
@@ -2804,25 +3700,25 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <>
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                            📐 Tipologia Habitacional
+                            {tLocal('hp_typology_label')}
                           </label>
                           <select
                             value={hpTypology}
                             onChange={(e) => setHpTypology(e.target.value as HousingTypology)}
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
                           >
-                            <option value="room">Quarto Individual (Room)</option>
-                            <option value="t0">Apartamento T0 / Estúdio</option>
-                            <option value="t1">Apartamento T1</option>
-                            <option value="t2">Apartamento T2</option>
-                            <option value="t3">Apartamento T3</option>
-                            <option value="t4_plus">Apartamento T4 ou Superior (T4+)</option>
+                            <option value="room">{tLocal('room_single')}</option>
+                            <option value="t0">{tLocal('t0_apartment')}</option>
+                            <option value="t1">{tLocal('t1_apartment')}</option>
+                            <option value="t2">{tLocal('t2_apartment')}</option>
+                            <option value="t3">{tLocal('t3_apartment')}</option>
+                            <option value="t4_plus">{tLocal('t4_apartment')}</option>
                           </select>
                         </div>
 
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                            🎂 Idade do Candidato (Anos)
+                            {tLocal('hp_age_label')}
                           </label>
                           <input
                             type="number"
@@ -2836,7 +3732,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <>
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                            🎂 Idade do Mutuário mais Velho
+                            {tLocal('hp_buyer_age_label')}
                           </label>
                           <input
                             type="number"
@@ -2855,7 +3751,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                             className="w-4 h-4 text-[#FF8C00] rounded focus:ring-[#FF8C00]"
                           />
                           <label htmlFor="youthGuaranteeToggle" className="text-xs font-bold text-slate-700">
-                            Garantia Pública Jovem (DL 44/2024)
+                            {tLocal('hp_youth_guarantee_toggle')}
                           </label>
                         </div>
                       </>
@@ -2869,12 +3765,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     {/* Inputs Card */}
                     <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-4">
                       <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider pb-2 border-b border-slate-100">
-                        Dados de Rendimento & Contrato
+                        {tLocal('hp_rent_inputs_title')}
                       </h4>
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          💰 Rendimento Líquido Mensal (€)
+                          {tLocal('hp_net_income_label')}
                         </label>
                         <input
                           type="number"
@@ -2882,12 +3778,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           onChange={(e) => setHpNetIncome(Number(e.target.value))}
                           className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
                         />
-                        <p className="text-[9px] text-slate-400 font-medium">Usado na taxa de esforço e prudência MIRA.</p>
+                        <p className="text-[9px] text-slate-400 font-medium">{tLocal('hp_net_income_help')}</p>
                       </div>
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          💼 Rendimento Bruto Mensal (€)
+                          {tLocal('hp_gross_income_label')}
                         </label>
                         <input
                           type="number"
@@ -2895,12 +3791,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           onChange={(e) => setHpGrossIncome(Number(e.target.value))}
                           className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
                         />
-                        <p className="text-[9px] text-slate-400 font-medium">Obrigatório para aferir a regra de esforço bruto ≤ 60% do Porta 65.</p>
+                        <p className="text-[9px] text-slate-400 font-medium">{tLocal('hp_gross_income_help')}</p>
                       </div>
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          🏠 Renda Mensal Pretendida (€)
+                          {tLocal('hp_rent_label')}
                         </label>
                         <div className="relative">
                           <input
@@ -2911,12 +3807,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
                           />
                         </div>
-                        <p className="text-[9px] text-slate-400 font-medium">Deixe 0 ou vazio para usar o benchmark apurado de mercado.</p>
+                        <p className="text-[9px] text-slate-400 font-medium">{tLocal('hp_rent_help')}</p>
                       </div>
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          🛒 Total de Outras Despesas Mensais (€)
+                          {tLocal('hp_expenses_label')}
                         </label>
                         <input
                           type="number"
@@ -2934,7 +3830,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white space-y-4 shadow-xl">
                         <div className="flex items-center justify-between pb-3 border-b border-white/10">
                           <div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#FF8C00]">Observatório Territorial MIRA</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-[#FF8C00]">{tLocal('hp_territorial_obs_title')}</span>
                             <h4 className="text-sm font-black text-white">Asking vs. Contracted — {territoryIntel?.territoryName}</h4>
                           </div>
                           <span className="text-[10px] font-black px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10">
@@ -2944,7 +3840,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">INE Contratado</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{tLocal('hp_ine_contracted')}</span>
                             <div className="text-xl font-black text-emerald-400">
                               {territoryIntel?.contractedMarket.medianRentEurPerM2} €/m²
                             </div>
@@ -2956,9 +3852,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           </div>
 
                           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Portais Anunciado</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{tLocal('hp_portals_asking')}</span>
                             <div className="text-xl font-black text-amber-400">
-                              {rentalAffordability.monthlyRentUsed} €/mês
+                              {rentalAffordability.monthlyRentUsed} € / {tLocal('per_month')}
                             </div>
                             <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">
                               MIRA Benchmark (DERIVED)
@@ -2966,12 +3862,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           </div>
 
                           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Ágio de Oferta</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{tLocal('hp_asking_spread')}</span>
                             <div className="text-xl font-black text-red-400">
                               +{territoryIntel?.askingVsContractedSpreadPct}%
                             </div>
                             <span className="text-[8px] text-slate-400 font-medium leading-none block">
-                              Pressão de proprietários face aos novos contratos AT
+                              {tLocal('hp_spread_help')}
                             </span>
                           </div>
                         </div>
@@ -2989,7 +3885,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
                           <div className="flex items-center gap-2">
                             <Building2 size={16} className="text-indigo-600" />
-                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Capital Inicial (Art. 1076.º CC)</h5>
+                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">{tLocal('hp_initial_capital_title')}</h5>
                           </div>
                           
                           <div className="text-3xl font-black text-slate-900">
@@ -2998,21 +3894,21 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                           <div className="text-[9px] text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
                             <div className="flex justify-between font-bold">
-                              <span>1.ª Renda de Entrada:</span>
+                              <span>{tLocal('hp_first_month_rent')}</span>
                               <span>{rentalAffordability.legalInitialCapitalCC1076.firstMonthRent} €</span>
                             </div>
                             <div className="flex justify-between font-bold">
-                              <span>Adiantamento (até 2 meses):</span>
+                              <span>{tLocal('hp_advance_rent')}</span>
                               <span>{rentalAffordability.legalInitialCapitalCC1076.maxAdvanceRentEur} €</span>
                             </div>
                             <div className="flex justify-between font-bold">
-                              <span>Caução (até 2 meses):</span>
+                              <span>{tLocal('hp_security_deposit')}</span>
                               <span>{rentalAffordability.legalInitialCapitalCC1076.maxSecurityDepositEur} €</span>
                             </div>
                           </div>
 
                           <p className="text-[8px] text-slate-400 font-medium leading-tight">
-                            {rentalAffordability.legalInitialCapitalCC1076.label}: teto legal máximo admissível (5 rendas), não sendo compulsório caso o senhorio acorde montante inferior.
+                            {rentalAffordability.legalInitialCapitalCC1076.label}: {tLocal('hp_cc1076_legal_note')}
                           </p>
                         </div>
 
@@ -3021,32 +3917,32 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <ShieldCheck size={16} className="text-emerald-600" />
-                              <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Triagem Porta 65 Jovem</h5>
+                              <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">{tLocal('hp_porta65_title')}</h5>
                             </div>
                             <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
                               rentalAffordability.porta65JovemScreening.screeningStatus === 'preliminary_pass'
                                 ? 'bg-emerald-100 text-emerald-800'
                                 : 'bg-red-100 text-red-800'
                             }`}>
-                              {rentalAffordability.porta65JovemScreening.screeningStatus === 'preliminary_pass' ? '✓ Pré-Aprovado' : 'Rejeitado na Triagem'}
+                              {rentalAffordability.porta65JovemScreening.screeningStatus === 'preliminary_pass' ? tLocal('hp_porta65_pre_pass') : tLocal('hp_porta65_rejected')}
                             </span>
                           </div>
 
                           <div className="text-[9px] text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
                             <div className="flex justify-between">
-                              <span>RMA Concelhia ({hpTypology.toUpperCase()}):</span>
+                              <span>{tLocal('hp_porta65_rma_label')} ({hpTypology.toUpperCase()}):</span>
                               <span className="font-bold">{rentalAffordability.porta65JovemScreening.municipalRmaEur} €</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Teto 4× RMA Concelho:</span>
+                              <span>{tLocal('hp_porta65_cap_rma')}</span>
                               <span className="font-bold">{rentalAffordability.porta65JovemScreening.incomeEligibility.maxByReferenceRent} €</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Teto 4× RMMG 2026:</span>
+                              <span>{tLocal('hp_porta65_cap_rmmg')}</span>
                               <span className="font-bold">{rentalAffordability.porta65JovemScreening.incomeEligibility.maxByRMMG} €</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Esforço Bruto (máx. 60%):</span>
+                              <span>{tLocal('hp_porta65_gross_effort')}</span>
                               <span className="font-bold">{rentalAffordability.porta65JovemScreening.incomeEligibility.grossEffortRatePct}%</span>
                             </div>
                           </div>
@@ -3060,7 +3956,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       {/* Effort Rate Status Bar */}
                       <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
                         <div className="flex items-center justify-between">
-                          <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Taxa de Esforço Habitacional MIRA</h5>
+                          <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">{tLocal('hp_effort_rate_title')}</h5>
                           <span className={`text-xs font-black px-2.5 py-1 rounded-full ${
                             rentalAffordability.miraPrudenceStatus === 'sustainable' ? 'bg-emerald-100 text-emerald-800' :
                             rentalAffordability.miraPrudenceStatus === 'moderate_risk' ? 'bg-amber-100 text-amber-800' :
@@ -3080,8 +3976,8 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         </div>
                         <div className="flex justify-between text-[9px] text-slate-400 font-bold">
                           <span>0%</span>
-                          <span>≤35% Diretriz Prudencial MIRA</span>
-                          <span>&gt;50% Risco Crítico</span>
+                          <span>{tLocal('hp_effort_mira_guide')}</span>
+                          <span>{tLocal('hp_effort_critical_risk')}</span>
                           <span>100%</span>
                         </div>
                       </div>
@@ -3096,12 +3992,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     {/* Inputs Card */}
                     <div className="bg-white border border-slate-100 rounded-[2.25rem] p-6 shadow-sm space-y-4">
                       <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider pb-2 border-b border-slate-100">
-                        Dados do Imóvel & Financiamento
+                        {tLocal('hp_buy_inputs_title')}
                       </h4>
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          🏷️ Preço de Aquisição do Imóvel (€)
+                          {tLocal('hp_buy_price_label')}
                         </label>
                         <input
                           type="number"
@@ -3113,7 +4009,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          🔍 Valor de Avaliação Bancária (€)
+                          {tLocal('hp_appraisal_label')}
                         </label>
                         <input
                           type="number"
@@ -3121,12 +4017,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           onChange={(e) => setHpAppraisalValue(Number(e.target.value))}
                           className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00]"
                         />
-                        <p className="text-[9px] text-slate-400 font-medium">O Banco de Portugal exige o cálculo sobre min(preço, avaliação).</p>
+                        <p className="text-[9px] text-slate-400 font-medium">{tLocal('hp_appraisal_help')}</p>
                       </div>
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          💰 Capitais Próprios Disponíveis (€)
+                          {tLocal('hp_own_capital_label')}
                         </label>
                         <input
                           type="number"
@@ -3138,7 +4034,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          💳 Rendimento Líquido do Agregado (€)
+                          {tLocal('hp_buyer_net_income_label')}
                         </label>
                         <input
                           type="number"
@@ -3150,7 +4046,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                          🧾 Outras Prestações / Créditos Atuais (€)
+                          {tLocal('hp_other_debts_label')}
                         </label>
                         <input
                           type="number"
@@ -3170,7 +4066,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                             className="w-4 h-4 text-[#FF8C00] rounded"
                           />
                           <label htmlFor="firstHppToggle" className="text-[10px] font-bold text-slate-700">
-                            1.ª Habitação Própria Permanente (HPP)
+                            {tLocal('hp_first_hpp_toggle')}
                           </label>
                         </div>
 
@@ -3183,7 +4079,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                             className="w-4 h-4 text-[#FF8C00] rounded"
                           />
                           <label htmlFor="ownsPropertyToggle" className="text-[10px] font-bold text-slate-700">
-                            É atualmente proprietário de habitação?
+                            {tLocal('hp_owns_prop_toggle')}
                           </label>
                         </div>
 
@@ -3196,7 +4092,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                             className="w-4 h-4 text-[#FF8C00] rounded"
                           />
                           <label htmlFor="ownsLast3YearsToggle" className="text-[10px] font-bold text-slate-700">
-                            Foi proprietário nos últimos 3 anos? (IMT Jovem)
+                            {tLocal('hp_owns_last3y_toggle')}
                           </label>
                         </div>
                       </div>
@@ -3209,37 +4105,37 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white space-y-5 shadow-xl">
                         <div className="flex items-center justify-between pb-3 border-b border-white/10">
                           <div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#FF8C00]">Enquadramento de Financiamento</span>
-                            <h4 className="text-sm font-black text-white">LTV, Financiamento & Prestação Mensal</h4>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-[#FF8C00]">{tLocal('hp_financing_title')}</span>
+                            <h4 className="text-sm font-black text-white">{tLocal('hp_financing_sub')}</h4>
                           </div>
                           <span className="text-[10px] font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            LTV Máx: {purchaseAffordability.financing.maxLtvAllowedPct}%
+                            {tLocal('hp_max_ltv')} {purchaseAffordability.financing.maxLtvAllowedPct}%
                           </span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Base Elegível min(P,A)</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{tLocal('hp_eligible_base')}</span>
                             <div className="text-xl font-black text-white">
                               {purchaseAffordability.eligiblePropertyValue.toLocaleString('pt-PT')} €
                             </div>
-                            <span className="text-[8px] text-slate-400 font-medium">Preço vs Avaliação</span>
+                            <span className="text-[8px] text-slate-400 font-medium">{tLocal('hp_price_vs_appraisal')}</span>
                           </div>
 
                           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Montante Financiado</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{tLocal('hp_loan_amount')}</span>
                             <div className="text-xl font-black text-emerald-400">
                               {purchaseAffordability.financing.loanAmount.toLocaleString('pt-PT')} €
                             </div>
-                            <span className="text-[8px] text-slate-400 font-medium">LTV Efetivo: {purchaseAffordability.financing.effectiveLtvPct}%</span>
+                            <span className="text-[8px] text-slate-400 font-medium">{tLocal('hp_effective_ltv')} {purchaseAffordability.financing.effectiveLtvPct}%</span>
                           </div>
 
                           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Prestação Estimada</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{tLocal('hp_monthly_mortgage')}</span>
                             <div className="text-xl font-black text-amber-400">
-                              {purchaseAffordability.financing.estimatedMonthlyMortgageEur.toLocaleString('pt-PT')} €/mês
+                              {purchaseAffordability.financing.estimatedMonthlyMortgageEur.toLocaleString('pt-PT')} € / {tLocal('per_month')}
                             </div>
-                            <span className="text-[8px] text-slate-400 font-medium">{purchaseAffordability.financing.maxMaturityYears} anos (Regulado BdP)</span>
+                            <span className="text-[8px] text-slate-400 font-medium">{purchaseAffordability.financing.maxMaturityYears} {tLocal('hp_bdp_regulated_years')}</span>
                           </div>
                         </div>
 
@@ -3271,36 +4167,36 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         {/* IMT Jovem DL 48-A/2024 */}
                         <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
                           <div className="flex items-center justify-between">
-                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">IMT Jovem (DL 48-A/2024)</h5>
+                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">{tLocal('hp_imt_jovem_title')}</h5>
                             <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
                               purchaseAffordability.fiscalTaxes.imtJovemApplied ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
                             }`}>
-                              {purchaseAffordability.fiscalTaxes.imtJovemApplied ? '✓ Isenção Aplicada' : 'Tributação Normal'}
+                              {purchaseAffordability.fiscalTaxes.imtJovemApplied ? tLocal('hp_imt_jovem_applied') : tLocal('hp_imt_jovem_normal')}
                             </span>
                           </div>
 
                           <div className="text-2xl font-black text-slate-900">
-                            {purchaseAffordability.fiscalTaxes.payableImtEur.toLocaleString('pt-PT')} € <span className="text-xs text-slate-400 font-bold">de IMT</span>
+                            {purchaseAffordability.fiscalTaxes.payableImtEur.toLocaleString('pt-PT')} € <span className="text-xs text-slate-400 font-bold">{tLocal('hp_imt_tax_suffix')}</span>
                           </div>
 
                           <div className="text-[9px] text-emerald-950 bg-emerald-50 p-3 rounded-xl border border-emerald-200 space-y-0.5 font-medium">
-                            <div><strong>Poupança de IMT:</strong> {purchaseAffordability.fiscalTaxes.imtJovemSavingsEur.toLocaleString('pt-PT')} €</div>
-                            <div><strong>Poupança Imposto de Selo:</strong> {purchaseAffordability.fiscalTaxes.stampDutySavingsEur.toLocaleString('pt-PT')} €</div>
+                            <div><strong>{tLocal('hp_imt_jovem_savings')}</strong> {purchaseAffordability.fiscalTaxes.imtJovemSavingsEur.toLocaleString('pt-PT')} €</div>
+                            <div><strong>{tLocal('hp_stamp_duty_savings')}</strong> {purchaseAffordability.fiscalTaxes.stampDutySavingsEur.toLocaleString('pt-PT')} €</div>
                           </div>
 
                           <p className="text-[8px] text-slate-400 font-medium leading-tight">
-                            Regime fiscal de 2026 ancorado no Ofício-Circulado n.º 40019/2024 da AT. Isenção total até 316.772 € e parcial até 633.453 €.
+                            {tLocal('hp_imt_jovem_legal_basis')}
                           </p>
                         </div>
 
                         {/* Garantia Pública Jovem DL 44/2024 */}
                         <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
                           <div className="flex items-center justify-between">
-                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Garantia Pública (DL 44/2024)</h5>
+                            <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">{tLocal('hp_guarantee_title')}</h5>
                             <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
                               purchaseAffordability.publicGuaranteeDL44.eligibleByRules ? 'bg-indigo-100 text-indigo-800' : 'bg-red-100 text-red-800'
                             }`}>
-                              {purchaseAffordability.publicGuaranteeDL44.eligibleByRules ? '✓ Elegível' : 'Inelegível'}
+                              {purchaseAffordability.publicGuaranteeDL44.eligibleByRules ? tLocal('hp_guarantee_eligible') : tLocal('hp_guarantee_ineligible')}
                             </span>
                           </div>
 
@@ -3309,7 +4205,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           </div>
 
                           <p className="text-[9px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 font-medium">
-                            Garantia pessoal do Estado até 15% de min(preço, avaliação), permitindo financiamento bancário até 100% em transações até 450.000 €.
+                            {tLocal('hp_guarantee_explanation')}
                           </p>
 
                           <p className="text-[8px] text-slate-400 font-medium leading-tight">
@@ -3321,8 +4217,8 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       {/* Total Disbursement Required */}
                       <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm flex items-center justify-between">
                         <div>
-                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Capital Inicial Total Estimado</span>
-                          <h4 className="text-sm font-black text-slate-800">Entrada + Impostos + Notário</h4>
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{tLocal('hp_total_initial_capital')}</span>
+                          <h4 className="text-sm font-black text-slate-800">{tLocal('hp_downpayment_taxes_notary')}</h4>
                         </div>
                         <div className="text-2xl font-black text-slate-900">
                           {purchaseAffordability.totalInitialDisbursementRequiredEur.toLocaleString('pt-PT')} €
@@ -3346,22 +4242,22 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
                   <HeartPulse size={18} className="text-[#FF8C00] shrink-0" />
                   <div>
-                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">Diagnóstico AIMA & Saúde Financeira 2026</h3>
-                    <p className="text-[9px] text-slate-400 font-medium mt-0.5">Verifica se o seu rendimento cumpre os limiares mínimos exigidos para a Autorização de Residência em Portugal</p>
+                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">{tLocal('aima_diag_title')}</h3>
+                    <p className="text-[9px] text-slate-400 font-medium mt-0.5">{tLocal('aima_diag_subtitle')}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-2">
                     <span className="text-base shrink-0">📋</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">Portaria 1563/2007 de 11/12</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('aima_portaria_badge')}</span>
                   </div>
                   <div className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-2">
                     <span className="text-base shrink-0">⚖️</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">Lei 23/2007 — Lei Estrangeiros</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('aima_lei_badge')}</span>
                   </div>
                   <div className="px-3 py-2.5 bg-[#FF8C00]/10 border border-[#FF8C00]/20 rounded-xl text-[#FF8C00] flex items-center gap-2">
                     <span className="text-base shrink-0">💶</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">RMMG 2026: 920€ / mês</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('aima_rmmg_badge')}</span>
                   </div>
                 </div>
               </div>
@@ -3371,17 +4267,17 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
                   <UserCheck className="text-[#FF8C00] shrink-0" size={18} />
                   <div>
-                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">Os Seus Dados de Rendimento</h3>
-                    <p className="text-[9px] text-slate-400 font-medium mt-0.5">Preencha os campos com os seus valores reais para verificar o cumprimento AIMA</p>
+                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">{tLocal('aima_data_title')}</h3>
+                    <p className="text-[9px] text-slate-400 font-medium mt-0.5">{tLocal('aima_data_sub')}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      💰 Rendimento Líquido Mensal (€)
+                      {tLocal('aima_net_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">O valor que recebe na conta após todos os descontos de SS e IRS.</p>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_net_help')}</p>
                     <div className="relative">
                       <input
                         type="number"
@@ -3395,15 +4291,15 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      👨‍👩‍👧 Nº de Dependentes no Agregado
+                      {tLocal('aima_dep_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">Cônjuge sem rendimentos, filhos menores ou ascendentes a cargo.</p>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_dep_help')}</p>
                     <select
                       value={aimaDependents}
                       onChange={(e) => setAimaDependents(Number(e.target.value))}
                       className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
                     >
-                      {[0,1,2,3,4,5].map(n => <option key={n} value={n}>{n} {n === 0 ? '(Sem dependentes)' : n === 1 ? 'dependente' : 'dependentes'}</option>)}
+                      {[0,1,2,3,4,5].map(n => <option key={n} value={n}>{n} {n === 0 ? tLocal('aima_no_dep') : n === 1 ? tLocal('aima_one_dep') : tLocal('aima_multi_dep')}</option>)}
                     </select>
                   </div>
                 </div>
@@ -3411,9 +4307,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      🏠 Renda Mensal (€)
+                      {tLocal('aima_rent_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">Valor pago por mês pela habitação.</p>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_rent_help')}</p>
                     <div className="relative">
                       <input
                         type="number"
@@ -3427,9 +4323,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      🛒 Total de Despesas Mensais (€)
+                      {tLocal('aima_exp_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">Inclui renda + alimentação + transportes + utilidades.</p>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_exp_help')}</p>
                     <div className="relative">
                       <input
                         type="number"
@@ -3444,18 +4340,18 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                 <div className="space-y-2 border-t border-slate-100 pt-4">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                    🛡️ Nível de Contribuição Registado na Segurança Social (ISS)
+                    {tLocal('aima_ss_label')}
                   </label>
-                  <p className="text-[8px] text-slate-400 font-medium">O regime e valor que declara mensalmente no seu extrato da Segurança Social.</p>
+                  <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_ss_help')}</p>
                   <select
                     value={aimaSsMode}
                     onChange={(e) => setAimaSsMode(e.target.value as any)}
                     className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
                   >
-                    <option value="normal_outrem">Trabalhador por Conta de Outrem (Desconto integral 11% sobre Salário Bruto)</option>
-                    <option value="normal_recibos">Recibos Verdes Geral (21,4% SS sobre 70% Faturação Real)</option>
-                    <option value="reduced_25">Recibos Verdes com Opção de Redução de Base (-25%)</option>
-                    <option value="min_20">⚠️ Contribuição Mínima Simbólica (20€ / mês)</option>
+                    <option value="normal_outrem">{tLocal('aima_ss_outrem')}</option>
+                    <option value="normal_recibos">{tLocal('aima_ss_recibos')}</option>
+                    <option value="reduced_25">{tLocal('aima_ss_reduced')}</option>
+                    <option value="min_20">{tLocal('aima_ss_min')}</option>
                   </select>
                 </div>
               </div>
@@ -3491,7 +4387,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 return (
                   <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-5">
                     <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <h3 className="text-xs font-black uppercase tracking-widest text-[#FF8C00]">Resultados do Diagnóstico AIMA</h3>
+                      <h3 className="text-xs font-black uppercase tracking-widest text-[#FF8C00]">{tLocal('aima_res_title')}</h3>
                       <span className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-full border ${
                         score >= 80 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
                         score >= 50 ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' :
@@ -3512,12 +4408,12 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <span className="text-[9px] text-slate-400 font-bold">/100</span>
                       </div>
                       <div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block mb-1">Índice de Viabilidade AIMA</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block mb-1">{tLocal('aima_viability_index')}</span>
                         <h4 className="text-base font-black uppercase text-white">
-                          {score >= 80 ? '🟢 Excelente & Sustentável' : score >= 50 ? '🟡 Estável com Atenção' : '🔴 Risco de Notificação / Indeferimento'}
+                          {score >= 80 ? tLocal('aima_score_high') : score >= 50 ? tLocal('aima_score_med') : tLocal('aima_score_low')}
                         </h4>
                         <p className="text-[9px] text-slate-400 font-medium mt-1">
-                          Retenção SS Estimada: <strong className="text-amber-300">{estimatedSsDeduction}€ / mês</strong> &middot; Taxa Esforço: <strong className="text-white">{effortRate}%</strong>
+                          {tLocal('aima_est_ss')}: <strong className="text-amber-300">{estimatedSsDeduction}€ / {tLocal('per_month')}</strong> &middot; {tLocal('effort_rate_housing')}: <strong className="text-white">{effortRate}%</strong>
                         </p>
                       </div>
                     </div>
@@ -3528,11 +4424,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <div className="flex items-center gap-2 text-red-400">
                           <AlertTriangle size={18} className="shrink-0" />
                           <h4 className="text-xs font-black uppercase tracking-wider">
-                            ⚠️ Alerta de Risco Grave AIMA: Discrepância na Segurança Social
+                            {tLocal('aima_ss_alert_title')}
                           </h4>
                         </div>
                         <p className="text-[10px] text-red-200 font-medium leading-relaxed">
-                          <strong>Fundamento de Indeferimento (Art. 52.º da Lei 23/2007):</strong> A AIMA cruza os extratos de remuneração da Segurança Social (ISS) em tempo real. Declarar um rendimento de {aimaNetIncome}€ para cumprir o limiar de subsistência, mas contribuir apenas o mínimo simbólico (20€/mês) ou forçar a redução de -25%, gera uma <strong>incoerência fiscal grave</strong>. A AIMA presume ausência de rendimentos reais e emite <strong>Intenção de Indeferimento (Audiência Prévia)</strong>.
+                          {tLocal('aima_ss_alert_desc')}
                         </p>
                       </div>
                     )}
@@ -3546,7 +4442,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           <UserCheck size={18} className={meetsReq && !isSsRisk ? 'text-emerald-400' : 'text-amber-400'} />
                           <div>
                             <h4 className="text-xs font-black uppercase tracking-wider text-white">
-                              Verificação de Subsistência Legal AIMA
+                              {tLocal('aima_legal_subsistence_check')}
                             </h4>
                             <p className="text-[8px] text-slate-400 font-medium mt-0.5">
                               Portaria 1563/2007 &middot; Art. 52.º Lei 23/2007 &middot; RMMG 2026 (920€)
@@ -3556,55 +4452,55 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <span className={`text-[9px] font-black uppercase px-3 py-1 rounded-full border shrink-0 ${
                           meetsReq && !isSsRisk ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-amber-500/20 border-amber-500/40 text-amber-300'
                         }`}>
-                          {meetsReq && !isSsRisk ? '✓ Cumpre Limiar Mínimo' : '⚠️ Atenção / Risco de Incoerência'}
+                          {meetsReq && !isSsRisk ? tLocal('aima_meets_threshold') : tLocal('aima_threshold_warn')}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                          <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">Rendimento Líquido</span>
+                          <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">{tLocal('aima_net_income')}</span>
                           <span className="text-xl font-black text-white">{aimaNetIncome.toLocaleString('pt')}€</span>
-                          <span className="text-[8px] text-slate-400 block">por mês</span>
+                          <span className="text-[8px] text-slate-400 block">{tLocal('per_month')}</span>
                         </div>
                         <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                          <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">Limiar Mínimo AIMA</span>
+                          <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">{tLocal('aima_min_threshold')}</span>
                           <span className="text-xl font-black text-amber-300">{totalReq.toLocaleString('pt')}€</span>
                           <span className="text-[8px] text-slate-400 block">920€ + {aimaDependents}×276€</span>
                         </div>
                         <div className={`p-4 border rounded-2xl ${
                           meetsReq ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'
                         }`}>
-                          <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">Diferença</span>
+                          <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">{tLocal('difference')}</span>
                           <span className={`text-xl font-black ${meetsReq ? 'text-emerald-400' : 'text-red-400'}`}>
                             {diff >= 0 ? '+' : ''}{diff}€
                           </span>
-                          <span className="text-[8px] text-slate-400 block">{meetsReq ? 'acima do limiar' : 'abaixo do limiar'}</span>
+                          <span className="text-[8px] text-slate-400 block">{meetsReq ? tLocal('above_threshold') : tLocal('below_threshold')}</span>
                         </div>
                       </div>
 
                       <p className="text-[9px] text-slate-300 font-medium leading-relaxed pt-1">
-                        📋 <strong className="text-white">Base Legal AIMA:</strong> Segundo a Portaria n.º 1563/2007 de 11 de Dezembro, os meios de subsistência exigidos para concessão e renovação de Autorização de Residência são calculados com base no Retribuição Mínima Mensal Garantida (RMMG 2026 = 920€): <strong className="text-amber-300">100% RMMG (920€) para o primeiro adulto</strong> + <strong className="text-amber-300">30% RMMG (276€) por cada dependente adicional</strong> (cônjuge sem rendimentos, filhos menores ou ascendentes a cargo).
+                        {tLocal('aima_legal_basis_note')}
                       </p>
                     </div>
 
                     {/* Breakdown Metrics */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">Saldo Mensal Disponível</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">{tLocal('aima_net_balance')}</span>
                         <h2 className={`text-2xl font-black tracking-tight ${netSavings >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                           {netSavings >= 0 ? `+${netSavings}€` : `${netSavings}€`}
                         </h2>
-                        <p className="text-[8px] text-slate-400 font-medium">Rendimento − Total Despesas</p>
+                        <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_income_minus_expenses')}</p>
                       </div>
                       <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">Fundo Emergência (3 Meses)</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">{tLocal('emergency_fund_title')}</span>
                         <h2 className="text-2xl font-black text-amber-400 tracking-tight">{emergencyFund}€</h2>
-                        <p className="text-[8px] text-slate-400 font-medium">Recomendado para estabilidade</p>
+                        <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_recommended_stability')}</p>
                       </div>
                       <div className="p-5 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-indigo-300 block">Capital Entrada Arrendamento</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-indigo-300 block">{tLocal('aima_setup_capital_title')}</span>
                         <h2 className="text-2xl font-black text-white tracking-tight">{setupCapital}€</h2>
-                        <p className="text-[8px] text-indigo-300 font-medium">2 Cauções + 1 Renda Adiantada</p>
+                        <p className="text-[8px] text-indigo-300 font-medium">{tLocal('aima_setup_capital_desc')}</p>
                       </div>
                     </div>
                   </div>
@@ -3623,10 +4519,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <Building2 size={18} className="text-[#FF8C00] shrink-0" />
                   <div>
                     <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                      Simulador para Pequenos Empreendedores & Microempresas
+                      {tLocal('pe_sim_title')}
                     </h3>
                     <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                      Estimativa de rentabilidade, impostos (IRC 12,5% PME / IRS Simplificado) e liquidez para ENI e Sociedade Unipessoal Lda (2026)
+                      {tLocal('pe_sim_subtitle')}
                     </p>
                   </div>
                 </div>
@@ -3634,15 +4530,15 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-2">
                     <span className="text-base shrink-0">🏛️</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">IRC Reduzido PME: 12.5%</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('pe_badge_irc')}</span>
                   </div>
                   <div className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-2">
                     <span className="text-base shrink-0">💼</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">Gerente MOE: TSU 33.05%</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('pe_badge_tsu')}</span>
                   </div>
                   <div className="px-3 py-2.5 bg-[#FF8C00]/10 border border-[#FF8C00]/20 rounded-xl text-[#FF8C00] flex items-center gap-2">
                     <span className="text-base shrink-0">📊</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">Break-Even Automático</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('pe_badge_breakeven')}</span>
                   </div>
                 </div>
               </div>
@@ -3652,16 +4548,16 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
                   <Coins className="text-[#FF8C00] shrink-0" size={18} />
                   <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                    Dados Financeiros da Empresa / Negócio
+                    {tLocal('pe_form_title')}
                   </h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      💰 Faturação Mensal Bruta (Volume de Negócios) (€)
+                      {tLocal('pe_revenue_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">Total cobrado a clientes por mês (sem IVA).</p>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('pe_revenue_help')}</p>
                     <div className="relative">
                       <input
                         type="number"
@@ -3675,9 +4571,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      📦 Despesas Operacionais Mensais (€)
+                      {tLocal('pe_expenses_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">Renda de espaço, fornecedores, contabilista, licenças, utilidades.</p>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('pe_expenses_help')}</p>
                     <div className="relative">
                       <input
                         type="number"
@@ -3693,31 +4589,31 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      🏷️ Setor de Atividade
+                      {tLocal('pe_sector_label')}
                     </label>
                     <select
                       value={bizSector}
                       onChange={(e) => setBizSector(e.target.value as any)}
                       className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
                     >
-                      <option value="services">Prestação de Serviços / Tecnologia (Coef. 0.75)</option>
-                      <option value="commerce">Comércio / Lojas / Restauração (Coef. 0.15)</option>
-                      <option value="hospitality">Alojamento Local / Turismo (Coef. 0.35)</option>
-                      <option value="industry">Indústria / Oficina / Artesanato (Coef. 0.35)</option>
+                      <option value="services">{tLocal('pe_opt_services')}</option>
+                      <option value="commerce">{tLocal('pe_opt_commerce')}</option>
+                      <option value="hospitality">{tLocal('pe_opt_hospitality')}</option>
+                      <option value="industry">{tLocal('pe_opt_industry')}</option>
                     </select>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      🏛️ Estrutura Jurídica da Empresa
+                      {tLocal('pe_structure_label')}
                     </label>
                     <select
                       value={bizLegalStructure}
                       onChange={(e) => setBizLegalStructure(e.target.value as any)}
                       className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
                     >
-                      <option value="unipessoal_lda">Sociedade Unipessoal Lda / Microempresa PME (IRC 12,5%)</option>
-                      <option value="eni">Empresário em Nome Individual — ENI (IRS Simplificado)</option>
+                      <option value="unipessoal_lda">{tLocal('pe_opt_lda')}</option>
+                      <option value="eni">{tLocal('pe_opt_eni')}</option>
                     </select>
                   </div>
                 </div>
@@ -3725,9 +4621,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                 {bizLegalStructure === 'unipessoal_lda' && (
                   <div className="space-y-2 border-t border-slate-100 pt-4 animate-in fade-in duration-300">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      👔 Pró-Labore / Salário do Gerente (€/mês)
+                      {tLocal('pe_prolabore_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">Remuneração mensal fixa atribuída ao sócio-gerente (sujeita a TSU de 33,05%).</p>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('pe_prolabore_help')}</p>
                     <div className="relative">
                       <input
                         type="number"
@@ -3748,42 +4644,42 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-6 text-white shadow-xl space-y-6">
                     <div className="flex items-center justify-between pb-3 border-b border-white/10">
                       <h3 className="text-xs font-black uppercase tracking-widest text-[#FF8C00]">
-                        Resultado Financeiro do Negócio
+                        {tLocal('pe_res_title')}
                       </h3>
                       <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
-                        Margem Líquida: {res.profitMargin}%
+                        {tLocal('pe_margin_label')}: {res.profitMargin}%
                       </span>
                     </div>
 
                     <div className="text-center space-y-2 py-4">
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        Lucro Líquido Mensal Disponível da Empresa
+                        {tLocal('pe_net_profit_title')}
                       </p>
                       <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
                         +{res.netProfit.toLocaleString('pt')}€
                       </h1>
                       <p className="text-[9px] text-slate-400 font-bold mt-1">
-                        Faturação Mensal ({bizRevenue}€) − Despesas ({bizExpenses}€) − Impostos/SS ({res.totalTaxes}€)
+                        {tLocal('pe_net_profit_calc').replace('{bizRevenue}', bizRevenue.toString()).replace('{bizExpenses}', bizExpenses.toString()).replace('{res.totalTaxes}', res.totalTaxes.toString())}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-                        <span className="text-[8px] text-slate-400 uppercase font-black block">Lucro Bruto Operacional</span>
-                        <span className="text-xl font-black text-white">+{res.grossProfit}€ / mês</span>
-                        <span className="text-[8px] text-slate-400 block">Antes de impostos e SS</span>
+                        <span className="text-[8px] text-slate-400 uppercase font-black block">{tLocal('pe_gross_op_profit')}</span>
+                        <span className="text-xl font-black text-white">+{res.grossProfit}€ / {tLocal('per_month')}</span>
+                        <span className="text-[8px] text-slate-400 block">{tLocal('pe_before_taxes')}</span>
                       </div>
 
                       <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-                        <span className="text-[8px] text-slate-400 uppercase font-black block">Impostos Estimados</span>
-                        <span className="text-xl font-black text-red-400">-{res.taxAmount}€ / mês</span>
-                        <span className="text-[8px] text-slate-400 block">{bizLegalStructure === 'unipessoal_lda' ? 'IRC 12,5% PME' : 'IRS Simplificado'}</span>
+                        <span className="text-[8px] text-slate-400 uppercase font-black block">{tLocal('pe_estimated_taxes')}</span>
+                        <span className="text-xl font-black text-red-400">-{res.taxAmount}€ / {tLocal('per_month')}</span>
+                        <span className="text-[8px] text-slate-400 block">{bizLegalStructure === 'unipessoal_lda' ? tLocal('pe_tax_label_irc') : tLocal('pe_tax_label_irs')}</span>
                       </div>
 
                       <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-                        <span className="text-[8px] text-slate-400 uppercase font-black block">Segurança Social / TSU</span>
-                        <span className="text-xl font-black text-amber-400">-{res.ssAmount}€ / mês</span>
-                        <span className="text-[8px] text-slate-400 block">{bizLegalStructure === 'unipessoal_lda' ? 'TSU MOE (33,05%)' : 'SS ENI (25,2%)'}</span>
+                        <span className="text-[8px] text-slate-400 uppercase font-black block">{tLocal('pe_ss_tsu_label')}</span>
+                        <span className="text-xl font-black text-amber-400">-{res.ssAmount}€ / {tLocal('per_month')}</span>
+                        <span className="text-[8px] text-slate-400 block">{bizLegalStructure === 'unipessoal_lda' ? tLocal('pe_ss_label_tsu') : tLocal('pe_ss_label_eni')}</span>
                       </div>
                     </div>
 
@@ -3791,10 +4687,10 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="p-5 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl flex items-center justify-between">
                       <div className="space-y-0.5">
                         <h4 className="text-xs font-black text-indigo-300 uppercase tracking-wide">
-                          Ponto de Equilíbrio (Break-Even Mensal)
+                          {tLocal('pe_breakeven_title')}
                         </h4>
                         <p className="text-[9px] text-indigo-200 font-bold">
-                          Faturação mínima necessária por mês para cobrir todas as despesas e impostos sem prejuízo
+                          {tLocal('pe_breakeven_sub')}
                         </p>
                       </div>
                       <span className="text-2xl font-black text-white shrink-0 ml-4">
@@ -3805,8 +4701,8 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="flex items-start gap-2 text-[10px] text-slate-300 bg-white/5 border border-white/5 rounded-2xl p-4">
                       <Info size={14} className="shrink-0 mt-0.5 text-[#FF8C00]" />
                       <span className="leading-relaxed">
-                        Em Portugal, as PMEs qualificadas beneficiam de uma taxa reduzida de IRC de <strong className="text-white">12,5% sobre os primeiros 50.000€ de matéria coletável</strong> (Art. 87.º CIRC). Os gerentes de Sociedades Unipessoais descontam TSU de 33,05% (23,75% empresa + 9,3% gerente) sobre a remuneração fixada.
-                      </span>
+                      {tLocal('pe_edu_note')}
+                    </span>
                     </div>
                   </div>
                 );
@@ -3839,7 +4735,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="p-4 bg-blue-50/40 border border-blue-200/60 rounded-2xl space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-blue-900 uppercase">{tLocal('pe_legal_lda_name')}</span>
-                        <span className="text-[8px] font-black px-2 py-0.5 bg-blue-600 text-white rounded-full">IRC 12,5%</span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-blue-600 text-white rounded-full">{tLocal('pe_tax_label_irc')}</span>
                       </div>
                       <p className="text-[11px] text-blue-950 leading-relaxed">{tLocal('pe_legal_lda_desc')}</p>
                     </div>
@@ -3847,7 +4743,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-800 uppercase">{tLocal('pe_legal_eni_name')}</span>
-                        <span className="text-[8px] font-black px-2 py-0.5 bg-amber-500/10 text-amber-700 rounded-full border border-amber-300">IRS Cat. B</span>
+                        <span className="text-[8px] font-black px-2 py-0.5 bg-amber-500/10 text-amber-700 rounded-full border border-amber-300">{tLocal('pe_tax_label_irs')}</span>
                       </div>
                       <p className="text-[11px] text-slate-600 leading-relaxed">{tLocal('pe_legal_eni_desc')}</p>
                     </div>
@@ -3935,19 +4831,19 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
             <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[9px] font-black uppercase">
               <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-1.5">
                 <Landmark size={12} className="text-indigo-500 shrink-0" />
-                <span>AT (IRS 2026)</span>
+                <span>{tLocal('badge_at')}</span>
               </div>
               <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-1.5">
                 <BarChart3 size={12} className="text-emerald-500 shrink-0" />
-                <span>INE (Preços Rendas)</span>
+                <span>{tLocal('badge_ine')}</span>
               </div>
               <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-1.5">
                 <ShieldCheck size={12} className="text-sky-500 shrink-0" />
-                <span>ISS (Seg. Social TI)</span>
+                <span>{tLocal('badge_iss')}</span>
               </div>
               <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-1.5">
                 <Coins size={12} className="text-amber-500 shrink-0" />
-                <span>Banco de Portugal</span>
+                <span>{tLocal('badge_bdp')}</span>
               </div>
             </div>
           </div>
