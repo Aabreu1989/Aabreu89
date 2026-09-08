@@ -96,6 +96,16 @@ export const DrivingLicenseWizard: React.FC<DrivingLicenseWizardProps> = ({
             ring: 'hover:ring-emerald-400/60',
             glow: 'hover:shadow-emerald-500/10',
             badgeStyle: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+        },
+        {
+            id: 'obtain',
+            emoji: '🚦',
+            title: t('drv_opt_obtain', lang),
+            desc: t('drv_opt_obtain_desc', lang),
+            badge: t('badge_obtain_license', lang),
+            ring: 'hover:ring-amber-400/60',
+            glow: 'hover:shadow-amber-500/10',
+            badgeStyle: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
         }
     ];
 
@@ -111,6 +121,16 @@ export const DrivingLicenseWizard: React.FC<DrivingLicenseWizardProps> = ({
             { icon: '🚗', text: t('req_driving_3years', lang) }
         ];
         docIds = ['imt_certificado_tvde'];
+    } else if (agreementType === 'obtain') {
+        checklistDocs = [
+            { icon: '🏫', text: t('drv_obtain_step1', lang) },
+            { icon: '🩺', text: t('drv_obtain_step2', lang) },
+            { icon: '📖', text: t('drv_obtain_step3', lang) },
+            { icon: '🚗', text: t('drv_obtain_step4', lang) },
+            { icon: '🎯', text: t('drv_obtain_step5', lang) },
+            { icon: '🪪', text: t('drv_obtain_step6', lang) }
+        ];
+        docIds = [];
     } else {
         checklistDocs = [
             { icon: '🩺', text: t('req_medical_cert', lang) },
@@ -124,10 +144,12 @@ export const DrivingLicenseWizard: React.FC<DrivingLicenseWizardProps> = ({
 
     const getAlertTitle = () => {
         if (agreementType === 'tvde') return t('badge_tvde_prof', lang);
+        if (agreementType === 'obtain') return t('drv_obtain_subtitle', lang);
         return t('drv_step2_alert_title', lang);
     }
     const getAlertText = () => {
         if (agreementType === 'tvde') return t('imt_certificado_tvde_expl', lang);
+        if (agreementType === 'obtain') return t('drv_obtain_imt_fees', lang);
         return t('drv_step2_alert_text', lang);
     }
 
@@ -186,6 +208,8 @@ export const DrivingLicenseWizard: React.FC<DrivingLicenseWizardProps> = ({
                                     ? t('drv_opt_ocde', lang)
                                     : agreementType === 'tvde'
                                     ? t('drv_opt_tvde', lang)
+                                    : agreementType === 'obtain'
+                                    ? t('drv_obtain_title', lang)
                                     : t('drv_opt_other', lang)
                                 }
                             </h2>
@@ -249,28 +273,75 @@ export const DrivingLicenseWizard: React.FC<DrivingLicenseWizardProps> = ({
                     {/* ════ STEP 2 — Checklist & Forms ═══════════════════════════ */}
                     {step === 2 && (
                         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                            {/* 📜 LEGISLATIVE UPDATE CARD (PARLIAMENT & IMT 2026) */}
-                            <div className="bg-indigo-500/5 border border-indigo-500/15 rounded-[2.25rem] p-5 space-y-3">
-                                <div className="flex items-center gap-2 text-indigo-600">
-                                    <ShieldCheck size={16} className="shrink-0" />
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest font-mono">
-                                        {t('drv_parliament_title', lang)}
-                                    </h4>
+                            {/* 📜 OBTAIN NEW LICENSE OR EXCHANGE CARD */}
+                            {agreementType === 'obtain' ? (
+                                <div className="space-y-4">
+                                    {/* Official Categories and Conditions */}
+                                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-[2.25rem] p-5 space-y-3">
+                                        <div className="flex items-center gap-2 text-amber-700">
+                                            <ShieldCheck size={18} className="shrink-0" />
+                                            <h4 className="text-[11px] font-black uppercase tracking-wider">
+                                                {t('drv_obtain_categories_title', lang)}
+                                            </h4>
+                                        </div>
+                                        <div className="space-y-2 text-xs text-slate-700">
+                                            <div className="p-3 bg-white rounded-2xl border border-amber-200/60 font-medium space-y-1">
+                                                <p className="font-bold text-slate-900">🏍️ {t('drv_obtain_cat_am', lang)}</p>
+                                                <p className="font-bold text-slate-900">🚙 {t('drv_obtain_cat_b1', lang)}</p>
+                                                <p className="font-bold text-slate-900">🏍️ {t('drv_obtain_cat_a1', lang)}</p>
+                                                <p className="font-bold text-slate-900">🏍️ {t('drv_obtain_cat_a2', lang)}</p>
+                                                <p className="font-bold text-indigo-700">🏍️ {t('drv_obtain_cat_a', lang)}</p>
+                                            </div>
+                                            <div className="p-3 bg-white rounded-2xl border border-amber-200/60 font-medium space-y-1">
+                                                <p className="font-bold text-slate-900">🚗 {t('drv_obtain_cat_b', lang)}</p>
+                                                <p className="text-slate-600">🚛 {t('drv_obtain_cat_be', lang)}</p>
+                                                <p className="text-slate-600">🚚 {t('drv_obtain_cat_c1', lang)}</p>
+                                                <p className="font-bold text-indigo-700">🚚 {t('drv_obtain_cat_c', lang)}</p>
+                                                <p className="text-slate-600">🚌 {t('drv_obtain_cat_d1', lang)}</p>
+                                                <p className="font-bold text-indigo-700">🚌 {t('drv_obtain_cat_d', lang)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Cost Separation: IMT Fees vs Market Estimate */}
+                                    <div className="bg-white border border-slate-200 rounded-[2.25rem] p-5 shadow-sm space-y-3">
+                                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                            <span>💶</span> {t('drv_obtain_fees_title', lang)}
+                                        </h4>
+                                        <div className="space-y-2 text-xs">
+                                            <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-950 font-medium">
+                                                <strong>🏛️ {t('drv_obtain_imt_fees', lang)}</strong>
+                                            </div>
+                                            <div className="p-3 bg-amber-50 border border-amber-200/70 rounded-2xl text-amber-950 text-[11px] leading-relaxed">
+                                                ⚠️ <strong>{t('drv_obtain_school_estimate', lang)}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-xs text-slate-700 font-medium space-y-2 leading-relaxed">
-                                    <p className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-900 font-bold">
-                                        {t('drv_parliament_cplp_note', lang)}
-                                    </p>
-                                    <p className="text-amber-900 bg-amber-500/10 p-3.5 rounded-2xl border border-amber-500/20 font-semibold">
-                                        {t('drv_parliament_eu_warning', lang)}
-                                    </p>
-                                    {agreementType === 'other' && (
-                                        <p className="p-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-800 font-medium">
-                                            {t('drv_parliament_deadlines', lang)}
+                            ) : (
+                                /* 📜 LEGISLATIVE UPDATE CARD (PARLIAMENT & IMT 2026) */
+                                <div className="bg-indigo-500/5 border border-indigo-500/15 rounded-[2.25rem] p-5 space-y-3">
+                                    <div className="flex items-center gap-2 text-indigo-600">
+                                        <ShieldCheck size={16} className="shrink-0" />
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest font-mono">
+                                            {t('drv_parliament_title', lang)}
+                                        </h4>
+                                    </div>
+                                    <div className="text-xs text-slate-700 font-medium space-y-2 leading-relaxed">
+                                        <p className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-900 font-bold">
+                                            {t('drv_parliament_cplp_note', lang)}
                                         </p>
-                                    )}
+                                        <p className="text-amber-900 bg-amber-500/10 p-3.5 rounded-2xl border border-amber-500/20 font-semibold">
+                                            {t('drv_parliament_eu_warning', lang)}
+                                        </p>
+                                        {agreementType === 'other' && (
+                                            <p className="p-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-800 font-medium">
+                                                {t('drv_parliament_deadlines', lang)}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Alert Box */}
                             <div className="bg-white border border-slate-100 rounded-[2.25rem] p-5 shadow-sm space-y-3">

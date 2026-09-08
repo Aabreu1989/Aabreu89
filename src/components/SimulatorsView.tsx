@@ -44,6 +44,14 @@ import {
   TERRITORIAL_SEEDS,
   IMT_JOVEM_2026
 } from '../services/miraHousingEngine';
+import { 
+  MiraAimaEngine, 
+  PortugueseTerritory, 
+  AimaPathwayId, 
+  SubmissionChannel, 
+  NORMATIVE_AIMA_2026,
+  UnifiedAimaComplianceResult
+} from '../services/miraAimaEngine';
 
 interface SimulatorsViewProps {
   language: string;
@@ -208,8 +216,45 @@ const translations: Record<string, Record<string, string>> = {
     aima_portaria_badge: "Portaria 1563/2007 de 11/12",
     aima_lei_badge: "Lei 23/2007 — Lei Estrangeiros",
     aima_rmmg_badge: "RMMG 2026: 920€ / mês",
-    aima_data_title: "Os Seus Dados de Rendimento",
-    aima_data_sub: "Preencha os campos com os seus valores reais para verificar o cumprimento AIMA",
+    aima_data_title: "Os Seus Dados de Rendimento & Processo",
+    aima_data_sub: "Preencha os campos com os seus valores reais para verificar a conformidade AIMA 2026",
+    aima_territory_label: "📍 Território de Residência (RMMG)",
+    aima_territory_help: "O salário mínimo de referência varia entre Continente e Regiões Autónomas.",
+    aima_territory_mainland: "Continente (RMMG: 920 €)",
+    aima_territory_azores: "Açores (+5% RMMG: 966 €)",
+    aima_territory_madeira: "Madeira (RMMG: 980 €)",
+    aima_pathway_label: "📜 Via Migratória / Procedimento AIMA",
+    aima_pathway_help: "Regime legal aplicável segundo a Lei 23/2007 consolidada.",
+    aima_pathway_d1: "Trabalho Subordinado (Visto D1 / Art. 88.º)",
+    aima_pathway_d2: "Trabalho Independente / Empreendedor (Visto D2 / Art. 89.º)",
+    aima_pathway_d7: "Aposentados & Rendimentos Próprios (Visto D7 / Art. 58.º)",
+    aima_pathway_d8: "Nómada Digital (Visto D8 — 4× RMMG / Art. 90.º-A)",
+    aima_pathway_job_search: "Procura de Trabalho (Reserva 3× RMMG / Art. 57.º-A)",
+    aima_pathway_family: "Reagrupamento Familiar (Art. 98.º)",
+    aima_pathway_cplp: "Mobilidade CPLP (Art. 87.º-A)",
+    aima_pathway_d4: "Estudante Ensino Superior (Visto D4 / Art. 91.º)",
+    aima_spouse_label: "👫 Cônjuge / 2.º Adulto (+50% RMMG)",
+    aima_spouse_help: "Portaria 1563/2007: 50% da RMMG para o segundo adulto.",
+    aima_spouse_none: "Sem cônjuge / 2.º adulto",
+    aima_spouse_one: "1 cônjuge / 2.º adulto (+50% RMMG)",
+    aima_minors_label: "👶 Filhos Menores / Dependentes (+30% cada)",
+    aima_minors_help: "Portaria 1563/2007: 30% da RMMG por cada menor.",
+    aima_gross_label: "💼 Salário Bruto / Remuneração Ilíquida (€)",
+    aima_gross_help: "Base legal de incidência para quotizações da Segurança Social (Art. 44.º CRCSPSS).",
+    aima_capital_label: "🏦 Poupança / Reserva de Capital Disponível (€)",
+    aima_capital_help: "Reserva de subsistência exigida para Procura de Trabalho (mín. 3× RMMG) ou D7 (12 meses).",
+    aima_channel_label: "🏛️ Canal de Submissão AIMA (Taxas Oficiais)",
+    aima_channel_help: "Reduções oficiais aplicáveis sobre a tabela tarifária.",
+    aima_channel_online: "Portal Online AIMA (-25% redução)",
+    aima_channel_assisted: "Atendimento Digital Assistido (-10% redução)",
+    aima_channel_in_person: "Balcão Presencial AIMA",
+    aima_proc_label: "⏱️ Tipo de Procedimento & Prazos",
+    aima_proc_help: "Artigo 82.º da Lei 23/2007 — prazos vinculativos de decisão.",
+    aima_proc_grant: "Concessão Inicial com Visto (90 dias legais)",
+    aima_proc_renewal: "Renovação de Título (60 dias + Deferimento Tácito)",
+    aima_fees_card_title: "Taxa Oficial AIMA Estimada",
+    aima_deadlines_card_title: "Prazos & Deferimento Tácito (Art. 82.º)",
+    aima_recourse_card_title: "Tutela Judicial em Caso de Mora (CPTA)",
     aima_net_label: "💰 Rendimento Líquido Mensal (€)",
     aima_net_help: "O valor que recebe na conta após todos os descontos de SS e IRS.",
     aima_dep_label: "👨‍👩‍👧 Nº de Dependentes no Agregado",
@@ -649,8 +694,45 @@ const translations: Record<string, Record<string, string>> = {
     aima_portaria_badge: "Ordinance 1563/2007 of 11/12",
     aima_lei_badge: "Law 23/2007 — Foreigners Act",
     aima_rmmg_badge: "RMMG 2026: €920 / month",
-    aima_data_title: "Your Income & Household Data",
-    aima_data_sub: "Enter your actual figures to verify legal compliance with AIMA guidelines",
+    aima_data_title: "Your Income, Pathway & Process Data",
+    aima_data_sub: "Enter your figures to verify legal compliance with AIMA 2026 regulations",
+    aima_territory_label: "📍 Residence Territory (RMMG)",
+    aima_territory_help: "Statutory minimum wage varies by mainland and autonomous regions.",
+    aima_territory_mainland: "Mainland Portugal (RMMG: €920)",
+    aima_territory_azores: "Azores (+5% RMMG: €966)",
+    aima_territory_madeira: "Madeira (RMMG: €980)",
+    aima_pathway_label: "📜 Immigration Pathway / Procedure",
+    aima_pathway_help: "Statutory framework under consolidated Foreigners Act (Law 23/2007).",
+    aima_pathway_d1: "Employed Worker (Visa D1 / Art. 88)",
+    aima_pathway_d2: "Self-Employed / Entrepreneur (Visa D2 / Art. 89)",
+    aima_pathway_d7: "Retirees & Passive Income (Visa D7 / Art. 58)",
+    aima_pathway_d8: "Digital Nomad (Visa D8 — 4× RMMG / Art. 90-A)",
+    aima_pathway_job_search: "Job Seeker (3× RMMG Reserve / Art. 57-A)",
+    aima_pathway_family: "Family Reunification (Art. 98)",
+    aima_pathway_cplp: "CPLP Mobility (Art. 87-A)",
+    aima_pathway_d4: "Higher Education Student (Visa D4 / Art. 91)",
+    aima_spouse_label: "👫 Spouse / 2nd Adult (+50% RMMG)",
+    aima_spouse_help: "Ordinance 1563/2007: 50% of RMMG for the second adult.",
+    aima_spouse_none: "No spouse / 2nd adult",
+    aima_spouse_one: "1 spouse / 2nd adult (+50% RMMG)",
+    aima_minors_label: "👶 Minor Children / Dependents (+30% each)",
+    aima_minors_help: "Ordinance 1563/2007: 30% of RMMG per minor child.",
+    aima_gross_label: "💼 Gross Salary / Remuneration (€)",
+    aima_gross_help: "Statutory tax base for Social Security contributions (Art. 44 CRCSPSS).",
+    aima_capital_label: "🏦 Capital Reserve / Savings Available (€)",
+    aima_capital_help: "Statutory reserve for Job Seeker (min. 3× RMMG) or D7 (12 months).",
+    aima_channel_label: "🏛️ AIMA Submission Channel (Official Fees)",
+    aima_channel_help: "Official tariff discounts based on service channel.",
+    aima_channel_online: "AIMA Online Portal (-25% reduction)",
+    aima_channel_assisted: "Assisted Digital Desk (-10% reduction)",
+    aima_channel_in_person: "AIMA In-Person Branch",
+    aima_proc_label: "⏱️ Procedure Type & Deadlines",
+    aima_proc_help: "Article 82 of Law 23/2007 — binding statutory decision deadlines.",
+    aima_proc_grant: "Initial Grant with Visa (90 statutory days)",
+    aima_proc_renewal: "Permit Renewal (60 days + Tacit Approval)",
+    aima_fees_card_title: "Estimated Official AIMA Fee",
+    aima_deadlines_card_title: "Statutory Deadlines & Tacit Approval (Art. 82)",
+    aima_recourse_card_title: "Judicial Remedies in Case of Delay (CPTA)",
     aima_net_label: "💰 Net Monthly Income (€)",
     aima_net_help: "The actual net amount deposited in your account after all SS and IRS deductions.",
     aima_dep_label: "👨‍👩‍👧 Number of Dependents in Household",
@@ -1090,8 +1172,45 @@ const translations: Record<string, Record<string, string>> = {
     aima_portaria_badge: "Orden 1563/2007 de 11/12",
     aima_lei_badge: "Ley 23/2007 — Ley de Extranjería",
     aima_rmmg_badge: "SMI 2026: 920€ / mes",
-    aima_data_title: "Sus Datos de Ingresos y Hogar",
-    aima_data_sub: "Rellene los campos con sus importes reales para verificar el cumplimiento legal ante AIMA",
+    aima_data_title: "Sus Datos de Ingresos, Vía y Expediente",
+    aima_data_sub: "Rellene los campos con sus importes reales para verificar el cumplimiento legal ante AIMA 2026",
+    aima_territory_label: "📍 Territorio de Residencia (SMI)",
+    aima_territory_help: "El salario mínimo de referencia varía entre Continente y Regiones Autónomas.",
+    aima_territory_mainland: "Portugal Continental (SMI: 920 €)",
+    aima_territory_azores: "Azores (+5% SMI: 966 €)",
+    aima_territory_madeira: "Madeira (SMI: 980 €)",
+    aima_pathway_label: "📜 Vía Migratoria / Procedimiento AIMA",
+    aima_pathway_help: "Régimen legal aplicable según la Ley 23/2007 consolidada.",
+    aima_pathway_d1: "Trabajo por Cuenta Ajena (Visado D1 / Art. 88)",
+    aima_pathway_d2: "Trabajador Autónomo / Emprendedor (Visado D2 / Art. 89)",
+    aima_pathway_d7: "Jubilados y Rentas Pasivas (Visado D7 / Art. 58)",
+    aima_pathway_d8: "Nómada Digital (Visado D8 — 4× SMI / Art. 90-A)",
+    aima_pathway_job_search: "Búsqueda de Empleo (Reserva 3× SMI / Art. 57-A)",
+    aima_pathway_family: "Reagrupación Familiar (Art. 98)",
+    aima_pathway_cplp: "Movilidad CPLP (Art. 87-A)",
+    aima_pathway_d4: "Estudiante Educación Superior (Visado D4 / Art. 91)",
+    aima_spouse_label: "👫 Cónyuge / 2.º Adulto (+50% SMI)",
+    aima_spouse_help: "Orden 1563/2007: 50% del SMI para el segundo adulto.",
+    aima_spouse_none: "Sin cónyuge / 2.º adulto",
+    aima_spouse_one: "1 cónyuge / 2.º adulto (+50% SMI)",
+    aima_minors_label: "👶 Hijos Menores / Dependientes (+30% cada uno)",
+    aima_minors_help: "Orden 1563/2007: 30% del SMI por cada menor.",
+    aima_gross_label: "💼 Salario Bruto / Remuneración (€)",
+    aima_gross_help: "Base legal imponible de cotización a la Seguridad Social (Art. 44 CRCSPSS).",
+    aima_capital_label: "🏦 Ahorros / Reserva de Capital Disponible (€)",
+    aima_capital_help: "Reserva de subsistencia obligatoria para Búsqueda de Empleo (3× SMI) o D7 (12 meses).",
+    aima_channel_label: "🏛️ Canal de Tramitación AIMA (Tasas Oficiales)",
+    aima_channel_help: "Descuentos oficiales aplicables sobre el cuadro tarifario.",
+    aima_channel_online: "Portal Online AIMA (-25% reducción)",
+    aima_channel_assisted: "Atención Digital Asistida (-10% reducción)",
+    aima_channel_in_person: "Mostrador Presencial AIMA",
+    aima_proc_label: "⏱️ Tipo de Procedimiento y Plazos",
+    aima_proc_help: "Artículo 82 de la Ley 23/2007 — plazos legales vinculantes.",
+    aima_proc_grant: "Concesión Inicial con Visado (90 días legales)",
+    aima_proc_renewal: "Renovación de Permiso (60 días + Aprobación Tácita)",
+    aima_fees_card_title: "Tasa Oficial AIMA Estimada",
+    aima_deadlines_card_title: "Plazos Oficiales y Aprobación Tácita (Art. 82)",
+    aima_recourse_card_title: "Tutela Judicial en Caso de Demora (CPTA)",
     aima_net_label: "💰 Ingreso Neto Mensual (€)",
     aima_net_help: "El importe neto percibido tras deducciones de Seguridad Social e IRPF.",
     aima_dep_label: "👨‍👩‍👧 N.º de Familiares a Cargo",
@@ -1530,8 +1649,45 @@ const translations: Record<string, Record<string, string>> = {
     aima_portaria_badge: "Arrêté 1563/2007 du 11/12",
     aima_lei_badge: "Loi 23/2007 — Loi sur les Étrangers",
     aima_rmmg_badge: "SMIC 2026: 920€ / mois",
-    aima_data_title: "Vos Données de Revenus et Ménage",
-    aima_data_sub: "Remplissez les champs avec vos chiffres réels pour vérifier la conformité AIMA",
+    aima_data_title: "Vos Données de Revenus, Démarche & Dossier",
+    aima_data_sub: "Renseignez vos montants réels pour vérifier la conformité AIMA 2026",
+    aima_territory_label: "📍 Territoire de Résidence (SMIC)",
+    aima_territory_help: "Le salaire minimum de référence varie entre Continent et Régions Autonomes.",
+    aima_territory_mainland: "Portugal Continental (SMIC: 920 €)",
+    aima_territory_azores: "Açores (+5% SMIC: 966 €)",
+    aima_territory_madeira: "Madère (SMIC: 980 €)",
+    aima_pathway_label: "📜 Voie Migratoire / Démarche AIMA",
+    aima_pathway_help: "Régime légal selon la Loi 23/2007 consolidée.",
+    aima_pathway_d1: "Salarié (Visa D1 / Art. 88)",
+    aima_pathway_d2: "Indépendant / Entrepreneur (Visa D2 / Art. 89)",
+    aima_pathway_d7: "Retraités & Revenus Passifs (Visa D7 / Art. 58)",
+    aima_pathway_d8: "Nomade Digital (Visa D8 — 4× SMIC / Art. 90-A)",
+    aima_pathway_job_search: "Recherche d'Emploi (Réserve 3× SMIC / Art. 57-A)",
+    aima_pathway_family: "Regroupement Familial (Art. 98)",
+    aima_pathway_cplp: "Mobilité CPLP (Art. 87-A)",
+    aima_pathway_d4: "Étudiant Enseignement Supérieur (Visa D4 / Art. 91)",
+    aima_spouse_label: "👫 Conjoint / 2e Adulte (+50% SMIC)",
+    aima_spouse_help: "Arrêté 1563/2007 : 50% du SMIC pour le second adulte.",
+    aima_spouse_none: "Sans conjoint / 2e adulte",
+    aima_spouse_one: "1 conjoint / 2e adulte (+50% SMIC)",
+    aima_minors_label: "👶 Enfants Mineurs / Dépendants (+30% chacun)",
+    aima_minors_help: "Arrêté 1563/2007 : 30% du SMIC par enfant mineur.",
+    aima_gross_label: "💼 Salaire Brut / Rémunération (€)",
+    aima_gross_help: "Assiette légale des cotisations à la Sécurité Sociale (Art. 44 CRCSPSS).",
+    aima_capital_label: "🏦 Épargne / Réserve de Capital Disponible (€)",
+    aima_capital_help: "Réserve de subsistance exigée pour Recherche d'Emploi (3× SMIC) ou D7 (12 mois).",
+    aima_channel_label: "🏛️ Canal de Dépôt AIMA (Taxes Officielles)",
+    aima_channel_help: "Réductions légales selon le canal de service.",
+    aima_channel_online: "Portail en Ligne AIMA (-25% réduction)",
+    aima_channel_assisted: "Guichet Numérique Assisté (-10% réduction)",
+    aima_channel_in_person: "Guichet Présentiel AIMA",
+    aima_proc_label: "⏱️ Type de Démarche & Délais",
+    aima_proc_help: "Article 82 de la Loi 23/2007 — délais légaux impératifs.",
+    aima_proc_grant: "Délivrance Initiale avec Visa (90 jours légaux)",
+    aima_proc_renewal: "Renouvellement de Titre (60 jours + Accord Tacite)",
+    aima_fees_card_title: "Taxe Officielle AIMA Estimée",
+    aima_deadlines_card_title: "Délais Officiels & Accord Tacite (Art. 82)",
+    aima_recourse_card_title: "Recours Judiciaire en Cas de Retard (CPTA)",
     aima_net_label: "💰 Revenu Net Mensuel (€)",
     aima_net_help: "Le montant net perçu après toutes cotisations sociales et retenues IRS.",
     aima_dep_label: "👨‍👩‍👧 Nbre de Personnes à Charge dans le Foyer",
@@ -1954,12 +2110,20 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const [hpOwnsPropertyLast3Years, setHpOwnsPropertyLast3Years] = useState<boolean>(false);
   const [hpYouthGuarantee, setHpYouthGuarantee] = useState<boolean>(true);
 
-  // ─── AIMA REQUISITES STATE (INDEPENDENT) ───────────────────────────────────
+  // ─── AIMA REQUISITES STATE (CANONICAL 2026) ───────────────────────────────────
+  const [aimaTerritory, setAimaTerritory] = useState<PortugueseTerritory>('mainland');
+  const [aimaPathway, setAimaPathway] = useState<AimaPathwayId>('work_d1');
+  const [aimaSpouseCount, setAimaSpouseCount] = useState<number>(0);
+  const [aimaMinorsCount, setAimaMinorsCount] = useState<number>(0);
+  const [aimaGrossIncome, setAimaGrossIncome] = useState<number>(1200);
   const [aimaNetIncome, setAimaNetIncome] = useState<number>(1000);
-  const [aimaDependents, setAimaDependents] = useState<number>(0);
+  const [aimaAvailableCapital, setAimaAvailableCapital] = useState<number>(3000);
   const [aimaMonthlyRent, setAimaMonthlyRent] = useState<number>(500);
   const [aimaTotalExpenses, setAimaTotalExpenses] = useState<number>(800);
   const [aimaSsMode, setAimaSsMode] = useState<'normal_outrem' | 'normal_recibos' | 'min_20' | 'reduced_25'>('normal_outrem');
+  const [aimaChannel, setAimaChannel] = useState<SubmissionChannel>('online');
+  const [aimaProcedureType, setAimaProcedureType] = useState<'residence_grant_visa' | 'residence_renewal'>('residence_grant_visa');
+  const [aimaDaysElapsed, setAimaDaysElapsed] = useState<number>(45);
 
   // ─── PEQUENO EMPREENDEDOR / MICROEMPRESA STATE ─────────────────────────────
   const [bizRevenue, setBizRevenue] = useState<number>(3500);
@@ -4233,7 +4397,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
             );
           })()}
 
-          {/* ════ TAB 5: DIAGNÓSTICO AIMA & SAÚDE FINANCEIRA (INDEPENDENTE) ══ */}
+          {/* ════ TAB 5: DIAGNÓSTICO AIMA & SAÚDE FINANCEIRA (CANÓNICO 2026) ══ */}
           {activeTab === 'aima_health' && (
             <div className="space-y-6 animate-in fade-in duration-300">
 
@@ -4246,7 +4410,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     <p className="text-[9px] text-slate-400 font-medium mt-0.5">{tLocal('aima_diag_subtitle')}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
                   <div className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-2">
                     <span className="text-base shrink-0">📋</span>
                     <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('aima_portaria_badge')}</span>
@@ -4257,7 +4421,13 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                   <div className="px-3 py-2.5 bg-[#FF8C00]/10 border border-[#FF8C00]/20 rounded-xl text-[#FF8C00] flex items-center gap-2">
                     <span className="text-base shrink-0">💶</span>
-                    <span className="text-[9px] font-black uppercase tracking-wide">{tLocal('aima_rmmg_badge')}</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">
+                      {aimaTerritory === 'azores' ? 'Açores: 966 €' : aimaTerritory === 'madeira' ? 'Madeira: 980 €' : 'Continente: 920 €'}
+                    </span>
+                  </div>
+                  <div className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 flex items-center gap-2">
+                    <span className="text-base shrink-0">🛡️</span>
+                    <span className="text-[9px] font-black uppercase tracking-wide">CRCSPSS Arts. 44.º & 53.º</span>
                   </div>
                 </div>
               </div>
@@ -4272,7 +4442,84 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 </div>
 
+                {/* Grid 1: Territory & Pathway */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_territory_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_territory_help')}</p>
+                    <select
+                      value={aimaTerritory}
+                      onChange={(e) => setAimaTerritory(e.target.value as PortugueseTerritory)}
+                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                    >
+                      <option value="mainland">{tLocal('aima_territory_mainland')}</option>
+                      <option value="azores">{tLocal('aima_territory_azores')}</option>
+                      <option value="madeira">{tLocal('aima_territory_madeira')}</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_pathway_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_pathway_help')}</p>
+                    <select
+                      value={aimaPathway}
+                      onChange={(e) => setAimaPathway(e.target.value as AimaPathwayId)}
+                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                    >
+                      <option value="work_d1">{tLocal('aima_pathway_d1')}</option>
+                      <option value="entrepreneur_d2">{tLocal('aima_pathway_d2')}</option>
+                      <option value="passive_income_d7">{tLocal('aima_pathway_d7')}</option>
+                      <option value="digital_nomad_d8">{tLocal('aima_pathway_d8')}</option>
+                      <option value="job_search">{tLocal('aima_pathway_job_search')}</option>
+                      <option value="family_reunification">{tLocal('aima_pathway_family')}</option>
+                      <option value="cplp_mobility">{tLocal('aima_pathway_cplp')}</option>
+                      <option value="student_d4">{tLocal('aima_pathway_d4')}</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Grid 2: Household Composition */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_spouse_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_spouse_help')}</p>
+                    <select
+                      value={aimaSpouseCount}
+                      onChange={(e) => setAimaSpouseCount(Number(e.target.value))}
+                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                    >
+                      <option value={0}>{tLocal('aima_spouse_none')}</option>
+                      <option value={1}>{tLocal('aima_spouse_one')}</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_minors_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_minors_help')}</p>
+                    <select
+                      value={aimaMinorsCount}
+                      onChange={(e) => setAimaMinorsCount(Number(e.target.value))}
+                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                    >
+                      {[0, 1, 2, 3, 4, 5].map((n) => (
+                        <option key={n} value={n}>
+                          {n} {n === 0 ? tLocal('aima_no_dep') : n === 1 ? tLocal('aima_one_dep') : tLocal('aima_multi_dep')}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Grid 3: Incomes & Funds */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
                       {tLocal('aima_net_label')}
@@ -4291,19 +4538,41 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                      {tLocal('aima_dep_label')}
+                      {tLocal('aima_gross_label')}
                     </label>
-                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_dep_help')}</p>
-                    <select
-                      value={aimaDependents}
-                      onChange={(e) => setAimaDependents(Number(e.target.value))}
-                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
-                    >
-                      {[0,1,2,3,4,5].map(n => <option key={n} value={n}>{n} {n === 0 ? tLocal('aima_no_dep') : n === 1 ? tLocal('aima_one_dep') : tLocal('aima_multi_dep')}</option>)}
-                    </select>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_gross_help')}</p>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={aimaGrossIncome}
+                        onChange={(e) => setAimaGrossIncome(Number(e.target.value))}
+                        className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00] focus:ring-1 focus:ring-[#FF8C00]"
+                      />
+                      <span className="absolute right-5 top-1/2 -translate-y-1/2 font-black text-slate-400 text-sm">€</span>
+                    </div>
                   </div>
                 </div>
 
+                {/* Conditional Capital Reserve input for job search and D7 */}
+                {(aimaPathway === 'job_search' || aimaPathway === 'passive_income_d7') && (
+                  <div className="space-y-2 border-t border-slate-100 pt-4">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_capital_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_capital_help')}</p>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={aimaAvailableCapital}
+                        onChange={(e) => setAimaAvailableCapital(Number(e.target.value))}
+                        className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:border-[#FF8C00] focus:ring-1 focus:ring-[#FF8C00]"
+                      />
+                      <span className="absolute right-5 top-1/2 -translate-y-1/2 font-black text-slate-400 text-sm">€</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Grid 4: Living Expenses */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
@@ -4338,42 +4607,102 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                   </div>
                 </div>
 
-                <div className="space-y-2 border-t border-slate-100 pt-4">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                    {tLocal('aima_ss_label')}
-                  </label>
-                  <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_ss_help')}</p>
-                  <select
-                    value={aimaSsMode}
-                    onChange={(e) => setAimaSsMode(e.target.value as any)}
-                    className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
-                  >
-                    <option value="normal_outrem">{tLocal('aima_ss_outrem')}</option>
-                    <option value="normal_recibos">{tLocal('aima_ss_recibos')}</option>
-                    <option value="reduced_25">{tLocal('aima_ss_reduced')}</option>
-                    <option value="min_20">{tLocal('aima_ss_min')}</option>
-                  </select>
+                {/* Grid 5: Administrative Parameters (SS, Channel, Procedure) */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_ss_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_ss_help')}</p>
+                    <select
+                      value={aimaSsMode}
+                      onChange={(e) => setAimaSsMode(e.target.value as any)}
+                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                    >
+                      <option value="normal_outrem">{tLocal('aima_ss_outrem')}</option>
+                      <option value="normal_recibos">{tLocal('aima_ss_recibos')}</option>
+                      <option value="reduced_25">{tLocal('aima_ss_reduced')}</option>
+                      <option value="min_20">{tLocal('aima_ss_min')}</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_channel_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_channel_help')}</p>
+                    <select
+                      value={aimaChannel}
+                      onChange={(e) => setAimaChannel(e.target.value as SubmissionChannel)}
+                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                    >
+                      <option value="online">{tLocal('aima_channel_online')}</option>
+                      <option value="digital_assisted">{tLocal('aima_channel_assisted')}</option>
+                      <option value="in_person">{tLocal('aima_channel_in_person')}</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                      {tLocal('aima_proc_label')}
+                    </label>
+                    <p className="text-[8px] text-slate-400 font-medium">{tLocal('aima_proc_help')}</p>
+                    <select
+                      value={aimaProcedureType}
+                      onChange={(e) => setAimaProcedureType(e.target.value as any)}
+                      className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#FF8C00]"
+                    >
+                      <option value="residence_grant_visa">{tLocal('aima_proc_grant')}</option>
+                      <option value="residence_renewal">{tLocal('aima_proc_renewal')}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               {/* Results Panel */}
               {(() => {
-                const baseReq = NORMATIVE_2026.RMMG_2026;
-                const depReq = aimaDependents * Math.round(NORMATIVE_2026.RMMG_2026 * 0.30);
-                const totalReq = baseReq + depReq;
-                const meetsReq = aimaNetIncome >= totalReq;
-                const diff = aimaNetIncome - totalReq;
+                const aimaEval = MiraAimaEngine.evaluateCompliance({
+                  pathwayId: aimaPathway,
+                  territory: aimaTerritory,
+                  household: {
+                    applicant: true,
+                    otherAdultsCount: aimaSpouseCount,
+                    minorsCount: aimaMinorsCount,
+                  },
+                  availableNetMonthlyEur: aimaNetIncome,
+                  availableCapitalEur: aimaAvailableCapital,
+                  grossIncomeEur: aimaGrossIncome,
+                  regime: aimaSsMode === 'normal_recibos' || aimaSsMode === 'reduced_25' || aimaSsMode === 'min_20'
+                    ? 'independent_contractor'
+                    : aimaPathway === 'passive_income_d7'
+                      ? 'passive_income'
+                      : aimaPathway === 'job_search'
+                        ? 'job_seeker'
+                        : 'tco_general',
+                  submissionChannel: aimaChannel,
+                  procedureType: aimaProcedureType,
+                  daysElapsed: aimaDaysElapsed,
+                });
+
+                const totalReq = aimaEval.subsistence.requiredNetMonthlyEur;
+                const meetsReq = aimaEval.subsistence.isCompliant;
+                const diff = aimaEval.subsistence.surplusMonthlyEur - aimaEval.subsistence.shortfallMonthlyEur;
                 const effortRate = aimaNetIncome > 0 ? Math.round((aimaMonthlyRent / aimaNetIncome) * 100) : 0;
                 const netSavings = Math.round(aimaNetIncome - aimaTotalExpenses);
                 const emergencyFund = Math.round(aimaTotalExpenses * 3);
                 const setupCapital = Math.round(aimaMonthlyRent * 3);
 
-                // Cálculo SS estimado no Diagnóstico AIMA
+                // Cálculo SS exato com base na remuneração ilíquida (Art. 44 e 53 CRCSPSS)
                 let estimatedSsDeduction = 0;
-                if (aimaSsMode === 'normal_outrem') estimatedSsDeduction = Math.round(aimaNetIncome * 0.123);
-                else if (aimaSsMode === 'normal_recibos') estimatedSsDeduction = Math.round(aimaNetIncome * 0.7 * 0.214);
-                else if (aimaSsMode === 'reduced_25') estimatedSsDeduction = Math.round(aimaNetIncome * 0.7 * 0.75 * 0.214);
-                else estimatedSsDeduction = 20;
+                if (aimaSsMode === 'normal_outrem') {
+                  estimatedSsDeduction = aimaEval.socialSecurityCheck.calculatedDeductionEur || Math.round(aimaGrossIncome * 0.11);
+                } else if (aimaSsMode === 'normal_recibos') {
+                  estimatedSsDeduction = Math.round(aimaNetIncome * 0.7 * 0.214);
+                } else if (aimaSsMode === 'reduced_25') {
+                  estimatedSsDeduction = Math.round(aimaNetIncome * 0.7 * 0.75 * 0.214);
+                } else {
+                  estimatedSsDeduction = 20;
+                }
 
                 const isSsRisk = aimaSsMode === 'min_20' || aimaSsMode === 'reduced_25';
 
@@ -4433,7 +4762,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                       </div>
                     )}
 
-                    {/* Compliance Card */}
+                    {/* Statutory Subsistence Card */}
                     <div className={`p-5 rounded-3xl border space-y-4 ${
                       meetsReq && !isSsRisk ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-amber-500/10 border-amber-500/30'
                     }`}>
@@ -4445,7 +4774,7 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                               {tLocal('aima_legal_subsistence_check')}
                             </h4>
                             <p className="text-[8px] text-slate-400 font-medium mt-0.5">
-                              Portaria 1563/2007 &middot; Art. 52.º Lei 23/2007 &middot; RMMG 2026 (920€)
+                              {aimaEval.subsistence.provenance.legalBasis} &middot; {aimaEval.subsistence.provenance.article} &middot; RMMG Ref. ({aimaEval.subsistence.rmmgReferenceEur}€)
                             </p>
                           </div>
                         </div>
@@ -4465,7 +4794,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
                           <span className="text-[8px] text-slate-400 uppercase font-black block mb-1">{tLocal('aima_min_threshold')}</span>
                           <span className="text-xl font-black text-amber-300">{totalReq.toLocaleString('pt')}€</span>
-                          <span className="text-[8px] text-slate-400 block">920€ + {aimaDependents}×276€</span>
+                          <span className="text-[8px] text-slate-400 block">
+                            {aimaPathway === 'digital_nomad_d8' 
+                              ? `4 × RMMG (${totalReq}€)` 
+                              : `${aimaEval.subsistence.householdBreakdown.applicantNetMonthlyEur}€ + ${aimaEval.subsistence.householdBreakdown.otherAdultsNetMonthlyEur}€ + ${aimaEval.subsistence.householdBreakdown.minorsNetMonthlyEur}€`}
+                          </span>
                         </div>
                         <div className={`p-4 border rounded-2xl ${
                           meetsReq ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'
@@ -4478,9 +4811,75 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         </div>
                       </div>
 
+                      {/* Capital reserve check for Job Search / D7 */}
+                      {aimaEval.subsistence.capitalReserveRequiredEur && (
+                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-between">
+                          <div>
+                            <span className="text-[8px] font-black uppercase text-slate-400 block">
+                              Reserva de Capital Exigida ({aimaPathway === 'job_search' ? 'Art. 57.º-A (3 × RMMG)' : 'Art. 5.º, n.º 6 Portaria 1563/2007 (12 meses)'})
+                            </span>
+                            <span className="text-base font-black text-white">
+                              {aimaAvailableCapital} € disponíveis / {aimaEval.subsistence.capitalReserveRequiredEur} € exigidos
+                            </span>
+                          </div>
+                          <span className={`text-[8px] font-black uppercase px-2.5 py-1 rounded-full border ${
+                            aimaAvailableCapital >= aimaEval.subsistence.capitalReserveRequiredEur
+                              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                              : 'bg-red-500/20 border-red-500/40 text-red-300'
+                          }`}>
+                            {aimaAvailableCapital >= aimaEval.subsistence.capitalReserveRequiredEur ? '✓ Reserva Coberta' : 'Insuficiente'}
+                          </span>
+                        </div>
+                      )}
+
                       <p className="text-[9px] text-slate-300 font-medium leading-relaxed pt-1">
                         {tLocal('aima_legal_basis_note')}
                       </p>
+                    </div>
+
+                    {/* Fees & Deadlines Double Card */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Official Fees Card */}
+                      <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-[#FF8C00] block">
+                            {tLocal('aima_fees_card_title')}
+                          </span>
+                          <span className="text-[8px] font-black uppercase px-2 py-0.5 bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded">
+                            {aimaEval.fees.reductionPercentageApplied > 0 ? `-${aimaEval.fees.reductionPercentageApplied}% canal` : 'Integral'}
+                          </span>
+                        </div>
+                        <h2 className="text-2xl font-black text-amber-400 tracking-tight">
+                          {aimaEval.fees.estimatedFeeEur !== null ? `${aimaEval.fees.estimatedFeeEur.toFixed(2)} €` : 'Sob Consulta'}
+                        </h2>
+                        <p className="text-[8.5px] text-slate-400 font-medium leading-normal">
+                          {aimaEval.fees.feeNotes} ({aimaEval.fees.provenance.legalBasis})
+                        </p>
+                      </div>
+
+                      {/* Statutory Deadlines Card */}
+                      <div className="p-5 bg-white/5 border border-white/10 rounded-3xl space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 block">
+                            {tLocal('aima_deadlines_card_title')}
+                          </span>
+                          <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${
+                            aimaEval.deadlines.tacitApprovalApplicable
+                              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                              : 'bg-slate-700 border-slate-600 text-slate-300'
+                          }`}>
+                            {aimaEval.deadlines.tacitApprovalApplicable ? '✓ Deferimento Tácito (n.º 7)' : 'Sem Deferimento Tácito'}
+                          </span>
+                        </div>
+                        <h2 className="text-2xl font-black text-white tracking-tight">
+                          {aimaEval.deadlines.legalDeadlineDays ? `${aimaEval.deadlines.legalDeadlineDays} dias` : '10 dias'}
+                        </h2>
+                        <p className="text-[8.5px] text-slate-300 font-medium leading-normal">
+                          {aimaEval.deadlines.tacitApprovalApplicable 
+                            ? 'Decorrido o prazo sem decisão e sem culpa do requerente, o pedido entende-se deferido com emissão do título.' 
+                            : 'Mora administrativa sem deferimento tácito: viabiliza ação de intimação no TAC (Art. 66.º CPTA).'}
+                        </p>
+                      </div>
                     </div>
 
                     {/* Breakdown Metrics */}

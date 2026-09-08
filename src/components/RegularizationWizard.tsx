@@ -10,6 +10,7 @@ import { ViewType } from "../types";
 import { t } from "../utils/translations";
 import { audioService } from "../services/audioService";
 import { PATHWAY_DOCS_DETAIL_GUIDE } from "../utils/visaDocumentsDatabase";
+import { MiraAimaEngine, AimaPathwayId } from "../services/miraAimaEngine";
 
 interface WizardProps {
     language: string;
@@ -252,6 +253,20 @@ const getCrossNavButtons = (sit?: string, purpose?: string): CrossNavButtonConfi
     return [btnJobsWork, btnSimulators];
 };
 
+const mapWizardToAimaPathway = (situation?: string, purpose?: string): AimaPathwayId => {
+    if (situation === 'voluntary_return') return 'pending_manifestation_legacy';
+    if (situation === 'asylum' || purpose === 'humanitarian') return 'asylum_protection';
+    if (situation === 'family') return 'family_reunification';
+    if (purpose === 'visa_job_search') return 'job_search';
+    if (purpose === 'art90a') return 'digital_nomad_d8';
+    if (purpose === 'visa_d7' || situation === 'retirement') return 'passive_income_d7';
+    if (purpose === 'visa_d4' || situation === 'student') return 'student_d4';
+    if (purpose === 'art89') return 'entrepreneur_d2';
+    if (purpose === 'art122') return 'art122_special';
+    if (situation === 'cplp') return 'cplp_mobility';
+    return 'work_d1';
+};
+
 export const RegularizationWizard: React.FC<WizardProps> = memo(({
     language,
     onSelectTemplate,
@@ -263,6 +278,17 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
     const [step, setStep] = useState<number>(1);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [activeDocTip, setActiveDocTip] = useState<string | null>(null);
+
+    const aimaNormative = useMemo(() => {
+        const pId = mapWizardToAimaPathway(answers.situation, answers.purpose);
+        return MiraAimaEngine.evaluateCompliance({
+            pathwayId: pId,
+            household: { applicant: true, otherAdultsCount: 0, minorsCount: 0 },
+            availableNetMonthlyEur: 1000,
+            submissionChannel: 'online',
+            procedureType: 'residence_grant_visa'
+        });
+    }, [answers.situation, answers.purpose]);
 
     const handleAnswer = (key: string, value: string) => {
         setAnswers(prev => ({ ...prev, [key]: value }));
@@ -596,7 +622,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                     { id: 'visa_d7',         label: t("wiz_purp_visa_d7", language),         icon: <Landmark size={18} className="text-amber-500" />,     badge: t('badge_visa_d7', language) },
                                     { id: 'visa_d4',         label: t("wiz_purp_visa_d4", language),         icon: <GraduationCap size={18} className="text-blue-500" />, badge: t('badge_visa_d4', language) },
                                     { id: 'visa_job_search', label: t("wiz_purp_visa_job_search", language), icon: <Briefcase size={18} className="text-teal-500" />,  badge: t('badge_visa_job_search', language) },
-                                    { id: 'art122',          label: t("wiz_purp_art122", language),          icon: <Users size={18} className="text-red-500 animate-pulse" />,           badge: t('badge_reunification_others', language), isRevoked: true },
+                                    { id: 'art122',          label: t("wiz_purp_art122", language),          icon: <Users size={18} className="text-amber-500" />,           badge: t('badge_reunification_others', language) },
                                     { id: 'humanitarian',    label: t("wiz_purp_humanitarian", language),    icon: <ShieldCheck size={18} className="text-slate-500" />,   badge: t('badge_humanitarian_reasons', language) }
                                   ]
                             ).map((opt, idx) => (
@@ -607,7 +633,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                     badgeText={opt.badge}
                                     onClick={() => handleAnswer('purpose', opt.id)}
                                     idx={idx}
-                                    isRevoked={opt.isRevoked}
+                                    isRevoked={(opt as any).isRevoked}
                                 />
                             ))}
                         </div>
@@ -656,6 +682,84 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                     </div>
                                 )}
                             </div>
+
+                            {/* Canonical AIMA Normative Overview Card */}
+                            {aimaNormative && (
+                                <div className="bg-slate-900 border border-slate-800 rounded-[2.25rem] p-5 text-white shadow-lg space-y-4">
+                                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                                        <div className="flex items-center gap-2">
+                                            <ShieldCheck size={18} className="text-orange-400 shrink-0" />
+                                            <div>
+                                                <h4 className="text-xs font-black uppercase tracking-wider text-white">
+                                                    Requisitos Normativos AIMA 2026
+                                                </h4>
+                                                <p className="text-[9px] text-slate-400 font-medium">
+                                                    {aimaNormative.subsistence.provenance.legalBasis} &middot; {aimaNormative.subsistence.provenance.article}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className="px-2.5 py-1 text-[8px] font-black uppercase tracking-wider bg-orange-500/20 text-orange-300 border border-orange-500/40 rounded-full">
+                                            Verificação Soberana
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+                                            <span className="text-[8px] font-black uppercase tracking-wider text-slate-400 block">
+                                                Meios de Subsistência
+                                            </span>
+                                            <p className="text-base font-black text-white">
+                                                {aimaNormative.subsistence.capitalReserveRequiredEur
+                                                    ? `${aimaNormative.subsistence.capitalReserveRequiredEur} € (reserva)`
+                                                    : `${aimaNormative.subsistence.requiredNetMonthlyEur} € / mês`}
+                                            </p>
+                                            <span className="text-[7.5px] text-slate-400 block">
+                                                RMMG Ref.: {aimaNormative.subsistence.rmmgReferenceEur} €
+                                            </span>
+                                        </div>
+
+                                        <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+                                            <span className="text-[8px] font-black uppercase tracking-wider text-slate-400 block">
+                                                Taxa Oficial Estimada
+                                            </span>
+                                            <p className="text-base font-black text-amber-300">
+                                                {aimaNormative.fees.estimatedFeeEur !== null 
+                                                    ? `${aimaNormative.fees.estimatedFeeEur.toFixed(2)} €` 
+                                                    : 'Sob Consulta'}
+                                            </p>
+                                            <span className="text-[7.5px] text-slate-400 block">
+                                                {aimaNormative.fees.reductionPercentageApplied > 0 
+                                                    ? `Canal online (-${aimaNormative.fees.reductionPercentageApplied}%)` 
+                                                    : 'Taxa integral'}
+                                            </span>
+                                        </div>
+
+                                        <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+                                            <span className="text-[8px] font-black uppercase tracking-wider text-slate-400 block">
+                                                Prazo Legal de Decisão
+                                            </span>
+                                            <p className="text-base font-black text-emerald-300">
+                                                {aimaNormative.deadlines.legalDeadlineDays 
+                                                    ? `${aimaNormative.deadlines.legalDeadlineDays} dias` 
+                                                    : '10 dias'}
+                                            </p>
+                                            <span className="text-[7.5px] text-slate-400 block">
+                                                {aimaNormative.deadlines.provenance.article}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Action button to open full simulator */}
+                                    <button
+                                        onClick={() => onViewChange?.(ViewType.SIMULATORS, { tab: 'aima_health' })}
+                                        className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md shadow-orange-500/20 active:scale-[0.98]"
+                                    >
+                                        <Calculator size={14} />
+                                        Simular Diagnóstico Financeiro Completo na Tab AIMA
+                                        <ArrowRight size={14} />
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Checklist of Steps */}
                             <div className="space-y-3">

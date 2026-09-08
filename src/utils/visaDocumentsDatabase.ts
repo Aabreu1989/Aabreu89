@@ -15,24 +15,24 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 hack: "O contrato deve ser registado nas Finanças (AT) e Segurança Social pelo empregador. Garanta que o salário proposto é igual ou superior ao Salário Mínimo Nacional (SMN) para evitar recusa automática."
             },
             {
-                docName: "✈️ Declaração de Entrada Legal",
-                accepted: "Passaporte válido com carimbo de entrada das autoridades portuguesas, ou comprovativo de Declaração de Entrada apresentado à AIMA.",
-                where: "AIMA online ou Loja do Cidadão no prazo de 3 dias úteis após entrar no país (se a entrada ocorreu via outro Estado-Membro da UE).",
-                hack: "Se pernoitar num hotel, hostel ou alojamento local legal em Portugal nas primeiras 3 noites, a entidade reporta automaticamente a sua entrada ao SEF/AIMA. Guarde a fatura com o seu nome; serve como prova de entrada legal!"
+                docName: "✈️ Visto de Residência Consular Válido (Art. 88.º, n.º 1)",
+                accepted: "Visto de Residência consular prévio para exercício de atividade profissional subordinada aposto no passaporte (emitido no país de origem antes da viagem).",
+                where: "Posto Consular / Embaixada de Portugal no país de residência habitual.",
+                hack: "Atenção: O Decreto-Lei n.º 37-A/2024 revogou as antigas Manifestações de Interesse. A entrada com visto de turista não permite regularização por trabalho; é obrigatório obter visto consular prévio de residência ou visto de procura de trabalho antes de viajar."
             },
             {
-                docName: "💳 NIF e NISS ativos",
+                docName: "💳 NIF e NISS ativos (Obtenção prévia ou presencial)",
                 accepted: "Documento oficial do Número de Identificação Fiscal (NIF) com morada atualizada e Número de Identificação de Segurança Social (NISS).",
-                where: "Autoridade Tributária (Finanças) e Segurança Social.",
-                hack: "Se tiver um contrato de trabalho, o empregador pode requerer o seu NISS online na hora. Se for promessa, pode requerer você mesmo no portal Segurança Social Direta anexando o documento."
+                where: "Autoridade Tributária (Finanças) e Instituto da Segurança Social (ISS).",
+                hack: "Canais Oficiais Pré-Chegada: Os consulados não atribuem NIF nem NISS como regra geral. Para obter NIF antes de chegar a Portugal, o pedido é feito junto da AT (e-Balcão ou presencial) através de representante legal/procurador munido de procuração e passaporte (nota: representante legal para pedido é distinto de representante fiscal). O NISS pré-chegada pode ser requerido no portal da Segurança Social por representante legal ou pela entidade empregadora mediante contrato/promessa de trabalho. Após a chegada, o NISS pode ser obtido presencialmente no serviço 'NISS na Hora'."
             }
         ],
         art89: [
             {
-                docName: "📋 Declaração de Início de Atividade",
+                docName: "📋 Declaração de Início de Atividade (Finanças & Segurança Social)",
                 accepted: "Comprovativo oficial de abertura de atividade nas Finanças com CAE (Atividade Económica) ou código de IRS válido.",
                 where: "Portal das Finanças (online) ou balcão de um Serviço de Finanças.",
-                hack: "Pode abrir atividade 100% online se tiver a senha do Portal das Finanças. Certifique-se de escolher uma CAE compatível com os serviços de prestação que vai faturar."
+                hack: "Início e Cessação de Atividade (Regime Canónico): A declaração de início de atividade deve ser entregue nas Finanças ANTES de iniciar qualquer operação (Art. 112.º, n.º 1 do CIRS). A AT comunica oficiosamente à Segurança Social (Art. 143.º do CRCSPSS), que inscreve automaticamente o trabalhador (Art. 144.º) — não existe prazo de 30 dias para comunicação manual à SS! O enquadramento normal produz efeitos no 1.º dia do 12.º mês (Art. 145.º), podendo o trabalhador requerer antecipação facultativa via declaração trimestral (Art. 146.º). Em caso de encerramento, a cessação deve ser comunicada nas Finanças em até 30 dias (Art. 33.º do CIVA e Art. 112.º, n.º 4 do CIRS); a SS cessa oficiosamente o enquadramento (Art. 147.º, n.º 2) com efeitos no 1.º dia do mês seguinte (Art. 148.º)."
             },
             {
                 docName: "📄 Contrato de Prestação de Serviços",
@@ -207,24 +207,24 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 hack: "The contract must be registered at the Tax Authority (AT) and Social Security by the employer. Ensure the proposed salary is equal to or higher than the National Minimum Wage to avoid automatic rejection."
             },
             {
-                docName: "✈️ Legal Entry Proof",
-                accepted: "Valid passport with entry stamp from Portuguese authorities, or proof of Entry Declaration submitted to AIMA.",
-                where: "AIMA online or Citizen Shop within 3 business days of entering the country (if entry occurred via another EU Member State with no border control).",
-                hack: "If you stay in a hotel, hostel, or registered local accommodation in Portugal for the first 3 nights, the establishment automatically reports your entry to AIMA. Keep the invoice with your name; it serves as legal proof of entry!"
+                docName: "✈️ Valid Consular Residence Visa (Art. 88, para 1)",
+                accepted: "Prior consular Residence Visa for subordinate professional activity affixed to your passport (issued in your home country prior to travel).",
+                where: "Consular Post / Embassy of Portugal in your country of origin or habitual residence.",
+                hack: "Important Notice: Decree-Law no. 37-A/2024 revoked the former Expressions of Interest. Tourist entry no longer permits employment regularization; obtaining a prior consular residence visa or job seeker visa before traveling is mandatory."
             },
             {
-                docName: "💳 Active NIF and NISS",
+                docName: "💳 Active NIF and NISS (Pre-arrival or In-person)",
                 accepted: "Official document of Tax Identification Number (NIF) with updated address and Social Security Identification Number (NISS).",
-                where: "Tax Authority (Finanças) and Social Security.",
-                hack: "If you have an employment contract, the employer can request your NISS online instantly. For a promise of contract, you can request it yourself on the Social Security Direta portal by attaching the document."
+                where: "Tax Authority (AT - Finanças) and Social Security Institute (ISS).",
+                hack: "Official Pre-Arrival Channels: Portuguese consulates do not issue NIF or NISS as a general rule. To obtain a NIF before arriving, the request is submitted to the AT (e-Balcão or tax office) by a legal representative/power of attorney holder with a passport and mandate (a legal representative for NIF request is distinct from a tax representative). Pre-arrival NISS can be requested online via Social Security by a legal representative or by your prospective employer holding an employment contract/promise. After arrival, NISS can be obtained in person via the 'NISS na Hora' service."
             }
         ],
         art89: [
             {
-                docName: "📋 Declaration of Start of Activity",
+                docName: "📋 Declaration of Start of Activity (Tax & Social Security)",
                 accepted: "Official proof of opening of activity at Finanças with a valid CAE (Economic Activity) or IRS code.",
                 where: "Portal das Finanças (online) or at a local Tax Office counter.",
-                hack: "You can open your activity 100% online if you have the Portal das Finanças password. Make sure to choose a CAE compatible with the services you will bill."
+                hack: "Start & Cessation of Activity (Statutory Rules): The declaration of commencement of activity must be filed at Finanças BEFORE starting any business operations (Art. 112, no. 1 CIRS). The Tax Authority automatically communicates this to Social Security (Art. 143 CRCSPSS), which registers the worker automatically (Art. 144) — there is no 30-day manual notice requirement to SS! Normal enrollment takes effect on the 1st day of the 12th month (Art. 145), though the worker may request voluntary early enrollment via quarterly declaration (Art. 146). For closure, cessation must be reported at Finanças within 30 days (Art. 33 CIVA & Art. 112, no. 4 CIRS); SS automatically closes enrollment (Art. 147, no. 2) effective the 1st day of the following month (Art. 148)."
             },
             {
                 docName: "📄 Service Agreement / Invoices",
@@ -399,24 +399,24 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 hack: "El contrato debe ser registrado en Hacienda (AT) y en la Seguridad Social por el empleador. Asegúrese de que el salario propuesto sea igual o superior al Salario Mínimo Nacional (SMN) para evitar el rechazo automático."
             },
             {
-                docName: "✈️ Prueba de Entrada Legal",
-                accepted: "Pasaporte válido con sello de entrada de las autoridades portuguesas, o comprobante de Declaración de Entrada presentado a AIMA.",
-                where: "AIMA en línea o Loja do Cidadão dentro de los 3 días hábiles posteriores a la entrada al país (si se ingresó a través de otro Estado miembro de la UE sin control de fronteras).",
-                hack: "Si se aloja en un hotel, hostal o alojamiento local registrado en Portugal las primeras 3 noches, el establecimiento informa automáticamente su entrada a AIMA. Guarde la factura a su nombre; ¡sirve como prueba legal de entrada!"
+                docName: "✈️ Visado de Residencia Consular Válido (Art. 88, n.º 1)",
+                accepted: "Visado de Residencia consular previo para el ejercicio de actividad laboral subordinada estampado en el pasaporte (emitido en el país de origen antes de viajar).",
+                where: "Puesto Consular / Embajada de Portugal en el país de origen o residencia habitual.",
+                hack: "Atención: El Decreto-Ley n.º 37-A/2024 revocó las antiguas Manifestaciones de Interés. La entrada como turista ya no permite la regularización por trabajo; es obligatorio obtener un visado consular de residencia o visado de búsqueda de trabajo antes de viajar."
             },
             {
-                docName: "💳 NIF y NISS activos",
+                docName: "💳 NIF y NISS activos (Obtención previa o presencial)",
                 accepted: "Documento oficial del Número de Identificación Fiscal (NIF) con dirección actualizada y Número de Identificación de la Seguridad Social (NISS).",
-                where: "Autoridad Tributaria (Finanças) y Seguridad Social.",
-                hack: "Si tiene un contrato de trabajo, el empleador puede solicitar su NISS en línea al instante. Si es una promesa de contrato, puede solicitarlo usted mismo en el portal de la Seguridad Social Direta adjuntando el documento."
+                where: "Autoridad Tributaria (AT - Finanças) e Instituto de la Seguridad Social (ISS).",
+                hack: "Canales Oficiales Previos a la Llegada: Los consulados portugueses no asignan NIF ni NISS como norma general. Para obtener el NIF antes de viajar, la solicitud se tramita ante la AT (e-Balcão o presencial) mediante un representante legal/apoderado con poder notarial y pasaporte (el apoderado para solicitar el NIF es una figura distinta del representante fiscal). El NISS antes de la llegada puede ser solicitado en la Seguridad Social por un representante legal o por el empleador con contrato/promesa laboral. Tras la llegada, el NISS se puede obtener en persona mediante el servicio 'NISS na Hora'."
             }
         ],
         art89: [
             {
-                docName: "📋 Declaración de Inicio de Actividad",
+                docName: "📋 Declaración de Inicio de Actividad (Hacienda & Seguridad Social)",
                 accepted: "Comprobante oficial de apertura de actividad en Hacienda con CAE (Actividad Económica) o código de IRS válido.",
                 where: "Portal das Finanças (en línea) o en el mostrador de una oficina de Hacienda local.",
-                hack: "Puede abrir su actividad 100% en línea si tiene la contraseña del Portal das Finanças. Asegúrese de elegir una CAE compatible con los servicios que va a facturar."
+                hack: "Inicio y Cese de Actividad (Régimen Normativo): La declaración de inicio de actividad debe presentarse en Hacienda ANTES de comenzar cualquier actividad (Art. 112, n.º 1 CIRS). La AT comunica de oficio a la Seguridad Social (Art. 143 CRCSPSS), que inscribe automáticamente al trabajador (Art. 144) — ¡no existe plazo de 30 días para notificación manual a la SS! El encuadre normal surte efectos el primer día del mes 12 (Art. 145), pudiendo solicitarse la anticipación facultativa mediante la declaración trimestral (Art. 146). Para el cierre, el cese debe comunicarse en Hacienda en un plazo de hasta 30 días (Art. 33 CIVA y Art. 112, n.º 4 CIRS); la SS extingue de oficio el encuadre (Art. 147, n.º 2) con efectos el primer día del mes siguiente (Art. 148)."
             },
             {
                 docName: "📄 Contrato de Prestación de Servicios",
@@ -591,24 +591,24 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 hack: "Le contrat doit être enregistré auprès de l'Administration Fiscale (AT) et de la Sécurité Sociale par l'employeur. Assurez-vous que le salaire proposé est égal ou supérieur au Salaire Minimum National (SMN) pour éviter un rejet automatique."
             },
             {
-                docName: "✈️ Preuve d'Entrée Légale",
-                accepted: "Passeport en cours de validité avec cachet d'entrée des autorités portugaises, ou preuve de Déclaration d'Entrée soumise à l'AIMA.",
-                where: "AIMA en ligne ou Loja do Cidadão dans les 3 jours ouvrables suivant l'entrée dans le pays (si l'entrée a eu lieu via un autre État membre de l'UE sans contrôle aux frontières).",
-                hack: "Si vous séjournez dans un hôtel, une auberge de jeunesse ou un hébergement local enregistré au Portugal pour les 3 premières nuits, l'établissement signale automatiquement votre entrée à l'AIMA. Conservez la facture à votre nom ; elle sert de preuve légale d'entrée !"
+                docName: "✈️ Visa de Résidence Consulaire Valide (Art. 88, al. 1)",
+                accepted: "Visa de résidence consulaire préalable pour l'exercice d'une activité salariée apposé sur le passeport (délivré dans le pays d'origine avant le voyage).",
+                where: "Poste Consulaire / Ambassade du Portugal dans le pays d'origine ou de résidence habituelle.",
+                hack: "Avertissement : Le décret-loi n.º 37-A/2024 a abrogé les anciennes Manifestations d'Intérêt. L'entrée en tant que touriste ne permet plus la régularisation par le travail ; il est obligatoire d'obtenir un visa consulaire de résidence ou de recherche d'emploi avant de voyager."
             },
             {
-                docName: "💳 NIF et NISS actifs",
+                docName: "💳 NIF et NISS actifs (Obtention préalable ou sur place)",
                 accepted: "Document officiel du Numéro d'Identification Fiscale (NIF) avec adresse mise à jour et Numéro d'Identification de la Sécurité Sociale (NISS).",
-                where: "Administration Fiscale (Finanças) et Sécurité Sociale.",
-                hack: "Si vous avez un contrat de travail, l'employeur peut demander votre NISS en ligne instantanément. Pour une promesse de contrat, vous pouvez en faire la demande vous-même sur le portail Segurança Social Direta en joignant le document."
+                where: "Administration Fiscale (AT - Finanças) et Institut de la Sécurité Sociale (ISS).",
+                hack: "Canaux Officiels Avant l'Arrivée : Les consulats portugais ne délivrent pas de NIF ni de NISS en règle générale. Pour obtenir un NIF avant d'arriver au Portugal, la demande est soumise à l'AT (e-Balcão ou bureau fiscal) par un représentant légal/mandataire muni d'une procuration et d'un passeport (le mandataire pour la demande de NIF est distinct du représentant fiscal). Le NISS avant l'arrivée peut être demandé en ligne auprès de la Sécurité Sociale par un représentant légal ou par l'employeur sur présentation d'un contrat/promesse d'embauche. Après l'arrivée, le NISS peut être obtenu en personne via le guichet 'NISS na Hora'."
             }
         ],
         art89: [
             {
-                docName: "📋 Déclaration de Début d'Activité",
+                docName: "📋 Déclaration de Début d'Activité (Fiscalité & Sécurité Sociale)",
                 accepted: "Preuve officielle d'ouverture d'activité auprès de Finanças avec un code CAE (Activité Économique) ou un code IRS valide.",
                 where: "Portal das Finanças (en ligne) ou au guichet d'un bureau de fiscalité local.",
-                hack: "Vous pouvez ouvrir votre activité 100% en ligne si vous avez le mot de passe du Portal das Finanças. Veillez à choisir un code CAE compatible avec les services que vous allez facturer."
+                hack: "Début et Cessation d'Activité (Cadre Légal) : La déclaration de début d'activité doit être déposée auprès des Finanças AVANT de commencer toute opération (Art. 112, n.º 1 CIRS). L'AT informe d'office la Sécurité Sociale (Art. 143 CRCSPSS), qui procède automatiquement à l'affiliation (Art. 144) — aucune démarche manuelle sous 30 jours n'est exigée envers la SS ! L'affiliation normale prend effet le 1er jour du 12e mois (Art. 145), le travailleur pouvant demander une prise d'effet anticipée via la déclaration trimestrielle (Art. 146). En cas d'arrêt, la cessation doit être déclarée aux Finanças dans les 30 jours (Art. 33 CIVA et Art. 112, n.º 4 CIRS) ; la SS clôture d'office l'affiliation (Art. 147, n.º 2) avec effet le 1er jour du mois suivant (Art. 148)."
             },
             {
                 docName: "📄 Contrat de Prestation de Services",
