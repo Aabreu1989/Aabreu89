@@ -169,8 +169,19 @@ const TOPIC_DETAILS: Record<string, { emoji: string; color: string; bg: string; 
   "Outros": { emoji: "💼", color: "#64748b", bg: "bg-slate-50/80 hover:bg-slate-100/90", text: "text-slate-600 border-slate-200", ring: "focus:ring-slate-500/20" }
 };
 
+export const DISTRICTS = ["Lisboa", "Porto", "Braga", "Setúbal", "Faro", "Coimbra", "Aveiro", "Remoto", "Leiria", "Santarém", "Viseu", "Évora"];
+
+export const isAllDistricts = (city?: string | null): boolean =>
+  !city ||
+  city === 'Todos' ||
+  city === 'all' ||
+  city === 'Todos os Distritos' ||
+  city === 'All Districts' ||
+  city === 'Todos los Distritos' ||
+  city === 'Tous les Districts';
+
 const LOCATIONS = (lang: string) => [
-  t('jobs_all_districts', lang), "Lisboa", "Porto", "Braga", "Setúbal", "Faro", "Coimbra", "Aveiro", "Remoto", "Leiria", "Santarém", "Viseu", "Évora"
+  t('jobs_all_districts', lang), ...DISTRICTS
 ];
 
 // 📍 Melhores cidades e polos regionais por setor (Recuperação canónica de insights do MIRA)
@@ -460,7 +471,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
   const [activeTab, setActiveTab] = useState<'jobs' | 'trends'>(initialTab === 'trends' ? 'trends' : 'jobs');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [selectedCity, setSelectedCity] = useState(t('jobs_all_districts', language));
+  const [selectedCity, setSelectedCity] = useState('Todos');
   const [selectedWorkTopic, setSelectedWorkTopic] = useState('Todos');
   const [selectedQuickFilter, setSelectedQuickFilter] = useState<string | null>(initialQuickFilter || null);
 
@@ -539,7 +550,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
   const hasActiveFilters = Boolean(
     searchQuery.trim() ||
-    selectedCity !== t('jobs_all_districts', language) ||
+    !isAllDistricts(selectedCity) ||
     selectedWorkTopic !== 'Todos' ||
     selectedQuickFilter
   );
@@ -568,7 +579,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         .select('id, title, location, source_name, source_url, created_at, category, work_topic', { count: 'exact' })
         .eq('is_active', true);
 
-      if (selectedCity && selectedCity !== t('jobs_all_districts', language)) {
+      if (selectedCity && !isAllDistricts(selectedCity)) {
         if (selectedCity.toLowerCase() === 'remoto') {
           query = query.or('location.ilike.%remoto%,title.ilike.%remoto%,location.ilike.%remote%,title.ilike.%remote%');
         } else {
@@ -710,7 +721,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
   const resetFilters = () => {
     setSearchQuery('');
-    setSelectedCity(t('jobs_all_districts', language));
+    setSelectedCity('Todos');
     setSelectedWorkTopic('Todos');
     setSelectedQuickFilter(null);
     setCurrentPage(1);
@@ -1062,11 +1073,12 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-1.5"><MapPin size={12} className="text-mira-orange" /> {t('jobs_label_loc', language)}</label>
                 <div className="relative">
                   <select
-                    value={selectedCity}
+                    value={isAllDistricts(selectedCity) ? 'Todos' : selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
                     className="w-full pl-4 pr-10 py-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest appearance-none outline-none focus:ring-2 focus:ring-mira-orange/20 border border-transparent focus:border-mira-orange/30 text-slate-700 transition-all cursor-pointer"
                   >
-                    {LOCATIONS(language).map(city => (
+                    <option value="Todos">📍 {t('jobs_all_districts', language)}</option>
+                    {DISTRICTS.map(city => (
                       <option key={city} value={city}>{city}</option>
                     ))}
                   </select>
@@ -1209,7 +1221,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
               <p className="text-sm font-medium text-slate-500 px-10 leading-relaxed">{t('jobs_empty_desc', language)}</p>
             </div>
             <button
-              onClick={() => { setSelectedCity('Todos'); setSelectedWorkTopic('Todos'); setSearchQuery(''); }}
+              onClick={resetFilters}
               className="px-8 py-3 bg-white text-slate-400 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
             >
               {t('jobs_reset_filters_btn', language)}
