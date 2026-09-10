@@ -130,6 +130,11 @@ function isSpamOrBlog(title: string, url: string): boolean {
 }
 
 
+// 🛡️ Cache em memória ao nível do módulo para carregamento instantâneo sem travamentos
+let cachedJobsMemory: JobPost[] = [];
+let cachedTotalPlatformJobsMemory: number | null = null;
+let cachedMarketDataMemory: MarketIntelligence | null = null;
+
 interface JobBoardProps {
   language: string;
   isAdmin?: boolean;
@@ -472,17 +477,17 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     setCurrentPage(1);
   }, [debouncedSearchQuery, selectedCity, selectedWorkTopic, selectedQuickFilter]);
 
-  const [jobs, setJobs] = useState<JobPost[]>([]);
-  const [totalPlatformJobs, setTotalPlatformJobs] = useState<number | null>(null);
+  const [jobs, setJobs] = useState<JobPost[]>(() => cachedJobsMemory);
+  const [totalPlatformJobs, setTotalPlatformJobs] = useState<number | null>(() => cachedTotalPlatformJobsMemory);
   const [filteredTotalCount, setFilteredTotalCount] = useState<number | null>(null);
   const [topicCounts, setTopicCounts] = useState<Record<string, number>>({});
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [activeAlertsCount, setActiveAlertsCount] = useState(() => jobAlertService.getAlerts(user?.id).filter(a => a.isActive).length);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => cachedJobsMemory.length === 0);
   const [error, setError] = useState<string | null>(null);
 
   // 📊 SOBERANIA MIRA: Inteligência de mercado 100% real calculada a partir do Supabase
-  const [marketData, setMarketData] = useState<MarketIntelligence | null>(null);
+  const [marketData, setMarketData] = useState<MarketIntelligence | null>(() => cachedMarketDataMemory);
   const [marketLoading, setMarketLoading] = useState(false);
   const [marketError, setMarketError] = useState<string | null>(null);
 
@@ -492,7 +497,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
     try {
       const data = await fetchMarketIntelligence(supabase);
       setMarketData(data);
+      cachedMarketDataMemory = data;
       setTotalPlatformJobs(data.activeJobsCount);
+      cachedTotalPlatformJobsMemory = data.activeJobsCount;
       const counts: Record<string, number> = {};
       for (const sec of data.sectors) {
         counts[sec.name] = sec.activeJobsCount;
@@ -658,6 +665,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
         .filter(job => isPortugalOrRemoteJob(job.title, job.location));
 
       setJobs(formatted);
+      if (formatted.length > 0 && !hasActiveFilters && currentPage === 1) {
+        cachedJobsMemory = formatted;
+      }
     } catch (err: any) {
       console.error('MIRA JobBoard error:', err);
       setError(err?.message || 'Erro ao carregar vagas');

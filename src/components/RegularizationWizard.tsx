@@ -286,7 +286,8 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             household: { applicant: true, otherAdultsCount: 0, minorsCount: 0 },
             availableNetMonthlyEur: 1000,
             submissionChannel: 'online',
-            procedureType: 'residence_grant_visa'
+            procedureType: 'residence_grant_visa',
+            daysElapsed: 0
         });
     }, [answers.situation, answers.purpose]);
 
@@ -407,7 +408,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.title = t("wiz_job_search_title", language);
             result.desc = t("wiz_job_search_desc", language);
             result.steps = [t("wiz_job_search_step1", language), t("wiz_job_search_step2", language), t("wiz_job_search_step3", language)];
-            result.docs = ["nif_req", "ss_niss"];
+            result.docs = ["aima_dec_responsabilidade", "aima_dec_alojamento", "nif_req", "ss_niss"];
             result.needsConsularVisa = true;
         } else if (sit === "via_verde") {
             result.title = t("wiz_via_verde_title", language);
@@ -694,7 +695,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                     Requisitos Normativos AIMA 2026
                                                 </h4>
                                                 <p className="text-[9px] text-slate-400 font-medium">
-                                                    {aimaNormative.subsistence.provenance.legalBasis} &middot; {aimaNormative.subsistence.provenance.article}
+                                                    {aimaNormative.subsistence?.provenance?.legalBasis || 'Lei n.º 23/2007'} &middot; {aimaNormative.subsistence?.provenance?.article || 'Artigo 57.º-A'}
                                                 </p>
                                             </div>
                                         </div>
@@ -709,12 +710,12 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                 Meios de Subsistência
                                             </span>
                                             <p className="text-base font-black text-white">
-                                                {aimaNormative.subsistence.capitalReserveRequiredEur
+                                                {aimaNormative.subsistence?.capitalReserveRequiredEur
                                                     ? `${aimaNormative.subsistence.capitalReserveRequiredEur} € (reserva)`
-                                                    : `${aimaNormative.subsistence.requiredNetMonthlyEur} € / mês`}
+                                                    : `${aimaNormative.subsistence?.requiredNetMonthlyEur || 0} € / mês`}
                                             </p>
                                             <span className="text-[7.5px] text-slate-400 block">
-                                                RMMG Ref.: {aimaNormative.subsistence.rmmgReferenceEur} €
+                                                RMMG Ref.: {aimaNormative.subsistence?.rmmgReferenceEur || 920} €
                                             </span>
                                         </div>
 
@@ -723,13 +724,13 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                 Taxa Oficial Estimada
                                             </span>
                                             <p className="text-base font-black text-amber-300">
-                                                {aimaNormative.fees.estimatedFeeEur !== null 
+                                                {aimaNormative.fees?.estimatedFeeEur !== null && aimaNormative.fees?.estimatedFeeEur !== undefined
                                                     ? `${aimaNormative.fees.estimatedFeeEur.toFixed(2)} €` 
                                                     : 'Sob Consulta'}
                                             </p>
                                             <span className="text-[7.5px] text-slate-400 block">
-                                                {aimaNormative.fees.reductionPercentageApplied > 0 
-                                                    ? `Canal online (-${aimaNormative.fees.reductionPercentageApplied}%)` 
+                                                {(aimaNormative.fees?.reductionPercentageApplied || 0) > 0 
+                                                    ? `Canal online (-${aimaNormative.fees?.reductionPercentageApplied}%)` 
                                                     : 'Taxa integral'}
                                             </span>
                                         </div>
@@ -739,12 +740,12 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                 Prazo Legal de Decisão
                                             </span>
                                             <p className="text-base font-black text-emerald-300">
-                                                {aimaNormative.deadlines.legalDeadlineDays 
+                                                {aimaNormative.deadlines?.legalDeadlineDays 
                                                     ? `${aimaNormative.deadlines.legalDeadlineDays} dias` 
-                                                    : '10 dias'}
+                                                    : '90 dias'}
                                             </p>
                                             <span className="text-[7.5px] text-slate-400 block">
-                                                {aimaNormative.deadlines.provenance.article}
+                                                {aimaNormative.deadlines?.provenance?.article || 'Artigo 82.º, n.º 5'}
                                             </span>
                                         </div>
                                     </div>

@@ -915,6 +915,21 @@ export const serviceGuides = [
         ]
     },
     {
+        id: 'g_visa_job_search', category: CATEGORIES.IMMIGRATION, title: 'g_visa_job_search_title', authority: 'Consulado / IEFP / AIMA',
+        description: 'g_visa_job_search_desc',
+        explanation: 'g_visa_job_search_expl',
+        steps: [
+            { docName: 'g_visa_job_search_step_1_title', whereToGet: 'g_visa_job_search_step_1_desc' },
+            { docName: 'g_visa_job_search_step_2_title', whereToGet: 'g_visa_job_search_step_2_desc' },
+            { docName: 'g_visa_job_search_step_3_title', whereToGet: 'g_visa_job_search_step_3_desc' },
+            { docName: 'g_visa_job_search_step_4_title', whereToGet: 'g_visa_job_search_step_4_desc' }
+        ],
+        faq: [
+            { q: 'g_visa_job_search_faq_1_q', a: 'g_visa_job_search_faq_1_a' },
+            { q: 'g_visa_job_search_faq_2_q', a: 'g_visa_job_search_faq_2_a' }
+        ]
+    },
+    {
         id: 'g_manifestacao_cima', category: CATEGORIES.IMMIGRATION, title: 'g_manifestacao_cima_title', authority: 'AIMA',
         description: 'g_manifestacao_cima_desc',
         explanation: 'g_manifestacao_cima_expl',
