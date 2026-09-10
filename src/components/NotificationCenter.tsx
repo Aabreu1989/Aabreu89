@@ -97,6 +97,16 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     setSelectedNotification(null);
     if (!path) return;
 
+    if (path.startsWith('mailto:')) {
+      window.location.href = path;
+      return;
+    }
+
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      window.open(path, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     if (path.startsWith('/community')) {
       onViewChange(ViewType.COMMUNITY);
     } else if (path.startsWith('/jobs')) {
@@ -336,12 +346,20 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 }
 
                 if (selectedNotification.link) {
+                  const isMail = selectedNotification.link.startsWith('mailto:');
                   return (
                     <button
                       onClick={() => handleActionLink(selectedNotification.link!)}
                       className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
                     >
-                      {t('notif_go_section', language)} <ExternalLink size={14} />
+                      {isMail ? (
+                        language === 'EN' ? 'SEND FEEDBACK EMAIL ✉️' :
+                        language === 'ES' ? 'ENVIAR EMAIL DE SUGERENCIAS ✉️' :
+                        language === 'FR' ? 'ENVOYER UN EMAIL DE SUGGESTION ✉️' :
+                        'ENVIAR EMAIL DE SUGESTÃO ✉️'
+                      ) : (
+                        <>{t('notif_go_section', language)} <ExternalLink size={14} /></>
+                      )}
                     </button>
                   );
                 }

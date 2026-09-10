@@ -29,7 +29,20 @@ export const notificationService = {
   getLocalNotifications(): AppNotification[] {
     try {
       const raw = localStorage.getItem(LOCAL_NOTIFS_KEY);
-      return raw ? JSON.parse(raw) : [];
+      const list: AppNotification[] = raw ? JSON.parse(raw) : [];
+      if (!list.some(n => n.id === 'mira-feedback-suggestion')) {
+        list.unshift({
+          id: 'mira-feedback-suggestion',
+          type: 'system',
+          title: '💡 Sugestões de Melhoria MIRA',
+          message: 'Nos envie sugestões de melhoria para mira.app@hotmail.com',
+          is_read: false,
+          link: 'mailto:mira.app@hotmail.com?subject=Sugest%C3%A3o%20de%20Melhoria%20MIRA',
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem(LOCAL_NOTIFS_KEY, JSON.stringify(list));
+      }
+      return list;
     } catch {
       return [];
     }

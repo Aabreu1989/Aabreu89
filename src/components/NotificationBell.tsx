@@ -309,15 +309,22 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 }
 
                 if (selectedNotification.link) {
+                  const isMail = selectedNotification.link.startsWith('mailto:');
                   return (
                     <button
                       onClick={() => {
-                        if (onViewNotificationsPage) onViewNotificationsPage();
+                        if (isMail) {
+                          window.location.href = selectedNotification.link!;
+                        } else if (selectedNotification.link!.startsWith('http')) {
+                          window.open(selectedNotification.link!, '_blank', 'noopener,noreferrer');
+                        } else if (onViewNotificationsPage) {
+                          onViewNotificationsPage();
+                        }
                         setSelectedNotification(null);
                       }}
                       className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 cursor-pointer"
                     >
-                      <ExternalLink size={16} /> ABRIR NO MIRA
+                      <ExternalLink size={16} /> {isMail ? 'ENVIAR EMAIL DE SUGESTÃO' : 'ABRIR NO MIRA'}
                     </button>
                   );
                 }
