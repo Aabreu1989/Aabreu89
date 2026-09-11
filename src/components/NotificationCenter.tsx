@@ -1,15 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { Bell, Trash2, CheckCheck, X, MessageCircle, Heart, AtSign, Shield, Info, ArrowRight, ExternalLink, Calendar, Briefcase, FileText, ShieldAlert } from 'lucide-react';
-import { AppNotification } from '../services/notificationService';
+import { AppNotification, notificationService } from '../services/notificationService';
 import { ViewType } from '../types';
 import { t } from '../utils/translations';
 import { resolveNotificationJobUrl } from '../utils/notificationUrlHelper';
+import { analytics } from '../services/analyticsService';
+import { jobAlertService } from '../services/jobAlertService';
 
 interface NotificationCenterProps {
   notifications: AppNotification[];
   unreadCount: number;
   onRead: (id: string) => void;
   onClearAll: () => Promise<void> | void;
+  onDelete?: (id: string) => Promise<void> | void;
   onViewChange: (view: ViewType, params?: any) => void;
   language: string;
 }
@@ -49,6 +52,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   unreadCount,
   onRead,
   onClearAll,
+  onDelete,
   onViewChange,
   language,
 }) => {
@@ -63,11 +67,37 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     });
   }, [notifications, activeTab]);
 
+  const handleDeleteItem = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (onDelete) {
+      await onDelete(id);
+    } else {
+      await notificationService.deleteNotification(id);
+    }
+  };
+
+  const trackJobClickFromNotification = (n: AppNotification) => {
+    try {
+      const jobId = n.metadata?.job_id || n.link?.match(/[?&]jobId=([^&]+)/)?.[1] || n.id;
+      const category = n.metadata?.work_topic || n.metadata?.category || 'Outros';
+      const effectiveUserId = n.user_id;
+      const guestId = !effectiveUserId ? jobAlertService.getClientId() : undefined;
+      analytics.track('job_click', effectiveUserId || 'guest', category, {
+        id: jobId,
+        title: n.title,
+        workTopic: category,
+        guest_id: guestId,
+        source: 'notification_center'
+      });
+    } catch (_) {}
+  };
+
   const handleOpenJobDirectly = (n: AppNotification, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (!n.is_read) onRead(n.id);
     const jobUrl = resolveNotificationJobUrl(n);
     if (jobUrl) {
+      trackJobClickFromNotification(n);
       window.open(jobUrl, '_blank', 'noopener,noreferrer');
     } else {
       setSelectedNotification(n);
@@ -80,6 +110,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     }
     const jobUrl = resolveNotificationJobUrl(n);
     if (n.type === 'jobs' && jobUrl) {
+      trackJobClickFromNotification(n);
       window.open(jobUrl, '_blank', 'noopener,noreferrer');
       return;
     }
@@ -254,7 +285,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
                   {/* Actions Panel */}
                   <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                    {isJob ? (
+                    {isJob && (
                       <button
                         type="button"
                         onClick={(e) => handleOpenJobDirectly(n, e)}
@@ -264,7 +295,16 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                         <ExternalLink size={12} />
                         <span>Aceder à Vaga</span>
                       </button>
-                    ) : (
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteItem(n.id, e)}
+                      className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                      title={language === 'EN' ? 'Delete notification' : language === 'ES' ? 'Eliminar notificación' : language === 'FR' ? 'Supprimer la notification' : 'Apagar notificação'}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                    {!isJob && (
                       <div className="text-slate-300 group-hover:text-slate-500 transition-colors">
                         <ArrowRight size={16} />
                       </div>
@@ -301,12 +341,24 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setSelectedNotification(null)}
-                className="p-2.5 bg-slate-50 border border-slate-150 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all active:scale-90 cursor-pointer"
-              >
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    await handleDeleteItem(selectedNotification.id);
+                    setSelectedNotification(null);
+                  }}
+                  className="p-2.5 bg-red-50 border border-red-100 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full transition-all active:scale-90 cursor-pointer"
+                  title={language === 'EN' ? 'Delete notification' : language === 'ES' ? 'Eliminar notificación' : language === 'FR' ? 'Supprimer la notification' : 'Apagar notificação'}
+                >
+                  <Trash2 size={16} />
+                </button>
+                <button
+                  onClick={() => setSelectedNotification(null)}
+                  className="p-2.5 bg-slate-50 border border-slate-150 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all active:scale-90 cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Modal Body Content */}
@@ -335,6 +387,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   return (
                     <button
                       onClick={() => {
+                        trackJobClickFromNotification(selectedNotification);
                         window.open(jobUrl, '_blank', 'noopener,noreferrer');
                         setSelectedNotification(null);
                       }}

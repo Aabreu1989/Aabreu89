@@ -903,6 +903,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                             setActiveScreen('form');
                         }
                     }}
+                    onViewChange={onViewChange}
                 />
             )}
 
@@ -910,6 +911,7 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                 <MetroCardWizard
                     language={language}
                     onBack={() => setActiveScreen('menu')}
+                    onViewChange={onViewChange}
                 />
             )}
 

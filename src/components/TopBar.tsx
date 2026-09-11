@@ -17,6 +17,7 @@ export interface TopBarProps {
     onNotifToggle: () => void;
     onNotifRead: (id: string) => void;
     onNotifClear: () => Promise<void> | void;
+    onNotifDelete?: (id: string) => Promise<void> | void;
     onNotifNavigate?: () => void;
     onSetLanguage: (lang: string) => void;
     onProfileClick?: () => void;
@@ -37,6 +38,7 @@ const TopBar: React.FC<TopBarProps> = ({
     onNotifToggle,
     onNotifRead,
     onNotifClear,
+    onNotifDelete,
     onNotifNavigate,
     onSetLanguage,
     onProfileClick,
@@ -114,6 +116,7 @@ const TopBar: React.FC<TopBarProps> = ({
                             onToggle={onNotifToggle}
                             onMarkRead={onNotifRead}
                             onClearAll={onNotifClear}
+                            onDelete={onNotifDelete}
                             onViewNotificationsPage={onNotifNavigate}
                         />
                         <button 

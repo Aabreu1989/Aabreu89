@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell, CheckCheck, MessageCircle, Heart, AtSign, Shield, Info, Trash2, ArrowRight, Briefcase, FileText, ShieldAlert, ExternalLink, X, MapPin, Building2, Calendar, Sparkles } from 'lucide-react';
-import { AppNotification } from '../services/notificationService';
+import { AppNotification, notificationService } from '../services/notificationService';
 import { resolveNotificationJobUrl } from '../utils/notificationUrlHelper';
+import { analytics } from '../services/analyticsService';
+import { jobAlertService } from '../services/jobAlertService';
 
 interface NotificationBellProps {
   unreadCount: number;
@@ -9,6 +11,7 @@ interface NotificationBellProps {
   isOpen: boolean;
   onToggle: () => void;
   onClearAll: () => Promise<void> | void;
+  onDelete?: (id: string) => Promise<void> | void;
   onMarkRead: (id: string) => void;
   isDark?: boolean;
   onViewNotificationsPage?: () => void;
@@ -41,6 +44,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   isOpen,
   onToggle,
   onClearAll,
+  onDelete,
   onMarkRead,
   isDark = false,
   onViewNotificationsPage,
@@ -59,12 +63,38 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     return () => document.removeEventListener('mousedown', handler);
   }, [isOpen, onToggle]);
 
+  const handleDeleteItem = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (onDelete) {
+      await onDelete(id);
+    } else {
+      await notificationService.deleteNotification(id);
+    }
+  };
+
+  const trackJobClickFromNotification = (n: AppNotification) => {
+    try {
+      const jobId = n.metadata?.job_id || n.link?.match(/[?&]jobId=([^&]+)/)?.[1] || n.id;
+      const category = n.metadata?.work_topic || n.metadata?.category || 'Outros';
+      const effectiveUserId = n.user_id;
+      const guestId = !effectiveUserId ? jobAlertService.getClientId() : undefined;
+      analytics.track('job_click', effectiveUserId || 'guest', category, {
+        id: jobId,
+        title: n.title,
+        workTopic: category,
+        guest_id: guestId,
+        source: 'notification_bell'
+      });
+    } catch (_) {}
+  };
+
   // Acesso direto e imediato à vaga externa (1 clique)
   const handleOpenJobDirectly = (n: AppNotification, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     onMarkRead(n.id);
     const jobUrl = resolveNotificationJobUrl(n);
     if (jobUrl) {
+      trackJobClickFromNotification(n);
       window.open(jobUrl, '_blank', 'noopener,noreferrer');
       if (isOpen) onToggle();
     } else {
@@ -80,6 +110,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     
     // Se for notificação de vaga e tiver URL externa resolvida, abre direto sem intermediários
     if (n.type === 'jobs' && jobUrl) {
+      trackJobClickFromNotification(n);
       window.open(jobUrl, '_blank', 'noopener,noreferrer');
       if (isOpen) onToggle();
       return;
@@ -197,6 +228,15 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                             >
                               Detalhes
                             </button>
+
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteItem(n.id, e)}
+                              className="px-2 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl text-[9px] font-extrabold uppercase transition-all"
+                              title="Apagar notificação"
+                            >
+                              <Trash2 size={11} />
+                            </button>
                           </div>
                         )}
                       </div>
@@ -245,13 +285,25 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setSelectedNotification(null)}
-                className="p-2.5 bg-slate-50 border border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all active:scale-90 cursor-pointer"
-                title="Fechar"
-              >
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    await handleDeleteItem(selectedNotification.id);
+                    setSelectedNotification(null);
+                  }}
+                  className="p-2.5 bg-red-50 border border-red-100 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full transition-all active:scale-90 cursor-pointer"
+                  title="Apagar esta notificação"
+                >
+                  <Trash2 size={16} />
+                </button>
+                <button
+                  onClick={() => setSelectedNotification(null)}
+                  className="p-2.5 bg-slate-50 border border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all active:scale-90 cursor-pointer"
+                  title="Fechar"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Body */}
@@ -298,6 +350,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   return (
                     <button
                       onClick={() => {
+                        trackJobClickFromNotification(selectedNotification);
                         window.open(jobUrl, '_blank', 'noopener,noreferrer');
                         setSelectedNotification(null);
                       }}

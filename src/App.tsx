@@ -175,8 +175,8 @@ const AppContent: React.FC = () => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [pullProgress, setPullProgress] = useState(0);
 
-    // Real-time notifications (Bell only — NotificationCenter page removed)
-    const { notifications, unreadCount, isOpen: notifOpen, toggleOpen: toggleNotif, clearAll, markAsRead } = useNotifications(user?.id);
+    // Real-time notifications
+    const { notifications, unreadCount, isOpen: notifOpen, toggleOpen: toggleNotif, clearAll, markAsRead, deleteNotification } = useNotifications(user?.id);
     const [tasks, setTasks] = useState<DocumentTask[]>([]);
     const [docDrafts, setDocDrafts] = useState<any[]>([]);
     const [targetProfileUser, setTargetProfileUser] = useState<User | null>(null);
@@ -1503,6 +1503,7 @@ const AppContent: React.FC = () => {
                     unreadCount={unreadCount} 
                     onRead={markAsRead} 
                     onClearAll={clearAll} 
+                    onDelete={deleteNotification}
                     onViewChange={handleViewChange} 
                     language={language} 
                 />;
@@ -1716,6 +1717,7 @@ const AppContent: React.FC = () => {
                             onNotifToggle={toggleNotif}
                             onNotifRead={markAsRead}
                             onNotifClear={clearAll}
+                            onNotifDelete={deleteNotification}
                             onNotifNavigate={() => handleViewChange(ViewType.NOTIFICATIONS)}
                             onSetLanguage={handleSetLanguage}
                             onInstallApp={handleTriggerPwaInstall}

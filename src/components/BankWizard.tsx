@@ -3,16 +3,20 @@ import React, { useState } from 'react';
 import {
     ArrowLeft, Landmark, CheckCircle2, ChevronRight, Info, FileText,
     Sparkles, RotateCcw, Globe, ExternalLink, DollarSign, Building2,
-    AlertTriangle, ShieldCheck, ChevronDown, ChevronUp
+    AlertTriangle, ShieldCheck, ChevronDown, ChevronUp,
+    Calculator, Users, Briefcase, GraduationCap
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
 import { templates } from '../utils/documentsDatabase';
+import { ViewType } from '../types';
+import { CrossModuleNavigationHub } from './CrossModuleNavigationHub';
 
 interface BankWizardProps {
     language: string;
     onBack: () => void;
     onSelectTemplate: (templateId: string) => void;
+    onViewChange?: (view: ViewType, params?: any) => void;
 }
 
 // ─── Step Indicator Dots ─────────────────────────────────────────────────────
@@ -45,6 +49,7 @@ export const BankWizard: React.FC<BankWizardProps> = ({
     language,
     onBack,
     onSelectTemplate,
+    onViewChange,
 }) => {
     const [step, setStep] = useState(1);
     const [residency, setResidency] = useState<string>('');
@@ -388,6 +393,44 @@ export const BankWizard: React.FC<BankWizardProps> = ({
                                     </div>
                                 </div>
                             </div>
+
+                            {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                            {onViewChange && (
+                                <CrossModuleNavigationHub
+                                    language={language}
+                                    onViewChange={onViewChange}
+                                    actions={[
+                                        {
+                                            id: 'simulators',
+                                            labelKey: 'wiz_cross_nav_simulators_plural',
+                                            descKey: 'wiz_cross_nav_simulators_desc',
+                                            icon: <Calculator size={22} />,
+                                            view: ViewType.SIMULATORS
+                                        },
+                                        {
+                                            id: 'community',
+                                            labelKey: 'wiz_cross_nav_community',
+                                            descKey: 'wiz_cross_nav_community_desc',
+                                            icon: <Users size={22} />,
+                                            view: ViewType.COMMUNITY
+                                        },
+                                        {
+                                            id: 'jobs',
+                                            labelKey: 'wiz_cross_nav_jobs',
+                                            descKey: 'wiz_cross_nav_jobs_desc',
+                                            icon: <Briefcase size={22} />,
+                                            view: ViewType.JOBS
+                                        },
+                                        {
+                                            id: 'courses',
+                                            labelKey: 'wiz_cross_nav_courses',
+                                            descKey: 'wiz_cross_nav_courses_desc',
+                                            icon: <GraduationCap size={22} />,
+                                            view: ViewType.LEARNING
+                                        }
+                                    ]}
+                                />
+                            )}
 
                             {/* Reset Button */}
                             <button

@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { notificationService, AppNotification, NOTIFICATION_EVENT } from '../services/notificationService';
+import { notificationService, AppNotification, NOTIFICATION_EVENT, NotificationBusMessage } from '../services/notificationService';
 import { RealtimeChannel } from '@supabase/supabase-js';
+
+const NOTIFICATION_BUS_CHANNEL = 'mira_notifications_bus_v1';
 
 export function useNotifications(userId: string | undefined) {
   const [notifications, setNotifications] = useState<AppNotification[]>(() => notificationService.getLocalNotifications());
   const [unreadCount, setUnreadCount] = useState(() => notificationService.getLocalNotifications().filter(n => !n.is_read).length);
   const [isOpen, setIsOpen] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const busRef = useRef<BroadcastChannel | null>(null);
 
   const loadNotifications = useCallback(async () => {
     try {
@@ -18,36 +21,108 @@ export function useNotifications(userId: string | undefined) {
     }
   }, [userId]);
 
-  // Carga inicial
+  // Carga inicial e recarga em mudança de utilizador
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
 
-  // Escuta de eventos locais (sincronização instantânea na mesma aba e entre abas)
+  // 📡 Barramento de Sincronização Cross-Tab (BroadcastChannel)
+  // B2 + Requisito 3: Reconciliação direta em memória SEM disparar fetchAll() assíncrono prematuro
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof BroadcastChannel === 'undefined') return;
+
+    try {
+      const bus = new BroadcastChannel(NOTIFICATION_BUS_CHANNEL);
+      busRef.current = bus;
+
+      bus.onmessage = (e: MessageEvent<NotificationBusMessage>) => {
+        const msg = e.data;
+        if (!msg) return;
+
+        // REQUISITO 3: Escopo de utilizador/sessão estrito
+        // Se a mensagem especificar userId e for diferente da aba atual, ignora
+        if (msg.userId && userId && msg.userId !== userId) {
+          return;
+        }
+
+        switch (msg.type) {
+          case 'DISMISSED': {
+            setNotifications(prev => {
+              const updated = prev.filter(n => 
+                !msg.ids.includes(n.id) && !msg.logical_keys.includes(n.logical_key)
+              );
+              setUnreadCount(updated.filter(n => !n.is_read).length);
+              return updated;
+            });
+            break;
+          }
+          case 'CLEARED_ALL': {
+            setNotifications([]);
+            setUnreadCount(0);
+            break;
+          }
+          case 'MARKED_READ': {
+            setNotifications(prev => {
+              const updated = prev.map(n => 
+                msg.ids.includes(n.id) || msg.ids.includes(n.logical_key)
+                  ? { ...n, is_read: true }
+                  : n
+              );
+              setUnreadCount(updated.filter(n => !n.is_read).length);
+              return updated;
+            });
+            break;
+          }
+          case 'MARKED_ALL_READ': {
+            setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+            setUnreadCount(0);
+            break;
+          }
+        }
+      };
+
+      return () => {
+        bus.close();
+        busRef.current = null;
+      };
+    } catch (e) {
+      console.warn('MIRA useNotifications: BroadcastChannel initialization warning', e);
+    }
+  }, [userId]);
+
+  // Escuta de eventos locais (fallback para mesma aba)
   useEffect(() => {
     const handleLocalChange = () => {
-      loadNotifications();
+      const current = notificationService.getLocalNotifications();
+      setNotifications(current);
+      setUnreadCount(current.filter(n => !n.is_read).length);
     };
 
     window.addEventListener(NOTIFICATION_EVENT, handleLocalChange);
-    window.addEventListener('storage', handleLocalChange);
-
     return () => {
       window.removeEventListener(NOTIFICATION_EVENT, handleLocalChange);
-      window.removeEventListener('storage', handleLocalChange);
     };
-  }, [loadNotifications]);
+  }, []);
 
   // Subscrição Realtime no Supabase para utilizador autenticado
   useEffect(() => {
     if (!userId) return;
 
     channelRef.current = notificationService.subscribeToNotifications(userId, (newNotif) => {
+      // Bloquear se já estiver no tombstone
+      if (notificationService.isDismissed(newNotif)) {
+        return;
+      }
+
       setNotifications(prev => {
-        const exists = prev.some(n => n.id === newNotif.id);
+        const exists = prev.some(n => 
+          n.id === newNotif.id || 
+          (n.logical_key && n.logical_key === newNotif.logical_key)
+        );
         if (exists) return prev;
         return [newNotif, ...prev];
       });
+
       setUnreadCount(prev => prev + 1);
 
       // Web Push / Notificação Nativa se autorizado
@@ -87,8 +162,11 @@ export function useNotifications(userId: string | undefined) {
   }, [userId]);
 
   const markAsRead = useCallback(async (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifications(prev => {
+      const updated = prev.map(n => n.id === id || n.logical_key === id ? { ...n, is_read: true } : n);
+      setUnreadCount(updated.filter(n => !n.is_read).length);
+      return updated;
+    });
     try {
       await notificationService.markAsRead(id, userId);
     } catch (error) {
@@ -97,7 +175,11 @@ export function useNotifications(userId: string | undefined) {
   }, [userId]);
 
   const deleteNotification = useCallback(async (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setNotifications(prev => {
+      const updated = prev.filter(n => n.id !== id && n.logical_key !== id);
+      setUnreadCount(updated.filter(n => !n.is_read).length);
+      return updated;
+    });
     try {
       await notificationService.deleteNotification(id, userId);
     } catch (error) {
@@ -121,4 +203,3 @@ export function useNotifications(userId: string | undefined) {
     reload: loadNotifications,
   };
 }
-

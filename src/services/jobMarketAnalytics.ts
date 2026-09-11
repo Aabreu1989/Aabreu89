@@ -33,6 +33,7 @@ export interface MarketIntelligence {
     growthPct: number;
   };
   sectors: SectorIntelligence[];
+  userInterest?: UserJobInterestAnalytics;
 }
 
 export interface ParsedSalary {
@@ -295,6 +296,9 @@ export async function fetchMarketIntelligence(supabase: SupabaseClient): Promise
     };
   });
 
+  // 6. Inteligência de procura real dos utilizadores (telemetria de cliques em activity_logs)
+  const userInterest = await fetchUserJobInterestAnalytics(supabase, 90);
+
   return {
     generatedAt: now.toISOString(),
     activeJobsCount: totalActive,
@@ -311,6 +315,194 @@ export async function fetchMarketIntelligence(supabase: SupabaseClient): Promise
       previousPeriodJobs,
       growthPct
     },
-    sectors
+    sectors,
+    userInterest
   };
 }
+
+export interface UserJobInterestCategory {
+  rank: number;
+  category: string;
+  topicKey: string;
+  uniqueUsers: number;
+  anonymousClicks: number;
+  totalClicks: number;
+  uniqueJobsViewed: number;
+  sharePct: number;
+}
+
+export interface UserJobInterestAnalytics {
+  periodDays: number;
+  startDate: string;
+  endDate: string;
+  totalUniqueUsers: number;
+  totalAnonymousClicks: number;
+  totalClicks: number;
+  totalUniqueJobs: number;
+  categories: UserJobInterestCategory[];
+}
+
+/**
+ * Agregação canónica da procura dos utilizadores a partir de public.activity_logs (action = 'job_click')
+ * - Diferencia estritamente utilizadores autenticados de cliques anónimos
+ * - Correlaciona o job_id com public.job_posts.work_topic para obter a categoria canónica
+ * - Ordenação: uniqueUsers DESC -> totalClicks DESC -> uniqueJobsViewed DESC
+ * - Regra T7: categorias sem cliques não são apresentadas como tendo procura
+ */
+export async function fetchUserJobInterestAnalytics(
+  supabase: SupabaseClient,
+  periodDays: number = 90
+): Promise<UserJobInterestAnalytics> {
+  const now = new Date();
+  const startDate = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000).toISOString();
+  const endDate = now.toISOString();
+
+  try {
+    const { data: clickLogs, error: logError } = await supabase
+      .from('activity_logs')
+      .select('id, user_id, metadata, created_at')
+      .eq('action', 'job_click')
+      .gte('created_at', startDate)
+      .lte('created_at', endDate);
+
+    if (logError || !clickLogs || clickLogs.length === 0) {
+      return {
+        periodDays,
+        startDate,
+        endDate,
+        totalUniqueUsers: 0,
+        totalAnonymousClicks: 0,
+        totalClicks: 0,
+        totalUniqueJobs: 0,
+        categories: []
+      };
+    }
+
+    // 1. Extrair job IDs distintos para correlação canónica com job_posts
+    const distinctJobIds = Array.from(
+      new Set(clickLogs.map(c => c.metadata?.id || c.metadata?.job_id).filter(Boolean))
+    );
+
+    const jobPostTopicMap = new Map<string, string>();
+    if (distinctJobIds.length > 0) {
+      const chunkSize = 200;
+      for (let i = 0; i < distinctJobIds.length; i += chunkSize) {
+        const chunk = distinctJobIds.slice(i, i + chunkSize);
+        const { data: posts } = await supabase
+          .from('job_posts')
+          .select('id, work_topic')
+          .in('id', chunk);
+
+        if (posts) {
+          for (const p of posts) {
+            if (p.work_topic) {
+              jobPostTopicMap.set(p.id, p.work_topic);
+            }
+          }
+        }
+      }
+    }
+
+    // 2. Agregação canónica por categoria
+    interface CatAgg {
+      category: string;
+      users: Set<string>;
+      jobs: Set<string>;
+      anonymousClicks: number;
+      totalClicks: number;
+    }
+
+    const catMap = new Map<string, CatAgg>();
+    const globalUsers = new Set<string>();
+    const globalJobs = new Set<string>();
+    let totalAnonymousClicks = 0;
+
+    for (const c of clickLogs) {
+      const jId = c.metadata?.id || c.metadata?.job_id;
+      // Regra Canónica: prioridade absoluta para work_topic real armazenado em job_posts
+      const category = (jId && jobPostTopicMap.get(jId)) || c.metadata?.workTopic || c.metadata?.category || 'Outros';
+
+      if (!catMap.has(category)) {
+        catMap.set(category, {
+          category,
+          users: new Set<string>(),
+          jobs: new Set<string>(),
+          anonymousClicks: 0,
+          totalClicks: 0
+        });
+      }
+
+      const agg = catMap.get(category)!;
+      agg.totalClicks++;
+
+      if (c.user_id) {
+        agg.users.add(c.user_id);
+        globalUsers.add(c.user_id);
+      } else {
+        agg.anonymousClicks++;
+        totalAnonymousClicks++;
+      }
+
+      if (jId) {
+        agg.jobs.add(jId);
+        globalJobs.add(jId);
+      }
+    }
+
+    const totalUniqueUsers = globalUsers.size;
+    const totalClicks = clickLogs.length;
+
+    // 3. Ordenação canónica: Unique Users DESC -> Total Clicks DESC -> Unique Jobs DESC
+    const sortedCats = Array.from(catMap.values()).sort((a, b) => {
+      if (b.users.size !== a.users.size) return b.users.size - a.users.size;
+      if (b.totalClicks !== a.totalClicks) return b.totalClicks - a.totalClicks;
+      if (b.jobs.size !== a.jobs.size) return b.jobs.size - a.jobs.size;
+      return a.category.localeCompare(b.category);
+    });
+
+    // 4. Mapeamento dos itens de categoria com Rank determinístico
+    const categories: UserJobInterestCategory[] = sortedCats.map((item, index) => {
+      const uCount = item.users.size;
+      // Se houver utilizadores autenticados, % de utilizadores interessados = (uCount / totalUniqueUsers) * 100
+      // Se não houver utilizadores autenticados (ex: histórico anónimo), % de share dos cliques
+      const sharePct = totalUniqueUsers > 0
+        ? Number(((uCount / totalUniqueUsers) * 100).toFixed(1))
+        : (totalClicks > 0 ? Number(((item.totalClicks / totalClicks) * 100).toFixed(1)) : 0);
+
+      return {
+        rank: index + 1,
+        category: item.category,
+        topicKey: getWorkTopicKey(item.category),
+        uniqueUsers: uCount,
+        anonymousClicks: item.anonymousClicks,
+        totalClicks: item.totalClicks,
+        uniqueJobsViewed: item.jobs.size,
+        sharePct
+      };
+    });
+
+    return {
+      periodDays,
+      startDate,
+      endDate,
+      totalUniqueUsers,
+      totalAnonymousClicks,
+      totalClicks,
+      totalUniqueJobs: globalJobs.size,
+      categories
+    };
+  } catch (err) {
+    console.warn('MIRA: Falha ao carregar telemetria de interesse dos utilizadores:', err);
+    return {
+      periodDays,
+      startDate,
+      endDate,
+      totalUniqueUsers: 0,
+      totalAnonymousClicks: 0,
+      totalClicks: 0,
+      totalUniqueJobs: 0,
+      categories: []
+    };
+  }
+}
+

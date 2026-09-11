@@ -66,6 +66,17 @@ export function decodeJobText(str: string | undefined | null): string {
   return s.replace(/\s+/g, ' ').trim();
 }
 
+function formatAnalysisDate(dateStr: string, lang: string): string {
+  try {
+    const d = new Date(dateStr);
+    const l = (lang || 'pt').toLowerCase();
+    const locale = l === 'pt' ? 'pt-PT' : l === 'es' ? 'es-ES' : l === 'fr' ? 'fr-FR' : 'en-US';
+    return d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
 function isSpamOrBlog(title: string, url: string): boolean {
   if (!url) return false;
   const lowerUrl = url.toLowerCase();
@@ -1130,7 +1141,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
             {/* 📋 Paginated Jobs Grid */}
             <div className="grid grid-cols-1 gap-5">
               {paginatedJobs.map(job => (
-                <JobItem key={job.id} job={job} language={language} onEarnPoints={onEarnPoints} />
+                <JobItem key={job.id} job={job} language={language} user={user} onEarnPoints={onEarnPoints} />
               ))}
             </div>
 
@@ -1351,6 +1362,145 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                    language === 'FR' ? 'Réessayer' :
                    'Tentar Novamente'}
                 </button>
+              </div>
+            )}
+
+            {/* 🔎 USER JOB INTEREST ANALYTICS: Vagas Mais Procuradas pelos Utilizadores */}
+            {marketData?.userInterest && (
+              <div className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-200/80 shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🔎</span>
+                      <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-slate-900">
+                        {language === 'EN' ? 'MOST SEARCHED & CLICKED JOB CATEGORIES' :
+                         language === 'ES' ? 'CATEGORÍAS DE EMPLEO MÁS BUSCADAS Y CLICADAS' :
+                         language === 'FR' ? 'CATÉGORIES D\'EMPLOI LES PLUS RECHERCHÉES' :
+                         'VAGAS MAIS PROCURADAS PELOS UTILIZADORES'}
+                      </h3>
+                      <span className="text-[9px] font-bold bg-amber-100/80 text-amber-800 border border-amber-200/80 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                        {language === 'EN' ? 'User Interest' : 'Procura Real'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-semibold text-slate-500">
+                      {language === 'EN' ? 'Real interaction telemetry measuring user demand (clicks and unique users) — independent from market offer' :
+                       language === 'ES' ? 'Telemetría de interacción real que mide la demanda (clics y usuarios únicos) — independiente de la oferta' :
+                       language === 'FR' ? 'Télémétrie d\'interaction réelle mesurant la demande (clics et utilisateurs uniques) — indépendante de l\'offre' :
+                       'Telemetria de interação real que mede a procura dos utilizadores (cliques e utilizadores únicos) — independente da oferta'}
+                    </p>
+                  </div>
+                  <div className="text-[10px] font-mono font-bold text-slate-500 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl self-start sm:self-auto shrink-0">
+                    <span className="text-slate-400 mr-1 uppercase">
+                      {language === 'EN' ? 'Period:' : language === 'ES' ? 'Periodo:' : language === 'FR' ? 'Période :' : 'Período:'}
+                    </span>
+                    <span className="text-slate-800 font-black">
+                      {formatAnalysisDate(marketData.userInterest.startDate, language)} – {formatAnalysisDate(marketData.userInterest.endDate, language)}
+                    </span>
+                  </div>
+                </div>
+
+                {marketData.userInterest.categories.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          <th className="py-3 px-2 text-center w-12"># Rank</th>
+                          <th className="py-3 px-3 min-w-[180px]">
+                            {language === 'EN' ? 'Category' : language === 'ES' ? 'Categoría' : language === 'FR' ? 'Catégorie' : 'Categoria'}
+                          </th>
+                          <th className="py-3 px-3 text-right">
+                            {language === 'EN' ? 'Unique Users' : language === 'ES' ? 'Usuarios Únicos' : language === 'FR' ? 'Utilisateurs Uniques' : 'Utilizadores Únicos'}
+                          </th>
+                          <th className="py-3 px-3 text-right">
+                            {language === 'EN' ? 'Total Clicks' : language === 'ES' ? 'Clics Totales' : language === 'FR' ? 'Clics Totaux' : 'Cliques Totais'}
+                          </th>
+                          <th className="py-3 px-3 text-right">
+                            {language === 'EN' ? 'Unique Jobs' : language === 'ES' ? 'Vacantes Únicas' : language === 'FR' ? 'Offres Uniques' : 'Vagas Únicas'}
+                          </th>
+                          <th className="py-3 px-3 text-right">
+                            {language === 'EN' ? '% Share' : language === 'ES' ? '% Demanda' : language === 'FR' ? '% Part' : '% Procura'}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {marketData.userInterest.categories.map((cat) => {
+                          const details = TOPIC_DETAILS[cat.category] || TOPIC_DETAILS['Outros'];
+                          return (
+                            <tr key={cat.category} className="hover:bg-slate-50/80 transition-colors">
+                              <td className="py-3 px-2 text-center font-mono font-black text-slate-400">
+                                {cat.rank <= 3 ? (
+                                  <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-black ${
+                                    cat.rank === 1 ? 'bg-amber-100 text-amber-700 border border-amber-300' :
+                                    cat.rank === 2 ? 'bg-slate-200 text-slate-700 border border-slate-300' :
+                                    'bg-orange-100 text-orange-700 border border-orange-300'
+                                  }`}>
+                                    {cat.rank}
+                                  </span>
+                                ) : (
+                                  cat.rank
+                                )}
+                              </td>
+                              <td className="py-3 px-3">
+                                <div className="flex items-center gap-2.5">
+                                  <span className="text-base">{details.emoji}</span>
+                                  <span className="font-extrabold text-slate-800">
+                                    {getSectorDisplayName(cat.category, language)}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="py-3 px-3 text-right font-mono font-black text-slate-900">
+                                {cat.uniqueUsers > 0 ? cat.uniqueUsers.toLocaleString() : (
+                                  <span className="text-slate-400 text-[10px] font-bold">
+                                    0 <span className="font-normal text-[9px] text-slate-400">({cat.anonymousClicks} anon.)</span>
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-3 px-3 text-right font-mono font-bold text-slate-700">
+                                {cat.totalClicks.toLocaleString()}
+                              </td>
+                              <td className="py-3 px-3 text-right font-mono text-slate-600">
+                                {cat.uniqueJobsViewed.toLocaleString()}
+                              </td>
+                              <td className="py-3 px-3 text-right">
+                                <span className="font-mono font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md text-[11px]">
+                                  {cat.sharePct}%
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-slate-400 space-y-1">
+                    <p className="text-xs font-bold uppercase tracking-wider">
+                      {language === 'EN' ? 'No user interaction telemetry recorded in this period' :
+                       language === 'ES' ? 'Sin telemetría de interacción registrada en este periodo' :
+                       language === 'FR' ? 'Aucune interaction enregistrée sur cette période' :
+                       'Sem telemetria de interação registada neste período'}
+                    </p>
+                  </div>
+                )}
+
+                {/* Provenance Footer */}
+                <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[10px] text-slate-400 font-medium">
+                  <div className="flex items-center gap-1.5">
+                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>
+                      {language === 'EN'
+                        ? `Audit base: ${marketData.userInterest.totalClicks} verified clicks on ${marketData.userInterest.totalUniqueJobs} distinct jobs`
+                        : language === 'ES'
+                        ? `Base auditada: ${marketData.userInterest.totalClicks} clics verificados en ${marketData.userInterest.totalUniqueJobs} vacantes distintas`
+                        : language === 'FR'
+                        ? `Base auditée : ${marketData.userInterest.totalClicks} clics vérifiés sur ${marketData.userInterest.totalUniqueJobs} offres distinctes`
+                        : `Base auditada: ${marketData.userInterest.totalClicks} cliques verificados em ${marketData.userInterest.totalUniqueJobs} vagas distintas`}
+                    </span>
+                  </div>
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400">
+                    Fonte: public.activity_logs (action = 'job_click')
+                  </span>
+                </div>
               </div>
             )}
 

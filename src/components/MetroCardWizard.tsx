@@ -3,14 +3,18 @@ import React, { useState } from 'react';
 import {
     ArrowLeft, ChevronRight, CheckCircle2, Info,
     Train, RotateCcw, Compass, MapPin, ExternalLink, Globe, Sparkles, AlertTriangle,
-    CreditCard, Bus, Ticket, Building2, Map, ShieldCheck, FileText, Check, Navigation
+    CreditCard, Bus, Ticket, Building2, Map, ShieldCheck, FileText, Check, Navigation,
+    Calculator, Briefcase, GraduationCap
 } from 'lucide-react';
 import { t } from '../utils/translations';
 import { TranslatedText } from './TranslatedText';
+import { ViewType } from '../types';
+import { CrossModuleNavigationHub } from './CrossModuleNavigationHub';
 
 interface MetroCardWizardProps {
     language: string;
     onBack: () => void;
+    onViewChange?: (view: ViewType, params?: any) => void;
 }
 
 interface CityTransportData {
@@ -427,7 +431,7 @@ const CITY_DATA: Record<string, CityTransportData> = {
     }
 };
 
-export const MetroCardWizard: React.FC<MetroCardWizardProps> = ({ language, onBack }) => {
+export const MetroCardWizard: React.FC<MetroCardWizardProps> = ({ language, onBack, onViewChange }) => {
     const [selectedCity, setSelectedCity] = useState<string>('lisboa');
     const [activeTab, setActiveTab] = useState<'passes' | 'transportes' | 'precos' | 'onde'>('passes');
 
@@ -483,10 +487,10 @@ export const MetroCardWizard: React.FC<MetroCardWizardProps> = ({ language, onBa
             {/* TAB NAVIGATION */}
             <div className="bg-slate-900 border-b border-white/10 px-4 py-2 flex items-center justify-around">
                 {[
-                    { id: 'passes', label: 'Passes & Alcance', icon: Ticket },
-                    { id: 'transportes', label: 'Tipos Transportes', icon: Bus },
-                    { id: 'precos', label: 'Preços & Bilhetes', icon: CreditCard },
-                    { id: 'onde', label: 'Onde Tirar', icon: MapPin },
+                    { id: 'passes', labelKey: 'metro_tab_passes', icon: Ticket },
+                    { id: 'transportes', labelKey: 'metro_tab_transports', icon: Bus },
+                    { id: 'precos', labelKey: 'metro_tab_prices', icon: CreditCard },
+                    { id: 'onde', labelKey: 'metro_tab_where', icon: MapPin },
                 ].map((tab) => (
                     <button
                         key={tab.id}
@@ -498,7 +502,7 @@ export const MetroCardWizard: React.FC<MetroCardWizardProps> = ({ language, onBa
                         }`}
                     >
                         <tab.icon size={18} />
-                        <span className="text-[9px] uppercase tracking-wider">{tab.label}</span>
+                        <span className="text-[9px] uppercase tracking-wider">{t(tab.labelKey, language)}</span>
                     </button>
                 ))}
             </div>
@@ -680,6 +684,46 @@ export const MetroCardWizard: React.FC<MetroCardWizardProps> = ({ language, onBa
                                 ))}
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* ── Interligação de Módulos (Cross-Module Navigation Hub) ── */}
+                {onViewChange && (
+                    <div className="pt-2">
+                        <CrossModuleNavigationHub
+                            language={language}
+                            onViewChange={onViewChange}
+                            actions={[
+                                {
+                                    id: 'courses',
+                                    labelKey: 'wiz_cross_nav_courses',
+                                    descKey: 'wiz_cross_nav_courses_desc',
+                                    icon: <GraduationCap size={22} />,
+                                    view: ViewType.LEARNING
+                                },
+                                {
+                                    id: 'jobs',
+                                    labelKey: 'wiz_cross_nav_jobs',
+                                    descKey: 'wiz_cross_nav_jobs_desc',
+                                    icon: <Briefcase size={22} />,
+                                    view: ViewType.JOBS
+                                },
+                                {
+                                    id: 'simulators',
+                                    labelKey: 'wiz_cross_nav_simulators_plural',
+                                    descKey: 'wiz_cross_nav_simulators_desc',
+                                    icon: <Calculator size={22} />,
+                                    view: ViewType.SIMULATORS
+                                },
+                                {
+                                    id: 'services',
+                                    labelKey: 'wiz_cross_nav_services',
+                                    descKey: 'wiz_cross_nav_services_desc',
+                                    icon: <MapPin size={22} />,
+                                    view: ViewType.SERVICES
+                                }
+                            ]}
+                        />
                     </div>
                 )}
             </div>

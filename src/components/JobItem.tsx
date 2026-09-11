@@ -3,11 +3,14 @@ import { Briefcase, MapPin, Building2, ExternalLink, Clock } from 'lucide-react'
 import { JobPost } from '../types';
 import { t } from '../utils/translations';
 import { analytics } from '../services/analyticsService';
+import { jobAlertService } from '../services/jobAlertService';
 import { getWorkTopicKey } from '../utils/categoryUtils';
 
 interface JobItemProps {
     job: JobPost;
     language: string;
+    user?: any;
+    userId?: string;
     onEarnPoints?: (amount: number, reason: string, actionKey?: string, entityId?: string) => void;
 }
 
@@ -71,7 +74,7 @@ const formatFriendlyJobDate = (rawDate: string | undefined, language: string): s
     return `Há ${Math.floor(diffDays / 30)} mes.`;
 };
 
-const JobItem: React.FC<JobItemProps> = ({ job, language, onEarnPoints }) => {
+const JobItem: React.FC<JobItemProps> = ({ job, language, user, userId, onEarnPoints }) => {
     const theme = TOPIC_THEMES[job.workTopic || "Outros"] || TOPIC_THEMES["Outros"];
     const displayDate = formatFriendlyJobDate((job as any).posted_at || job.datePosted, language);
 
@@ -99,7 +102,14 @@ const JobItem: React.FC<JobItemProps> = ({ job, language, onEarnPoints }) => {
                 if (!job.sourceUrl || job.sourceUrl === '#') {
                     return;
                 }
-                analytics.track('job_click', undefined, job.workTopic, { id: job.id, title: job.title });
+                const effectiveUserId = user?.id || userId;
+                const guestId = !effectiveUserId ? jobAlertService.getClientId() : undefined;
+                analytics.track('job_click', effectiveUserId || 'guest', job.workTopic, {
+                    id: job.id,
+                    title: job.title,
+                    workTopic: job.workTopic,
+                    guest_id: guestId
+                });
 
                 // 🎮 Gamificação Cross-Module: Consulta de Vaga (+5 XP, 1x por vaga)
                 if (onEarnPoints && job.id) {
