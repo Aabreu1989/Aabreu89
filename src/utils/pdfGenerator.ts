@@ -39,7 +39,7 @@ export async function generateOfficialPDF(
       honor: 'O signatário declara, sob compromisso de honra, que os dados acima indicados são verdadeiros e assume total responsabilidade legal sobre os mesmos, em conformidade com a legislação portuguesa vigente.',
       defer: 'Pede Deferimento.',
       signature: '(Assinatura do Requerente)',
-      disclaimer: 'As informações apresentadas têm caráter informativo e educativo. O MIRA não presta consultoria jurídica individual. Para aconselhamento personalizado, consulte a AIMA ou um advogado.'
+      disclaimer: 'Nota Legal: Modelo de apoio à literacia administrativa. Não constitui consulta jurídica nem dispensa o recurso a Advogado, Solicitador ou aos serviços públicos oficiais (AIMA, AT, ISS). Os dados inscritos e a sua veracidade são da exclusiva responsabilidade do signatário.'
     },
     ES: {
       salutation: 'EXCELENTÍSIMOS SEÑORES,',
@@ -55,7 +55,7 @@ export async function generateOfficialPDF(
       honor: 'El firmante declara, bajo compromiso de honor, que los datos arriba indicados son verdaderos y asume total responsabilidad legal sobre los mismos, de conformidad con la legislación portuguesa vigente.',
       defer: 'Pide Deferimiento.',
       signature: '(Firma del Solicitante)',
-      disclaimer: 'La información presentada tiene carácter informativo e educativo. MIRA no presta asesoría jurídica individual. Para asesoramiento personalizado, consulte a la AIMA o a un abogado.'
+      disclaimer: 'Nota Legal: Modelo de apoio à literacia administrativa. Não constitui consulta jurídica nem dispensa o recurso a Advogado, Solicitador ou aos serviços públicos oficiais (AIMA, AT, ISS). Os dados inscritos e a sua veracidade são da exclusiva responsabilidade do signatário.'
     },
     FR: {
       salutation: 'MESDAMES, MESSIEURS,',
@@ -71,7 +71,7 @@ export async function generateOfficialPDF(
       honor: 'Le soussigné déclare, sur l\'honneur, que les données indiquées ci-dessus sont exactes et assume l\'entière responsabilité légale de celles-ci, conformément à la législation portugaise en vigueur.',
       defer: 'Je demande l\'agrément.',
       signature: '(Signature du Demandeur)',
-      disclaimer: 'Les informations présentées sont fournies à titre informatif et éducatif. MIRA ne fournit pas de conseil juridique individuel. Pour un conseil personnalisé, veuillez consulter l\'AIMA ou un avocat.'
+      disclaimer: 'Nota Legal: Modelo de apoio à literacia administrativa. Não constitui consulta jurídica nem dispensa o recurso a Advogado, Solicitador ou aos serviços públicos oficiais (AIMA, AT, ISS). Os dados inscritos e a sua veracidade são da exclusiva responsabilidade do signatário.'
     },
     EN: {
       salutation: 'DEAR SIR/MADAM,',
@@ -87,7 +87,7 @@ export async function generateOfficialPDF(
       honor: 'The undersigned declares, under oath, that the data indicated above are true and assumes full legal responsibility for them, in accordance with current Portuguese legislation.',
       defer: 'Yours faithfully.',
       signature: '(Applicant\'s Signature)',
-      disclaimer: 'The information presented is for informational and educational purposes. MIRA does not provide individual legal advice. For personalized advice, consult AIMA or a lawyer.'
+      disclaimer: 'Nota Legal: Modelo de apoio à literacia administrativa. Não constitui consulta jurídica nem dispensa o recurso a Advogado, Solicitador ou aos serviços públicos oficiais (AIMA, AT, ISS). Os dados inscritos e a sua veracidade são da exclusiva responsabilidade do signatário.'
     }
   };
 
@@ -425,9 +425,7 @@ export async function generateGuidePDF(guide: any, _language: string) {
       doc.setTextColor(130, 130, 130);
       doc.setFont('times', 'italic');
       
-      const disclaimer = language.toUpperCase() === 'PT' 
-        ? 'Este guia é estritamente educativo. Verifique as informações oficiais junto das entidades competentes.'
-        : 'This guide is strictly educational. Verify official information with competent authorities.';
+      const disclaimer = 'Nota Legal: Modelo de apoio à literacia administrativa. Não constitui consulta jurídica nem dispensa o recurso a Advogado, Solicitador ou aos serviços públicos oficiais (AIMA, AT, ISS). Os dados inscritos e a sua veracidade são da exclusiva responsabilidade do signatário.';
       const disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth - 20);
       doc.text(disclaimerLines, pageWidth / 2, footerY, { align: 'center' });
       
