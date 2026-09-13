@@ -252,49 +252,27 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
             // Immediately switch to success screen to show download button
             setActiveScreen('success');
 
-            // 🛡️ MIRA SOVEREIGN: Async Sync (Non-blocking)
+            // 🛡️ MIRA SOVEREIGN: Efemeridade Técnica e Zero Retenção Documental
+            // O MIRA não armazena ficheiros PDF nem dados pessoais preenchidos no servidor/storage.
+            // O processamento opera com estrita efemeridade técnica local.
             (async () => {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
                     const currentUserId = session?.user?.id;
                     if (currentUserId) {
-                        let storageUrl: string | null = null;
-                        try {
-                            const fileExt = pdfResult.filename.split('.').pop() || 'pdf';
-                            const fileId = Math.random().toString(36).substring(2, 10);
-                            const filePath = `${currentUserId}/doc_${fileId}.${fileExt}`;
-
-                            const { error: uploadError } = await supabase.storage
-                                .from('documents')
-                                .upload(filePath, pdfResult.blob, {
-                                    contentType: 'application/pdf',
-                                    upsert: false
-                                });
-
-                            if (!uploadError) {
-                                const { data: { publicUrl } } = supabase.storage
-                                    .from('documents')
-                                    .getPublicUrl(filePath);
-                                storageUrl = publicUrl;
-                            }
-                        } catch (storageErr) {
-                            // Storage não bloqueia a persistência da base de dados
-                        }
-
-                        // Persistir metadados diretamente na tabela relacional user_documents
+                        // Apenas incrementa o contador não-pessoal para pontos e badges
                         await supabase.from('user_documents').insert([{
                             user_id: currentUserId,
                             document_type: selectedTemplate.id || selectedTemplate.title,
-                            file_path: storageUrl,
+                            file_path: null,
                             metadata: {
                                 title: t(selectedTemplate.title, language),
-                                form_data: formData,
                                 is_draft: false
                             }
                         }]);
                     }
                 } catch (syncErr) {
-                    console.warn("MIRA: Document sync failed (Non-blocking):", syncErr);
+                    console.warn("MIRA: Document counter sync failed (Non-blocking):", syncErr);
                 }
             })();
 
@@ -679,6 +657,18 @@ export const DocumentAssistant: React.FC<DocumentAssistantProps> = ({
                                         <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                     </div>
                                 </div>
+
+                                {/* 🛡️ Legal Safeguards & Official Sources Link */}
+                                <button
+                                    onClick={() => onViewChange(ViewType.PRIVACY, { section: 'pdf_safety' })}
+                                    className="w-full flex items-center justify-between px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-2xl text-[11px] font-bold text-emerald-900 transition-all shadow-sm group active:scale-[0.99]"
+                                >
+                                    <span className="flex items-center gap-2 truncate">
+                                        <Scale size={15} className="text-emerald-700 shrink-0" />
+                                        <span className="truncate">{t('docs_legal_shield_button', language)}</span>
+                                    </span>
+                                    <ChevronRight size={14} className="text-emerald-600 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                                </button>
                             </div>
                     </div>
 

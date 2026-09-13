@@ -153,6 +153,114 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({
           </div>
         </Section>
 
+        {/* 🛡️ SALVAGUARDA DE PRIVACIDADE E SEGURANÇA NA GERAÇÃO DE DOCUMENTOS (PDF) */}
+        <Section id="pdf_safety" title={t('doc_safety_title', language)} icon={ShieldCheck} colorClass="bg-emerald-50 text-emerald-600 border border-emerald-100">
+          <div className="space-y-4 text-xs sm:text-sm text-slate-600">
+            {/* Bloco 1: Processamento Local e Efemeridade Técnica */}
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
+              <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider text-emerald-700 flex items-center gap-2">
+                <Zap size={14} className="text-emerald-600 shrink-0" />
+                1. {t('doc_safety_sec1_title', language)}
+              </h4>
+              <p className="text-xs leading-relaxed text-slate-600">
+                {t('doc_safety_sec1_desc', language)}
+              </p>
+            </div>
+
+            {/* Bloco 2: Inexistência de Retenção de Documentos Pessoais */}
+            <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200/80 space-y-2">
+              <h4 className="font-black text-emerald-950 text-xs uppercase tracking-wider flex items-center gap-2">
+                <Lock size={14} className="text-emerald-700 shrink-0" />
+                2. {t('doc_safety_sec2_title', language)}
+              </h4>
+              <p className="text-xs text-emerald-900 font-medium leading-relaxed">
+                {t('doc_safety_sec2_desc', language)}
+              </p>
+            </div>
+
+            {/* Bloco 3: Compromisso de Honra e Responsabilidade Declarativa */}
+            <div className="bg-amber-50 p-4 rounded-2xl border border-amber-200/80 space-y-2">
+              <h4 className="font-black text-amber-950 text-xs uppercase tracking-wider flex items-center gap-2">
+                <Scale size={14} className="text-amber-700 shrink-0" />
+                3. {t('doc_safety_sec3_title', language)}
+              </h4>
+              <p className="text-xs text-amber-950 leading-relaxed">
+                {t('doc_safety_sec3_desc', language)}
+              </p>
+            </div>
+
+            {/* Bloco 4: Salvaguarda contra Procuradoria Ilícita */}
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
+              <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                <FileText size={14} className="text-slate-600 shrink-0" />
+                4. {t('doc_safety_sec4_title', language)}
+              </h4>
+              <p className="text-xs leading-relaxed text-slate-600">
+                {t('doc_safety_sec4_desc', language)}
+              </p>
+            </div>
+
+            {/* Matriz de Fontes Oficiais */}
+            <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200 space-y-3 mt-2">
+              <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                <Shield size={14} className="text-mira-blue shrink-0" />
+                {t('doc_sources_title', language)}
+              </h4>
+              <p className="text-xs leading-relaxed text-slate-600">
+                {t('doc_sources_desc', language)}
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-[11px] text-slate-600 border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-900 font-bold">
+                      <th className="py-2 pr-2">Minuta / Modelo</th>
+                      <th className="py-2 px-2">Entidade</th>
+                      <th className="py-2 pl-2">Base Legal / Diário da República</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200/60 font-normal">
+                    <tr>
+                      <td className="py-2 pr-2 font-bold text-slate-800">Termo de Responsabilidade</td>
+                      <td className="py-2 px-2">AIMA / MNE</td>
+                      <td className="py-2 pl-2 text-slate-700">Portaria n.º 1563/2007 e Art. 12.º da Lei 23/2007</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-2 font-bold text-slate-800">Declaração de Alojamento c/ Testemunhas</td>
+                      <td className="py-2 px-2">Juntas de Freguesia</td>
+                      <td className="py-2 pl-2 text-slate-700">Lei n.º 75/2013 e DL n.º 135/99 (2 eleitores recenseados)</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-2 font-bold text-slate-800">Pronúncia em Audiência Prévia</td>
+                      <td className="py-2 px-2">AIMA, I.P.</td>
+                      <td className="py-2 pl-2 text-slate-700">Artigos 121.º e 122.º do Código do Procedimento Administrativo</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-2 font-bold text-slate-800">Declaração de Entrada</td>
+                      <td className="py-2 px-2">AIMA / PSP</td>
+                      <td className="py-2 pl-2 text-slate-700">Artigo 14.º da Lei n.º 23/2007</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-2 font-bold text-slate-800">Reclamação Graciosa IRS</td>
+                      <td className="py-2 px-2">Autoridade Tributária (AT)</td>
+                      <td className="py-2 pl-2 text-slate-700">Artigos 68.º a 77.º do CPPT (DL n.º 433/99)</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-2 font-bold text-slate-800">Estatutos de Sociedade por Quotas</td>
+                      <td className="py-2 px-2">IRN / Empresa na Hora</td>
+                      <td className="py-2 pl-2 text-slate-700">DL n.º 111/2005 e Código das Sociedades Comerciais</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-2 font-bold text-slate-800">Queixa ao Provedor de Justiça</td>
+                      <td className="py-2 px-2">Provedor de Justiça</td>
+                      <td className="py-2 pl-2 text-slate-700">Artigos 23.º e 24.º da Lei n.º 9/91</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </Section>
+
         {/* 🛡️ POLÍTICA DE TRANSPARÊNCIA, AGREGAÇÃO DE VAGAS E SEGURANÇA */}
         {/* 🛡️ POLÍTICA DE TRANSPARÊNCIA, AGREGAÇÃO DE CONTEÚDOS E SEGURANÇA */}
         <Section id="jobs_policy" title={t('jobs_policy_title', language)} icon={Globe} colorClass="bg-blue-50 text-blue-600 border border-blue-100">
