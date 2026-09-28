@@ -140,7 +140,6 @@ export default async function handler(req, res) {
         getCount('services'),
         (() => {
           const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-          supabaseAdmin.from('job_posts').delete().lt('created_at', ninetyDaysAgo).then(() => {}).catch(() => {});
           return supabaseAdmin.from('job_posts').select('id', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', ninetyDaysAgo);
         })(),
         getCount('courses'),

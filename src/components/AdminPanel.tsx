@@ -36,8 +36,12 @@ const getInitialDashboardCounts = () => {
             const stored = sessionStorage.getItem('mira_admin_dashboard_counts_v7');
             if (stored) {
                 const parsed = JSON.parse(stored);
-                if (parsed && typeof parsed === 'object' && parsed.recurrence && parsed.recurrence.isLoaded === true) {
-                    return parsed;
+                const SNAPSHOT_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutos (TTL do snapshot visual)
+                const fetchedAt = typeof parsed?.fetchedAt === 'number' ? parsed.fetchedAt : 0;
+                const isFresh = (Date.now() - fetchedAt) < SNAPSHOT_MAX_AGE_MS;
+                const data = parsed?.data && typeof parsed.data === 'object' ? parsed.data : parsed;
+                if (isFresh && data && typeof data === 'object' && data.recurrence && data.recurrence.isLoaded === true) {
+                    return data;
                 }
             }
         }
@@ -180,6 +184,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const fetchingTabsRef = useRef<Set<string>>(new Set());
     const realtimeDebounceTimerRef = useRef<any>(null);
     const [counts, setCounts] = useState(getInitialDashboardCounts);
+    const countsRef = useRef(counts);
+    countsRef.current = counts;
     const [userSearchTerm, setUserSearchTerm] = useState('');
     const [knowledgeSearch, setKnowledgeSearch] = useState('');
     const [isSyncing, setIsSyncing] = useState(false);
@@ -339,7 +345,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         };
                         setCounts(newCounts);
                         try {
-                            sessionStorage.setItem('mira_admin_dashboard_counts_v7', JSON.stringify(newCounts));
+                            sessionStorage.setItem('mira_admin_dashboard_counts_v7', JSON.stringify({ fetchedAt: Date.now(), data: newCounts }));
                         } catch (_) {}
                         const cachePayload = { timestamp: Date.now(), data: newCounts };
                         dataCacheRef.current['dashboard'] = cachePayload;
@@ -372,7 +378,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 setLoadingGamification(false);
 
             } else if (tab === 'broadcast' || tab === 'impact') {
-                if (!counts.users || !counts.recurrence?.isLoaded) {
+                if (!countsRef.current.users || !countsRef.current.recurrence?.isLoaded) {
                     adminService.fetchSyncStatus().then(status => {
                         if (status) {
                             const newCounts = {
@@ -408,7 +414,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             };
                             setCounts(newCounts);
                             try {
-                                sessionStorage.setItem('mira_admin_dashboard_counts_v7', JSON.stringify(newCounts));
+                                sessionStorage.setItem('mira_admin_dashboard_counts_v7', JSON.stringify({ fetchedAt: Date.now(), data: newCounts }));
                             } catch (_) {}
                         }
                     });
@@ -428,7 +434,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             setLoadingKnowledge(false);
             setLoadingGamification(false);
         }
-    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod, counts.users]);
+    }, [activeTab, usersPage, knowledgePage, userSearchTerm, userFilterStatus, dashboardPeriod]);
 
     // Reactive search effect with debounce (não dispara concorrente na troca inicial de aba)
     useEffect(() => {
