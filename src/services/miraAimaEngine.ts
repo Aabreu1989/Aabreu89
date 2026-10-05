@@ -19,14 +19,20 @@
  *    - Artigo 52.º: Condições gerais de subsistência.
  *    - Artigo 57.º-A: Visto para procura de trabalho (recursos de pelo menos 3 × RMMG).
  *    - Artigo 58.º, n.º 1, al. b): Visto de residência para titulares de rendimentos próprios (D7).
- *    - Artigo 82.º, n.º 5: Prazo de decisão na concessão de AR com visto (90 dias).
+ *    - Artigo 82.º, n.º 5: Prazo de decisão na concessão de AR com visto (90 dias, prorrogável a 30 dias).
  *    - Artigo 82.º, n.º 6: Prazo de decisão na renovação de AR (60 dias).
- *    - Artigo 82.º, n.º 7: Deferimento tácito da renovação de AR decorridos 60 dias sem culpa.
+ *    - Artigo 82.º, n.º 7: Revogado pela Lei n.º 62/2026, de 10 de setembro (fim do deferimento tácito em renovações; mora administrativa com recurso ao CPTA).
  *    - Artigo 87.º-A: Autorização de residência para cidadãos da CPLP (Acordo de Mobilidade).
  *    - Artigo 88.º, n.º 1: Autorização de residência para atividade subordinada com visto.
  *    - Artigo 90.º-A: Visto de residência para nómadas digitais (4 × RMMG).
  *    - Artigo 122.º: Autorização de residência com dispensa de visto em situações especiais (ativo).
- * 3. Decreto-Lei n.º 37-A/2024, de 3 de junho:
+ * 3. Lei n.º 62/2026, de 10 de setembro (em vigor desde 11 de setembro de 2026):
+ *    - Transposição do Pacto Europeu sobre Migração e Asilo.
+ *    - Revogação expressa do deferimento tácito e fixação de prazos vinculativos (90 dias concessão / 60 dias renovação).
+ *    - Extinção definitiva de regularizações pós-chegada (estudos sem visto consular prévio, progenitores sem visto).
+ *    - Substituição da NAV pelo Dever de Abandono (10-20 dias), retenção em CIT até 180 dias e interdição até 5 anos.
+ *    - Flexibilidade de mudança de entidade patronal por mera comunicação digital à AIMA.
+ * 4. Decreto-Lei n.º 37-A/2024, de 3 de junho:
  *    - Artigo 2.º: Revogação dos n.ºs 2 dos Artigos 88.º e 89.º (fim das manifestações de interesse).
  * 4. Decreto-Lei n.º 41-A/2024 e Resolução do Conselho de Ministros n.º 75/2024:
  *    - Regime transitório da Estrutura de Missão da AIMA para processos SAPA submetidos até 03/06/2024.
@@ -557,22 +563,18 @@ export class AimaDeadlineEngine {
     faultAttributableToApplicant?: boolean;
     actualNoticeDays?: number;
   }): AimaDeadlineAssessment {
-    // 1. Renovação de Autorização de Residência (Artigo 82.º, n.º 6 e 7 da Lei 23/2007)
+    // 1. Renovação de Autorização de Residência (Artigo 82.º, n.º 6 da Lei 23/2007 com redação da Lei n.º 62/2026)
     if (params.procedureType === 'residence_renewal') {
       const legalDeadlineDays = 60;
       const isExpired = params.daysElapsed > legalDeadlineDays;
-      const fault = !!params.faultAttributableToApplicant;
 
+      // Lei n.º 62/2026, de 10 de setembro (em vigor desde 11 de setembro de 2026):
+      // Revogação expressa do n.º 7 do Artigo 82.º da Lei 23/2007. O decurso do prazo de 60 dias
+      // sem decisão já NÃO gera deferimento tácito automático, constituindo mora administrativa.
       let status: AimaDeadlineAssessment['status'] = 'within_legal_deadline';
-      let tacitApplicable = false;
 
       if (isExpired) {
-        if (!fault) {
-          status = 'tacit_approval_granted';
-          tacitApplicable = true;
-        } else {
-          status = 'administrative_delay';
-        }
+        status = 'administrative_delay';
       }
 
       return {
@@ -581,15 +583,15 @@ export class AimaDeadlineEngine {
         deadlineUnit: 'calendar_days',
         daysElapsed: params.daysElapsed,
         isExpired,
-        tacitApprovalApplicable: tacitApplicable,
+        tacitApprovalApplicable: false, // Revogado expressamente pela Lei n.º 62/2026
         status,
         provenance: {
           ruleId: 'RULE_AIMA_DEADLINE_RENEWAL',
-          legalBasis: 'Lei n.º 23/2007',
-          article: 'Artigo 82.º, n.º 6 e n.º 7',
-          officialSource: 'Diário da República — Lei n.º 23/2007 consolidada',
-          effectiveFrom: '2007-07-04',
-          verifiedAt: '2026-09-06'
+          legalBasis: 'Lei n.º 23/2007 (com alterações da Lei n.º 62/2026)',
+          article: 'Artigo 82.º, n.º 6 (n.º 7 revogado)',
+          officialSource: 'Diário da República — Lei n.º 62/2026, de 10 de setembro',
+          effectiveFrom: '2026-09-11',
+          verifiedAt: '2026-10-05'
         }
       };
     }

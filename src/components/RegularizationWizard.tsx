@@ -4,7 +4,7 @@ import {
     ChevronRight, ArrowLeft, CheckCircle2, FileText, Info,
     Landmark, AlertCircle, Volume2, UserX, UserCheck, Briefcase,
     GraduationCap, Users, ShieldCheck, Sparkles, RotateCcw, Zap, Globe, ExternalLink,
-    ChevronDown, ChevronUp, Compass, ArrowRight, Calculator, MapPin
+    ChevronDown, ChevronUp, Compass, ArrowRight, Calculator, MapPin, Scale
 } from "lucide-react";
 import { ViewType } from "../types";
 import { t } from "../utils/translations";
@@ -279,6 +279,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
     const [step, setStep] = useState<number>(1);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [activeDocTip, setActiveDocTip] = useState<string | null>(null);
+    const [showLegalDistinction, setShowLegalDistinction] = useState<boolean>(false);
 
     const aimaNormative = useMemo(() => {
         const pId = mapWizardToAimaPathway(answers.situation, answers.purpose);
@@ -447,11 +448,8 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
             result.infoNote = t("wiz_humanitarian_note", language);
         }
 
-        if (sit === "contract" || sit === "student") {
-            if (!result.docs.includes("aima_deferimento_tacito")) {
-                result.docs.push("aima_deferimento_tacito");
-            }
-        }
+        // ⚖️ LEI N.º 62/2026 (11/09/2026): O Artigo 82.º, n.º 7 da Lei 23/2007 (deferimento tácito)
+        // foi revogado. Prazos vinculativos da AIMA (90d/60d) agora constituem mora administrativa (Art. 66.º CPTA).
 
         // 📝 MIRA LEGISLATIVO: Telemetria de acompanhamento parlamentar e promulgação presidencial
         const warningsList: string[] = [];
@@ -684,6 +682,105 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                     </div>
                                 )}
                             </div>
+
+                            {/* ⚖️ Painel Jurídico: Permanência Irregular vs. Permanência Ilegal (Lei n.º 62/2026) */}
+                            {(answers.situation === 'irregular' || showLegalDistinction) ? (
+                                <div className="bg-slate-900 border border-amber-500/30 rounded-[2.25rem] p-5 text-white shadow-xl space-y-4 animate-in fade-in duration-300">
+                                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                                                <Scale size={18} className="text-amber-400" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xs font-black uppercase tracking-wider text-white">
+                                                    {t('wiz_diff_irregular_illegal_title', language)}
+                                                </h3>
+                                                <p className="text-[9px] text-slate-400 font-medium">
+                                                    Lei n.º 62/2026 (em vigor a 11/09/2026) &middot; Lei n.º 23/2007 &middot; Código Penal
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {answers.situation !== 'irregular' && (
+                                            <button
+                                                onClick={() => setShowLegalDistinction(false)}
+                                                className="text-[10px] text-slate-400 hover:text-white px-2 py-1 rounded-lg bg-white/5 transition-colors"
+                                            >
+                                                Ocultar
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                                        {/* Bloco 1: Permanência Irregular */}
+                                        <div className="p-4 bg-white/5 border border-amber-500/20 rounded-2xl space-y-2.5">
+                                            <div className="flex items-center justify-between">
+                                                <span className="px-2 py-0.5 text-[8px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-lg">
+                                                    {t('wiz_diff_irregular_badge', language)}
+                                                </span>
+                                                <span className="text-[8px] font-bold text-amber-400/90 uppercase tracking-wider">
+                                                    Não é Crime
+                                                </span>
+                                            </div>
+                                            <h4 className="text-xs font-black text-white">
+                                                {t('wiz_diff_irregular_title', language)}
+                                            </h4>
+                                            <p className="text-[11px] text-slate-300 font-medium leading-relaxed">
+                                                {t('wiz_diff_irregular_desc', language)}
+                                            </p>
+                                        </div>
+
+                                        {/* Bloco 2: Permanência Ilegal */}
+                                        <div className="p-4 bg-red-950/40 border border-red-500/30 rounded-2xl space-y-2.5">
+                                            <div className="flex items-center justify-between">
+                                                <span className="px-2 py-0.5 text-[8px] font-black uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/40 rounded-lg">
+                                                    {t('wiz_diff_illegal_badge', language)}
+                                                </span>
+                                                <span className="text-[8px] font-bold text-red-400 uppercase tracking-wider">
+                                                    CIT &middot; Expulsão
+                                                </span>
+                                            </div>
+                                            <h4 className="text-xs font-black text-rose-200">
+                                                {t('wiz_diff_illegal_title', language)}
+                                            </h4>
+                                            <p className="text-[11px] text-rose-100/90 font-medium leading-relaxed">
+                                                {t('wiz_diff_illegal_desc', language)}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between gap-3 text-xs">
+                                        <span className="text-[10px] text-slate-300 font-medium">
+                                            Dúvidas sobre o seu enquadramento? O apoio jurídico e social no CNAIM/CLAIM é gratuito e confidencial.
+                                        </span>
+                                        <button
+                                            onClick={() => onViewChange?.(ViewType.SERVICES)}
+                                            className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 rounded-lg text-[10px] font-black uppercase tracking-wider shrink-0 transition-colors"
+                                        >
+                                            Ver Balcões Oficiais
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setShowLegalDistinction(true)}
+                                    className="w-full p-4 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl flex items-center justify-between text-left transition-all group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                                            <Scale size={16} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black text-white group-hover:text-amber-400 transition-colors">
+                                                {t('wiz_diff_irregular_illegal_title', language)}
+                                            </h4>
+                                            <p className="text-[10px] text-slate-400">
+                                                Clique para ver a distinção jurídica, sanções (coima vs. CIT) e prazos legais da Lei 62/2026.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <ChevronDown size={16} className="text-slate-400 group-hover:text-white transition-colors shrink-0" />
+                                </button>
+                            )}
 
                             {/* Canonical AIMA Normative Overview Card */}
                             {aimaNormative && (

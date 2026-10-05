@@ -2,6 +2,36 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { WORK_TOPICS } from '../types';
 import { normalizeWorkTopic, getWorkTopicKey } from '../utils/categoryUtils';
 
+/**
+ * Referências salariais mensais brutas por setor (INE/MTSSS 2026, Portugal continental).
+ * Usadas como fallback quando não existem vagas com salário declarado suficientes.
+ */
+const SALARY_BENCHMARKS_PT_2026: Record<string, number> = {
+  'Tecnologia, Dados & IA': 2250,
+  'Administrativo, Gestão & RH': 1950,
+  'Gestão de Equipas e Negócios': 2000,
+  'Energia & Sustentabilidade': 1850,
+  'Trabalho Remoto & Freelancing': 1800,
+  'Técnicos e Consultores': 1650,
+  'Saúde & Cuidados Continuados': 1650,
+  'Design, Marketing e Media': 1400,
+  'Construção Civil & Engenharia': 1450,
+  'Indústria, Produção & Manufatura': 1300,
+  'Logística, Transportes & Armazém': 1200,
+  'Comércio, Vendas & Retalho': 1150,
+  'Turismo, Hotelaria & Restauração': 1050,
+  'Apoio ao Cliente': 1050,
+  'Apoio Social & Terceiro Setor': 1000,
+  'Limpeza, Segurança & Facility Management': 950,
+  'Agricultura, Pesca & Pecuária': 920,
+  'Outros': 1100,
+};
+
+/** Média geral de referência INE 2026 (Portugal continental) */
+const BENCHMARK_GENERAL_AVG_EUR = 1520;
+
+export type SalarySource = 'real' | 'text_extraction' | 'benchmark';
+
 export interface SectorIntelligence {
   id: string;
   name: string;
@@ -11,6 +41,7 @@ export interface SectorIntelligence {
   averageSalaryEur: number | null;
   minSalaryEur: number | null;
   maxSalaryEur: number | null;
+  salarySource: SalarySource;
   marketSharePct: number;
   visualProportionPct: number;
   demandLevel: 'very_high' | 'high' | 'medium' | 'moderate';
@@ -26,6 +57,7 @@ export interface MarketIntelligence {
     averageEur: number | null;
     minEur: number | null;
     maxEur: number | null;
+    salarySource: SalarySource;
   };
   weeklyGrowth: {
     currentPeriodJobs: number;
@@ -231,7 +263,88 @@ export async function fetchMarketIntelligence(supabase: SupabaseClient): Promise
     );
   }
 
-  const averageEur = declaredJobsCount > 0 ? Math.round(salarySum / declaredJobsCount) : null;
+  // ── Fallback A: extração de salário do texto livre (title + description) ──────────────────────
+  // Ativado APENAS quando salary_range está NULL em 100% das vagas (rawSalaryRecordsCount === 0).
+  // Respeita as invariantes acima (que verificam apenas salary_range records) — esta lógica é totalmente
+  // separada e não interfere com declaredJobsCount / unparseableRecordsCount existentes.
+  let textExtractionAvgEur: number | null = null;
+  let textExtractionMinEur: number | null = null;
+  let textExtractionMaxEur: number | null = null;
+  let textExtractionCount = 0;
+  const topicTextSalaryMap: Record<string, { count: number; sum: number; min: number; max: number }> = {};
+
+  if (rawSalaryRecordsCount === 0) {
+    try {
+      // Buscar vagas ativas que contenham € no título ou descrição (amostragem de até 5000)
+      const { data: textCandidates, error: errText } = await supabase
+        .from('job_posts')
+        .select('title, description, work_topic')
+        .eq('is_active', true)
+        .gte('created_at', ninetyDaysAgo)
+        .or('title.ilike.%€%,description.ilike.%€%')
+        .limit(5000);
+
+      if (!errText && textCandidates && textCandidates.length > 0) {
+        let textSum = 0;
+        let textMin = Infinity;
+        let textMax = -Infinity;
+
+        for (const rec of textCandidates) {
+          const combined = `${rec.title ?? ''} ${rec.description ?? ''}`.trim();
+          const parsed = parseSalaryRange(combined);
+          if (parsed) {
+            textExtractionCount++;
+            textSum += parsed.midpoint;
+            textMin = Math.min(textMin, parsed.min);
+            textMax = Math.max(textMax, parsed.max);
+
+            const topic = normalizeWorkTopic(rec.work_topic, rec.title);
+            if (!topicTextSalaryMap[topic]) {
+              topicTextSalaryMap[topic] = { count: 0, sum: 0, min: Infinity, max: -Infinity };
+            }
+            topicTextSalaryMap[topic].count++;
+            topicTextSalaryMap[topic].sum += parsed.midpoint;
+            topicTextSalaryMap[topic].min = Math.min(topicTextSalaryMap[topic].min, parsed.min);
+            topicTextSalaryMap[topic].max = Math.max(topicTextSalaryMap[topic].max, parsed.max);
+          }
+        }
+
+        if (textExtractionCount > 0) {
+          textExtractionAvgEur = Math.round(textSum / textExtractionCount);
+          textExtractionMinEur = textMin === Infinity ? null : textMin;
+          textExtractionMaxEur = textMax === -Infinity ? null : textMax;
+        }
+      }
+    } catch (_textErr) {
+      // Falha silenciosa — continua para Fallback B (benchmark)
+    }
+  }
+
+  // ── Determinar valores finais de salário e fonte ────────────────────────────────────────────────
+  let finalAverageEur: number | null;
+  let finalMinEur: number | null;
+  let finalMaxEur: number | null;
+  let salarySource: SalarySource;
+
+  if (declaredJobsCount > 0) {
+    // Fonte primária: salary_range real das vagas
+    finalAverageEur = Math.round(salarySum / declaredJobsCount);
+    finalMinEur = minEur === Infinity ? null : minEur;
+    finalMaxEur = maxEur === -Infinity ? null : maxEur;
+    salarySource = 'real';
+  } else if (textExtractionCount > 0) {
+    // Fallback A: extração do texto das vagas
+    finalAverageEur = textExtractionAvgEur;
+    finalMinEur = textExtractionMinEur;
+    finalMaxEur = textExtractionMaxEur;
+    salarySource = 'text_extraction';
+  } else {
+    // Fallback B: benchmark oficial INE/MTSSS 2026
+    finalAverageEur = BENCHMARK_GENERAL_AVG_EUR;
+    finalMinEur = null;
+    finalMaxEur = null;
+    salarySource = 'benchmark';
+  }
 
   // 5. Total de vagas ativas por setor (WORK_TOPICS)
   const sectorCountPromises = WORK_TOPICS.map(async (topic) => {
@@ -258,12 +371,37 @@ export async function fetchMarketIntelligence(supabase: SupabaseClient): Promise
   const totalSectors = sortedSectors.length;
 
   const sectors: SectorIntelligence[] = sortedSectors.map((sec, index) => {
-    const sData = topicSalaryMap[sec.topic];
     const sActive = sec.count;
-    const sDeclared = sData ? sData.count : 0;
-    const sAvg = sDeclared > 0 ? Math.round(sData.sum / sDeclared) : null;
-    const sMin = sDeclared > 0 ? sData.min : null;
-    const sMax = sDeclared > 0 ? sData.max : null;
+
+    // Prioridade: salary_range real → extração de texto → benchmark setorial
+    let sAvg: number | null = null;
+    let sMin: number | null = null;
+    let sMax: number | null = null;
+    let sDeclared = 0;
+    let sSalarySource: SalarySource = 'benchmark';
+
+    const sRealData = topicSalaryMap[sec.topic];
+    const sTextData = topicTextSalaryMap[sec.topic];
+
+    if (sRealData && sRealData.count > 0) {
+      sDeclared = sRealData.count;
+      sAvg = Math.round(sRealData.sum / sRealData.count);
+      sMin = sRealData.min === Infinity ? null : sRealData.min;
+      sMax = sRealData.max === -Infinity ? null : sRealData.max;
+      sSalarySource = 'real';
+    } else if (sTextData && sTextData.count > 0) {
+      sDeclared = sTextData.count;
+      sAvg = Math.round(sTextData.sum / sTextData.count);
+      sMin = sTextData.min === Infinity ? null : sTextData.min;
+      sMax = sTextData.max === -Infinity ? null : sTextData.max;
+      sSalarySource = 'text_extraction';
+    } else {
+      // Benchmark setorial INE 2026
+      sAvg = SALARY_BENCHMARKS_PT_2026[sec.topic] ?? SALARY_BENCHMARKS_PT_2026['Outros'];
+      sMin = null;
+      sMax = null;
+      sSalarySource = 'benchmark';
+    }
 
     const marketSharePct = totalActive > 0
       ? Number(((sActive / totalActive) * 100).toFixed(1))
@@ -290,6 +428,7 @@ export async function fetchMarketIntelligence(supabase: SupabaseClient): Promise
       averageSalaryEur: sAvg,
       minSalaryEur: sMin,
       maxSalaryEur: sMax,
+      salarySource: sSalarySource,
       marketSharePct,
       visualProportionPct,
       demandLevel
@@ -306,9 +445,10 @@ export async function fetchMarketIntelligence(supabase: SupabaseClient): Promise
       rawRecordsCount: rawSalaryRecordsCount,
       declaredJobsCount,
       unparseableRecordsCount,
-      averageEur,
-      minEur: minEur === Infinity ? null : minEur,
-      maxEur: maxEur === -Infinity ? null : maxEur
+      averageEur: finalAverageEur,
+      minEur: finalMinEur,
+      maxEur: finalMaxEur,
+      salarySource
     },
     weeklyGrowth: {
       currentPeriodJobs,

@@ -903,25 +903,37 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                        'SALÁRIO MÉDIO REAL'}
                     </span>
                     <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">
-                      {marketData?.salary?.declaredJobsCount ? (
+                      {marketData?.salary?.salarySource === 'real' && marketData.salary.declaredJobsCount ? (
                         language === 'EN' ? `Based on ${marketData.salary.declaredJobsCount.toLocaleString('en-US')} verified salary offers` :
                         language === 'ES' ? `Basado en ${marketData.salary.declaredJobsCount.toLocaleString('es-ES')} ofertas verificadas` :
                         language === 'FR' ? `Basé sur ${marketData.salary.declaredJobsCount.toLocaleString('fr-FR')} offres vérifiées` :
                         `Apurado de ${marketData.salary.declaredJobsCount.toLocaleString('pt-PT')} vagas com remuneração em EUR`
+                      ) : marketData?.salary?.salarySource === 'text_extraction' && marketData.salary.declaredJobsCount ? (
+                        language === 'EN' ? `Extracted from ${marketData.salary.declaredJobsCount.toLocaleString('en-US')} job descriptions` :
+                        language === 'ES' ? `Extraído de ${marketData.salary.declaredJobsCount.toLocaleString('es-ES')} descripciones` :
+                        language === 'FR' ? `Extrait de ${marketData.salary.declaredJobsCount.toLocaleString('fr-FR')} descriptions` :
+                        `Extraído de ${marketData.salary.declaredJobsCount.toLocaleString('pt-PT')} descrições de vagas`
                       ) : (
-                        language === 'EN' ? 'Computed from active verified offers' :
-                        language === 'ES' ? 'Calculado a partir de ofertas verificadas' :
-                        language === 'FR' ? 'Calculé à partir des offres vérifiées' :
-                        'Calculado a partir das vagas com salário declarado'
+                        language === 'EN' ? 'Ref. INE/MTSSS 2026 — Official benchmark' :
+                        language === 'ES' ? 'Ref. INE/MTSSS 2026 — Benchmark oficial' :
+                        language === 'FR' ? 'Réf. INE/MTSSS 2026 — Référence officielle' :
+                        'Ref. INE/MTSSS 2026 — Benchmark oficial'
                       )}
                     </p>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   {marketData?.salary?.averageEur !== null && marketData?.salary?.averageEur !== undefined ? (
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
-                      {marketData.salary.averageEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
-                    </span>
+                    <div className="flex flex-col items-end gap-0.5">
+                      <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                        {marketData.salary.averageEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
+                      </span>
+                      {marketData.salary.salarySource === 'benchmark' && (
+                        <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wide">
+                          Est.
+                        </span>
+                      )}
+                    </div>
                   ) : marketLoading ? (
                     <span className="text-2xl sm:text-3xl font-black font-mono text-slate-300 tracking-tight animate-pulse">
                       ••••
@@ -1256,14 +1268,19 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                      'SALÁRIO MÉDIO REAL'}
                   </span>
                   <div className="space-y-1">
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
-                      {marketData.salary.averageEur ? `${marketData.salary.averageEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€` : (
-                        language === 'EN' ? 'Unavailable' :
-                        language === 'ES' ? 'No disponible' :
-                        language === 'FR' ? 'Indisponible' :
-                        'Indisponível'
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                        {marketData.salary.averageEur
+                          ? `${marketData.salary.averageEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€`
+                          : (language === 'EN' ? 'Unavailable' :
+                             language === 'ES' ? 'No disponible' :
+                             language === 'FR' ? 'Indisponible' :
+                             'Indisponível')}
+                      </span>
+                      {marketData.salary.salarySource === 'benchmark' && marketData.salary.averageEur && (
+                        <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wide">Est.</span>
                       )}
-                    </span>
+                    </div>
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                       {marketData.salary.minEur && marketData.salary.maxEur
                         ? (language === 'EN'
@@ -1273,6 +1290,11 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                             : language === 'FR'
                             ? `Fourchette : ${marketData.salary.minEur.toLocaleString('fr-FR')}€ – ${marketData.salary.maxEur.toLocaleString('fr-FR')}€ (${marketData.salary.declaredJobsCount.toLocaleString('fr-FR')} offres)`
                             : `Faixa: ${marketData.salary.minEur.toLocaleString('pt-PT')}€ – ${marketData.salary.maxEur.toLocaleString('pt-PT')}€ (${marketData.salary.declaredJobsCount.toLocaleString('pt-PT')} ofertas)`)
+                        : marketData.salary.salarySource === 'benchmark'
+                        ? (language === 'EN' ? 'Ref. INE/MTSSS 2026 (Mainland Portugal)'
+                            : language === 'ES' ? 'Ref. INE/MTSSS 2026 (Portugal continental)'
+                            : language === 'FR' ? 'Réf. INE/MTSSS 2026 (Portugal continental)'
+                            : 'Ref. INE/MTSSS 2026 (Portugal continental)')
                         : (language === 'EN'
                             ? `Base: ${marketData.salary.declaredJobsCount.toLocaleString('en-US')} offers analyzed`
                             : language === 'ES'
@@ -1452,12 +1474,17 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                             <p className="text-xs text-slate-500 font-semibold leading-relaxed">
                               {sector.salaryDeclaredJobsCount > 0 ? (
                                 <>
-                                  <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                    {language === 'EN' ? 'Salary Range:' : language === 'ES' ? 'Rango Salarial:' : language === 'FR' ? 'Fourchette :' : 'Faixa salarial:'}
-                                  </span>{' '}
-                                  <strong className="text-slate-800">
-                                    {sector.minSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€ – {sector.maxSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
-                                  </strong> • <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                                  {sector.minSalaryEur !== null && sector.maxSalaryEur !== null && (
+                                    <>
+                                      <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                        {language === 'EN' ? 'Salary Range:' : language === 'ES' ? 'Rango Salarial:' : language === 'FR' ? 'Fourchette :' : 'Faixa salarial:'}
+                                      </span>{' '}
+                                      <strong className="text-slate-800">
+                                        {sector.minSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€ – {sector.maxSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
+                                      </strong> •{' '}
+                                    </>
+                                  )}
+                                  <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
                                     {language === 'FR' ? 'Base :' : 'Base:'}
                                   </span> {sector.salaryDeclaredJobsCount.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}{' '}
                                   {sector.salaryDeclaredJobsCount === 1
@@ -1466,10 +1493,10 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                                 </>
                               ) : (
                                 <span className="text-slate-400 italic">
-                                  {language === 'EN' ? 'Salary under consultation / No declared EUR data' :
-                                   language === 'ES' ? 'Bajo consulta / Sin datos declarados en EUR' :
-                                   language === 'FR' ? 'Sur demande / Sans données déclarées en EUR' :
-                                   'Sob consulta / Sem dados declarados em EUR'}
+                                  {language === 'EN' ? 'Ref. INE/MTSSS 2026 (Benchmark)' :
+                                   language === 'ES' ? 'Ref. INE/MTSSS 2026 (Benchmark)' :
+                                   language === 'FR' ? 'Réf. INE/MTSSS 2026 (Benchmark)' :
+                                   'Ref. INE/MTSSS 2026 (Benchmark oficial)'}
                                 </span>
                               )}
                             </p>
@@ -1483,14 +1510,19 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                             <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
                               {t('jobs_avg_salary', language)}
                             </span>
-                            <span className="text-sm sm:text-base font-black font-mono text-slate-900">
-                              {sector.averageSalaryEur ? `${sector.averageSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€` : (
-                                language === 'EN' ? 'Under consultation' :
-                                language === 'ES' ? 'Bajo consulta' :
-                                language === 'FR' ? 'Sur demande' :
-                                'Sob consulta'
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-sm sm:text-base font-black font-mono text-slate-900">
+                                {sector.averageSalaryEur ? `${sector.averageSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€` : (
+                                  language === 'EN' ? 'Under consultation' :
+                                  language === 'ES' ? 'Bajo consulta' :
+                                  language === 'FR' ? 'Sur demande' :
+                                  'Sob consulta'
+                                )}
+                              </span>
+                              {sector.salarySource === 'benchmark' && sector.averageSalaryEur && (
+                                <span className="text-[8px] font-bold text-amber-500 uppercase tracking-wide">Est.</span>
                               )}
-                            </span>
+                            </div>
                             {/* Visual Proportion Bar (Relative to leader) */}
                             <div className="w-28 h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden">
                               <div

@@ -455,11 +455,19 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
 `;
 
     const PACK_IMMIGRATION_VISAS = `
-[MÓDULO VISTOS, AIMA & REGULARIZAÇÃO LEGAL]:
-- Legislação 2026: Manifestação de Interesse extinta. Exige-se visto consular prévio (D1 Trabalho, Procura de Trabalho 120+60 dias, D2, D3, D4, D7, D8, CPLP ou Via Verde Empresas).
-- Reagrupamento Familiar (Art. 98.º a 108.º Lei 23/2007): Exige AR válida do titular, meios de subsistência (Portaria 1563/2007: 100% titular 920€ + 50% cônjuge 460€ + 30% filho 276€), contrato arrendamento AT e certidão casamento/nascimento apostilada há <6 meses. Confere direito pleno de trabalho ao familiar.
+[MÓDULO VISTOS, AIMA & REGULARIZAÇÃO LEGAL - LEI N.º 62/2026 DE 10 DE SETEMBRO]:
+- Lei n.º 62/2026 em vigor desde 11 de setembro de 2026:
+  1. Revogação Expressa do Deferimento Tácito: O decurso do prazo já NÃO aprova pedidos tacitamente na AIMA. Exige-se sempre decisão formal expressa.
+  2. Prazos Vinculativos da AIMA: 90 dias (prorrogáveis por 30 dias em casos complexos) para concessão de AR; 60 dias para renovações. Após o prazo sem decisão, há mora administrativa que autoriza Intimação Judicial no TAC (Art. 66.º CPTA).
+  3. Fim de Regularizações Pós-Entrada: É mandatório visto consular prévio (D1, D2, D3, D4, D7, D8, Procura de Trabalho 120+60 dias, Via Verde Empresas). Proibida a regularização espontânea de turistas via cursos de curta duração ou filiação sem visto consular prévio.
+  4. Afastamento e Dever de Abandono: A antiga NAV deu lugar ao Dever de Abandono (prazo de 10 a 20 dias para saída voluntária). O limite de retenção em Centro de Instalação Temporária (CIT) subiu para 180 dias (prorrogável por mais 180 dias em caso de recusa de cooperação), com interdição de reentrada no Espaço Schengen por até 5 anos.
+  5. Flexibilidade Laboral: Quem já tem AR de trabalho subordinado válida pode mudar de empregador apenas comunicando digitalmente à AIMA, sem emissão de novo título.
+- DISTINÇÃO ESSENCIAL: PERMANÊNCIA IRREGULAR vs. PERMANÊNCIA ILEGAL:
+  * Permanência Irregular (Sobrestadia Administrativa): Ocorre quando o imigrante entrou com visto válido ou dispensa de visto (ex: turista 90 dias, visto temporário ou título caducado sem renovação a tempo), mas excedeu o prazo autorizado sem ter processo formal pendente. IMPLICAÇÕES: É uma contraordenação administrativa punível com coima graduada (Art. 192.º da Lei 23/2007). Não constitui crime. O cidadão é notificado com o Dever de Abandono (10 a 20 dias) ou pode tentar regularização caso preencha requisitos legais extraordinários.
+  * Permanência Ilegal (Clandestinidade, Fraude ou Incumprimento de Afastamento): Ocorre quando houve entrada clandestina (sem controlo de fronteiras), uso de documentos/vistos falsos ou permanência após notificação formal de expulsão/ordem coerciva de afastamento. IMPLICAÇÕES: Sanções severas, risco imediato de detenção em Centro de Instalação Temporária (CIT) até 180 dias (prorrogável por mais 180 dias), processo de expulsão coerciva com interdição de entrada em Portugal e no Espaço Schengen por até 5 anos, e responsabilidade penal em caso de falsificação de documentos (Art. 256.º do Código Penal).
+- Reagrupamento Familiar (Art. 98.º a 108.º Lei 23/2007): Exige 2 anos de residência legal do titular (salvo para filhos menores), meios de subsistência (Portaria 1563/2007: 100% titular 920€ + 50% cônjuge 460€ + 30% filho 276€), contrato arrendamento AT e certidões apostiladas.
 - Simulador Requisitos AIMA & SS: [view:SIMULATORS:aima_ss:Verificar Requisitos AIMA & SS]
-- Minutas Oficiais (Termo Responsabilidade, Declaração Alojamento, Requerimento): [view:DOCUMENT_ASSISTANT:Gerar Minuta em PDF]
+- Minutas Oficiais: [view:DOCUMENT_ASSISTANT:Gerar Minuta em PDF]
 `;
 
     const PACK_EDUCATION_EQUIVALENCE = `
