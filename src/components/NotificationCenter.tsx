@@ -293,7 +293,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                         title="Aceder diretamente à vaga no site externo"
                       >
                         <ExternalLink size={12} />
-                        <span>Aceder à Vaga</span>
+                        <span>{n.type === 'jobs' ? 'Aceder à Vaga' : 'Aceder'}</span>
                       </button>
                     )}
                     <button
@@ -393,7 +393,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       }}
                       className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
                     >
-                      <ExternalLink size={14} /> ACEDER À VAGA NA FONTE EXTERNA ↗
+                      <ExternalLink size={14} /> {selectedNotification.type === 'jobs' ? 'ACEDER À VAGA NA FONTE EXTERNA ↗' : 'ACEDER ↗'}
                     </button>
                   );
                 }

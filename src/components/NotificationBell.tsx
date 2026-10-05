@@ -212,7 +212,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                               title="Aceder diretamente à vaga no site externo"
                             >
                               <ExternalLink size={11} className="shrink-0" />
-                              <span>Aceder à Vaga</span>
+                              <span>{n.type === 'jobs' ? 'Aceder à Vaga' : 'Aceder'}</span>
                             </button>
 
                             <button
@@ -356,7 +356,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       }}
                       className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
                     >
-                      <ExternalLink size={16} /> ACEDER À VAGA NA FONTE EXTERNA ↗
+                      <ExternalLink size={16} /> {selectedNotification.type === 'jobs' ? 'ACEDER À VAGA NA FONTE EXTERNA ↗' : 'ACEDER ↗'}
                     </button>
                   );
                 }
