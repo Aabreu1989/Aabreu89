@@ -297,6 +297,9 @@ export interface JobPost {
   category: string;
   workTopic: string;
   work_topic?: string; // Compatibility
+  salary?: string | null;
+  salary_range?: string | null;
+  averageSalaryEur?: number | null;
 }
 
 export interface Course {

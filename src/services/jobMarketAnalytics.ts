@@ -6,7 +6,7 @@ import { normalizeWorkTopic, getWorkTopicKey } from '../utils/categoryUtils';
  * Referências salariais mensais brutas por setor (INE/MTSSS 2026, Portugal continental).
  * Usadas como fallback quando não existem vagas com salário declarado suficientes.
  */
-const SALARY_BENCHMARKS_PT_2026: Record<string, number> = {
+export const SALARY_BENCHMARKS_PT_2026: Record<string, number> = {
   'Tecnologia, Dados & IA': 2250,
   'Administrativo, Gestão & RH': 1950,
   'Gestão de Equipas e Negócios': 2000,
@@ -28,7 +28,7 @@ const SALARY_BENCHMARKS_PT_2026: Record<string, number> = {
 };
 
 /** Média geral de referência INE 2026 (Portugal continental) */
-const BENCHMARK_GENERAL_AVG_EUR = 1520;
+export const BENCHMARK_GENERAL_AVG_EUR = 1520;
 
 export type SalarySource = 'real' | 'text_extraction' | 'benchmark';
 

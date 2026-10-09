@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Briefcase, MapPin, Building2, ExternalLink, Clock } from 'lucide-react';
+import { Briefcase, MapPin, Building2, ExternalLink, Clock, TrendingUp } from 'lucide-react';
 import { JobPost } from '../types';
 import { t } from '../utils/translations';
 import { analytics } from '../services/analyticsService';
@@ -177,6 +177,14 @@ const JobItem: React.FC<JobItemProps> = ({ job, language, user, userId, onEarnPo
                             {t(getWorkTopicKey(job.workTopic), language)}
                         </span>
                     </div>
+                    {job.averageSalaryEur && (
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50/90 text-emerald-700 rounded-xl border border-emerald-200/80 shadow-3xs" title={language === 'EN' ? 'Estimated sector average salary (INE 2026)' : 'Salário médio de referência do setor (INE 2026)'}>
+                            <TrendingUp size={10} className="text-emerald-600" />
+                            <span className="text-[9px] font-black tracking-tight font-mono">
+                                ~{job.averageSalaryEur.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€/mês
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
 

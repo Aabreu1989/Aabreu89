@@ -11,7 +11,7 @@ import JobItem from './JobItem';
 import { JobAlertModal } from './JobAlertModal';
 import { jobAlertService } from '../services/jobAlertService';
 import { isPortugalOrRemoteJob } from '../utils/jobLocationHelper';
-import { fetchMarketIntelligence, MarketIntelligence, SectorIntelligence } from '../services/jobMarketAnalytics';
+import { fetchMarketIntelligence, MarketIntelligence, SectorIntelligence, SALARY_BENCHMARKS_PT_2026, BENCHMARK_GENERAL_AVG_EUR } from '../services/jobMarketAnalytics';
 
 export function decodeJobText(str: string | undefined | null): string {
   if (!str) return '';
@@ -587,7 +587,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
 
       let query = supabase
         .from('job_posts')
-        .select('id, title, location, source_name, source_url, created_at, category, work_topic', { count: 'exact' })
+        .select('id, title, location, source_name, source_url, created_at, category, work_topic, salary_range', { count: 'exact' })
         .eq('is_active', true);
 
       if (selectedCity && !isAllDistricts(selectedCity)) {
@@ -671,6 +671,10 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
           else if (diffDays <= 30) displayDate = `Há ${diffDays} dias`;
           else displayDate = postDate.toLocaleDateString('pt-PT');
 
+          const workTopic = normalizeWorkTopic((dbJob as any).work_topic, dbJob.title);
+          const rawSalary = (dbJob as any).salary_range || (dbJob as any).salary;
+          const avgSalary = SALARY_BENCHMARKS_PT_2026[workTopic] || BENCHMARK_GENERAL_AVG_EUR;
+
           return {
             id: dbJob.id,
             title: decodeJobText(dbJob.title) || t('jobs_no_title', language),
@@ -681,7 +685,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
             posted_at: rawTime || now.toISOString(),
             tags: Array.isArray((dbJob as any).tags) ? (dbJob as any).tags : (dbJob.title && dbJob.title.toLowerCase().includes('remoto') ? ['Remote'] : []),
             category: normalizeCategory(dbJob.category || 'Trabalho & Carreira'),
-            workTopic: normalizeWorkTopic((dbJob as any).work_topic, dbJob.title)
+            workTopic: workTopic,
+            salary_range: rawSalary || null,
+            averageSalaryEur: avgSalary
           };
         })
         .filter(job => isPortugalOrRemoteJob(job.title, job.location));
@@ -935,16 +941,23 @@ export const JobBoard: React.FC<JobBoardProps> = ({ language, isAdmin, user, onV
                       )}
                     </div>
                   ) : marketLoading ? (
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-300 tracking-tight animate-pulse">
-                      ••••
-                    </span>
+                    <div className="flex flex-col items-end gap-0.5">
+                      <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                        {BENCHMARK_GENERAL_AVG_EUR.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
+                      </span>
+                      <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wide">
+                        Est.
+                      </span>
+                    </div>
                   ) : (
-                    <span className="text-xs font-black uppercase text-amber-600">
-                      {language === 'EN' ? 'Unavailable' :
-                       language === 'ES' ? 'No disponible' :
-                       language === 'FR' ? 'Indisponible' :
-                       'Indisponível'}
-                    </span>
+                    <div className="flex flex-col items-end gap-0.5">
+                      <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">
+                        {BENCHMARK_GENERAL_AVG_EUR.toLocaleString(language === 'EN' ? 'en-US' : 'pt-PT')}€
+                      </span>
+                      <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wide">
+                        Est.
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
