@@ -161,18 +161,19 @@ const CommunityViewComponent = ({
         .filter(p => !pendingDeletes.has(p.id))
         .map(p => {
             // 🛡️ RECONCILIAÇÃO CANÓNICA SOBERANA:
-            // 1. Se há ação otimista em trânsito local para este post, usar o estado otimista imediato.
-            // 2. Caso contrário, a verdade canónica do Supabase (p.isLikedByUser / p.userVote) prevalece soberana.
-            const hasPendingLike = pendingActions.some(a => a.action === 'like' && String(a.payload.postId) === String(p.id));
-            const hasPendingVote = pendingActions.some(a => a.action === 'vote' && String(a.payload.postId) === String(p.id));
+            // 1. Ações pendentes locais têm prioridade máxima imediata.
+            // 2. Os Sets/Records hidratados pelo App.tsx (fetchUserInteractions) representam o estado real autenticado.
+            // 3. Fallback para as propriedades do post retornado.
+            const hasPendingLike = pendingActions.some(a => a.action === 'like' && String((a.payload as any).postId) === String(p.id));
+            const hasPendingVote = pendingActions.some(a => a.action === 'vote' && String((a.payload as any).postId) === String(p.id));
 
             const isLiked = hasPendingLike 
               ? likedPosts.has(p.id) 
-              : (p.isLikedByUser !== undefined ? p.isLikedByUser : likedPosts.has(p.id));
+              : (likedPosts.has(p.id) || !!p.isLikedByUser);
 
             const currentVote = hasPendingVote 
               ? userVotes[p.id] 
-              : (p.userVote !== undefined ? p.userVote : (userVotes[p.id] || undefined));
+              : (userVotes[p.id] || p.userVote || undefined);
 
             const isSaved = savedPostsIds.has(p.id) || !!p.isSaved;
             const isFollowingAuthor = followedUserIds.has(p.authorId);
