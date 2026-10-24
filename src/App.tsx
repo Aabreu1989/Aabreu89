@@ -376,29 +376,40 @@ const AppContent: React.FC = () => {
         const uId = user?.id || 'guest';
         const arr = [...likedPostsIds];
         localStorage.setItem('mira_liked_posts', JSON.stringify(arr));
-        localStorage.setItem(`mira_liked_posts_${uId}`, JSON.stringify(arr));
-    }, [likedPostsIds, user?.id]);
+        // 🛡️ MIRA GOLD: Só persistir a chave user-specific após a sessão estar resolvida.
+        // Durante isInitializing=true, likedPostsIds pode ainda estar vazio (antes de fetchUserInteractions).
+        // Escrever [] nessa chave destruiria o cache e os likes desapareceriam no próximo arranque.
+        if (!isInitializing && uId !== 'guest') {
+            localStorage.setItem(`mira_liked_posts_${uId}`, JSON.stringify(arr));
+        }
+    }, [likedPostsIds, user?.id, isInitializing]);
 
     useEffect(() => {
         const uId = user?.id || 'guest';
         const arr = [...likedCommentsIds];
         localStorage.setItem('mira_liked_comments', JSON.stringify(arr));
-        localStorage.setItem(`mira_liked_comments_${uId}`, JSON.stringify(arr));
-    }, [likedCommentsIds, user?.id]);
+        if (!isInitializing && uId !== 'guest') {
+            localStorage.setItem(`mira_liked_comments_${uId}`, JSON.stringify(arr));
+        }
+    }, [likedCommentsIds, user?.id, isInitializing]);
 
     useEffect(() => {
         const uId = user?.id || 'guest';
         localStorage.setItem('mira_user_votes', JSON.stringify(userVotes));
-        localStorage.setItem(`mira_user_votes_${uId}`, JSON.stringify(userVotes));
-    }, [userVotes, user?.id]);
+        if (!isInitializing && uId !== 'guest') {
+            localStorage.setItem(`mira_user_votes_${uId}`, JSON.stringify(userVotes));
+        }
+    }, [userVotes, user?.id, isInitializing]);
 
     useEffect(() => { 
         const uId = user?.id || 'guest';
         const arr = [...savedPostsIds];
         localStorage.setItem('mira_saved_posts', JSON.stringify(arr)); 
-        localStorage.setItem(`mira_saved_posts_${uId}`, JSON.stringify(arr)); 
+        if (!isInitializing && uId !== 'guest') {
+            localStorage.setItem(`mira_saved_posts_${uId}`, JSON.stringify(arr)); 
+        }
         persistence.set('saved_posts', arr); // V2026.PRO: Iron Persistence
-    }, [savedPostsIds, user?.id]); 
+    }, [savedPostsIds, user?.id, isInitializing]); 
 
     const fetchSavedPosts = async (userId: string): Promise<Set<string>> => {
         try {
