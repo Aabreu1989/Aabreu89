@@ -90,3 +90,75 @@ describe('🛡️ MIRA GOLD: PRESERVAÇÃO DO FIX FRONTEND (COMMIT 632ace93)', (
     assert.ok(communityViewCode.includes('hasPendingVote'), 'Deve verificar ações pendentes de vote');
   });
 });
+
+describe('⚡ MIRA GOLD: FIX DA CORRIDA DE HIDRATAÇÃO DE SESSÃO & CARREGAMENTO DO FEED', () => {
+  const appPath = path.resolve(process.cwd(), 'src/App.tsx');
+  const appCode = fs.readFileSync(appPath, 'utf8');
+
+  test('T-INIT-01: Não há chamada prematura a fetchPosts no mount antes de isInitializing === false', () => {
+    // No mount effect (deps []), não deve existir import('communityService').fetchPosts
+    const mountEffectMatch = appCode.match(/useEffect\(\(\)\s*=>\s*\{[\s\S]+?initPageSDKs[\s\S]+?\}\s*,\s*\[\]\);/);
+    assert.ok(mountEffectMatch, 'Mount effect deve existir');
+    assert.ok(
+      !mountEffectMatch[0].includes('communityService.fetchPosts'),
+      'Mount effect não deve conter chamada prematura a fetchPosts antes da sessão'
+    );
+  });
+
+  test('T-INIT-02: Carregamento do feed é guardado por isInitializing e lastLoadedSessionUserIdRef', () => {
+    assert.ok(
+      appCode.includes('lastLoadedSessionUserIdRef'),
+      'Deve declarar lastLoadedSessionUserIdRef para deduplicação soberana'
+    );
+    assert.ok(
+      appCode.includes('if (lastLoadedSessionUserIdRef.current === currentAuthId) return;'),
+      'Deve barrar chamadas duplicadas para o mesmo currentAuthId'
+    );
+  });
+
+  test('T-INIT-03: Removido useEffect concorrente duplicado com refreshData em [user?.id]', () => {
+    assert.ok(
+      !appCode.includes('useEffect(() => {\n        if (user?.id) {\n            refreshData();\n        }\n    }, [user?.id]);'),
+      'Não deve existir useEffect concorrente disparando refreshData em [user?.id]'
+    );
+  });
+
+  test('T-INIT-04: loadSavedLikes e loadSavedVotes isolam completamente utilizadores anónimos (!uId)', () => {
+    assert.ok(
+      /if\s*\(!uId\)\s*return\s*new\s*Set\(\);/.test(appCode),
+      'loadSavedLikes deve retornar Set vazio quando !uId'
+    );
+    assert.ok(
+      /if\s*\(!uId\)\s*return\s*\{\};/.test(appCode),
+      'loadSavedVotes deve retornar objeto vazio quando !uId'
+    );
+  });
+
+  test('T-INIT-05: SIGNED_OUT limpa estado pessoal de interações e reseta ref de sessão', () => {
+    const signedOutBlock = appCode.match(/event === 'SIGNED_OUT'\)\s*\{[\s\S]+?setIsInitializing\(false\);/);
+    assert.ok(signedOutBlock, 'Bloco SIGNED_OUT deve existir');
+    const code = signedOutBlock[0];
+    assert.ok(code.includes('setLikedPostsIds(new Set())'), 'Deve resetar setLikedPostsIds');
+    assert.ok(code.includes('setUserVotes({})'), 'Deve resetar setUserVotes');
+    assert.ok(code.includes('setSavedPostsIds(new Set())'), 'Deve resetar setSavedPostsIds');
+    assert.ok(code.includes("localStorage.removeItem('mira_liked_posts')"), 'Deve limpar mira_liked_posts');
+    assert.ok(code.includes("localStorage.removeItem('mira_user_votes')"), 'Deve limpar mira_user_votes');
+    assert.ok(code.includes('lastLoadedSessionUserIdRef.current = null'), 'Deve resetar ref de sessão');
+  });
+
+  test('T-INIT-06: refreshData reconcilia canonicamente e suporta sessão anónima sem fuga', () => {
+    assert.ok(
+      appCode.includes('isLikedByUser: interactions.likes.has(p.id) || !!p.isLikedByUser'),
+      'refreshData deve reconciliar com || !!p.isLikedByUser'
+    );
+    assert.ok(
+      appCode.includes('userVote: interactions.votes[p.id] || p.userVote || undefined'),
+      'refreshData deve reconciliar com || p.userVote'
+    );
+    assert.ok(
+      appCode.includes('isLikedByUser: false'),
+      'refreshData anónimo deve fixar isLikedByUser: false'
+    );
+  });
+});
+

@@ -188,7 +188,8 @@ const AppContent: React.FC = () => {
         try {
             const userStr = localStorage.getItem('mira_user');
             const uId = userStr ? JSON.parse(userStr)?.id : null;
-            const key = uId ? `mira_liked_posts_${uId}` : 'mira_liked_posts';
+            if (!uId) return new Set();
+            const key = `mira_liked_posts_${uId}`;
             const val = localStorage.getItem(key);
             if (val) {
                 const parsed = JSON.parse(val);
@@ -202,7 +203,8 @@ const AppContent: React.FC = () => {
         try {
             const userStr = localStorage.getItem('mira_user');
             const uId = userStr ? JSON.parse(userStr)?.id : null;
-            const key = uId ? `mira_saved_posts_${uId}` : 'mira_saved_posts';
+            if (!uId) return new Set();
+            const key = `mira_saved_posts_${uId}`;
             const val = localStorage.getItem(key);
             if (val) {
                 const parsed = JSON.parse(val);
@@ -216,7 +218,8 @@ const AppContent: React.FC = () => {
         try {
             const userStr = localStorage.getItem('mira_user');
             const uId = userStr ? JSON.parse(userStr)?.id : null;
-            const key = uId ? `mira_liked_comments_${uId}` : 'mira_liked_comments';
+            if (!uId) return new Set();
+            const key = `mira_liked_comments_${uId}`;
             const val = localStorage.getItem(key);
             if (val) {
                 const parsed = JSON.parse(val);
@@ -230,7 +233,8 @@ const AppContent: React.FC = () => {
         try {
             const userStr = localStorage.getItem('mira_user');
             const uId = userStr ? JSON.parse(userStr)?.id : null;
-            const key = uId ? `mira_user_votes_${uId}` : 'mira_user_votes';
+            if (!uId) return {};
+            const key = `mira_user_votes_${uId}`;
             const val = localStorage.getItem(key);
             if (val) {
                 const parsed = JSON.parse(val);
@@ -254,6 +258,9 @@ const AppContent: React.FC = () => {
         // The DB fetch in useEffect will merge real posts on top
         return DEFAULT_FALLBACK_POSTS;
     });
+
+    // 🛡️ MIRA GOLD: Ref para deduplicação soberana de carregamento inicial/sessão
+    const lastLoadedSessionUserIdRef = React.useRef<string | null | undefined>(undefined);
 
     // REFS for Pull-to-Refresh
     const touchStartY = React.useRef(0);
@@ -331,41 +338,9 @@ const AppContent: React.FC = () => {
             setCourses(prev => prev.length === 0 ? [...IEFP_MASSIVE_DATABASE, ...DGES_RECOGNIZED_DATABASE] : prev);
         });
 
-        import('./services/communityService').then(({ communityService }) => {
-            communityService.fetchPosts(user?.id).then(fetchedPosts => {
-                if (fetchedPosts && fetchedPosts.length > 0) {
-                    setMasterPosts(prev => {
-                        const prevMap = new Map(prev.map(p => [p.id, p]));
-                        const merged = fetchedPosts.map(remotePost => {
-                            const localPost = prevMap.get(remotePost.id);
-                            if (!localPost) return remotePost;
-                            
-                            // Merge comments: include remote comments + any local comments created by user that aren't in remote
-                            const remoteCommentIds = new Set((remotePost.comments || []).map(c => c.id));
-                            const extraLocalComments = (localPost.comments || []).filter(c => !remoteCommentIds.has(c.id));
-                            const mergedComments = [...(remotePost.comments || []), ...extraLocalComments];
-
-                            return {
-                                ...remotePost,
-                                likes: remotePost.likes ?? 0,
-                                usefulVotes: remotePost.usefulVotes ?? 0,
-                                fakeVotes: remotePost.fakeVotes ?? 0,
-                                comments: mergedComments
-                            };
-                        });
-
-                        // Keep local-only posts (e.g. pending offline posts starting with local-)
-                        prev.forEach(p => {
-                            if (!merged.some(m => m.id === p.id) && String(p.id).startsWith('local-')) {
-                                merged.unshift(p);
-                            }
-                        });
-
-                        return merged;
-                    });
-                }
-            });
-        });
+        // 🛡️ MIRA GOLD: O carregamento do feed da comunidade foi movido para o hook de sessão
+        // resolvido (isInitializing === false), eliminando a condição de corrida no arranque.
+        
         
         // MIRA V26.90: Global Audio High-End Gesture Bridge
         // Prime the audio system on the very first interaction with the app
@@ -434,8 +409,7 @@ const AppContent: React.FC = () => {
             if (!error && data) {
                 data.forEach(d => localSaved.add(String(d.post_id)));
             }
-            setSavedPostsIds(prev => new Set([...prev, ...localSaved])); 
-            localStorage.setItem('mira_saved_posts', JSON.stringify([...localSaved]));
+            setSavedPostsIds(localSaved); 
             localStorage.setItem(`mira_saved_posts_${userId}`, JSON.stringify([...localSaved]));
             persistence.set('saved_posts', [...localSaved]);
             return localSaved;
@@ -559,16 +533,64 @@ const AppContent: React.FC = () => {
         }
     };
 
-    useEffect(() => { 
-        if (user?.id) {
-            fetchSavedPosts(user.id);
-            fetchUserInteractions(user.id);
+    // 🛡️ CARREGAMENTO CANÓNICO SOBERANO DO FEED E INTERAÇÕES
+    // Dispara APENAS após a sessão inicial ser resolvida por supabase.auth.getSession() (isInitializing === false)
+    useEffect(() => {
+        if (isInitializing) return;
+
+        const currentAuthId = user?.id || null;
+
+        // Evitar chamadas concorrentes duplicadas durante arranque e INITIAL_SESSION
+        if (lastLoadedSessionUserIdRef.current === currentAuthId) return;
+        lastLoadedSessionUserIdRef.current = currentAuthId;
+
+        if (currentAuthId) {
+            // 🛡️ SESSÃO AUTENTICADA:
+            Promise.all([
+                fetchSavedPosts(currentAuthId),
+                fetchUserInteractions(currentAuthId)
+            ]).then(() => {
+                import('./services/communityService').then(({ communityService }) => {
+                    communityService.fetchPosts(currentAuthId).then(fetchedPosts => {
+                        if (fetchedPosts && fetchedPosts.length > 0) {
+                            setMasterPosts(prev => {
+                                const prevMap = new Map(prev.map(p => [p.id, p]));
+                                const merged = fetchedPosts.map(remotePost => {
+                                    const localPost = prevMap.get(remotePost.id);
+                                    if (!localPost) return remotePost;
+                                    const remoteCommentIds = new Set((remotePost.comments || []).map(c => c.id));
+                                    const extraLocalComments = (localPost.comments || []).filter(c => !remoteCommentIds.has(c.id));
+                                    return {
+                                        ...remotePost,
+                                        comments: [...(remotePost.comments || []), ...extraLocalComments]
+                                    };
+                                });
+                                prev.forEach(p => {
+                                    if (!merged.some(m => m.id === p.id) && String(p.id).startsWith('local-')) {
+                                        merged.unshift(p);
+                                    }
+                                });
+                                return merged;
+                            });
+                        }
+                    });
+                });
+            });
+
+        } else {
+            // 🌐 SESSÃO ANÓNIMA:
+            // Limpar interações pessoais de qualquer utilizador anterior
+            setLikedPostsIds(new Set());
+            setLikedCommentsIds(new Set());
+            setUserVotes({});
+            setSavedPostsIds(new Set());
+
             import('./services/communityService').then(({ communityService }) => {
-                communityService.fetchPosts(user.id).then(fetchedPosts => {
+                communityService.fetchPosts(undefined).then(fetchedPosts => {
                     if (fetchedPosts && fetchedPosts.length > 0) {
                         setMasterPosts(prev => {
                             const prevMap = new Map(prev.map(p => [p.id, p]));
-                            return fetchedPosts.map(remotePost => {
+                            const merged = fetchedPosts.map(remotePost => {
                                 const localPost = prevMap.get(remotePost.id);
                                 if (!localPost) return remotePost;
                                 const remoteCommentIds = new Set((remotePost.comments || []).map(c => c.id));
@@ -578,11 +600,21 @@ const AppContent: React.FC = () => {
                                     comments: [...(remotePost.comments || []), ...extraLocalComments]
                                 };
                             });
+                            prev.forEach(p => {
+                                if (!merged.some(m => m.id === p.id) && String(p.id).startsWith('local-')) {
+                                    merged.unshift(p);
+                                }
+                            });
+                            return merged;
                         });
                     }
                 });
             });
+        }
+    }, [isInitializing, user?.id]);
 
+    useEffect(() => { 
+        if (user?.id) {
             // V98.0 REAL-TIME OR NOTHING PROTOCOL
             const channel = supabase
                 .channel('community_realtime')
@@ -771,8 +803,6 @@ const AppContent: React.FC = () => {
                 const u = authService.mapProfileToUser(profile, authUser);
                 setUser(u);
                 localStorage.setItem('mira_user', JSON.stringify(u));
-                fetchSavedPosts(u.id);
-                fetchUserInteractions(u.id);
                 setShowSplash(false);
                 setIsInitializing(false);
                 sessionStorage.setItem('mira_splash_shown', 'true');
@@ -843,8 +873,6 @@ const AppContent: React.FC = () => {
                         setHasSupabaseSession(true);
                         setUser(u);
                         localStorage.setItem('mira_user', JSON.stringify(u));
-                        fetchSavedPosts(u.id);
-                        fetchUserInteractions(u.id);
                         setShowSplash(false);
                         setIsInitializing(false);
                         sessionStorage.setItem('mira_splash_shown', 'true');
@@ -875,8 +903,6 @@ const AppContent: React.FC = () => {
                            setHasSupabaseSession(true);
                            setUser(u);
                            localStorage.setItem('mira_user', JSON.stringify(u));
-                           fetchSavedPosts(u.id);
-                           fetchUserInteractions(u.id);
                            setShowSplash(false);
                            setIsInitializing(false);
                         } else if (mounted) {
@@ -892,6 +918,15 @@ const AppContent: React.FC = () => {
                 }
             } else if (event === 'SIGNED_OUT') {
                 setHasSupabaseSession(false);
+                setLikedPostsIds(new Set());
+                setLikedCommentsIds(new Set());
+                setUserVotes({});
+                setSavedPostsIds(new Set());
+                localStorage.removeItem('mira_liked_posts');
+                localStorage.removeItem('mira_liked_comments');
+                localStorage.removeItem('mira_user_votes');
+                localStorage.removeItem('mira_saved_posts');
+                lastLoadedSessionUserIdRef.current = null;
                 // MIRA V2026.GOLD: Prevent view reset on refresh "flicker"
                 // Only clear if we are NOT initializing (which means it's an explicit logout or session loss)
                 if (!isInitializing) {
@@ -926,102 +961,120 @@ const AppContent: React.FC = () => {
     // 3. CORE LOGIC (REFRESH & ACTIONS)
     // ---------------------------------------------------------
     const refreshData = async () => {
-        if (!user?.id || isRefreshing) return;
+        if (isRefreshing) return;
         setIsRefreshing(true);
         try {
-            // [MIRA V2026.GOLD] SOVEREIGN SYNC: Fetch interactions FIRST to avoid flicker
-            const [savedIds, interactions] = await Promise.all([
-                fetchSavedPosts(user.id),
-                fetchUserInteractions(user.id)
-            ]);
-
-            // V48.0: Pagination - Load only 20 posts initially
             const PAGE_SIZE = 20;
-            const dbPosts = await communityService.fetchPosts(user.id, PAGE_SIZE, 0);
-            
-            const hydratedPosts = (dbPosts || []).map(p => ({
-              ...p,
-              category: normalizeCategory(p.category),
-              isLikedByUser: interactions.likes.has(p.id),
-              userVote: interactions.votes[p.id],
-              isSaved: savedIds.has(p.id)
-            }));
 
-            // MIRA V2026.GOLD: Apply pending interactions to fetched posts for local consistency
-            const pendingActions = syncService.getPendingActions();
-            const pendingInteractions = pendingActions.filter(a => ['like', 'vote'].includes(a.action));
-            
-            hydratedPosts.forEach(p => {
-              pendingInteractions.forEach(a => {
-                if (a.payload.postId === p.id) {
-                  if (a.action === 'like') {
-                    p.isLikedByUser = true;
-                    p.likes = (p.likes || 0) + 1;
-                  } else if (a.action === 'vote') {
-                    p.userVote = a.payload.voteType === 'useful' ? 'true' : 'false';
-                    if (a.payload.voteType === 'useful') p.usefulVotes = (p.usefulVotes || 0) + 1;
-                    if (a.payload.voteType === 'fake') p.fakeVotes = (p.fakeVotes || 0) + 1;
-                  }
+            if (user?.id) {
+                // [MIRA V2026.GOLD] SOVEREIGN SYNC: Fetch interactions FIRST to avoid flicker
+                const [savedIds, interactions] = await Promise.all([
+                    fetchSavedPosts(user.id),
+                    fetchUserInteractions(user.id)
+                ]);
+
+                const dbPosts = await communityService.fetchPosts(user.id, PAGE_SIZE, 0);
+                
+                const hydratedPosts = (dbPosts || []).map(p => ({
+                  ...p,
+                  category: normalizeCategory(p.category),
+                  isLikedByUser: interactions.likes.has(p.id) || !!p.isLikedByUser,
+                  userVote: interactions.votes[p.id] || p.userVote || undefined,
+                  isSaved: savedIds.has(p.id) || !!p.isSaved
+                }));
+
+                // MIRA V2026.GOLD: Apply pending interactions to fetched posts for local consistency
+                const pendingActions = syncService.getPendingActions();
+                const pendingInteractions = pendingActions.filter(a => ['like', 'vote'].includes(a.action));
+                
+                hydratedPosts.forEach(p => {
+                  pendingInteractions.forEach(a => {
+                    if (a.payload.postId === p.id) {
+                      if (a.action === 'like') {
+                        p.isLikedByUser = true;
+                        p.likes = (p.likes || 0) + 1;
+                      } else if (a.action === 'vote') {
+                        p.userVote = a.payload.voteType === 'useful' ? 'true' : 'false';
+                        if (a.payload.voteType === 'useful') p.usefulVotes = (p.usefulVotes || 0) + 1;
+                        if (a.payload.voteType === 'fake') p.fakeVotes = (p.fakeVotes || 0) + 1;
+                      }
+                    }
+                  });
+                });
+
+                // MIRA V2026.GOLD: Sovereign Content - relying on syncService
+                setCommOffset(0);
+
+                setMasterPosts(prev => {
+                    const combined = [...hydratedPosts];
+                    
+                    const deletedIds = new Set(
+                        pendingActions
+                            .filter(a => a.action === 'delete_post' || a.action === 'delete' || a.action === 'delete_reported_content' || a.action === 'delete_comment')
+                            .map(a => a.payload.postId || a.payload.id || a.payload.commentId)
+                    );
+
+                    const cleanedPostsFromDB = combined.filter(p => !deletedIds.has(p.id));
+
+                    // 🛡️ MIRA SOVEREIGN: Capture ALL local posts (current pending + previous locals in state)
+                    const currentLocalsInState = (prev || []).filter(p => String(p.id).startsWith('local-'));
+
+                    const pendingPostsFromQueue = pendingActions
+                        .filter(a => a.action === 'post')
+                        .map(a => {
+                            const payload = a.payload;
+                            return {
+                                id: `local-${a.id}`,
+                                authorId: payload.authorId || user.id,
+                                authorName: user.name,
+                                authorAvatar: user.avatar,
+                                content: payload.content,
+                                category: normalizeCategory(payload.category),
+                                timestamp: new Date(a.timestamp).toISOString(),
+                                isPending: true,
+                                likes: 0,
+                                comments: []
+                            } as Post;
+                        });
+
+                    const allPotentialLocals = [...pendingPostsFromQueue, ...currentLocalsInState];
+                    
+                    // Deduplicate locals by content against DB
+                    const dbContents = new Set((dbPosts || []).map(p => p.content));
+                    const uniqueLocals = allPotentialLocals.filter(p => !dbContents.has(p.content));
+                    
+                    // Final merge with ID-based deduplication
+                    const finalMap = new Map();
+                    cleanedPostsFromDB.forEach(p => finalMap.set(p.id, p));
+                    uniqueLocals.forEach(p => finalMap.set(p.id, p));
+
+                    return Array.from(finalMap.values()).sort((a,b) => 
+                        new Date(b.timestamp || b.created_at).getTime() - new Date(a.timestamp || a.created_at).getTime()
+                    );
+                });
+
+                setCommOffset(PAGE_SIZE);
+                setHasMorePosts((dbPosts || []).length === PAGE_SIZE);
+            } else {
+                // 🌐 REFRESH EM SESSÃO ANÓNIMA:
+                setLikedPostsIds(new Set());
+                setLikedCommentsIds(new Set());
+                setUserVotes({});
+                setSavedPostsIds(new Set());
+
+                const dbPosts = await communityService.fetchPosts(undefined, PAGE_SIZE, 0);
+                if (dbPosts && dbPosts.length > 0) {
+                    setMasterPosts(dbPosts.map(p => ({
+                        ...p,
+                        category: normalizeCategory(p.category),
+                        isLikedByUser: false,
+                        userVote: undefined,
+                        isSaved: false
+                    })));
                 }
-              });
-            });
-
-            // MIRA V2026.GOLD: Sovereign Content - relying on syncService
-            setCommOffset(0);
-
-            setMasterPosts(prev => {
-                const combined = [...hydratedPosts];
-                
-                const deletedIds = new Set(
-                    pendingActions
-                        .filter(a => a.action === 'delete_post' || a.action === 'delete' || a.action === 'delete_reported_content' || a.action === 'delete_comment')
-                        .map(a => a.payload.postId || a.payload.id || a.payload.commentId)
-                );
-
-                const cleanedPostsFromDB = combined.filter(p => !deletedIds.has(p.id));
-
-                // 🛡️ MIRA SOVEREIGN: Capture ALL local posts (current pending + previous locals in state)
-                const currentLocalsInState = (prev || []).filter(p => String(p.id).startsWith('local-'));
-
-                const pendingPostsFromQueue = pendingActions
-                    .filter(a => a.action === 'post')
-                    .map(a => {
-                        const payload = a.payload;
-                        return {
-                            id: `local-${a.id}`,
-                            authorId: payload.authorId || user.id,
-                            authorName: user.name,
-                            authorAvatar: user.avatar,
-                            content: payload.content,
-                            category: normalizeCategory(payload.category),
-                            timestamp: new Date(a.timestamp).toISOString(),
-                            isPending: true,
-                            likes: 0,
-                            comments: []
-                        } as Post;
-                    });
-
-                const allPotentialLocals = [...pendingPostsFromQueue, ...currentLocalsInState];
-                
-                // Deduplicate locals by content against DB
-                const dbContents = new Set((dbPosts || []).map(p => p.content));
-                const uniqueLocals = allPotentialLocals.filter(p => !dbContents.has(p.content));
-                
-                // Final merge with ID-based deduplication
-                const finalMap = new Map();
-                cleanedPostsFromDB.forEach(p => finalMap.set(p.id, p));
-                uniqueLocals.forEach(p => finalMap.set(p.id, p));
-
-                return Array.from(finalMap.values()).sort((a,b) => 
-                    new Date(b.timestamp || b.created_at).getTime() - new Date(a.timestamp || a.created_at).getTime()
-                );
-            });
-
-            setCommOffset(PAGE_SIZE);
-            setHasMorePosts(dbPosts.length === PAGE_SIZE);
-            
-            await fetchSavedPosts(user.id);
-            await fetchUserInteractions(user.id);
+                setCommOffset(PAGE_SIZE);
+                setHasMorePosts((dbPosts || []).length === PAGE_SIZE);
+            }
 
             // Fetch Courses from DB
             const { courseService } = await import('./services/courseService');
@@ -1118,11 +1171,6 @@ const AppContent: React.FC = () => {
         };
     }, [user?.id]);
 
-    useEffect(() => {
-        if (user?.id) {
-            refreshData();
-        }
-    }, [user?.id]);
 
     // V5.4.1: Handle auth callback URL on mount only (not on user change)
     useEffect(() => {
