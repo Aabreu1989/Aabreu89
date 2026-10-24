@@ -357,8 +357,8 @@ describe('🏛️ MIRA AIMA LEGAL COMPLIANCE ENGINE 2026 (AUDITORIA FORENSE E BA
     assert.equal(fee.reductionRule, 'insufficient_official_source');
   });
 
-  // ─── T-AIMA-13: Renovação de AR e Deferimento Tácito (Art. 82.º, n.º 6 e 7) ───
-  it('T-AIMA-13: Prazos de Renovação — 60 Dias (Art. 82.º, n.º 6) e Deferimento Tácito (Art. 82.º, n.º 7)', () => {
+  // ─── T-AIMA-13: Renovação de AR — 60 Dias (Art. 82.º, n.º 6) e Revogação do Deferimento Tácito (Lei 62/2026) ───
+  it('T-AIMA-13: Prazos de Renovação — 60 Dias (Art. 82.º, n.º 6) e Revogação do Deferimento Tácito (Lei n.º 62/2026)', () => {
     // 1. Processo de renovação com 45 dias decorridos (Dentro do prazo legal)
     const dWithin = AimaDeadlineEngine.evaluateDeadline({
       procedureType: 'residence_renewal',
@@ -369,17 +369,19 @@ describe('🏛️ MIRA AIMA LEGAL COMPLIANCE ENGINE 2026 (AUDITORIA FORENSE E BA
     assert.equal(dWithin.tacitApprovalApplicable, false);
     assert.equal(dWithin.status, 'within_legal_deadline');
 
-    // 2. Processo de renovação com 65 dias decorridos sem culpa do requerente (Deferimento Tácito Concedido)
-    const dTacit = AimaDeadlineEngine.evaluateDeadline({
+    // 2. Processo de renovação com 65 dias decorridos (Mora Administrativa / Deferimento Tácito Revogado pela Lei 62/2026)
+    const dExpired = AimaDeadlineEngine.evaluateDeadline({
       procedureType: 'residence_renewal',
       daysElapsed: 65,
       faultAttributableToApplicant: false
     });
-    assert.equal(dTacit.isExpired, true);
-    assert.equal(dTacit.tacitApprovalApplicable, true);
-    assert.equal(dTacit.status, 'tacit_approval_granted');
-    assert.equal(dTacit.provenance.article, 'Artigo 82.º, n.º 6 e n.º 7');
-    assert.equal(dTacit.provenance.legalBasis, 'Lei n.º 23/2007');
+    assert.equal(dExpired.isExpired, true);
+    assert.equal(dExpired.tacitApprovalApplicable, false); // Revogado expressamente pela Lei n.º 62/2026
+    assert.equal(dExpired.status, 'administrative_delay');
+    assert.ok(dExpired.potentialLegalRecourse);
+    assert.equal(dExpired.potentialLegalRecourse?.primaryRecourse, 'cpta_intimacao_ato_devido');
+    assert.equal(dExpired.provenance.article, 'Artigo 82.º, n.º 6 (n.º 7 revogado)');
+    assert.ok(dExpired.provenance.legalBasis.includes('Lei n.º 62/2026'));
   });
 
   // ─── T-AIMA-14: Concessão de AR com Visto (Artigo 82.º, n.º 5) ────────────────

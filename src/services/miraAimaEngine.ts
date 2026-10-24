@@ -60,6 +60,8 @@ export const NORMATIVE_AIMA_2026 = {
   JOB_SEARCH_MULTIPLIER: 3,    // 3 × RMMG (Art. 57.º-A Lei 23/2007)
   DIGITAL_NOMAD_MULTIPLIER: 4, // 4 × RMMG (Art. 90.º-A Lei 23/2007)
   LEGACY_CUTOFF_DATE: '2024-06-03', // DL 37-A/2024
+  LAW_62_2026_EFFECTIVE_DATE: '2026-09-11', // Lei n.º 62/2026 (Transposição do Pacto Europeu / Fim do Deferimento Tácito)
+  RENEWAL_PORTAL_WINDOW_END: '2027-01-31', // Janela oficial AIMA de renovações online (outubro/2026 para caducidades até jan/2027)
 };
 
 // ─── TIPOS FUNDAMENTAIS ────────────────────────────────────────────────────────
@@ -568,13 +570,19 @@ export class AimaDeadlineEngine {
       const legalDeadlineDays = 60;
       const isExpired = params.daysElapsed > legalDeadlineDays;
 
-      // Lei n.º 62/2026, de 10 de setembro (em vigor desde 11 de setembro de 2026):
+      // Lei n.º 62/2026, de 10 de setembro (em vigor desde 11 de setembro de 2026, aplicada em outubro/2026):
       // Revogação expressa do n.º 7 do Artigo 82.º da Lei 23/2007. O decurso do prazo de 60 dias
       // sem decisão já NÃO gera deferimento tácito automático, constituindo mora administrativa.
       let status: AimaDeadlineAssessment['status'] = 'within_legal_deadline';
+      let recourse: AimaDeadlineAssessment['potentialLegalRecourse'] = null;
 
       if (isExpired) {
         status = 'administrative_delay';
+        recourse = {
+          primaryRecourse: 'cpta_intimacao_ato_devido',
+          urgentSubsidiaryRecourse: 'cpta_direitos_liberdades',
+          recourseNotice: 'Decorrido o prazo legal de 60 dias sem decisão da AIMA, opera a mora administrativa (o deferimento tácito foi expressamente revogado pela Lei n.º 62/2026). O requerente pode intentar Ação de Intimação para a Prática de Ato Legalmente Devido (Artigo 66.º e seguintes do CPTA) junto do Tribunal Administrativo de Círculo, ou Intimação Urgente para Proteção de Direitos, Liberdades e Garantias (Artigo 109.º do CPTA).'
+        };
       }
 
       return {
@@ -585,13 +593,14 @@ export class AimaDeadlineEngine {
         isExpired,
         tacitApprovalApplicable: false, // Revogado expressamente pela Lei n.º 62/2026
         status,
+        potentialLegalRecourse: recourse,
         provenance: {
           ruleId: 'RULE_AIMA_DEADLINE_RENEWAL',
           legalBasis: 'Lei n.º 23/2007 (com alterações da Lei n.º 62/2026)',
           article: 'Artigo 82.º, n.º 6 (n.º 7 revogado)',
           officialSource: 'Diário da República — Lei n.º 62/2026, de 10 de setembro',
           effectiveFrom: '2026-09-11',
-          verifiedAt: '2026-10-05'
+          verifiedAt: '2026-10-24'
         }
       };
     }
@@ -804,20 +813,101 @@ export class AimaDocumentEngine {
       });
     }
 
+    if (pathwayId === 'student_d4') {
+      docs.push({
+        code: 'doc_student_visa_d4',
+        name: 'Visto Consular de Residência D4 Válido (Artigo 91.º, n.º 1)',
+        description: 'Visto prévio de residência para estudantes emitido no país de origem antes de viajar para Portugal.',
+        whereToObtain: 'Posto Consular ou Embaixada de Portugal no país de residência habitual.',
+        officialGuidance: 'A Lei n.º 62/2026 extinguiu a regularização interna pós-chegada de estudantes. É estritamente obrigatório dispor de visto consular prévio emitido antes da viagem.',
+        provenance: {
+          ruleId: 'RULE_DOC_STUDENT_D4_VISA',
+          legalBasis: 'Lei n.º 23/2007 (com redação da Lei n.º 62/2026)',
+          article: 'Artigo 91.º, n.º 1',
+          officialSource: 'Diário da República — Lei n.º 62/2026, de 10 de setembro',
+          effectiveFrom: '2026-09-11',
+          verifiedAt: '2026-10-24'
+        }
+      });
+      docs.push({
+        code: 'doc_student_enrollment',
+        name: 'Comprovativo de Matrícula ou Aceitação no Ensino Superior',
+        description: 'Documento oficial comprovativo de matrícula ativa ou aceitação em curso de ensino superior reconhecido pela DGES.',
+        whereToObtain: 'Estabelecimento de Ensino Superior em Portugal.',
+        officialGuidance: 'Deve comprovar a inscrição em ciclo de estudos conducente a grau ou formação oficialmente equiparada.',
+        provenance: {
+          ruleId: 'RULE_DOC_STUDENT_ENROLLMENT',
+          legalBasis: 'Lei n.º 23/2007',
+          article: 'Artigo 91.º, n.º 1, al. a)',
+          officialSource: 'Diário da República — Lei n.º 23/2007 consolidada',
+          effectiveFrom: '2007-07-04',
+          verifiedAt: '2026-10-24'
+        }
+      });
+      docs.push({
+        code: 'doc_student_subsistence',
+        name: 'Comprovativo de Meios de Subsistência e Pagamento de Propinas',
+        description: 'Bolsa de estudo oficial, depósito bancário próprio para o ano letivo ou Termo de Responsabilidade.',
+        whereToObtain: 'Instituição de ensino, entidade de bolsa ou instituição bancária.',
+        officialGuidance: 'Deve garantir a cobertura do custo de vida e propinas durante a vigência do título.',
+        provenance: {
+          ruleId: 'RULE_DOC_STUDENT_SUBSISTENCE',
+          legalBasis: 'Portaria n.º 1563/2007',
+          article: 'Artigo 2.º e Artigo 4.º',
+          officialSource: 'Diário da República n.º 238/2007, Série I',
+          effectiveFrom: '2007-12-12',
+          verifiedAt: '2026-10-24'
+        }
+      });
+    }
+
+    if (pathwayId === 'family_reunification') {
+      docs.push({
+        code: 'doc_family_certs',
+        name: 'Certidões Oficiais de Vínculo de Parentesco',
+        description: 'Certidão de casamento, união de facto ou nascimento de descendentes/dependentes apostiladas e traduzidas.',
+        whereToObtain: 'Registo Civil do país de origem com Apostila de Haia e tradução certificada.',
+        officialGuidance: 'Documentos emitidos no estrangeiro devem ter menos de 6 meses de validade e certificação oficial.',
+        provenance: {
+          ruleId: 'RULE_DOC_FAMILY_CERTS',
+          legalBasis: 'Lei n.º 23/2007',
+          article: 'Artigo 98.º e Artigo 103.º',
+          officialSource: 'Diário da República — Lei n.º 23/2007',
+          effectiveFrom: '2007-07-04',
+          verifiedAt: '2026-10-24'
+        }
+      });
+      docs.push({
+        code: 'doc_family_sponsor_permit',
+        name: 'Título de Residência Válido do Cidadão Chamador',
+        description: 'Autorização de Residência ativa do familiar residente em território nacional.',
+        whereToObtain: 'AIMA (cidadão residente em Portugal).',
+        officialGuidance: 'O chamador deve ser titular de título de residência válido com termo superior a 1 ano (ou sem limite de termo nas situações elegíveis).',
+        provenance: {
+          ruleId: 'RULE_DOC_FAMILY_SPONSOR',
+          legalBasis: 'Lei n.º 23/2007',
+          article: 'Artigo 98.º, n.º 1',
+          officialSource: 'Diário da República — Lei n.º 23/2007',
+          effectiveFrom: '2007-07-04',
+          verifiedAt: '2026-10-24'
+        }
+      });
+    }
+
     if (pathwayId === 'art122_special') {
       docs.push({
         code: 'doc_art122_grounds',
-        name: 'Comprovativo do Enquadramento Específico nas Alíneas do Artigo 122.º',
-        description: 'Certidão de nascimento em PT, comprovativo de menor residente a cargo, laços sociais ou relatório médico oficial.',
-        whereToObtain: 'Conservatória do Registo Civil, Tribunal, Estabelecimento de Saúde Oficial SNS.',
-        officialGuidance: 'O pedido de dispensa de visto exige demonstração cabal do enquadramento taxativo nas alíneas do Art. 122.º.',
+        name: 'Comprovativo do Enquadramento Estrito no Artigo 122.º (Lei n.º 62/2026)',
+        description: 'Certidão de nascimento de filho menor de nacionalidade portuguesa (com prova de guarda e sustento efetivo), laços sociais consolidados ou razões de saúde grave.',
+        whereToObtain: 'Conservatória do Registo Civil (filho nacional português), Tribunal ou Estabelecimento de Saúde Oficial SNS.',
+        officialGuidance: 'A Lei n.º 62/2026 restringiu taxativamente a dispensa de visto: a parentalidade é reservada a progenitores de menores com nacionalidade portuguesa que exerçam a autoridade parental.',
         provenance: {
           ruleId: 'RULE_DOC_ART122_SPECIAL',
           legalBasis: 'Lei n.º 23/2007',
           article: 'Artigo 122.º',
-          officialSource: 'Diário da República — Lei n.º 23/2007',
+          officialSource: 'Diário da República — Lei n.º 23/2007 (com redação da Lei n.º 62/2026)',
           effectiveFrom: '2007-07-04',
-          verifiedAt: '2026-09-06'
+          verifiedAt: '2026-10-24'
         }
       });
     }
@@ -959,8 +1049,17 @@ export class MiraAimaEngine {
     if (pathwayId === 'work_d1' || pathwayId === 'entrepreneur_d2') {
       legalWarnings.push('O Decreto-Lei n.º 37-A/2024 revogou as manifestações de interesse. É obrigatória a posse de visto de residência consular prévio.');
     }
+    if (pathwayId === 'student_d4') {
+      legalWarnings.push('A Lei n.º 62/2026 extinguiu a regularização pós-chegada de estudantes em território nacional. É estritamente obrigatório dispor de Visto D4 consular emitido no país de origem antes de viajar.');
+    }
+    if (pathwayId === 'art122_special') {
+      legalWarnings.push('A Lei n.º 62/2026 restringiu a dispensa de visto por parentalidade: é agora reservada exclusivamente a progenitores de menores com nacionalidade portuguesa que exerçam a respetiva autoridade parental.');
+    }
     if (pathwayId === 'passive_income_d7' && !subsistence.d7Detail?.isAvailabilityInPortugalConfirmed) {
       legalWarnings.push('Portaria n.º 1563/2007, Art. 5.º, n.º 6: É obrigatória a comprovação da disponibilidade efetiva dos rendimentos passivos em Portugal.');
+    }
+    if (params.procedureType === 'residence_renewal' && deadlines?.isExpired) {
+      legalWarnings.push('A Lei n.º 62/2026 revogou expressamente o deferimento tácito em renovações de residência. Decorridos 60 dias sem decisão, configura-se mora administrativa impugnável no Tribunal Administrativo de Círculo (CPTA).');
     }
 
     // 7. Determinação do Estado de Conformidade Jurídica (`complianceStatus`)

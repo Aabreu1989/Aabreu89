@@ -83,6 +83,12 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         visa_d4: [
             {
+                docName: "✈️ Visto Consular de Residência D4 Válido (Art. 91.º, n.º 1)",
+                accepted: "Visto prévio de residência para estudantes emitido pela Embaixada ou Posto Consular de Portugal no país de origem antes de viajar.",
+                where: "Posto Consular / Centro de Vistos VFS no país de residência habitual.",
+                hack: "Atenção (Lei n.º 62/2026): A regularização de estudantes sem visto consular prévio em território nacional foi extinta. É estritamente obrigatório dispor de visto D4 emitido antes da deslocação para Portugal."
+            },
+            {
                 docName: "🎓 Matrícula ou Carta de Aceitação",
                 accepted: "Documento oficial de aceitação emitido por universidade, politécnico ou escola secundária em Portugal.",
                 where: "Secretaria da instituição de ensino portuguesa.",
@@ -93,6 +99,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Extrato bancário provando posse de fundos para o ano letivo, comprovativo de bolsa, ou Termo de Responsabilidade assinado por cidadão/residente em Portugal.",
                 where: "Bancos ou declaração assinada pelo familiar/patrocinador.",
                 hack: "Se tiver uma bolsa de estudos oficial ou um contrato de estágio remunerado, estes documentos dispensam a necessidade de provar saldos elevados em conta bancária."
+            }
+        ],
+        student: [
+            {
+                docName: "✈️ Visto Consular de Residência D4 Válido (Art. 91.º, n.º 1)",
+                accepted: "Visto prévio de residência para estudantes emitido pela Embaixada ou Posto Consular de Portugal no país de origem antes de viajar.",
+                where: "Posto Consular / Centro de Vistos VFS no país de residência habitual.",
+                hack: "Atenção (Lei n.º 62/2026): A regularização interna pós-chegada de estudantes foi revogada. É obrigatório solicitar o visto D4 no país de origem antes da viagem."
+            },
+            {
+                docName: "🎓 Matrícula ou Carta de Aceitação no Ensino Superior",
+                accepted: "Documento oficial de aceitação emitido por universidade, politécnico ou estabelecimento de ensino reconhecido pela DGES.",
+                where: "Secretaria da instituição de ensino portuguesa.",
+                hack: "Estudantes residentes têm direito pleno ao trabalho (Art. 97.º da Lei 23/2007). Basta comunicar à AIMA e registar na Segurança Social."
+            },
+            {
+                docName: "💰 Prova de Meios de Subsistência e Alojamento",
+                accepted: "Extrato bancário de fundos próprios para o ano letivo, bolsa oficial ou Termo de Responsabilidade de residente.",
+                where: "Bancos ou entidade emissora da bolsa.",
+                hack: "Bolsas oficiais ou contratos de estágio remunerado cumprem integralmente a exigência de subsistência."
             }
         ],
         visa_job_search: [
@@ -111,10 +137,16 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         art122: [
             {
-                docName: "👥 Certidões de Vínculo Familiar",
-                accepted: "Certidão de Casamento, Certidão de Nascimento dos filhos ou declaração oficial de união de facto.",
-                where: "Registo Civil do país de origem (obrigatoriamente Apostiladas ou legalizadas pelo Consulado Português).",
-                hack: "Qualquer documento emitido em língua estrangeira tem de ser traduzido para português e a tradução deve ser certificada (por notário, advogado português ou Consulado) para ser aceite pela AIMA."
+                docName: "👥 Prova de Enquadramento Estrito no Artigo 122.º (Lei n.º 62/2026)",
+                accepted: "Certidão de Nascimento de filho com nacionalidade portuguesa com prova de exercício efetivo das responsabilidades parentais e sustento, laços sociais históricos consolidados ou relatório médico oficial do SNS.",
+                where: "Conservatória do Registo Civil (filho com nacionalidade portuguesa) ou Estabelecimento Oficial de Saúde SNS.",
+                hack: "Atenção (Lei n.º 62/2026): A via de dispensa de visto por ter filho menor estrangeiro a frequentar escola em Portugal foi revogada. O Art. 122.º, al. k) é agora taxativamente restrito a progenitores de menores de nacionalidade portuguesa que exerçam a respetiva autoridade parental."
+            },
+            {
+                docName: "📄 Registo Criminal e Comprovativo de Alojamento",
+                accepted: "Certificado de Registo Criminal do país de origem apostilado de Haia e atestado de residência da Junta de Freguesia ou contrato de arrendamento registado na AT.",
+                where: "País de origem (Apostila de Haia) e senhorio / Junta de Freguesia.",
+                hack: "O pedido de dispensa de visto é submetido presencialmente na AIMA e beneficia de redução transitória de 25% na taxa oficial (€180,00)."
             }
         ],
         family: [
@@ -196,6 +228,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 where: "Gabinetes locais da OIM e parceiros sociais no país de regresso.",
                 hack: "O subsídio de reintegração pós-chegada não é entregue em dinheiro líquido no aeroporto, mas sim gerido em projetos de capacitação e compra de bens produtivos para garantir a sustentabilidade económica da família."
             }
+        ],
+        residence_renewal: [
+            {
+                docName: "🌐 Pedido Submetido no Portal das Renovações AIMA",
+                accepted: "Comprovativo de renovação submetido online no Portal da AIMA (renovacoes.aima.gov.pt). Janela em vigor em outubro de 2026: títulos com caducidade até 31 de janeiro de 2027.",
+                where: "Portal Digital de Renovações da AIMA.",
+                hack: "A AIMA liberta vagas bimestrais para mitigar a sobrecarga. A taxa oficial online beneficia de 25% de desconto (€56,25). O comprovativo digital emitido com QR Code atesta a legalidade da permanência e os plenos direitos de trabalho."
+            },
+            {
+                docName: "💼 Comprovativo de Rendimentos e Situação Fiscal/Contributiva",
+                accepted: "Recibos de vencimento dos últimos 3 meses ou declaração de IRS com Nota de Liquidação, e certidão de situação regularizada na Segurança Social e Finanças.",
+                where: "Segurança Social Direta e Portal das Finanças.",
+                hack: "A interoperabilidade digital valida a maioria dos registos automaticamente. Decorridos 60 dias sem decisão da AIMA, opera a mora administrativa (o deferimento tácito foi revogado pela Lei 62/2026), assistindo ao requerente recurso aos tribunais administrativos (CPTA)."
+            },
+            {
+                docName: "🏠 Domicílio Fiscal e Alojamento Atualizado",
+                accepted: "Certidão de Domicílio Fiscal emitida no Portal das Finanças ou Contrato de Arrendamento registado com recibos eletrónicos.",
+                where: "Portal das Finanças (AT).",
+                hack: "A morada submetida no portal da AIMA deve coincidir rigorosamente com a morada do NIF e da Segurança Social para assegurar a entrega do cartão físico pelos CTT sem extravios."
+            }
         ]
     },
     en: {
@@ -275,6 +327,12 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         visa_d4: [
             {
+                docName: "✈️ Valid Consular Residence Visa D4 (Art. 91, para 1)",
+                accepted: "Prior student residence visa issued by the Portuguese Embassy/Consulate in your country of origin before travelling.",
+                where: "Consular Post / VFS Visa Application Center in your country of habitual residence.",
+                hack: "Important (Law no. 62/2026): Post-arrival student regularization from tourist status is abolished. Obtaining a prior consular D4 visa before traveling to Portugal is mandatory."
+            },
+            {
                 docName: "🎓 Enrolment or Acceptance Letter",
                 accepted: "Official acceptance document issued by a university, polytechnic, or secondary school in Portugal.",
                 where: "Registrar office of the Portuguese educational institution.",
@@ -285,6 +343,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Bank statement proving possession of funds for the school year, proof of scholarship, or a Statement of Responsibility signed by a citizen/resident in Portugal.",
                 where: "Banks or declaration signed by the relative/sponsor.",
                 hack: "If you have an official scholarship or a paid internship contract, these documents waive the need to prove large bank account balances."
+            }
+        ],
+        student: [
+            {
+                docName: "✈️ Valid Consular Residence Visa D4 (Art. 91, para 1)",
+                accepted: "Prior student residence visa issued by the Portuguese Embassy or Consulate in your country of origin before travel.",
+                where: "Consular Post / VFS Center in your home country.",
+                hack: "Important (Law no. 62/2026): In-country conversion from tourist visa to student permit was repealed. You must apply for a D4 visa abroad before arrival."
+            },
+            {
+                docName: "🎓 Higher Education Enrolment Certificate",
+                accepted: "Official enrollment certificate from a Portuguese higher education institution recognized by DGES.",
+                where: "Academic services of the university or polytechnic.",
+                hack: "Student residents are legally entitled to work (Article 97 of Law 23/2007). Simply notify AIMA and register with Social Security."
+            },
+            {
+                docName: "💰 Proof of Subsistence & Accommodation",
+                accepted: "Bank statement with annual funds, official scholarship proof, or signed Statement of Responsibility.",
+                where: "Financial institution or scholarship awarding entity.",
+                hack: "Official scholarships or paid internship contracts fulfill the subsistence requirement."
             }
         ],
         visa_job_search: [
@@ -303,10 +381,16 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         art122: [
             {
-                docName: "👥 Proof of Family Relationship",
-                accepted: "Marriage Certificate, birth certificates of children, or official declaration of stable civil union.",
-                where: "Civil Registry of the country of origin (must be Apostilled or legalized by the Portuguese Consulate).",
-                hack: "Any document issued in a foreign language must be translated into Portuguese, and the translation must be certified (by a notary, a Portuguese lawyer, or Consulate) to be accepted by AIMA."
+                docName: "👥 Proof of Strict Grounds under Article 122 (Law 62/2026)",
+                accepted: "Birth certificate of minor child holding Portuguese nationality (with proof of effective parental custody and maintenance), established historical community ties, or official NHS medical report.",
+                where: "Civil Registry (Portuguese child) or National Health Service (SNS) medical board.",
+                hack: "Notice (Law no. 62/2026): The visa waiver based on having a foreign minor attending school in Portugal was repealed. Art. 122(k) is now strictly restricted to parents of Portuguese minor citizens exercising parental authority."
+            },
+            {
+                docName: "📄 Police Clearance & Registered Address",
+                accepted: "Hague apostilled criminal record certificate from country of origin and registered lease agreement or Parish Council residence certificate.",
+                where: "Ministry of Justice of home country and Portuguese Tax Authority (AT) / Junta de Freguesia.",
+                hack: "Applications under Art. 122 are submitted in person at AIMA and benefit from a 25% transitional statutory fee discount (€180.00)."
             }
         ],
         family: [
@@ -388,6 +472,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 where: "Local IOM offices and partner organizations in your destination country.",
                 hack: "The post-arrival reintegration grant is managed through tool purchases and vocational projects rather than raw cash, ensuring long-term family self-sufficiency."
             }
+        ],
+        residence_renewal: [
+            {
+                docName: "🌐 Application Submitted via AIMA Renewal Portal",
+                accepted: "Digital receipt of renewal submitted online via AIMA official portal (renovacoes.aima.gov.pt). Window active in October 2026: permits expiring up to January 31, 2027.",
+                where: "AIMA Digital Renewal Portal.",
+                hack: "AIMA opens bi-monthly application batches to manage traffic. The online fee has a statutory 25% discount (€56.25). The QR-code digital receipt certifies legal status and preserves full employment and movement rights."
+            },
+            {
+                docName: "💼 Proof of Income & Clean Tax/Social Security Standing",
+                accepted: "Last 3 months of payslips or IRS declaration with Tax Settlement Note, and clearance certificates from Social Security and Tax Authority (Finanças).",
+                where: "Social Security Direct and Finanças Portal.",
+                hack: "Digital interoperability verifies most records automatically. If AIMA fails to decide within 60 days, administrative delay applies (tacit approval was repealed by Law 62/2026), granting judicial recourse before administrative courts (CPTA)."
+            },
+            {
+                docName: "🏠 Fiscal Residence & Registered Accommodation",
+                accepted: "Tax domicile certificate from Portal das Finanças or registered lease agreement with electronic rent receipts.",
+                where: "Portuguese Tax Authority (AT).",
+                hack: "The address registered on the AIMA portal must match your fiscal domicile precisely to ensure reliable card delivery by postal mail (CTT)."
+            }
         ]
     },
     es: {
@@ -467,6 +571,12 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         visa_d4: [
             {
+                docName: "✈️ Visado de Residencia Consular D4 Válido (Art. 91, ap. 1)",
+                accepted: "Visado de residencia consular previo para estudiantes expedido por el Consulado o Embajada de Portugal en el país de origen antes del viaje.",
+                where: "Puesto Consular / Centro de Visados VFS en el país de residencia habitual.",
+                hack: "Atención (Ley n.º 62/2026): La regularización de estudiantes tras entrar como turista en territorio nacional fue extinguida. Es estrictamente obligatorio disponer de visado D4 antes de viajar a Portugal."
+            },
+            {
                 docName: "🎓 Matrícula o Carta de Aceptación",
                 accepted: "Documento oficial de aceptación emitido por una universidad, politécnico o escuela secundaria en Portugal.",
                 where: "Oficina de registro de la institución educativa portuguesa.",
@@ -477,6 +587,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Extracto bancario que demuestre la posesión de fondos para el año escolar, comprobante de beca o una Declaración de Responsabilidad firmada por un ciudadano/residente en Portugal.",
                 where: "Bancos o declaración firmada por el familiar/patrocinador.",
                 hack: "Si tiene una beca oficial o un contrato de prácticas remuneradas, estos documentos eximen de la necesidad de demostrar saldos bancarios elevados."
+            }
+        ],
+        student: [
+            {
+                docName: "✈️ Visado de Residencia Consular D4 Válido (Art. 91, ap. 1)",
+                accepted: "Visado consular previo de estudios emitido en el país de origen antes del traslado a Portugal.",
+                where: "Consulado de Portugal / Centro VFS en el país de origen.",
+                hack: "Atención (Ley n.º 62/2026): La conversión interna de turista a estudiante en AIMA fue derogada. Debe solicitar el visado D4 antes de ingresar a Portugal."
+            },
+            {
+                docName: "🎓 Matrícula en Educación Superior",
+                accepted: "Certificado de matrícula oficial en una institución de educación superior reconocida por la DGES.",
+                where: "Secretaría académica de la universidad o politécnico portugués.",
+                hack: "Los estudiantes residentes tienen pleno derecho al trabajo (Art. 97 de la Ley 23/2007). Basta con notificar a AIMA y registrarse en la Seguridad Social."
+            },
+            {
+                docName: "💰 Acreditación de Subsistencia y Alojamiento",
+                accepted: "Extracto bancario con fondos anuales, comprobante de beca oficial o Declaración de Responsabilidad.",
+                where: "Entidad bancaria o institución otorgante de la beca.",
+                hack: "Las becas o contratos de prácticas cubren íntegramente la exigencia de medios económicos."
             }
         ],
         visa_job_search: [
@@ -495,10 +625,16 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         art122: [
             {
-                docName: "👥 Pruebas de Vínculo Familiar",
-                accepted: "Certificado de Matrimonio, certificados de nacimiento de los hijos o declaración oficial de unión de hecho estable.",
-                where: "Registro Civil del país de origen (deben estar Apostillados o legalizados por el Consulado Portugués).",
-                hack: "Cualquier documento expedido en un idioma extranjero debe traducirse al portugués y la traducción debe ser certificada (por notario, abogado portugués o Consulado) para ser aceptada por AIMA."
+                docName: "👥 Prueba de Supuestos Estrictos del Artículo 122 (Ley 62/2026)",
+                accepted: "Certificado de nacimiento de hijo con nacionalidad portuguesa (con prueba de ejercicio efectivo de la patria potestad y manutención), arraigo histórico acreditado o informe médico oficial del SNS.",
+                where: "Registro Civil portugués (hijo nacional) o Junta Médica del Servicio Nacional de Salud (SNS).",
+                hack: "Atención (Ley n.º 62/2026): La regularización por tener un hijo menor extranjero escolarizado en Portugal fue revocada. El Art. 122(k) se reserva taxativamente a progenitores de menores con nacionalidad portuguesa que ejerzan la patria potestad."
+            },
+            {
+                docName: "📄 Antecedentes Penales y Domicilio Acreditado",
+                accepted: "Certificado de antecedentes penales del país de origen apostillado y contrato de alquiler registrado en Finanzas o certificado de la Junta de Freguesia.",
+                where: "Ministerio de Justicia del país de origen y Hacienda (Finanças) / Junta de Freguesia.",
+                hack: "Las solicitudes del Art. 122 se presentan de forma presencial en AIMA y cuentan con una reducción transitoria del 25% en la tasa oficial (€180,00)."
             }
         ],
         family: [
@@ -580,6 +716,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 where: "Oficinas locales de la OIM y ONG colaboradoras en el país de destino.",
                 hack: "La ayuda tras la llegada se destina a la compra directa de equipos de trabajo o cursos para garantizar la estabilidad económica de la familia."
             }
+        ],
+        residence_renewal: [
+            {
+                docName: "🌐 Solicitud Presentada en el Portal de Renovaciones AIMA",
+                accepted: "Justificante digital de renovación tramitado en línea a través del portal oficial de AIMA (renovacoes.aima.gov.pt). Ventana activa en octubre de 2026: títulos que vencen hasta el 31 de enero de 2027.",
+                where: "Portal Digital de Renovaciones de AIMA.",
+                hack: "AIMA habilita cupos bimestrales para descongestionar el sistema. La tasa oficial en línea cuenta con un 25% de descuento (€56,25). El resguardo digital con código QR acredita la permanencia regular y mantiene plenos derechos laborales."
+            },
+            {
+                docName: "💼 Acreditación de Ingresos y Situación Tributaria/Seguridad Social",
+                accepted: "Nóminas de los últimos 3 meses o declaración de la renta (IRS) y certificados de estar al corriente con Hacienda y Seguridad Social.",
+                where: "Seguridad Social Directa y Portal de Finanzas.",
+                hack: "La interoperabilidad digital valida casi todos los datos de forma automática. Transcurridos 60 días sin resolución de AIMA, opera la mora administrativa (el silencio positivo fue revocado por la Ley 62/2026), pudiendo acudir al tribunal administrativo (CPTA)."
+            },
+            {
+                docName: "🏠 Domicilio Fiscal y Alojamiento Actualizado",
+                accepted: "Certificado de Domicilio Fiscal emitido por Finanzas o contrato de alquiler registrado con recibos electrónicos.",
+                where: "Autoridad Tributaria portuguesa (Finanças).",
+                hack: "El domicilio en el portal de AIMA debe coincidir con el NIF y la Seguridad Social para evitar devoluciones de la tarjeta postal (CTT)."
+            }
         ]
     },
     fr: {
@@ -659,6 +815,12 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         visa_d4: [
             {
+                docName: "✈️ Visa Consulaire de Résidence D4 Valide (Art. 91, al. 1)",
+                accepted: "Visa de résidence consulaire préalable pour étudiants délivré par le Consulat ou l'Ambassade du Portugal dans le pays d'origine avant le départ.",
+                where: "Poste Consulaire / Centre de Visas VFS dans le pays de résidence habituelle.",
+                hack: "Attention (Loi n.º 62/2026) : La régularisation interne des étudiants entrés comme touristes a été abrogée. Il est strictement obligatoire d'obtenir un visa D4 avant de voyager vers le Portugal."
+            },
+            {
                 docName: "🎓 Inscription ou Lettre d'Acceptation",
                 accepted: "Document officiel d'acceptation délivré par une université, un institut polytechnique ou une école secondaire au Portugal.",
                 where: "Bureau d'inscription de l'établissement d'enseignement portugais.",
@@ -669,6 +831,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Relevé bancaire prouvant la possession de fonds pour l'année scolaire, preuve de bourse ou Déclaration de Prise en Charge signée par un citoyen/résident au Portugal.",
                 where: "Banques ou déclaration signée par le parent/garant.",
                 hack: "Si vous disposez d'une bourse d'études officielle ou d'un contrat de stage rémunéré, ces documents dispensent de l'obligation de prouver des soldes bancaires élevés."
+            }
+        ],
+        student: [
+            {
+                docName: "✈️ Visa Consulaire de Résidence D4 Valide (Art. 91, al. 1)",
+                accepted: "Visa consulaire préalable de long séjour pour études délivré dans le pays d'origine.",
+                where: "Consulat du Portugal / Centre VFS dans le pays d'origine.",
+                hack: "Attention (Loi n.º 62/2026) : La conversion sur place de visa touriste en titre étudiant auprès de l'AIMA est supprimée. La demande consulaire avant l'arrivée est obligatoire."
+            },
+            {
+                docName: "🎓 Inscription dans l'Enseignement Supérieur",
+                accepted: "Attestation d'inscription officielle dans un établissement d'enseignement supérieur reconnu par la DGES.",
+                where: "Services académiques de l'université ou de l'école supérieure.",
+                hack: "Les étudiants résidents ont plein droit de travailler (Art. 97 de la Loi 23/2007). Notification auprès de l'AIMA et affiliation à la Sécurité Sociale requises."
+            },
+            {
+                docName: "💰 Justificatifs de Subsistance et Logement",
+                accepted: "Relevé bancaire prouvant les ressources annuelles, bourse officielle ou Déclaration de Prise en Charge.",
+                where: "Banques ou organisme de bourse.",
+                hack: "Une bourse d'études ou un contrat de stage rémunéré satisfait pleinement à l'exigence de subsistance."
             }
         ],
         visa_job_search: [
@@ -687,10 +869,16 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         ],
         art122: [
             {
-                docName: "👥 Preuve de Lien Familial",
-                accepted: "Acte de Mariage, actes de naissance des enfants ou déclaration officielle d'union stable de fait.",
-                where: "Registre d'état civil du pays d'origine (doivent obligatoirement être Apostillés ou légalisés par le Consulat Portugais).",
-                hack: "Tout document rédigé dans une langue étrangère doit être traduit en portugais, et la traduction doit être certifiée (par un notaire, un avocat portugais ou le Consulat) pour être acceptée par l'AIMA."
+                docName: "👥 Justificatif des Motifs Stricts de l'Article 122 (Loi 62/2026)",
+                accepted: "Acte de naissance d'un enfant mineur de nationalité portugaise (avec preuve d'autorité parentale effective et d'entretien), attaches sociales historiques solides ou rapport médical officiel SNS.",
+                where: "Registre d'état civil (enfant portugais) ou Commission Médicale du Service National de Santé (SNS).",
+                hack: "Attention (Loi n.º 62/2026) : La régularisation au titre de la scolarité d'un enfant étranger a été abrogée. L'Art. 122(k) est désormais strictement réservé aux parents d'enfants mineurs de nationalité portugaise exerçant l'autorité parentale."
+            },
+            {
+                docName: "📄 Casier Judiciaire et Justificatif de Domicile",
+                accepted: "Extrait de casier judiciaire du pays d'origine apostillé et contrat de bail enregistré auprès des impôts ou attestation de la Junta de Freguesia.",
+                where: "Ministère de la Justice du pays d'origine et Administration Fiscale (AT) / Junta de Freguesia.",
+                hack: "Les demandes de l'Art. 122 sont déposées en personne auprès de l'AIMA et bénéficient d'une réduction légale transitoire de 25% sur la taxe officielle (€180,00)."
             }
         ],
         family: [
@@ -771,6 +959,26 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 accepted: "Plan de réintégration socio-économique validé pour le soutien financier post-arrivée (achat d'outils, d'équipements de travail ou formation professionnelle).",
                 where: "Bureaux locaux de l'OIM et partenaires dans le pays de retour.",
                 hack: "L'allocation post-arrivée est investie dans du matériel professionnel et des projets concrets pour assurer l'autonomie durable du foyer."
+            }
+        ],
+        residence_renewal: [
+            {
+                docName: "🌐 Demande Déposée sur le Portail des Renouvellements AIMA",
+                accepted: "Récépissé numérique de renouvellement soumis en ligne sur le portail officiel de l'AIMA (renovacoes.aima.gov.pt). Période active en octobre 2026 : titres expirant jusqu'au 31 janvier 2027.",
+                where: "Portail Numérique de Renouvellement de l'AIMA.",
+                hack: "L'AIMA ouvre des créneaux bimestriels pour éviter les surcharges. Le tarif officiel en ligne bénéficie d'une réduction de 25% (€56,25). Le récépissé avec code QR certifie la régularité du séjour et préserve les droits au travail."
+            },
+            {
+                docName: "💼 Justificatifs de Revenus et Situation Fiscale / Sécurité Sociale",
+                accepted: "Fiches de paie des 3 derniers mois ou déclaration fiscale (IRS), et attestations de régularité délivrées par la Sécurité Sociale et les Impôts (Finanças).",
+                where: "Sécurité Sociale Directe et Portail Finanças.",
+                hack: "L'interopérabilité numérique valide automatiquement la plupart des dossiers. Passé 60 jours sans décision de l'AIMA, le retard administratif est constitué (le silence valant accord ayant été abrogé par la Loi 62/2026), ouvrant droit à un recours devant le tribunal administratif (CPTA)."
+            },
+            {
+                docName: "🏠 Domicile Fiscal et Hébergement Mis à Jour",
+                accepted: "Attestation de domicile fiscal émise par Finanças ou contrat de bail enregistré avec quittances électroniques de loyer.",
+                where: "Administration Fiscale portugaise (AT).",
+                hack: "L'adresse déclarée sur le portail AIMA doit correspondre scrupuleusement au domicile fiscal pour garantir la réception postale de la carte (CTT)."
             }
         ]
     }

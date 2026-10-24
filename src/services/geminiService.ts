@@ -408,13 +408,14 @@ export const CANONICAL_DOMAINS: Record<string, { aliases: string[], PT: string, 
       'faculdade', 'universidade', 'ensino superior', 'estudar em portugal', 'posso estudar', 'estudante pode trabalhar',
       'quiero estudiar en portugal', 'want to study in portugal', 'étudier au portugal'
     ],
-    PT: `🎓 RESIDÊNCIA DE ESTUDANTE & ART. 91.º (LEI DE ESTRANGEIROS):
+    PT: `🎓 RESIDÊNCIA DE ESTUDANTE & ART. 91.º (LEI DE ESTRANGEIROS & LEI N.º 62/2026):
 
-1. ENTRADA LEGAL & VISTO D4:
-Para quem está no país de origem, o percurso inicia-se com o pedido de Visto D4 de Estudante no Consulado de Portugal / VFS, mediante comprovativo de matrícula ou admissão em estabelecimento de Ensino Superior ou cursos oficialmente reconhecidos.
+1. ENTRADA LEGAL & VISTO D4 CONSULAR:
+Para estudar em Portugal, o percurso inicia-se obrigatoriamente com o pedido de Visto D4 de Estudante no Posto Consular de Portugal / VFS no país de residência antes da viagem, mediante comprovativo de matrícula ou admissão em estabelecimento de Ensino Superior ou cursos oficialmente reconhecidos.
 
-2. EM TERRITÓRIO NACIONAL (ART. 91.º, N.º 4):
-Estudantes que tenham entrado legalmente em Portugal e estejam matriculados no Ensino Superior podem requerer a Autorização de Residência diretamente na AIMA em território nacional, sem necessidade de regresso ao país de origem.
+2. EXTINÇÃO DA REGULARIZAÇÃO INTERNA (LEI N.º 62/2026):
+A Lei n.º 62/2026 extinguiu a faculdade de regularização de estudantes entrados em território nacional sem visto consular prévio. É estritamente proibido entrar como turista e tentar regularizar por estudos.
+Após a chegada a Portugal com o Visto D4 consular, o estudante comparece ao agendamento na AIMA para recolha de dados biométricos e emissão do Título de Residência.
 - Requisitos: Matrícula ativa + Comprovativo de propinas + Meios de subsistência (bolsa, apoio familiar ou recursos próprios) + Alojamento + Registo criminal apostilado + Seguro de saúde / inscrição SNS.
 
 3. DIREITO AO TRABALHO (ART. 97.º):
@@ -424,13 +425,14 @@ O estudante residente tem pleno direito legal de trabalhar a contrato ou recibos
 Posicionas-te na Estação 1 (Entrada/Vistos) ou Estação 6 (Residência AIMA).
 
 [view:DOCUMENTS:student:Abrir Requisitos AIMA e Guia de Estudante] [view:LEARNING:Ver Cursos e Equivalências DGES] [view:JOBS:Ver Vagas Compatíveis com Estudante]`,
-    EN: `🎓 STUDENT RESIDENCY & ART. 91 (PORTUGUESE IMMIGRATION LAW):
+    EN: `🎓 STUDENT RESIDENCY & ART. 91 (PORTUGUESE IMMIGRATION LAW & LAW NO. 62/2026):
 
-1. LEGAL ENTRY & D4 VISA:
-From abroad, apply for a D4 Student Visa at the Portuguese Consulate/VFS with proof of enrollment/acceptance in Higher Education or recognized study programs.
+1. MANDATORY CONSULAR ENTRY & D4 VISA:
+To study in Portugal, the legal pathway begins with applying for a D4 Student Visa at the Portuguese Consulate/VFS in your home country before travelling, with proof of enrollment/acceptance in Higher Education or recognized study programs.
 
-2. WITHIN PORTUGAL (ART. 91, PARA 4):
-Students who entered legally and are enrolled in Higher Education can apply for a Residence Permit directly with AIMA in Portugal.
+2. ABOLITION OF IN-COUNTRY REGULARIZATION (LAW NO. 62/2026):
+Law no. 62/2026 repealed the option for students to regularize from within Portugal after entering as tourists. Obtaining a prior consular D4 visa before travelling is strictly mandatory.
+Upon arrival in Portugal holding the D4 visa, the student attends their scheduled AIMA appointment for biometric data and residence permit card issuance.
 - Requirements: Active Enrollment + Tuition payment proof + Means of subsistence + Registered accommodation + Police clearance + Health insurance / SNS.
 
 3. RIGHT TO WORK (ART. 97):
@@ -440,26 +442,28 @@ Student residents are legally entitled to work (employment contract or self-empl
 Anchored in Station 1 (Entry/Visas) or Station 6 (AIMA Residence).
 
 [view:DOCUMENTS:student:Open AIMA Student Guide] [view:LEARNING:View DGES Courses & Equivalence] [view:JOBS:View Student Friendly Jobs]`,
-    ES: `🎓 RESIDENCIA DE ESTUDIANTE Y ART. 91 (LEY DE EXTRANJERÍA DE PORTUGAL):
+    ES: `🎓 RESIDENCIA DE ESTUDIANTE Y ART. 91 (LEY DE EXTRANJERÍA & LEY N.º 62/2026):
 
-1. ENTRADA LEGAL Y VISADO D4:
-Desde el país de origen, el trámite se inicia solicitando el Visado D4 de Estudiante en el Consulado de Portugal / VFS con matrícula o carta de aceptación en Educación Superior.
+1. ENTRADA LEGAL Y VISADO D4 CONSULAR:
+El trámite se inicia obligatoriamente solicitando el Visado D4 de Estudiante en el Consulado de Portugal / VFS en el país de origen antes del viaje, con matrícula o carta de aceptación en Educación Superior.
 
-2. DENTRO DE PORTUGAL (ART. 91, APARTADO 4):
-Los estudiantes matriculados en Educación Superior que hayan entrado legalmente pueden solicitar la Autorización de Residencia directamente en AIMA sin regresar a su país.
+2. EXTINCIÓN DE LA REGULARIZACIÓN INTERNA (LEY N.º 62/2026):
+La Ley n.º 62/2026 derogó la regularización interna para estudiantes ingresados como turistas. Es obligatorio disponer de visado D4 tramitado antes del viaje.
+Tras llegar a Portugal con el visado D4, el estudiante asiste a la cita en AIMA para biometría y emisión de la Tarjeta de Residencia.
 - Requisitos: Matrícula activa + Pago de propinas/tasas + Medios de subsistencia + Alojamiento acreditado + Antecedentes penales + Seguro médico / SNS.
 
 3. DERECHO A TRABAJAR (ART. 97):
 El estudiante residente tiene derecho legal a trabajar (contrato laboral o autónomo/recibos verdes). Debe comunicarse a AIMA y registrarse en la Seguridad Social (NISS).
 
 [view:DOCUMENTS:student:Abrir Requisitos AIMA y Guía de Estudiante] [view:LEARNING:Ver Cursos y Equivalencias DGES] [view:JOBS:Ver Ofertas de Empleo Compatibles]`,
-    FR: `🎓 RÉSIDENCE ÉTUDIANT & ART. 91 (LOI SUR L'IMMIGRATION AU PORTUGAL) :
+    FR: `🎓 RÉSIDENCE ÉTUDIANT & ART. 91 (LOI SUR L'IMMIGRATION & LOI N.º 62/2026) :
 
-1. ENTRÉE LÉGALE & VISA D4 :
-Depuis l'étranger, demandez le Visa D4 Étudiant au Consulat du Portugal / VFS avec attestation d'inscription dans l'Enseignement Supérieur.
+1. ENTRÉE LÉGALE & VISA CONSULAIRE D4 :
+La démarche commence obligatoirement par la demande du Visa D4 Étudiant au Consulat du Portugal / VFS avant le départ, avec attestation d'inscription dans l'Enseignement Supérieur.
 
-2. SUR LE TERRITOIRE PORTUGAIS (ART. 91, AL. 4) :
-Les étudiants inscrits dans l'Enseignement Supérieur entrés légalement peuvent demander le Titre de Séjour directement auprès de l'AIMA.
+2. ABROGATION DE LA RÉGULARISATION SUR PLACE (LOI N.º 62/2026) :
+La Loi n.º 62/2026 a supprimé la régularisation interne des étudiants entrés comme touristes. L'obtention d'un visa D4 consulaire préalable avant le voyage est obligatoire.
+Après l'arrivée au Portugal avec le visa D4, l'étudiant se présente au rendez-vous à l'AIMA pour l'enregistrement biométrique et la délivrance de la carte de séjour.
 - Conditions : Inscription active + Moyens de subsistance + Logement + Casier judiciaire + Assurance santé / SNS.
 
 3. DROIT DE TRAVAILLER (ART. 97) :
