@@ -31,6 +31,20 @@ export type TaxRegion = 'continente' | 'madeira' | 'acores';
 export type MealAllowanceType = 'card' | 'cash';
 export type DuodecimosMode = 'none' | 'half_vacation' | 'half_christmas' | 'half_both' | 'full_both';
 
+
+/**
+ * Situações especiais de retenção que requerem tabelas próprias do Despacho n.º 233-A/2026.
+ * Quando presentes e não suportadas pelo motor, devolve irsSpecialCaseStatus: 'not_implemented'.
+ * Fonte: Despacho n.º 233-A/2026, tabelas especiais (incapacidade, alimentos, guarda conjunta).
+ */
+export interface SalarySpecialCases {
+  /** Titular ou dependente com incapacidade permanente >= 60% (EBF Art. 16.º e tabelas especiais Despacho 233-A/2026). */
+  hasDisabilityOver60Pct?: boolean;
+  /** Pensão de alimentos fixada por tribunal ou acordo homologado (tabelas especiais Despacho 233-A/2026). */
+  hasAlimony?: boolean;
+  /** Guarda conjunta ou residência alternada com tributação repartida (tabelas especiais Despacho 233-A/2026). */
+  hasJointCustody?: boolean;
+}
 export interface SalaryInput {
   grossSalary: number;
   maritalStatus: MaritalStatus;
@@ -41,6 +55,8 @@ export interface SalaryInput {
   workingDays: number;
   irsJovemYear?: number; // 0 para inativo, 1 a 10 para o ano do ciclo
   duodecimosMode: DuodecimosMode;
+  /** Situacoes especiais — ver SalarySpecialCases. Se preenchido, o motor avalia e pode devolver not_implemented. */
+  specialCases?: SalarySpecialCases;
 }
 
 export interface SalaryAssessment {
@@ -56,6 +72,8 @@ export interface SalaryAssessment {
   christmasDuodecimoAmount: number;
   duodecimosAmount: number;       // Soma dos duodécimos mensais
   netMonthlyIncome: number;
+  irsSpecialCaseStatus: 'standard' | 'not_implemented';
+  irsSpecialCaseNotice?: string;
   breakdown: {
     baseTaxableSalary: number;
     marginalTaxRate: number;
@@ -186,12 +204,18 @@ function resolveRegionTable(taxRegion: TaxRegion, tableKey: 'TABELA_I' | 'TABELA
 // ─── CÁLCULO DA PARCELA A ABATER CONFORME FÓRMULA OFICIAL DO ESCALÃO ───────
 function calculateParcelaAbater(escalao: IrsEscalaoNormativo, R: number): number {
   if (escalao.tipoFormulaParcela === 'dinamica_1') {
-    // Escalão até € 1.042: 12,50% × 2,60 × (1.273,85 − R)
-    return Math.max(0, 0.125 * 2.60 * Math.max(0, 1273.85 - R));
+    // Fórmulas dinâmicas de 1.º nível (Despacho n.º 233-A/2026)
+    const factor = escalao.fatorDinamico ?? 2.60;
+    const ref = escalao.valorRefDinamico ?? 1273.85;
+    const rate = escalao.taxaMarginal || 0.125;
+    return Math.max(0, rate * factor * Math.max(0, ref - R));
   }
   if (escalao.tipoFormulaParcela === 'dinamica_2') {
-    // Escalão até € 1.108: 15,70% × 1,35 × (1.554,83 − R)
-    return Math.max(0, 0.157 * 1.35 * Math.max(0, 1554.83 - R));
+    // Fórmulas dinâmicas de 2.º nível (Despacho n.º 233-A/2026)
+    const factor = escalao.fatorDinamico ?? 1.35;
+    const ref = escalao.valorRefDinamico ?? 1554.83;
+    const rate = escalao.taxaMarginal || 0.157;
+    return Math.max(0, rate * factor * Math.max(0, ref - R));
   }
   return escalao.parcelaFixa || 0;
 }
@@ -291,6 +315,23 @@ export function calculateNetSalary(input: SalaryInput): SalaryAssessment {
   const socialSecurityEmployee = Math.round(baseTaxableSalary * RATE_SS_EMPLOYEE * 100) / 100;
   const socialSecurityCompany = Math.round(baseTaxableSalary * RATE_SS_COMPANY * 100) / 100;
 
+  // 5a. Deteccao de situacoes especiais de IRS (Despacho 233-A/2026)
+  const _sc = input.specialCases || {};
+  const hasBlockingSpecialCase = !!(_sc.hasDisabilityOver60Pct || _sc.hasJointCustody);
+  let irsSpecialCaseStatus: SalaryAssessment['irsSpecialCaseStatus'] = hasBlockingSpecialCase ? 'not_implemented' : 'standard';
+  let irsSpecialCaseNotice: string | undefined;
+
+  if (hasBlockingSpecialCase) {
+    const _details: string[] = [];
+    if (_sc.hasDisabilityOver60Pct) _details.push('incapacidade permanente >= 60%');
+    if (_sc.hasJointCustody) _details.push('guarda conjunta ou residencia alternada');
+    irsSpecialCaseNotice = 'AVISO: O perfil inclui ' + _details.join(', ') + '. ' +
+      'Esta situacao requer tabela(s) especial(ais) do Despacho n.o 233-A/2026 nao implementadas neste motor. ' +
+      'O valor de retencao apresentado resulta da tabela padrao e NAO contempla o enquadramento especial. Consulte a AT.';
+  } else if (_sc.hasAlimony) {
+    irsSpecialCaseNotice = 'Nota sobre Pensao de Alimentos: As pensoes de alimentos fixadas judicialmente nao alteram as tabelas de retencao na fonte da Categoria A. A deducao de 20% e apurada exclusivamente na liquidacao anual de IRS (Art. 83.º-A do CIRS, Anexo H).';
+  }
+
   // 5. Retenção na Fonte de IRS
   const standardIrsResult = calculateStandardIrsWithholding(
     baseTaxableSalary,
@@ -350,6 +391,8 @@ export function calculateNetSalary(input: SalaryInput): SalaryAssessment {
     christmasDuodecimoAmount,
     duodecimosAmount,
     netMonthlyIncome,
+    irsSpecialCaseStatus,
+    irsSpecialCaseNotice,
     breakdown: {
       baseTaxableSalary,
       marginalTaxRate: standardIrsResult.marginalRate,

@@ -11,7 +11,9 @@
  * FONTES PRIMÁRIAS OFICIAIS (DIÁRIO DA REPÚBLICA):
  * 1. Portaria n.º 1563/2007, de 11 de dezembro:
  *    - Artigo 2.º, n.º 1 e 2: Escala de subsistência (100% / 50% / 30%) calculada
- *      por referência à RMMG líquida de quotizações para a segurança social.
+ *      por referência à RMMG bruta (Retribuição Mínima Mensal Garantida — valor ilíquido,
+ *      antes de qualquer desconto). A Portaria n.º 1563/2007 refere-se ao "salário mínimo
+ *      nacional", que corresponde à RMMG bruta, não ao valor líquido após descontos de SS.
  *    - Artigo 5.º, n.º 6: Visto de residência D7 (meios de bens/pensões, 12 meses,
  *      prova de titularidade e disponibilidade efetiva em Portugal).
  *    - Artigo 9.º: Meios de subsistência para reagrupamento familiar.
@@ -57,8 +59,8 @@
 // ─── CONSTANTES TERRITORIAIS CANÓNICAS & STATUS DE HOMOLOGAÇÃO (2026) ────────
 export const NORMATIVE_AIMA_2026 = {
   RMMG_CONTINENTAL: 920.00, // Homologado pelo Decreto-Lei n.º 139/2025 (Diário da República)
-  RMMG_AZORES: 966.00,      // Estimativa baseada no acréscimo legal de 5% (DLR 8/2002/A) — pendente de confirmação de diploma executivo regional 2026
-  RMMG_MADEIRA: 980.00,     // Projeção indicativa da ALRAM — pendente de homologação por Decreto Legislativo Regional próprio para 2026
+  RMMG_AZORES: 966.00,      // Confirmado pelo acréscimo legal vinculativo de 5% sobre a RMMG continental (Art. 1.º do DLR n.º 8/2002/A)
+  RMMG_MADEIRA: 980.00,     // Confirmado pelo Decreto Legislativo Regional n.º 1/2026/M, publicado em Diário da República a 03/02/2026
   JOB_SEARCH_MULTIPLIER: 3,    // 3 × RMMG (Art. 57.º-A Lei 23/2007)
   DIGITAL_NOMAD_MULTIPLIER: 4, // 4 × RMMG (Art. 90.º-A Lei 23/2007)
   LEGACY_CUTOFF_DATE: '2024-06-03', // DL 37-A/2024
@@ -144,6 +146,12 @@ export interface AimaSubsistenceAssessment {
     applicantNetMonthlyEur: number;
     otherAdultsNetMonthlyEur: number;
     minorsNetMonthlyEur: number;
+    /** Parcela do requerente calculada sobre a RMMG bruta (alias semântico canónico) */
+    applicantRmmgShareEur?: number;
+    /** Parcela dos outros adultos calculada sobre a RMMG bruta (alias semântico canónico) */
+    otherAdultsRmmgShareEur?: number;
+    /** Parcela dos menores calculada sobre a RMMG bruta (alias semântico canónico) */
+    minorsRmmgShareEur?: number;
   };
   capitalReserveRequiredEur?: number;
   availableNetMonthlyEur: number;
@@ -163,6 +171,13 @@ export interface AimaSubsistenceAssessment {
     proofType: string;
   };
   provenance: NormativeProvenance;
+  /**
+   * Estado de confirmação normativa da RMMG utilizada no cálculo.
+   * 'confirmed': valor homologado por diploma oficial publicado no Diário da República.
+   * 'pending': valor estimado ou projetado — diploma regional 2026 ainda não confirmado.
+   * Fonte: DL 139/2025 (Continente); DLR 8/2002/A base (Açores — pendente); ALRAM projeção (Madeira — pendente).
+   */
+  rmmgStatus: 'confirmed' | 'pending';
 }
 
 export interface AimaFeeCalculation {
@@ -227,6 +242,13 @@ export interface UnifiedAimaComplianceResult {
 // ─── 1. SUB-MOTOR DE MEIOS DE SUBSISTÊNCIA ─────────────────────────────────────
 
 export class AimaMeansOfSubsistenceEngine {
+  public static getRmmgStatus(territory: PortugueseTerritory = 'mainland'): 'confirmed' | 'pending' {
+    // Continente: DL n.º 139/2025 (920,00 €)
+    // Açores: DLR n.º 8/2002/A (+5% legal vinculativo = 966,00 €)
+    // Madeira: DLR n.º 1/2026/M publicado em DR a 03/02/2026 (980,00 €)
+    return 'confirmed';
+  }
+
   public static getRmmgReference(territory: PortugueseTerritory = 'mainland'): number {
     switch (territory) {
       case 'azores':
@@ -251,7 +273,9 @@ export class AimaMeansOfSubsistenceEngine {
     const rmmg = this.getRmmgReference(territory);
 
     // Escala geral: Artigo 2.º, n.º 1 e 2 da Portaria n.º 1563/2007
-    let applicantNetMonthly = rmmg; // 100%
+    // A base de cálculo é a RMMG BRUTA (valor ilíquido, antes de descontos de SS).
+    // A Portaria refere-se ao "salário mínimo nacional" = RMMG bruta. NÃO usar valor líquido.
+    let applicantNetMonthly = rmmg; // 100% da RMMG bruta (primeiro adulto/requerente)
     const otherAdultsNetMonthly = (params.household.otherAdultsCount || 0) * (rmmg * 0.50); // 50%
     const minorsNetMonthly = (params.household.minorsCount || 0) * (rmmg * 0.30); // 30%
 
@@ -358,7 +382,10 @@ export class AimaMeansOfSubsistenceEngine {
       householdBreakdown: {
         applicantNetMonthlyEur: applicantNetMonthly,
         otherAdultsNetMonthlyEur: otherAdultsNetMonthly,
-        minorsNetMonthlyEur: minorsNetMonthly
+        minorsNetMonthlyEur: minorsNetMonthly,
+        applicantRmmgShareEur: applicantNetMonthly,
+        otherAdultsRmmgShareEur: otherAdultsNetMonthly,
+        minorsRmmgShareEur: minorsNetMonthly,
       },
       capitalReserveRequiredEur,
       availableNetMonthlyEur: params.availableNetMonthlyEur,
@@ -367,6 +394,7 @@ export class AimaMeansOfSubsistenceEngine {
       surplusMonthlyEur,
       d7Detail: d7AssessmentDetail,
       jobSearchDetail: jobSearchAssessmentDetail,
+      rmmgStatus: AimaMeansOfSubsistenceEngine.getRmmgStatus(territory),
       provenance
     };
   }

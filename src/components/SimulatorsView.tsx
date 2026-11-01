@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Calculator, Coins, TrendingUp, Landmark, ShieldCheck, 
   MapPin, AlertTriangle, BarChart3, Info, CheckCircle2, 
-  Wallet, HeartPulse, PiggyBank, Sparkles, Building2, UserCheck, Briefcase, Home
+  Wallet, HeartPulse, PiggyBank, Sparkles, Building2, UserCheck, Briefcase, Home, FileText
 } from 'lucide-react';
 import { ViewType } from '../types';
 import { analytics } from '../services/analyticsService';
@@ -2066,6 +2066,9 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
   const [isIrsJovem, setIsIrsJovem] = useState<boolean>(false);
   const [irsJovemYear, setIrsJovemYear] = useState<number>(1);
   const [duodecimosMode, setDuodecimosMode] = useState<DuodecimosMode>('none');
+  const [hasDisabilityOver60Pct, setHasDisabilityOver60Pct] = useState<boolean>(false);
+  const [hasAlimony, setHasAlimony] = useState<boolean>(false);
+  const [hasJointCustody, setHasJointCustody] = useState<boolean>(false);
 
   // ─── RECIBOS VERDES SIMULATOR STATE (INDEPENDENT) ─────────────────────────
   const [monthlyInvoice, setMonthlyInvoice] = useState<number>(1500);
@@ -2185,6 +2188,11 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
       workingDays: workDays,
       irsJovemYear: isIrsJovem ? irsJovemYear : 0,
       duodecimosMode,
+      specialCases: {
+        hasDisabilityOver60Pct,
+        hasAlimony,
+        hasJointCustody,
+      },
     });
 
     return {
@@ -2204,6 +2212,8 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
       effectiveRate: res.irsEffectiveRate,
       marginalRate: res.breakdown.marginalTaxRate,
       employerTotalCost: Math.round((res.grossTotal + res.socialSecurityCompany + res.mealAllowanceExempt) * 100) / 100,
+      irsSpecialCaseStatus: res.irsSpecialCaseStatus,
+      irsSpecialCaseNotice: res.irsSpecialCaseNotice,
     };
   };
 
@@ -2726,6 +2736,56 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                     </div>
                   </div>
 
+                  {/* Situações Especiais de IRS (Despacho n.º 233-A/2026) */}
+                  <div className="border-t border-slate-100 pt-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <FileText size={16} className="text-slate-500 shrink-0" />
+                      <div>
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+                          Situações Especiais de IRS (Despacho n.º 233-A/2026)
+                        </label>
+                        <p className="text-[9px] text-slate-400 font-medium mt-0.5">
+                          Assinale se o seu agregado se enquadra em regimes com tabelas próprias de retenção.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2 pt-1">
+                      <label className="flex items-start gap-2.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={hasDisabilityOver60Pct}
+                          onChange={(e) => setHasDisabilityOver60Pct(e.target.checked)}
+                          className="w-4 h-4 mt-0.5 accent-[#FF8C00] rounded cursor-pointer shrink-0"
+                        />
+                        <span className="text-[11px] text-slate-600 font-medium">
+                          Titular ou dependente com grau de incapacidade permanente &ge; 60%
+                        </span>
+                      </label>
+                      <label className="flex items-start gap-2.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={hasAlimony}
+                          onChange={(e) => setHasAlimony(e.target.checked)}
+                          className="w-4 h-4 mt-0.5 accent-[#FF8C00] rounded cursor-pointer shrink-0"
+                        />
+                        <span className="text-[11px] text-slate-600 font-medium">
+                          Existência de pensão de alimentos fixada judicialmente
+                        </span>
+                      </label>
+                      <label className="flex items-start gap-2.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={hasJointCustody}
+                          onChange={(e) => setHasJointCustody(e.target.checked)}
+                          className="w-4 h-4 mt-0.5 accent-[#FF8C00] rounded cursor-pointer shrink-0"
+                        />
+                        <span className="text-[11px] text-slate-600 font-medium">
+                          Guarda conjunta com residência alternada
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
                   {/* Alerta Visual de Subsídio Tributável */}
                   {mealAllowance > (mealType === 'card' ? MEAL_CAP_CARD_2026 : MEAL_CAP_CASH_2026) && (
                     <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-2.5 text-amber-900 text-xs animate-in fade-in duration-200">
@@ -2831,6 +2891,26 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                         </div>
                       </div>
                     </div>
+
+                    {res.irsSpecialCaseNotice && (
+                      <div className={`p-4 rounded-2xl flex items-start gap-3 text-xs leading-relaxed ${
+                        res.irsSpecialCaseStatus === 'not_implemented'
+                          ? 'bg-amber-500/15 border border-amber-500/30 text-amber-200'
+                          : 'bg-blue-500/15 border border-blue-500/30 text-blue-200'
+                      }`}>
+                        <AlertTriangle size={18} className={`shrink-0 mt-0.5 ${
+                          res.irsSpecialCaseStatus === 'not_implemented' ? 'text-amber-400' : 'text-blue-400'
+                        }`} />
+                        <div>
+                          <p className="font-bold mb-1">
+                            {res.irsSpecialCaseStatus === 'not_implemented'
+                              ? 'Situação Especial de Retenção (Tabela Específica Não Implementada)'
+                              : 'Informação sobre Pensão de Alimentos'}
+                          </p>
+                          <p className="text-[11px] opacity-90">{res.irsSpecialCaseNotice}</p>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex items-start gap-2 text-[10px] text-slate-300 bg-white/5 border border-white/5 rounded-2xl p-4">
                       <Info size={14} className="shrink-0 mt-0.5 text-[#FF8C00]" />
@@ -4784,6 +4864,18 @@ export const SimulatorsView: React.FC<SimulatorsViewProps> = ({ language, onView
                           {meetsReq && !isSsRisk ? tLocal('aima_meets_threshold') : tLocal('aima_threshold_warn')}
                         </span>
                       </div>
+
+                      {aimaEval.subsistence.rmmgStatus === 'pending' && (
+                        <div className="p-3 bg-amber-500/15 border border-amber-500/30 rounded-2xl flex items-start gap-2 text-amber-200 text-[10px]">
+                          <AlertTriangle size={14} className="text-amber-400 shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-bold block text-amber-300">RMMG Regional Pendente de Homologação</span>
+                            <span>
+                              O valor de {aimaEval.subsistence.rmmgReferenceEur}€ utilizado para este território constitui uma estimativa e aguarda publicação de diploma regional oficial para 2026. O resultado desta simulação é indicativo.
+                            </span>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">

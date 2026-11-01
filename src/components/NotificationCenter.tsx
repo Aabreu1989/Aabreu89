@@ -290,10 +290,19 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                         type="button"
                         onClick={(e) => handleOpenJobDirectly(n, e)}
                         className="px-4 py-2 bg-slate-950 hover:bg-mira-orange text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
-                        title="Aceder diretamente à vaga no site externo"
+                        title={
+                          language === 'EN' ? 'Access job directly on external website' :
+                          language === 'ES' ? 'Acceder directamente a la vacante en el sitio externo' :
+                          language === 'FR' ? "Accéder directement à l'offre sur le site externe" :
+                          'Aceder diretamente à vaga no site externo'
+                        }
                       >
                         <ExternalLink size={12} />
-                        <span>{n.type === 'jobs' ? 'Aceder à Vaga' : 'Aceder'}</span>
+                        <span>{
+                          n.type === 'jobs'
+                            ? (language === 'EN' ? 'Access Job' : language === 'ES' ? 'Acceder a Vacante' : language === 'FR' ? "Accéder à l'Offre" : 'Aceder à Vaga')
+                            : (language === 'EN' ? 'Access' : language === 'ES' ? 'Acceder' : language === 'FR' ? 'Accéder' : 'Aceder')
+                        }</span>
                       </button>
                     )}
                     <button
@@ -393,7 +402,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       }}
                       className="w-full mt-2 py-4 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-mira-orange active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
                     >
-                      <ExternalLink size={14} /> {selectedNotification.type === 'jobs' ? 'ACEDER À VAGA NA FONTE EXTERNA ↗' : 'ACEDER ↗'}
+                      <ExternalLink size={14} /> {
+                        selectedNotification.type === 'jobs'
+                          ? (language === 'EN' ? 'ACCESS JOB ON EXTERNAL SOURCE ↗' : language === 'ES' ? 'ACCEDER A LA VACANTE EN FUENTE EXTERNA ↗' : language === 'FR' ? "ACCÉDER À L'OFFRE SUR LE SITE EXTERNE ↗" : 'ACEDER À VAGA NA FONTE EXTERNA ↗')
+                          : (language === 'EN' ? 'ACCESS ↗' : language === 'ES' ? 'ACCEDER ↗' : language === 'FR' ? 'ACCÉDER ↗' : 'ACEDER ↗')
+                      }
                     </button>
                   );
                 }

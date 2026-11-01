@@ -24,6 +24,7 @@ describe('🏛️ MIRA AIMA LEGAL COMPLIANCE ENGINE 2026 (AUDITORIA FORENSE E BA
       pathwayId: 'work_d1'
     });
     assert.equal(resMainland.rmmgReferenceEur, 920.00);
+    assert.equal(resMainland.rmmgStatus, 'confirmed');
     assert.equal(resMainland.requiredNetMonthlyEur, 920.00);
     assert.equal(resMainland.requiredNetAnnualEur, 11040.00);
     assert.equal(resMainland.isCompliant, true);
@@ -39,6 +40,7 @@ describe('🏛️ MIRA AIMA LEGAL COMPLIANCE ENGINE 2026 (AUDITORIA FORENSE E BA
       pathwayId: 'work_d1'
     });
     assert.equal(resAzores.rmmgReferenceEur, 966.00);
+    assert.equal(resAzores.rmmgStatus, 'confirmed');
     assert.equal(resAzores.requiredNetMonthlyEur, 966.00);
     assert.equal(resAzores.requiredNetAnnualEur, 11592.00);
     assert.equal(resAzores.isCompliant, true);
@@ -51,6 +53,7 @@ describe('🏛️ MIRA AIMA LEGAL COMPLIANCE ENGINE 2026 (AUDITORIA FORENSE E BA
       pathwayId: 'work_d1'
     });
     assert.equal(resMadeira.rmmgReferenceEur, 980.00);
+    assert.equal(resMadeira.rmmgStatus, 'confirmed');
     assert.equal(resMadeira.requiredNetMonthlyEur, 980.00);
     assert.equal(resMadeira.requiredNetAnnualEur, 11760.00);
     assert.equal(resMadeira.isCompliant, true);
@@ -72,6 +75,9 @@ describe('🏛️ MIRA AIMA LEGAL COMPLIANCE ENGINE 2026 (AUDITORIA FORENSE E BA
     assert.equal(resSufficient.householdBreakdown.applicantNetMonthlyEur, 920.00);
     assert.equal(resSufficient.householdBreakdown.otherAdultsNetMonthlyEur, 460.00);
     assert.equal(resSufficient.householdBreakdown.minorsNetMonthlyEur, 276.00);
+    assert.equal(resSufficient.householdBreakdown.applicantRmmgShareEur, 920.00);
+    assert.equal(resSufficient.householdBreakdown.otherAdultsRmmgShareEur, 460.00);
+    assert.equal(resSufficient.householdBreakdown.minorsRmmgShareEur, 276.00);
     assert.equal(resSufficient.isCompliant, true);
     assert.equal(resSufficient.surplusMonthlyEur, 44.00);
     assert.equal(resSufficient.shortfallMonthlyEur, 0);

@@ -27,6 +27,8 @@ export interface IrsEscalaoNormativo {
   taxaMarginal: number;
   parcelaFixa?: number;
   tipoFormulaParcela?: 'dinamica_1' | 'dinamica_2' | 'fixa';
+  fatorDinamico?: number;
+  valorRefDinamico?: number;
   parcelaAdicionalPorDependente?: number;
 }
 
@@ -131,14 +133,18 @@ export const NORMATIVE_2026 = {
 
     // TABELA III: Casado, único titular
     TABELA_III: [
-      { escalao: 1, limiteSuperior: 1694.00, taxaMarginal: 0.00, parcelaFixa: 0.00, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
-      { escalao: 2, limiteSuperior: 2063.00, taxaMarginal: 0.212, parcelaFixa: 359.13, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
-      { escalao: 3, limiteSuperior: 2492.00, taxaMarginal: 0.311, parcelaFixa: 563.37, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
-      { escalao: 4, limiteSuperior: 4487.00, taxaMarginal: 0.349, parcelaFixa: 658.07, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
-      { escalao: 5, limiteSuperior: 4753.00, taxaMarginal: 0.3836, parcelaFixa: 813.33, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
-      { escalao: 6, limiteSuperior: 6687.00, taxaMarginal: 0.3969, parcelaFixa: 876.55, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
-      { escalao: 7, limiteSuperior: 20468.00, taxaMarginal: 0.4495, parcelaFixa: 1228.29, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
-      { escalao: 8, limiteSuperior: Infinity, taxaMarginal: 0.4717, parcelaFixa: 1682.68, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
+      { escalao: 1, limiteSuperior: 991.00, taxaMarginal: 0.00, parcelaFixa: 0.00, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 0.00 },
+      { escalao: 2, limiteSuperior: 1042.00, taxaMarginal: 0.1250, tipoFormulaParcela: 'dinamica_1', fatorDinamico: 2.60, valorRefDinamico: 1372.15, parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 3, limiteSuperior: 1108.00, taxaMarginal: 0.1250, tipoFormulaParcela: 'dinamica_2', fatorDinamico: 1.35, valorRefDinamico: 1677.85, parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 4, limiteSuperior: 1119.00, taxaMarginal: 0.1250, parcelaFixa: 96.17, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 5, limiteSuperior: 1432.00, taxaMarginal: 0.1272, parcelaFixa: 98.64, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 6, limiteSuperior: 1962.00, taxaMarginal: 0.1570, parcelaFixa: 141.32, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 7, limiteSuperior: 2240.00, taxaMarginal: 0.1938, parcelaFixa: 213.53, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 8, limiteSuperior: 2773.00, taxaMarginal: 0.2277, parcelaFixa: 289.47, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 9, limiteSuperior: 3389.00, taxaMarginal: 0.2570, parcelaFixa: 370.72, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 10, limiteSuperior: 5965.00, taxaMarginal: 0.2881, parcelaFixa: 476.12, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 11, limiteSuperior: 20265.00, taxaMarginal: 0.3843, parcelaFixa: 1049.96, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
+      { escalao: 12, limiteSuperior: Infinity, taxaMarginal: 0.4717, parcelaFixa: 2821.13, tipoFormulaParcela: 'fixa', parcelaAdicionalPorDependente: 42.86 },
     ] as IrsEscalaoNormativo[],
   },
 

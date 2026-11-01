@@ -118,6 +118,7 @@ const TopBar: React.FC<TopBarProps> = ({
                             onClearAll={onNotifClear}
                             onDelete={onNotifDelete}
                             onViewNotificationsPage={onNotifNavigate}
+                            language={language}
                         />
                         <button 
                             onClick={onLogout}

@@ -44,7 +44,16 @@ const MODAL_I18N: Record<string, Record<string, string>> = {
     delete_tooltip: 'Eliminar Alerta',
     created_at: 'Criado em',
     empty_list_msg: 'Ainda não tens nenhum alerta configurado.',
-    empty_list_sub: 'Cria um alerta para receberes notificações automáticas de novas vagas compatíveis!'
+    empty_list_sub: 'Cria um alerta para receberes notificações automáticas de novas vagas compatíveis!',
+    alert_count_one: 'ALERTA CONFIGURADO',
+    alert_count_many: 'ALERTAS CONFIGURADOS',
+    guest_sync_msg: 'Alertas guardados localmente neste dispositivo. Inicia sessão para sincronizar na nuvem e receber notificações por e-mail.',
+    freq_daily_label: 'Enviaremos um resumo diário às 06:00 UTC com as novas oportunidades.',
+    freq_weekly_label: 'Enviaremos um resumo semanal com as novas oportunidades.',
+    freq_instant_label: 'Avisaremos em tempo real assim que novas vagas compatíveis forem publicadas.',
+    guest_alert_ok: '📱 Alerta guardado neste dispositivo! Cria uma conta gratuita para receber notificações por e-mail e em todos os teus dispositivos.',
+    auth_alert_ok: '🎉 Alerta ativado na tua conta MIRA!',
+    error_save: 'Erro de comunicação ao salvar o alerta. Por favor tenta novamente.'
   },
   EN: {
     notifications_badge: '✦ MIRA Notifications',
@@ -72,7 +81,16 @@ const MODAL_I18N: Record<string, Record<string, string>> = {
     delete_tooltip: 'Delete Alert',
     created_at: 'Created on',
     empty_list_msg: 'You have no job alerts configured yet.',
-    empty_list_sub: 'Create an alert to receive automated notifications for matching opportunities!'
+    empty_list_sub: 'Create an alert to receive automated notifications for matching opportunities!',
+    alert_count_one: 'ALERT CONFIGURED',
+    alert_count_many: 'ALERTS CONFIGURED',
+    guest_sync_msg: 'Alerts saved locally on this device. Sign in to sync to the cloud and receive email notifications.',
+    freq_daily_label: 'We will send a daily digest at 06:00 UTC with new opportunities.',
+    freq_weekly_label: 'We will send a weekly digest with new opportunities.',
+    freq_instant_label: 'We will notify you in real time as soon as new matching jobs are posted.',
+    guest_alert_ok: '📱 Alert saved on this device! Create a free account to receive email notifications on all your devices.',
+    auth_alert_ok: '🎉 Alert activated on your MIRA account!',
+    error_save: 'Communication error while saving the alert. Please try again.'
   },
   ES: {
     notifications_badge: '✦ Notificaciones MIRA',
@@ -100,7 +118,16 @@ const MODAL_I18N: Record<string, Record<string, string>> = {
     delete_tooltip: 'Eliminar Alerta',
     created_at: 'Creado el',
     empty_list_msg: 'Aún no tienes alertas de empleo configuradas.',
-    empty_list_sub: '¡Crea una alerta para recibir notificaciones automáticas de nuevas vacantes compatibles!'
+    empty_list_sub: '¡Crea una alerta para recibir notificaciones automáticas de nuevas vacantes compatibles!',
+    alert_count_one: 'ALERTA CONFIGURADA',
+    alert_count_many: 'ALERTAS CONFIGURADAS',
+    guest_sync_msg: 'Alertas guardadas localmente en este dispositivo. Inicia sesión para sincronizar en la nube y recibir notificaciones por correo.',
+    freq_daily_label: 'Enviaremos un resumen diario a las 06:00 UTC con las nuevas oportunidades.',
+    freq_weekly_label: 'Enviaremos un resumen semanal con las nuevas oportunidades.',
+    freq_instant_label: 'Te avisaremos en tiempo real en cuanto se publiquen nuevas vacantes compatibles.',
+    guest_alert_ok: '📱 ¡Alerta guardada en este dispositivo! Crea una cuenta gratuita para recibir notificaciones por correo en todos tus dispositivos.',
+    auth_alert_ok: '🎉 ¡Alerta activada en tu cuenta MIRA!',
+    error_save: 'Error de comunicación al guardar la alerta. Por favor, inténtalo de nuevo.'
   },
   FR: {
     notifications_badge: '✦ Notifications MIRA',
@@ -128,7 +155,16 @@ const MODAL_I18N: Record<string, Record<string, string>> = {
     delete_tooltip: 'Supprimer l\'Alerte',
     created_at: 'Créé le',
     empty_list_msg: 'Vous n\'avez pas encore configuré d\'alerte d\'emploi.',
-    empty_list_sub: 'Créez une alerte pour recevoir des notifications automatiques pour les offres compatibles !'
+    empty_list_sub: 'Créez une alerte pour recevoir des notifications automatiques pour les offres compatibles !',
+    alert_count_one: 'ALERTE CONFIGURÉE',
+    alert_count_many: 'ALERTES CONFIGURÉES',
+    guest_sync_msg: "Alertes enregistrées localement sur cet appareil. Connectez-vous pour synchroniser dans le cloud et recevoir des notifications par e-mail.",
+    freq_daily_label: 'Nous enverrons un résumé quotidien à 06h00 UTC avec les nouvelles opportunités.',
+    freq_weekly_label: 'Nous enverrons un résumé hebdomadaire avec les nouvelles opportunités.',
+    freq_instant_label: 'Vous serez notifié en temps réel dès que de nouvelles offres compatibles seront publiées.',
+    guest_alert_ok: '📱 Alerte enregistrée sur cet appareil ! Créez un compte gratuit pour recevoir des notifications par e-mail sur tous vos appareils.',
+    auth_alert_ok: '🎉 Alerte activée sur votre compte MIRA !',
+    error_save: "Erreur de communication lors de la sauvegarde de l'alerte. Veuillez réessayer."
   }
 };
 
@@ -269,13 +305,13 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
       // 2. Feedback visual limpo (diferenciado para Guest vs Autenticado)
       const isGuest = !user?.id;
       const freqLabel = frequency === 'daily'
-        ? 'Enviaremos um resumo diário às 06:00 UTC com as novas oportunidades.'
+        ? i18n.freq_daily_label
         : frequency === 'weekly'
-          ? 'Enviaremos um resumo semanal com as novas oportunidades.'
-          : 'Avisaremos em tempo real assim que novas vagas compatíveis forem publicadas.';
+          ? i18n.freq_weekly_label
+          : i18n.freq_instant_label;
 
-      const guestMsg = '📱 Alerta guardado neste dispositivo! Cria uma conta gratuita para receber notificações por e-mail e em todos os teus dispositivos.';
-      const authMsg = `🎉 Alerta ativado na tua conta MIRA! ${freqLabel}`;
+      const guestMsg = i18n.guest_alert_ok;
+      const authMsg = `${i18n.auth_alert_ok} ${freqLabel}`;
 
       setScanFeedback({
         status: 'success',
@@ -294,7 +330,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
       setScanFeedback({
         status: 'error',
         matchesCount: 0,
-        message: 'Erro de comunicação ao salvar o alerta. Por favor tenta novamente.'
+        message: i18n.error_save
       });
     } finally {
       setIsSubmitting(false);
@@ -438,7 +474,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
               {/* Botão de Destaque: + Criar Novo Alerta */}
               <div className="flex items-center justify-between gap-3 pb-1">
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                  {existingAlerts.length} {existingAlerts.length === 1 ? 'ALERTA CONFIGURADO' : 'ALERTAS CONFIGURADOS'}
+                  {existingAlerts.length} {existingAlerts.length === 1 ? i18n.alert_count_one : i18n.alert_count_many}
                 </p>
                 <button
                   type="button"
@@ -455,7 +491,7 @@ export const JobAlertModal: React.FC<JobAlertModalProps> = ({
                 <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-2.5">
                   <Info size={16} className="text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-[11px] font-bold text-amber-900 leading-snug">
-                    Alertas guardados localmente neste dispositivo. Inicia sessão para sincronizar na nuvem e receber notificações por e-mail.
+                    {i18n.guest_sync_msg}
                   </p>
                 </div>
               )}

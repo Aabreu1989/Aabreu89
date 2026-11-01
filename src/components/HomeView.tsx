@@ -106,6 +106,7 @@ export const HomeView: React.FC<HomeViewProps> = memo(({ user, onViewChange, lan
     { id: ViewType.MAP, label: t('nav_map', language), icon: MapPin, color: 'bg-rose-100 text-rose-700' },
     { id: ViewType.SIMULATORS, label: t('nav_simulators', language), icon: Calculator, color: 'bg-indigo-100 text-indigo-700' },
     { id: ViewType.PRIVACY, label: t('nav_privacy', language), icon: Shield, color: 'bg-indigo-200 text-indigo-900' },
+    { id: ViewType.NOTIFICATIONS, label: t('nav_notifications', language), icon: Bell, color: 'bg-amber-100 text-amber-800' },
   ];
 
     // Stories and Community Highlights removed from Home as per CEO instructions

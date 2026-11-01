@@ -15,6 +15,7 @@ interface NotificationBellProps {
   onMarkRead: (id: string) => void;
   isDark?: boolean;
   onViewNotificationsPage?: () => void;
+  language?: string;
 }
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
@@ -38,6 +39,102 @@ function timeAgo(date: string) {
   return `${Math.floor(diff / 86400)}d`;
 }
 
+
+const BELL_I18N: Record<string, Record<string, string>> = {
+  PT: {
+    title: 'Notificações',
+    new_single: 'nova',
+    new_plural: 'novas',
+    clear_all_title: 'Apagar todas as notificações permanentemente',
+    clear_all_btn: 'APAGAR TODAS',
+    empty: 'Sem notificações',
+    access_job_title: 'Aceder diretamente à vaga no site externo',
+    access_job: 'Aceder à Vaga',
+    access_generic: 'Aceder',
+    details_title: 'Ver detalhes do alerta',
+    details_btn: 'Detalhes',
+    delete_tooltip: 'Apagar notificação',
+    view_all: 'VER TODAS AS NOTIFICAÇÕES',
+    modal_title_job: 'Nova Vaga Compatível',
+    modal_title_notif: 'Detalhes da Notificação',
+    modal_delete_title: 'Apagar esta notificação',
+    modal_close_title: 'Fechar',
+    modal_access_job_ext: 'ACEDER À VAGA NA FONTE EXTERNA ↗',
+    modal_access_ext: 'ACEDER ↗',
+    modal_send_email: 'ENVIAR EMAIL DE SUGESTÃO',
+    modal_open_mira: 'ABRIR NO MIRA',
+  },
+  EN: {
+    title: 'Notifications',
+    new_single: 'new',
+    new_plural: 'new',
+    clear_all_title: 'Permanently delete all notifications',
+    clear_all_btn: 'CLEAR ALL',
+    empty: 'No notifications',
+    access_job_title: 'Access job directly on external website',
+    access_job: 'Access Job',
+    access_generic: 'Access',
+    details_title: 'View alert details',
+    details_btn: 'Details',
+    delete_tooltip: 'Delete notification',
+    view_all: 'VIEW ALL NOTIFICATIONS',
+    modal_title_job: 'New Matching Job',
+    modal_title_notif: 'Notification Details',
+    modal_delete_title: 'Delete this notification',
+    modal_close_title: 'Close',
+    modal_access_job_ext: 'ACCESS JOB ON EXTERNAL SOURCE ↗',
+    modal_access_ext: 'ACCESS ↗',
+    modal_send_email: 'SEND FEEDBACK EMAIL',
+    modal_open_mira: 'OPEN IN MIRA',
+  },
+  ES: {
+    title: 'Notificaciones',
+    new_single: 'nueva',
+    new_plural: 'nuevas',
+    clear_all_title: 'Eliminar todas las notificaciones permanentemente',
+    clear_all_btn: 'BORRAR TODAS',
+    empty: 'Sin notificaciones',
+    access_job_title: 'Acceder directamente a la vacante en el sitio externo',
+    access_job: 'Acceder a Vacante',
+    access_generic: 'Acceder',
+    details_title: 'Ver detalles de la alerta',
+    details_btn: 'Detalles',
+    delete_tooltip: 'Eliminar notificación',
+    view_all: 'VER TODAS LAS NOTIFICACIONES',
+    modal_title_job: 'Nueva Vacante Compatible',
+    modal_title_notif: 'Detalles de la Notificación',
+    modal_delete_title: 'Eliminar esta notificación',
+    modal_close_title: 'Cerrar',
+    modal_access_job_ext: 'ACCEDER A LA VACANTE EN FUENTE EXTERNA ↗',
+    modal_access_ext: 'ACCEDER ↗',
+    modal_send_email: 'ENVIAR EMAIL DE SUGERENCIAS',
+    modal_open_mira: 'ABRIR EN MIRA',
+  },
+  FR: {
+    title: 'Notifications',
+    new_single: 'nouvelle',
+    new_plural: 'nouvelles',
+    clear_all_title: 'Supprimer définitivement toutes les notifications',
+    clear_all_btn: 'TOUT EFFACER',
+    empty: 'Aucune notification',
+    access_job_title: "Accéder directement à l'offre sur le site externe",
+    access_job: "Accéder à l'Offre",
+    access_generic: 'Accéder',
+    details_title: "Voir les détails de l'alerte",
+    details_btn: 'Détails',
+    delete_tooltip: 'Supprimer la notification',
+    view_all: 'VOIR TOUTES LES NOTIFICATIONS',
+    modal_title_job: 'Nouvelle Offre Compatible',
+    modal_title_notif: 'Détails de la Notification',
+    modal_delete_title: 'Supprimer cette notification',
+    modal_close_title: 'Fermer',
+    modal_access_job_ext: "ACCÉDER À L'OFFRE SUR LE SITE EXTERNE ↗",
+    modal_access_ext: 'ACCÉDER ↗',
+    modal_send_email: 'ENVOYER UN EMAIL DE SUGGESTION',
+    modal_open_mira: 'OUVRIR DANS MIRA',
+  }
+};
+
 export const NotificationBell: React.FC<NotificationBellProps> = ({
   unreadCount,
   notifications,
@@ -48,7 +145,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   onMarkRead,
   isDark = false,
   onViewNotificationsPage,
+  language = 'PT',
 }) => {
+  const langKey = (language || 'PT').toUpperCase();
+  const i18n = BELL_I18N[langKey] || BELL_I18N.PT;
   const ref = useRef<HTMLDivElement>(null);
   const [selectedNotification, setSelectedNotification] = useState<AppNotification | null>(null);
 
@@ -130,7 +230,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
         }}
         id="notification-bell-btn"
         className={`relative p-2.5 rounded-2xl transition-all active:scale-90 border ${isDark ? 'bg-white/5 text-white hover:bg-white/10 border-white/5' : 'bg-slate-100 text-slate-800 hover:bg-slate-200 border-slate-200'}`}
-        title="Notificações"
+        title={i18n.title}
       >
         <Bell size={18} />
         {unreadCount > 0 && (
@@ -145,10 +245,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50/50">
             <div className="flex items-center gap-2">
-              <p className="text-xs font-black uppercase tracking-widest text-slate-900">Notificações</p>
+              <p className="text-xs font-black uppercase tracking-widest text-slate-900">{i18n.title}</p>
               {unreadCount > 0 && (
                 <span className="px-2 py-0.5 bg-orange-100 text-orange-700 font-extrabold text-[9px] rounded-full">
-                  {unreadCount} nova{unreadCount > 1 ? 's' : ''}
+                  {unreadCount} {unreadCount > 1 ? i18n.new_plural : i18n.new_single}
                 </span>
               )}
             </div>
@@ -160,10 +260,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   onToggle();
                 }}
                 className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors cursor-pointer"
-                title="Apagar todas as notificações permanentemente"
+                title={i18n.clear_all_title}
               >
                 <Trash2 size={12} />
-                APAGAR TODAS
+                {i18n.clear_all_btn}
               </button>
             )}
           </div>
@@ -174,7 +274,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               <div className="py-12 text-center">
                 <Bell size={28} className="mx-auto text-slate-200 mb-3" />
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">
-                  Sem notificações
+                  {i18n.empty}
                 </p>
               </div>
             ) : (
@@ -209,10 +309,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                               type="button"
                               onClick={(e) => handleOpenJobDirectly(n, e)}
                               className="px-3 py-1.5 bg-slate-950 hover:bg-mira-orange text-white rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
-                              title="Aceder diretamente à vaga no site externo"
+                              title={i18n.access_job_title}
                             >
                               <ExternalLink size={11} className="shrink-0" />
-                              <span>{n.type === 'jobs' ? 'Aceder à Vaga' : 'Aceder'}</span>
+                              <span>{n.type === 'jobs' ? i18n.access_job : i18n.access_generic}</span>
                             </button>
 
                             <button
@@ -224,16 +324,16 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                                 if (isOpen) onToggle();
                               }}
                               className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[9px] font-extrabold uppercase transition-all"
-                              title="Ver detalhes do alerta"
+                              title={i18n.details_title}
                             >
-                              Detalhes
+                              {i18n.details_btn}
                             </button>
 
                             <button
                               type="button"
                               onClick={(e) => handleDeleteItem(n.id, e)}
                               className="px-2 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl text-[9px] font-extrabold uppercase transition-all"
-                              title="Apagar notificação"
+                              title={i18n.delete_tooltip}
                             >
                               <Trash2 size={11} />
                             </button>
@@ -260,7 +360,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             }}
             className="w-full bg-slate-50 hover:bg-slate-100 border-t border-slate-100 py-3.5 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
           >
-            VER TODAS AS NOTIFICAÇÕES <ArrowRight size={12} />
+            {i18n.view_all} <ArrowRight size={12} />
           </button>
         </div>
       )}
@@ -278,7 +378,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-slate-900 leading-tight tracking-tight uppercase">
-                    {selectedNotification.type === 'jobs' ? 'Nova Vaga Compatível' : 'Detalhes da Notificação'}
+                    {selectedNotification.type === 'jobs' ? i18n.modal_title_job : i18n.modal_title_notif}
                   </h3>
                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">
                     {timeAgo(selectedNotification.created_at)}
@@ -292,14 +392,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                     setSelectedNotification(null);
                   }}
                   className="p-2.5 bg-red-50 border border-red-100 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full transition-all active:scale-90 cursor-pointer"
-                  title="Apagar esta notificação"
+                  title={i18n.modal_delete_title}
                 >
                   <Trash2 size={16} />
                 </button>
                 <button
                   onClick={() => setSelectedNotification(null)}
                   className="p-2.5 bg-slate-50 border border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all active:scale-90 cursor-pointer"
-                  title="Fechar"
+                  title={i18n.modal_close_title}
                 >
                   <X size={18} />
                 </button>
@@ -356,7 +456,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       }}
                       className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 hover:shadow-orange-500/20 cursor-pointer"
                     >
-                      <ExternalLink size={16} /> {selectedNotification.type === 'jobs' ? 'ACEDER À VAGA NA FONTE EXTERNA ↗' : 'ACEDER ↗'}
+                      <ExternalLink size={16} /> {selectedNotification.type === 'jobs' ? i18n.modal_access_job_ext : i18n.modal_access_ext}
                     </button>
                   );
                 }
@@ -377,7 +477,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       }}
                       className="w-full py-4 bg-slate-950 hover:bg-mira-orange text-white rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-950/10 cursor-pointer"
                     >
-                      <ExternalLink size={16} /> {isMail ? 'ENVIAR EMAIL DE SUGESTÃO' : 'ABRIR NO MIRA'}
+                      <ExternalLink size={16} /> {isMail ? i18n.modal_send_email : i18n.modal_open_mira}
                     </button>
                   );
                 }

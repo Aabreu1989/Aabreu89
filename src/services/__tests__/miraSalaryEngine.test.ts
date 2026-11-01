@@ -232,4 +232,132 @@ describe('🏛️ MIRA SALARY ENGINE (U-SALARY-01 — ESPECIFICAÇÃO CANÓNICA 
     assert.strictEqual(resFull.grossTotal, 1400.00);
   });
 
+
+  test('TESTE 7: Casado, Dois Titulares com Dependentes (Tabela I — Despacho n.º 233-A/2026)', () => {
+    // Casado 2 titulares: usa Tabela I com deducao adicional por dependente de 21,43€ (Continente)
+    // Para 1.500€: Escalao 6 (24,10%, parcela fixa 193,33€)
+    // Retencao = (1.500 * 24,10%) - 193,33 - (1 * 21,43) = 361,50 - 193,33 - 21,43 = 146,74€
+    const input: SalaryInput = {
+      grossSalary: 1500.00,
+      maritalStatus: 'married_2_holders',
+      dependentsCount: 1,
+      taxRegion: 'continente',
+      mealAllowanceDaily: 0,
+      mealAllowanceType: 'card',
+      workingDays: 22,
+      duodecimosMode: 'none',
+    };
+
+    const res = calculateNetSalary(input);
+
+    assert.strictEqual(res.breakdown.marginalTaxRate, 24.10, 'Taxa marginal deve ser 24,10%');
+    assert.strictEqual(res.breakdown.parcelaAbater, 193.33, 'Parcela a abater oficial deve ser 193,33€');
+    assert.strictEqual(res.breakdown.deductionPerDependent, 21.43, 'Deducao por dependente na Tabela I deve ser 21,43€');
+    assert.strictEqual(res.irsWithholdingTax, 146.74, 'Retencao na fonte deve ser rigorosamente 146,74€');
+    assert.strictEqual(res.socialSecurityEmployee, 165.00, 'SS do trabalhador (11%) deve ser 165,00€');
+    assert.strictEqual(res.netMonthlyIncome, 1188.26, 'Salario liquido deve ser 1.188,26€ (1500 - 165 - 146,74)');
+    assert.strictEqual(res.irsSpecialCaseStatus, 'standard', 'Status especial deve ser standard');
+    assert.strictEqual(res.irsSpecialCaseNotice, undefined, 'Nao deve haver aviso especial');
+  });
+
+  test('TESTE 8: Casado, Único Titular (Tabela III — Despacho n.º 233-A/2026)', () => {
+    // Cenário 1: 950€ — Abaixo do limite de isenção de 991,00€ (Escalão 1, 0% / parcela 0€)
+    const res950 = calculateNetSalary({
+      grossSalary: 950.00,
+      maritalStatus: 'married_1_holder',
+      dependentsCount: 0,
+      taxRegion: 'continente',
+      mealAllowanceDaily: 0,
+      mealAllowanceType: 'card',
+      workingDays: 22,
+      duodecimosMode: 'none',
+    });
+    assert.strictEqual(res950.breakdown.marginalTaxRate, 0, 'Taxa marginal até 991€ deve ser 0%');
+    assert.strictEqual(res950.irsWithholdingTax, 0.00, 'Retenção na fonte para 950€ deve ser 0,00€');
+    assert.strictEqual(res950.socialSecurityEmployee, 104.50, 'SS (11% de 950€) = 104,50€');
+    assert.strictEqual(res950.netMonthlyIncome, 845.50, 'Salário líquido = 845,50€ (950 - 104,50)');
+
+    // Cenário 2: 1.600€ — Escalão 6 da Tabela III (até 1.962€: taxa 15,70%, parcela fixa 141,32€)
+    // Retenção = (1.600 × 15,70%) - 141,32€ = 251,20 - 141,32 = 109,88€
+    const res1600 = calculateNetSalary({
+      grossSalary: 1600.00,
+      maritalStatus: 'married_1_holder',
+      dependentsCount: 0,
+      taxRegion: 'continente',
+      mealAllowanceDaily: 0,
+      mealAllowanceType: 'card',
+      workingDays: 22,
+      duodecimosMode: 'none',
+    });
+    assert.strictEqual(res1600.breakdown.marginalTaxRate, 15.70, 'Taxa marginal do 6.º escalão Tabela III deve ser 15,70%');
+    assert.strictEqual(res1600.breakdown.parcelaAbater, 141.32, 'Parcela a abater oficial do 6.º escalão deve ser 141,32€');
+    assert.strictEqual(res1600.irsWithholdingTax, 109.88, 'Retenção na fonte para 1.600€ deve ser 109,88€');
+    assert.strictEqual(res1600.socialSecurityEmployee, 176.00, 'SS (11% de 1.600€) = 176,00€');
+    assert.strictEqual(res1600.netMonthlyIncome, 1314.12, 'Salário líquido = 1.314,12€ (1.600 - 176 - 109,88)');
+
+    // Cenário 3: 2.000€ — Escalão 7 da Tabela III (até 2.240€: taxa 19,38%, parcela fixa 213,53€)
+    // Retenção = (2.000 × 19,38%) - 213,53€ = 387,60 - 213,53 = 174,07€
+    const res2000 = calculateNetSalary({
+      grossSalary: 2000.00,
+      maritalStatus: 'married_1_holder',
+      dependentsCount: 0,
+      taxRegion: 'continente',
+      mealAllowanceDaily: 0,
+      mealAllowanceType: 'card',
+      workingDays: 22,
+      duodecimosMode: 'none',
+    });
+    assert.strictEqual(res2000.breakdown.marginalTaxRate, 19.38, 'Taxa marginal do 7.º escalão Tabela III deve ser 19,38%');
+    assert.strictEqual(res2000.breakdown.parcelaAbater, 213.53, 'Parcela a abater oficial do 7.º escalão deve ser 213,53€');
+    assert.strictEqual(res2000.irsWithholdingTax, 174.07, 'Retenção na fonte para 2.000€ deve ser 174,07€');
+    assert.strictEqual(res2000.socialSecurityEmployee, 220.00, 'SS (11% de 2.000€) = 220,00€');
+    assert.strictEqual(res2000.netMonthlyIncome, 1605.93, 'Salário líquido = 1.605,93€ (2.000 - 220 - 174,07)');
+  });
+
+  test('TESTE 9: Situações Especiais de IRS — Bloqueio de Silêncio e not_implemented (Despacho n.º 233-A/2026)', () => {
+    const base: SalaryInput = {
+      grossSalary: 1500.00,
+      maritalStatus: 'single',
+      dependentsCount: 0,
+      taxRegion: 'continente',
+      mealAllowanceDaily: 0,
+      mealAllowanceType: 'card',
+      workingDays: 22,
+      duodecimosMode: 'none',
+    };
+
+    // 1. Incapacidade permanente >= 60% -> not_implemented
+    const resDisability = calculateNetSalary({
+      ...base,
+      specialCases: { hasDisabilityOver60Pct: true }
+    });
+    assert.strictEqual(resDisability.irsSpecialCaseStatus, 'not_implemented', 'Deve assinalar not_implemented para incapacidade');
+    assert.ok(resDisability.irsSpecialCaseNotice?.includes('incapacidade permanente >= 60%'), 'Deve descrever a incapacidade no aviso');
+
+    // 2. Guarda conjunta / residencia alternada -> not_implemented
+    const resCustody = calculateNetSalary({
+      ...base,
+      specialCases: { hasJointCustody: true }
+    });
+    assert.strictEqual(resCustody.irsSpecialCaseStatus, 'not_implemented', 'Deve assinalar not_implemented para guarda conjunta');
+    assert.ok(resCustody.irsSpecialCaseNotice?.includes('guarda conjunta'), 'Deve descrever guarda conjunta no aviso');
+
+    // 3. Pensão de alimentos isolada -> standard + aviso informativo sobre Art. 83.º-A CIRS
+    const resAlimony = calculateNetSalary({
+      ...base,
+      specialCases: { hasAlimony: true }
+    });
+    assert.strictEqual(resAlimony.irsSpecialCaseStatus, 'standard', 'Pensao de alimentos nao altera retencao mensal (mantem standard)');
+    assert.ok(resAlimony.irsSpecialCaseNotice?.includes('Pensao de Alimentos'), 'Deve conter nota informativa de alimentos');
+    assert.ok(resAlimony.irsSpecialCaseNotice?.includes('83.º-A'), 'Deve referenciar o Art. 83.º-A do CIRS');
+
+    // 4. Perfil normal sem situacoes especiais -> standard sem aviso
+    const resNormal = calculateNetSalary({
+      ...base,
+      specialCases: {}
+    });
+    assert.strictEqual(resNormal.irsSpecialCaseStatus, 'standard', 'Perfil normal sem especiais deve ser standard');
+    assert.strictEqual(resNormal.irsSpecialCaseNotice, undefined, 'Nao deve ter aviso em perfil normal');
+  });
+
 });
