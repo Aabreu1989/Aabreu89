@@ -200,6 +200,12 @@ export const communityService = {
     const authorAvatarVal = row.author_avatar || authorData.avatar_url || '';
     const authorIsVerifiedVal = row.author_is_verified ?? authorData.is_verified ?? false;
     
+    // 🛡️ SOBERANIA: Projeção canónica de selos do autor (de authorData.badges ou row.author_badges)
+    const rawAuthorBadges = authorData.badges || row.author_badges || [];
+    const authorBadgesVal: string[] = Array.isArray(rawAuthorBadges)
+      ? rawAuthorBadges.map((b: any) => (typeof b === 'string' ? b : b?.badge_id)).filter(Boolean)
+      : [];
+
     // 🛡️ RECONCILIAÇÃO CANÓNICA: Baseline histórico de posts.likes + Votos relacionais de post_votes
     const dynamicVotes = (typeof row.likes === 'number') ? row.likes : 0;
     const baseLikes = baselineLikes || (row.likes_count ?? 0);
@@ -210,6 +216,7 @@ export const communityService = {
       authorId: row.author_id || authorData.id || '',
       authorName: authorNameVal,
       authorAvatar: authorAvatarVal,
+      authorBadges: authorBadgesVal,
       authorIsVerified: authorIsVerifiedVal,
       authorRole: authorData.role || 'member',
       title: row.title || 'Post Comunitário',

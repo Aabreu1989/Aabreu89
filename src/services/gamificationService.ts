@@ -287,8 +287,9 @@ export const gamificationService = {
         
         const newBadges: string[] = [];
         
+        // 🛡️ REGRAS SOBERANAS E VERIFICÁVEIS: Nenhuma atribuição indiscriminada
+        // Apenas marcos quantitativos de reputação ou verificação oficial comprovada
         const milestones = [
-            { id: 'pioneiro',          threshold: 0,   name: 'Membro Pioneiro',      icon_emoji: '⭐', always: true },
             { id: 'coracao',           threshold: 10,  name: 'Coração da Tribo',     icon_emoji: '❤️' },
             { id: 'curador',           threshold: 50,  name: 'Curador de Conteúdo',  icon_emoji: '🔍' },
             { id: 'mestre_docs',       threshold: 80,  name: 'Mestre dos Documentos',icon_emoji: '📚' },
@@ -302,9 +303,7 @@ export const gamificationService = {
 
         for (const milestone of milestones) {
             let isEligible = false;
-            if (milestone.always) {
-                isEligible = true;
-            } else if (milestone.requireVerified) {
+            if (milestone.requireVerified) {
                 isEligible = !!isVerifiedParam;
             } else if (reputation >= milestone.threshold) {
                 isEligible = true;

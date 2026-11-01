@@ -1151,22 +1151,45 @@ export const adminService: AdminService = {
     },
 
     async awardBadge(userId: string, badgeId: string): Promise<void> {
-        const { data: profile } = await supabase.from('profiles').select('badges').eq('id', userId).single();
-        const currentBadges = profile?.badges || [];
-        if (!currentBadges.includes(badgeId)) {
-            await supabase.from('profiles').update({ badges: [...currentBadges, badgeId] }).eq('id', userId);
+        // 🛡️ SOBERANIA: Fonte canónica public.user_badges com chave primária (user_id, badge_id)
+        const { error } = await supabase
+            .from('user_badges')
+            .upsert({ user_id: userId, badge_id: badgeId, awarded_at: new Date().toISOString() }, { onConflict: 'user_id,badge_id' });
+        if (error) {
+            console.error('MIRA Admin: Erro ao atribuir badge em user_badges:', error);
+            throw error;
         }
+        await this.logAdminAction('award_badge', { userId, badgeId });
     },
 
     async removeBadge(userId: string, badgeId: string): Promise<void> {
-        const { data: profile } = await supabase.from('profiles').select('badges').eq('id', userId).single();
-        const currentBadges = profile?.badges || [];
-        await supabase.from('profiles').update({ badges: currentBadges.filter((b: string) => b !== badgeId) }).eq('id', userId);
+        // 🛡️ SOBERANIA: Remoção atómica na fonte canónica public.user_badges
+        const { error } = await supabase
+            .from('user_badges')
+            .delete()
+            .eq('user_id', userId)
+            .eq('badge_id', badgeId);
+        if (error) {
+            console.error('MIRA Admin: Erro ao remover badge em user_badges:', error);
+            throw error;
+        }
+        await this.logAdminAction('remove_badge', { userId, badgeId });
     },
 
     async fetchUserBadges(userId: string): Promise<string[]> {
-        const { data } = await supabase.from('profiles').select('badges').eq('id', userId).single();
-        return data?.badges || [];
+        // 🛡️ SOBERANIA: Leitura direta da tabela canónica public.user_badges
+        const { data, error } = await supabase
+            .from('user_badges')
+            .select('badge_id')
+            .eq('user_id', userId);
+        if (error) {
+            console.warn('MIRA Admin: Erro ao buscar user_badges, fallback de leitura em profiles:', error);
+            const { data: profile } = await supabase.from('profiles').select('badges').eq('id', userId).single();
+            return Array.isArray(profile?.badges) 
+                ? profile.badges.map((b: any) => typeof b === 'string' ? b : b?.badge_id).filter(Boolean) 
+                : [];
+        }
+        return (data || []).map((b: any) => b.badge_id);
     },
 
     async fetchPolicyAnalytics(): Promise<any> {

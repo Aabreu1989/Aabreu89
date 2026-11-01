@@ -24,8 +24,9 @@ No direito administrativo português vigora a distinção absoluta entre:
 2. **Requerimentos e Declarações Particulares (O Cidadão perante o Estado):** Instrumentos dirigidos pelo particular aos órgãos públicos, nos termos do **Artigo 52.º da Constituição da República Portuguesa** e dos **Artigos 102.º a 105.º do Código do Procedimento Administrativo (Decreto-Lei n.º 4/2015 - CPA)**.  
    *Função do MIRA:* O sistema atua exclusivamente como formatador estrutural das declarações e pretensões do próprio requerente.
 
-### Pilar 2: Afastamento da Procuradoria Ilícita (Lei n.º 49/2004)
-Nos termos da Lei n.º 49/2004, de 24 de agosto, a disponibilização de modelos e minutas-tipo de acesso público não consubstancia mandato judicial nem consulta jurídica. O MIRA assegura esta conformidade mediante:
+### Pilar 2: Afastamento da Procuradoria Ilícita e Salvaguarda dos Atos Próprios (Lei n.º 10/2024)
+A Lei n.º 49/2004 foi revogada pela Lei n.º 10/2024, de 19 de janeiro, que estabelece o regime jurídico vigente dos atos próprios dos advogados e dos solicitadores. Nos termos da Lei n.º 10/2024, constituem atos próprios a consulta jurídica individualizada, a representação ou mandato forense e a elaboração com caráter profissional de contratos e peças para terceiros.
+A disponibilização meramente técnica de modelos e minutas-tipo de acesso público, formatados pelo próprio utilizador para petições no âmbito do Direito de Petição (Artigo 52.º da CRP e Arts. 102.º a 105.º do CPA), não consubstancia mandato judicial, consulta jurídica nem prática de atos próprios. O MIRA assegura esta conformidade mediante:
 - **Cláusula de Salvaguarda Obrigatória:** O MIRA adverte expressamente que não presta consultoria jurídica individualizada e recomenda o recurso a advogado habilitado para casos complexos.
 - **Compromisso de Honra e Responsabilidade Declarativa:** O signatário declara sob compromisso de honra a veracidade de todos os factos vertidos no documento impresso, transferindo-se a responsabilidade exclusiva do teor declarativo para o titular que o assina e apresenta perante as autoridades.
 

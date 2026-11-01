@@ -140,7 +140,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "👥 Prova de Enquadramento Estrito no Artigo 122.º (Lei n.º 62/2026)",
                 accepted: "Certidão de Nascimento de filho com nacionalidade portuguesa com prova de exercício efetivo das responsabilidades parentais e sustento, laços sociais históricos consolidados ou relatório médico oficial do SNS.",
                 where: "Conservatória do Registo Civil (filho com nacionalidade portuguesa) ou Estabelecimento Oficial de Saúde SNS.",
-                hack: "Atenção (Lei n.º 62/2026): A via de dispensa de visto por ter filho menor estrangeiro a frequentar escola em Portugal foi revogada. O Art. 122.º, al. k) é agora taxativamente restrito a progenitores de menores de nacionalidade portuguesa que exerçam a respetiva autoridade parental."
+                hack: "Atenção (Lei n.º 62/2026): A via de dispensa de visto por frequência escolar de filho menor estrangeiro foi revogada. O Artigo 122.º, alínea k) é taxativamente aplicável a progenitores de filhos menores com nacionalidade portuguesa residentes em Portugal sobre os quais exerçam efetivamente responsabilidades parentais e assegurem sustento e educação (sem que a lei exija nacionalidade originária do menor)."
             },
             {
                 docName: "📄 Registo Criminal e Comprovativo de Alojamento",
@@ -232,9 +232,9 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         residence_renewal: [
             {
                 docName: "🌐 Pedido Submetido no Portal das Renovações AIMA",
-                accepted: "Comprovativo de renovação submetido online no Portal da AIMA (renovacoes.aima.gov.pt). Janela em vigor em outubro de 2026: títulos com caducidade até 31 de janeiro de 2027.",
+                accepted: "Comprovativo digital de renovação submetido no Portal da AIMA (renovacoes.aima.gov.pt). Informação operacional: abertura por janelas temporais de caducidade (sujeita a confirmação e elegibilidade no portal oficial).",
                 where: "Portal Digital de Renovações da AIMA.",
-                hack: "A AIMA liberta vagas bimestrais para mitigar a sobrecarga. A taxa oficial online beneficia de 25% de desconto (€56,25). O comprovativo digital emitido com QR Code atesta a legalidade da permanência e os plenos direitos de trabalho."
+                hack: "A AIMA aplica a abertura faseada de vagas no portal oficial para escalonar a procura. A taxa oficial online prevê redução de 25% (estimada em cerca de €56,25 pela tabela geral), carecendo de validação na respetiva guia DUC emitida. O comprovativo digital com QR Code atesta a regularidade da permanência e os plenos direitos de trabalho. Atenção (DL n.º 85-B/2025): o comprovativo tem eficácia estritamente territorial em Portugal, não sendo aceite para trânsito internacional no Espaço Schengen."
             },
             {
                 docName: "💼 Comprovativo de Rendimentos e Situação Fiscal/Contributiva",
@@ -384,7 +384,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "👥 Proof of Strict Grounds under Article 122 (Law 62/2026)",
                 accepted: "Birth certificate of minor child holding Portuguese nationality (with proof of effective parental custody and maintenance), established historical community ties, or official NHS medical report.",
                 where: "Civil Registry (Portuguese child) or National Health Service (SNS) medical board.",
-                hack: "Notice (Law no. 62/2026): The visa waiver based on having a foreign minor attending school in Portugal was repealed. Art. 122(k) is now strictly restricted to parents of Portuguese minor citizens exercising parental authority."
+                hack: "Notice (Law no. 62/2026): The visa waiver based on foreign minor school attendance was repealed. Article 122(k) applies specifically to parents of minor children with Portuguese nationality residing in Portugal over whom they effectively exercise parental responsibilities and provide maintenance and education (without statutory requirement of origin nationality)."
             },
             {
                 docName: "📄 Police Clearance & Registered Address",
@@ -476,9 +476,9 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         residence_renewal: [
             {
                 docName: "🌐 Application Submitted via AIMA Renewal Portal",
-                accepted: "Digital receipt of renewal submitted online via AIMA official portal (renovacoes.aima.gov.pt). Window active in October 2026: permits expiring up to January 31, 2027.",
+                accepted: "Digital receipt of renewal submitted online via AIMA portal (renovacoes.aima.gov.pt). Operational information: subject to batch availability and eligibility verification on the official portal.",
                 where: "AIMA Digital Renewal Portal.",
-                hack: "AIMA opens bi-monthly application batches to manage traffic. The online fee has a statutory 25% discount (€56.25). The QR-code digital receipt certifies legal status and preserves full employment and movement rights."
+                hack: "AIMA releases online renewal batches progressively to manage traffic. The online fee has an estimated 25% statutory discount (~€56.25 under general tariff table), pending final confirmation on the issued DUC payment slip. The QR-code digital receipt certifies legal status and preserves full employment rights during processing. Travel warning (DL 85-B/2025): the digital receipt has strictly territorial validity inside Portugal and is not recognized for international transit across the Schengen Area."
             },
             {
                 docName: "💼 Proof of Income & Clean Tax/Social Security Standing",
@@ -628,7 +628,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "👥 Prueba de Supuestos Estrictos del Artículo 122 (Ley 62/2026)",
                 accepted: "Certificado de nacimiento de hijo con nacionalidad portuguesa (con prueba de ejercicio efectivo de la patria potestad y manutención), arraigo histórico acreditado o informe médico oficial del SNS.",
                 where: "Registro Civil portugués (hijo nacional) o Junta Médica del Servicio Nacional de Salud (SNS).",
-                hack: "Atención (Ley n.º 62/2026): La regularización por tener un hijo menor extranjero escolarizado en Portugal fue revocada. El Art. 122(k) se reserva taxativamente a progenitores de menores con nacionalidad portuguesa que ejerzan la patria potestad."
+                hack: "Atención (Ley n.º 62/2026): La vía de dispensa de visado por escolarización de hijo menor extranjero fue derogada. El Artículo 122(k) se aplica estrictamente a progenitores de hijos menores con nacionalidad portuguesa residentes en Portugal sobre los que ejerzan efectivamente responsabilidades parentales y aseguren manutención y educación (sin exigencia de nacionalidad originaria del menor)."
             },
             {
                 docName: "📄 Antecedentes Penales y Domicilio Acreditado",
@@ -720,9 +720,9 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         residence_renewal: [
             {
                 docName: "🌐 Solicitud Presentada en el Portal de Renovaciones AIMA",
-                accepted: "Justificante digital de renovación tramitado en línea a través del portal oficial de AIMA (renovacoes.aima.gov.pt). Ventana activa en octubre de 2026: títulos que vencen hasta el 31 de enero de 2027.",
+                accepted: "Justificante digital de renovación tramitado en línea a través del portal de AIMA (renovacoes.aima.gov.pt). Información operativa: sujeta a apertura de convocatorias y verificación de elegibilidad en el portal oficial.",
                 where: "Portal Digital de Renovaciones de AIMA.",
-                hack: "AIMA habilita cupos bimestrales para descongestionar el sistema. La tasa oficial en línea cuenta con un 25% de descuento (€56,25). El resguardo digital con código QR acredita la permanencia regular y mantiene plenos derechos laborales."
+                hack: "AIMA habilita cupos progresivos para gestionar el tráfico. La tasa oficial en línea prevé una reducción del 25% (estimada en aprox. €56,25 según el arancel general), pendiente de confirmación en la carta de pago DUC oficial. El resguardo digital con código QR acredita la permanencia regular y mantiene plenos derechos laborales. Advertencia de viaje (DL 85-B/2025): el resguardo tiene validez estrictamente territorial en Portugal y no es válido para tránsito internacional por el Espacio Schengen."
             },
             {
                 docName: "💼 Acreditación de Ingresos y Situación Tributaria/Seguridad Social",
@@ -872,7 +872,7 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
                 docName: "👥 Justificatif des Motifs Stricts de l'Article 122 (Loi 62/2026)",
                 accepted: "Acte de naissance d'un enfant mineur de nationalité portugaise (avec preuve d'autorité parentale effective et d'entretien), attaches sociales historiques solides ou rapport médical officiel SNS.",
                 where: "Registre d'état civil (enfant portugais) ou Commission Médicale du Service National de Santé (SNS).",
-                hack: "Attention (Loi n.º 62/2026) : La régularisation au titre de la scolarité d'un enfant étranger a été abrogée. L'Art. 122(k) est désormais strictement réservé aux parents d'enfants mineurs de nationalité portugaise exerçant l'autorité parentale."
+                hack: "Attention (Loi n.º 62/2026) : La dispense de visa au titre de la scolarité d'un enfant étranger a été abrogée. L'Article 122(k) est désormais réservé aux parents d'enfants mineurs de nationalité portugaise résidant au Portugal sur lesquels ils exercent effectivement l'autorité parentale et pourvoient à leur entretien (sans condition de nationalité originaire de l'enfant)."
             },
             {
                 docName: "📄 Casier Judiciaire et Justificatif de Domicile",
@@ -964,9 +964,9 @@ export const PATHWAY_DOCS_DETAIL_GUIDE: Record<string, Record<string, DocGuideIt
         residence_renewal: [
             {
                 docName: "🌐 Demande Déposée sur le Portail des Renouvellements AIMA",
-                accepted: "Récépissé numérique de renouvellement soumis en ligne sur le portail officiel de l'AIMA (renovacoes.aima.gov.pt). Période active en octobre 2026 : titres expirant jusqu'au 31 janvier 2027.",
+                accepted: "Récépissé numérique de renouvellement soumis sur le portail AIMA (renovacoes.aima.gov.pt). Information opérationnelle : soumise à l'ouverture des créneaux et à l'éligibilité sur le portail officiel.",
                 where: "Portail Numérique de Renouvellement de l'AIMA.",
-                hack: "L'AIMA ouvre des créneaux bimestriels pour éviter les surcharges. Le tarif officiel en ligne bénéficie d'une réduction de 25% (€56,25). Le récépissé avec code QR certifie la régularité du séjour et préserve les droits au travail."
+                hack: "L'AIMA ouvre des créneaux progressifs pour étaler la demande. Le tarif officiel en ligne prévoit une réduction de 25% (estimé à environ 56,25 € selon la grille générale), sous réserve de validation sur le bordereau DUC délivré. Le récépissé avec code QR certifie la régularité du séjour et préserve les droits au travail. Avertissement voyages (DL 85-B/2025) : le récépissé a une validité strictement territoriale au Portugal et n'est pas reconnu pour le transit international dans l'Espace Schengen."
             },
             {
                 docName: "💼 Justificatifs de Revenus et Situation Fiscale / Sécurité Sociale",

@@ -49,7 +49,7 @@ Os motores de cálculo não devem depender de constantes anuais mutáveis sobres
 | **Pensão de Velhice** | 66 anos e 4 meses | MTSSS / DRE | Portaria n.º 396/2023 (Fator Sustentabilidade) |
 | **Meios Subsistência AIMA** | 920€ + 30%/dep. | AIMA / MAI | Portaria n.º 1563/2007 & Art. 52.º Lei 23/2007 |
 | **IRC Reduzido PMEs** | 12,5% até 50.000 € | Código do IRC (CIRC) | Artigo 87.º, n.º 2 do CIRC |
-| **Cauções e Rendas** | Máx. 2 Cauções + 1 Renda | Código Civil Português | Artigo 1076.º do Código Civil (Lei n.º 56/2023) |
+| **Cauções e Rendas Antecipadas** | Caução máx. 2 rendas (n.º 2); Antecipação máx. 2 meses (n.º 1, escrito) | Código Civil Português | Artigo 1076.º do Código Civil (redação pela Lei n.º 24-D/2022) |
 
 ---
 

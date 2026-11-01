@@ -616,8 +616,11 @@ export function calculateRentalAffordability(input: RentalAffordabilityInput): R
     prudenceStatus = 'moderate_risk';
   }
 
-  // 2. Capital Inicial Máximo Admissível (Art. 1076.º Código Civil)
-  // 1 renda corrente + até 2 antecipadas + até 2 caução = 5 rendas no máximo legal
+  // 2. Capital Inicial Máximo Admissível (Art. 1076.º do Código Civil — redação Lei n.º 24-D/2022)
+  // • Rendas antecipadas (Art. 1076.º, n.º 1 CC): mediante acordo escrito, por período não superior a dois meses.
+  // • Caução (Art. 1076.º, n.º 2 CC): garantia de cumprimento das obrigações até ao valor correspondente a duas rendas.
+  // • Renda do mês inicial corrente: 1 renda.
+  // Total de desembolso inicial contratualmente admissível: até 5 rendas (1 + 2 + 2).
   const maxAdvanceMonths = 2;
   const maxDepositMonths = 2;
   const maxAdvanceEur = rentToUse * maxAdvanceMonths;
@@ -674,8 +677,8 @@ export function calculateRentalAffordability(input: RentalAffordabilityInput): R
       maxSecurityDepositMonths: maxDepositMonths,
       maxSecurityDepositEur: maxDepositEur,
       maxAdmissibleTotalEur: maxAdmissibleTotal,
-      label: 'Capital inicial máximo contratualmente admissível segundo os parâmetros do Art. 1076.º do Código Civil',
-      disclaimer: 'O valor de 5 rendas constitui o teto legal de desembolso inicial admissível no contrato (1.ª renda + até 2 adiantamentos + até 2 cauções), não sendo um pagamento legalmente obrigatório se o senhorio acordar montante inferior.'
+      label: 'Capital inicial máximo contratualmente admissível (Art. 1076.º do Código Civil — redação Lei n.º 24-D/2022)',
+      disclaimer: 'O Art. 1076.º do Código Civil (redação Lei n.º 24-D/2022) estipula que a caução tem como teto até 2 rendas (n.º 2) e as rendas antecipadas não podem exceder 2 meses mediante acordo escrito (n.º 1). O desembolso inicial total máximo admissível é de 5 rendas (1.ª renda corrente + até 2 antecipadas + até 2 cauções), não sendo compulsório se o senhorio acordar quantia inferior.'
     },
     porta65JovemScreening: {
       screeningStatus: screeningStatus,

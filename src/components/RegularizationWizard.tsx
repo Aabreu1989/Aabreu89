@@ -774,7 +774,7 @@ export const RegularizationWizard: React.FC<WizardProps> = memo(({
                                                 {t('wiz_diff_irregular_illegal_title', language)}
                                             </h4>
                                             <p className="text-[10px] text-slate-400">
-                                                Clique para ver a distinção jurídica, sanções (coima vs. CIT) e prazos legais da Lei 62/2026.
+                                                Clique para ver a distinção jurídica, enquadramento graduado (coima vs. medidas de afastamento) e prazos legais.
                                             </p>
                                         </div>
                                     </div>

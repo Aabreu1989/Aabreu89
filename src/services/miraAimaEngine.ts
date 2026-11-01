@@ -30,12 +30,14 @@
  *    - Transposição do Pacto Europeu sobre Migração e Asilo.
  *    - Revogação expressa do deferimento tácito e fixação de prazos vinculativos (90 dias concessão / 60 dias renovação).
  *    - Extinção definitiva de regularizações pós-chegada (estudos sem visto consular prévio, progenitores sem visto).
- *    - Substituição da NAV pelo Dever de Abandono (10-20 dias), retenção em CIT até 180 dias e interdição até 5 anos.
+ *    - Prazos diferenciados de Abandono Voluntário: 20 a 30 dias após indeferimento administrativo (Art. 138.º, n.º 1) e 10 a 20 dias em decisão de afastamento coercivo (Art. 160.º, n.º 1).
+ *    - Retenção em CIT como medida cautelar excecional em processos de afastamento com risco comprovado de fuga ou não cooperação.
  *    - Flexibilidade de mudança de entidade patronal por mera comunicação digital à AIMA.
  * 4. Decreto-Lei n.º 37-A/2024, de 3 de junho:
  *    - Artigo 2.º: Revogação dos n.ºs 2 dos Artigos 88.º e 89.º (fim das manifestações de interesse).
- * 4. Decreto-Lei n.º 41-A/2024 e Resolução do Conselho de Ministros n.º 75/2024:
+ * 4. Decreto-Lei n.º 41-A/2024 e Decreto-Lei n.º 85-B/2025:
  *    - Regime transitório da Estrutura de Missão da AIMA para processos SAPA submetidos até 03/06/2024.
+ *    - Fim das prorrogações automáticas genéricas em massa (outubro/2025) e exigência de comprovativo oficial digital da AIMA com eficácia estritamente territorial em Portugal (sem validade de circulação/trânsito no Espaço Schengen).
  * 5. Código dos Regimes Contributivos (CRCSPSS — Lei n.º 110/2009, de 16 de setembro):
  *    - Artigo 44.º: Base de incidência contributiva na remuneração ilíquida devida.
  *    - Artigo 53.º: Taxas contributivas do regime geral TCO (11,0% trabalhador / 23,75% empregador).
@@ -52,16 +54,16 @@
  *    - RMMG Continental 2026 = 920,00 €.
  */
 
-// ─── CONSTANTES TERRITORIAIS CANÓNICAS (2026) ──────────────────────────────────
+// ─── CONSTANTES TERRITORIAIS CANÓNICAS & STATUS DE HOMOLOGAÇÃO (2026) ────────
 export const NORMATIVE_AIMA_2026 = {
-  RMMG_CONTINENTAL: 920.00,
-  RMMG_AZORES: 966.00,   // DL 139/2025 + DLR 8/2002/A (+5% regional)
-  RMMG_MADEIRA: 980.00,  // Decreto Legislativo Regional ALRAM 2026
+  RMMG_CONTINENTAL: 920.00, // Homologado pelo Decreto-Lei n.º 139/2025 (Diário da República)
+  RMMG_AZORES: 966.00,      // Estimativa baseada no acréscimo legal de 5% (DLR 8/2002/A) — pendente de confirmação de diploma executivo regional 2026
+  RMMG_MADEIRA: 980.00,     // Projeção indicativa da ALRAM — pendente de homologação por Decreto Legislativo Regional próprio para 2026
   JOB_SEARCH_MULTIPLIER: 3,    // 3 × RMMG (Art. 57.º-A Lei 23/2007)
   DIGITAL_NOMAD_MULTIPLIER: 4, // 4 × RMMG (Art. 90.º-A Lei 23/2007)
   LEGACY_CUTOFF_DATE: '2024-06-03', // DL 37-A/2024
   LAW_62_2026_EFFECTIVE_DATE: '2026-09-11', // Lei n.º 62/2026 (Transposição do Pacto Europeu / Fim do Deferimento Tácito)
-  RENEWAL_PORTAL_WINDOW_END: '2027-01-31', // Janela oficial AIMA de renovações online (outubro/2026 para caducidades até jan/2027)
+  RENEWAL_PORTAL_WINDOW_END: '2027-01-31', // Dado operacional: janela temporária divulgada, pendente de validação contínua em renovacoes.aima.gov.pt
 };
 
 // ─── TIPOS FUNDAMENTAIS ────────────────────────────────────────────────────────
@@ -543,7 +545,7 @@ export class AimaFeeEngine {
       reductionPercentageApplied: reductionPct,
       reductionRule,
       isDigitalChannelEligible: feeItem.digitalEligible,
-      feeNotes: `Taxa calculada com base na ${feeItem.legalBasis} (${reductionRule}).`,
+      feeNotes: `Taxa calculada com base na ${feeItem.legalBasis} (${reductionRule}). Valor estimado sujeito a validação na guia DUC oficial emitida pela AIMA no ato da instrução.`,
       provenance: {
         ruleId: `RULE_AIMA_FEE_${feeItem.procedureId.toUpperCase()}`,
         legalBasis: feeItem.legalBasis,
@@ -900,7 +902,7 @@ export class AimaDocumentEngine {
         name: 'Comprovativo do Enquadramento Estrito no Artigo 122.º (Lei n.º 62/2026)',
         description: 'Certidão de nascimento de filho menor de nacionalidade portuguesa (com prova de guarda e sustento efetivo), laços sociais consolidados ou razões de saúde grave.',
         whereToObtain: 'Conservatória do Registo Civil (filho nacional português), Tribunal ou Estabelecimento de Saúde Oficial SNS.',
-        officialGuidance: 'A Lei n.º 62/2026 restringiu taxativamente a dispensa de visto: a parentalidade é reservada a progenitores de menores com nacionalidade portuguesa que exerçam a autoridade parental.',
+        officialGuidance: 'Nos termos do Artigo 122.º, alínea k) da Lei n.º 23/2007 (com redação da Lei n.º 62/2026), a dispensa de visto abrange progenitores de filhos menores com nacionalidade portuguesa residentes em Portugal sobre os quais exerçam efetivamente responsabilidades parentais e assegurem sustento e educação (sem exigência legal de nacionalidade originária do menor).',
         provenance: {
           ruleId: 'RULE_DOC_ART122_SPECIAL',
           legalBasis: 'Lei n.º 23/2007',

@@ -103,34 +103,25 @@ export const authService = {
             const { data: { session } } = await supabase.auth.getSession();
             const sessionUser = session?.user?.id === userId ? session.user : null;
 
-            // 🛡️ SOBERANIA MIRA: Busca atómica de medalhas na tabela central
-            let { data: badgesData } = await supabase
+            // 🛡️ SOBERANIA MIRA: Busca canónica e pura de medalhas na tabela user_badges (read-only, sem mutações secundárias)
+            const { data: badgesData, error: badgesError } = await supabase
                 .from('user_badges')
                 .select('badge_id, awarded_at')
                 .eq('user_id', userId);
 
-            // Se o utilizador ainda não tiver medalhas registadas, executar onboarding de gamificação (persiste pioneiro no DB)
-            if (!badgesData || badgesData.length === 0) {
-                try {
-                    const { gamificationService } = await import('./gamificationService');
-                    await gamificationService.autoAwardBadges(userId, profile.reputation || 0, profile.is_verified || false);
-                    const { data: freshBadges } = await supabase
-                        .from('user_badges')
-                        .select('badge_id, awarded_at')
-                        .eq('user_id', userId);
-                    if (freshBadges && freshBadges.length > 0) {
-                        badgesData = freshBadges;
-                    }
-                } catch (e) {
-                    console.warn('MIRA: Aviso ao inicializar medalhas no onboarding:', e);
-                }
+            if (badgesError) {
+                console.warn('MIRA: Aviso ao consultar user_badges:', badgesError.message);
             }
 
             const user = this.mapProfileToUser(profile, sessionUser);
-            user.badges = (badgesData || []).map(b => ({
-                badge_id: b.badge_id,
-                awarded_at: b.awarded_at
-            }));
+            
+            // Fonte canónica: se existirem registos em user_badges, prevalecem sobre qualquer coluna legada
+            if (Array.isArray(badgesData) && badgesData.length > 0) {
+                user.badges = badgesData.map(b => ({
+                    badge_id: b.badge_id,
+                    awarded_at: b.awarded_at || new Date().toISOString()
+                }));
+            }
             
             return user;
         } catch (e) {
@@ -175,7 +166,13 @@ export const authService = {
             lynxEyeCount: profile?.lynx_eye_count || 0,
             communityValidationsCount: profile?.community_validations_count || 0,
             likesGivenCount: profile?.likes_given_count || 0,
-            badges: Array.isArray(profile?.badges) ? profile.badges : [],
+            badges: Array.isArray(profile?.badges)
+                ? profile.badges.map((b: any) => {
+                    if (typeof b === 'string') return { badge_id: b, awarded_at: profile?.created_at || new Date().toISOString() };
+                    if (b && typeof b === 'object' && b.badge_id) return { badge_id: b.badge_id, awarded_at: b.awarded_at || profile?.created_at || new Date().toISOString() };
+                    return null;
+                }).filter(Boolean) as any
+                : [],
             email_confirmed_at: sessionUser?.email_confirmed_at || new Date().toISOString()
         };
     },

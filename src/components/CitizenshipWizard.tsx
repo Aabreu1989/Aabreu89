@@ -75,7 +75,7 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
             glow: 'hover:shadow-sky-500/5',
             ring: 'hover:ring-sky-400/30',
-            sub: 'Cidadãos de países CPLP: Brasil, Angola, Cabo Verde, etc. 5 anos de residência legal (Lei Orgânica 1/2024: tempo de espera desde a submissão do pedido na AIMA conta integralmente).'
+            sub: 'Cidadãos de países CPLP: 5 anos de residência legal (Art. 15.º, n.º 4 da Lei da Nacionalidade: releva o tempo desde o pedido de residência temporária na AIMA, desde que a autorização venha a ser deferida).'
         },
         {
             id: 'marriage',
@@ -129,7 +129,7 @@ export const CitizenshipWizard: React.FC<CitizenshipWizardProps> = ({
             tagColor: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
             glow: 'hover:shadow-orange-500/5',
             ring: 'hover:ring-orange-400/30',
-            sub: 'Regime Geral: 5 anos de residência legal em Portugal. Pela Lei Orgânica 1/2024, o tempo de espera do pedido de residência na AIMA conta para os 5 anos.'
+            sub: 'Regime Geral: 5 anos de residência legal (Art. 15.º, n.º 4 da Lei da Nacionalidade: releva o tempo desde o pedido de residência temporária na AIMA, desde que a autorização venha a ser deferida).'
         },
         {
             id: 'marriage',
