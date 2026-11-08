@@ -691,7 +691,9 @@ export default async function handler(req, res) {
             title: cleanTextEncoding(job.title),
             location: cleanTextEncoding(classificationResult.location),
             source_url: canonical,
-            created_at: job.created_at || new Date().toISOString()
+            created_at: job.created_at || new Date().toISOString(),
+            ingested_at: new Date().toISOString(),
+            ingested_at_source: 'verified_realtime'
           });
           validCount++;
         } else {
@@ -757,7 +759,7 @@ export default async function handler(req, res) {
     // Tentativa soberana de UPSERT com onConflict: 'source_url'
     const { data: upsertData, error: upsertError } = await supabase
       .from('job_posts')
-      .upsert(batch, { onConflict: 'source_url' })
+      .upsert(batch, { onConflict: 'source_url', ignoreDuplicates: true })
       .select('id, title, location, work_topic, source_name, source_url');
 
     if (!upsertError && upsertData) {
@@ -787,124 +789,38 @@ export default async function handler(req, res) {
     const { data: activeAlerts } = await supabase
       .from('user_job_alerts')
       .select('*')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .is('deleted_at', null);
 
     if (activeAlerts && activeAlerts.length > 0) {
       activeAlertsCount = activeAlerts.length;
 
-      // 5.1 Processar Matching exclusivamente para as Vagas Novas Ingeridas (insertedJobs)
+      // 5.1 Matching live via RPC process_live_alert_matches (B-01: barreira ingested_at no SQL)
+      // A barreira temporal está na RPC: ingested_at >= alert.created_at
+      // Vagas com created_at antigo mas ingested_at recente são correctamente processadas.
       if (insertedJobs.length > 0) {
-        const candidates = [];
+        const jobIds = insertedJobs.map(j => j.id).filter(Boolean);
 
         for (const alert of activeAlerts) {
-          if (!alert.user_id) continue;
-
-          for (const job of insertedJobs) {
-            // Barreira Temporal: Vaga deve ter sido publicada/ingerida a partir da criação do alerta
-            if (alert.created_at && job.created_at) {
-              if (new Date(job.created_at) < new Date(alert.created_at)) {
-                continue;
-              }
-            }
-
-            if (evaluateMatch(job, alert)) {
-              candidates.push({
-                alert_id: alert.id,
-                job_id: job.id,
-                user_id: alert.user_id,
-                frequency: alert.frequency || 'instant',
-                jobTitle: job.title,
-                jobSource: job.source_name || 'MIRA',
-                jobLocation: job.location || 'Portugal',
-                alertTopic: alert.work_topic || 'Emprego'
+          if (!alert.user_id || !alert.id) continue;
+          try {
+            const { data: rpcResult, error: rpcError } = await supabase
+              .rpc('process_live_alert_matches', {
+                p_alert_id: alert.id,
+                p_job_ids: jobIds
               });
+
+            if (rpcError) {
+              console.warn(`[SyncJobs] RPC process_live_alert_matches error (${alert.id}):`, rpcError.message);
+              continue;
             }
-          }
-        }
 
-        // Agrupamento de candidatos por alerta para permitir agregação por ciclo e eliminar tempestades de notificações
-        const candidatesByAlert = new Map();
-        for (const cand of candidates) {
-          if (!candidatesByAlert.has(cand.alert_id)) {
-            candidatesByAlert.set(cand.alert_id, []);
-          }
-          candidatesByAlert.get(cand.alert_id).push(cand);
-        }
-
-        // Processar cada alerta com registo atómico em job_alert_deliveries e agregação por ciclo
-        for (const [alertId, alertCandidates] of candidatesByAlert.entries()) {
-          const newDeliveriesForAlert = [];
-
-          for (const cand of alertCandidates) {
-            try {
-              const { data: delivery, error: delError } = await supabase
-                .from('job_alert_deliveries')
-                .insert({
-                  alert_id: cand.alert_id,
-                  job_id: cand.job_id
-                })
-                .select('id')
-                .single();
-
-              if (delError) {
-                const isDuplicate =
-                  delError.code === '23505' ||
-                  delError.message?.includes('duplicate key') ||
-                  delError.message?.includes('uq_alert_job_delivery') ||
-                  delError.message?.includes('job_alert_deliveries_pkey');
-
-                if (!isDuplicate) {
-                  console.warn(`[SyncJobs] Erro real ao registrar delivery (${cand.alert_id}:${cand.job_id}):`, delError.message || delError);
-                }
-                continue;
-              }
-
-              if (delivery) {
-                newDeliveriesForAlert.push(cand);
-              }
-            } catch (delErr) {
-              console.warn(`[SyncJobs] Exceção inesperada no delivery para ${cand.alert_id}:${cand.job_id}:`, delErr);
+            if (rpcResult?.status === 'success' && rpcResult?.notified === true) {
+              notificationsCount++;
             }
+          } catch (rpcEx) {
+            console.warn(`[SyncJobs] Exceção inesperada no live matching (${alert.id}):`, rpcEx);
           }
-
-          // Se nenhuma vaga deste alerta foi nova, não emite nada
-          if (newDeliveriesForAlert.length === 0) continue;
-
-          // Avaliar emissão para alertas com frequência 'instant'
-          const firstCand = newDeliveriesForAlert[0];
-          if (firstCand.frequency === 'instant') {
-            try {
-              if (newDeliveriesForAlert.length === 1) {
-                // Caso 1: Apenas 1 vaga nova no ciclo -> Notificação individual detalhada
-                const { error: notifErr } = await supabase.from('notifications').insert({
-                  user_id: firstCand.user_id,
-                  type: 'jobs',
-                  title: `💼 Nova Vaga Compatível: ${firstCand.jobTitle}`,
-                  message: `${firstCand.jobSource} • ${firstCand.jobLocation}\nCorrespondência com o teu alerta de ${firstCand.alertTopic}.`,
-                  is_read: false,
-                  link: `/jobs?jobId=${encodeURIComponent(firstCand.job_id)}`,
-                  created_at: new Date().toISOString()
-                });
-                if (!notifErr) notificationsCount++;
-              } else {
-                // Caso 2: Múltiplas vagas novas no mesmo ciclo -> Notificação AGRUPADA única (Anti-Flood Soberano)
-                const count = newDeliveriesForAlert.length;
-                const { error: notifErr } = await supabase.from('notifications').insert({
-                  user_id: firstCand.user_id,
-                  type: 'jobs',
-                  title: `💼 ${count} Novas Vagas Compatíveis: ${firstCand.alertTopic}`,
-                  message: `Encontrámos ${count} novas oportunidades para o teu alerta em ${firstCand.jobLocation || 'Portugal'}.`,
-                  is_read: false,
-                  link: `/jobs?topic=${encodeURIComponent(firstCand.alertTopic)}&alertId=${encodeURIComponent(firstCand.alert_id)}`,
-                  created_at: new Date().toISOString()
-                });
-                if (!notifErr) notificationsCount++;
-              }
-            } catch (notifEx) {
-              console.warn(`[SyncJobs] Erro ao registrar notificação instantânea para user ${firstCand.user_id}:`, notifEx);
-            }
-          }
-          // Para daily/weekly: os deliveries já foram gravados atómicamente acima, aguardando o Digest Engine abaixo
         }
       }
 

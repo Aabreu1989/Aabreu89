@@ -66,50 +66,33 @@ export default async function handler(req, res) {
       const targetUid = authData.user.id;
       console.log(`🔒 [MIRA RGPD] A executar auto-exclusão controlada do utilizador ${targetUid}`);
 
-      // Purgação em ordem topológica de dependências (FKs)
-      // 1. Dados privados, documentos e preferências
-      await Promise.allSettled([
-        supabaseAdmin.from('user_documents').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('user_job_alerts').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('saved_posts').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('post_votes').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('user_badges').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('reputation_logs').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('notifications').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('app_suggestions').delete().eq('user_id', targetUid),
-        supabaseAdmin.from('community_interactions').delete().eq('user_id', targetUid)
-      ]);
-
-      // 2. Relações sociais e denúncias associadas
-      await Promise.allSettled([
-        supabaseAdmin.from('user_follows').delete().eq('follower_id', targetUid),
-        supabaseAdmin.from('user_follows').delete().eq('following_id', targetUid),
-        supabaseAdmin.from('reports').delete().eq('reporter_id', targetUid),
-        supabaseAdmin.from('reports').delete().eq('target_user_id', targetUid)
-      ]);
-
-      // 3. Conteúdo publicado pelo utilizador
-      await Promise.allSettled([
-        supabaseAdmin.from('comments').delete().eq('author_id', targetUid),
-        supabaseAdmin.from('stories').delete().eq('author_id', targetUid),
-        supabaseAdmin.from('posts').delete().eq('author_id', targetUid)
-      ]);
-
-      // 4. Perfil público
-      await supabaseAdmin.from('profiles').delete().eq('id', targetUid);
-
-      // 5. Telemetria de sistema (Anonimização do user_id mantendo a contagem agregada de indicadores)
-      await supabaseAdmin.from('activity_logs').update({ user_id: null }).eq('user_id', targetUid);
-
-      // 6. Eliminação final da conta no Supabase Auth
-      const { error: authDeleteErr } = await supabaseAdmin.auth.admin.deleteUser(targetUid);
-      if (authDeleteErr) {
-        console.error(`🚨 [MIRA RGPD] Falha ao eliminar do auth.users: ${authDeleteErr.message}`);
-        return res.status(500).json({ error: `Falha ao eliminar registo de autenticação: ${authDeleteErr.message}` });
+      // Passo 1: Purga relacional atómica em PostgreSQL via RPC SECURITY DEFINER.
+      // Em caso de falha, o PostgreSQL faz ROLLBACK automático — dados intactos, retry seguro.
+      const { error: purgeError } = await supabaseAdmin.rpc('purge_user_account_gdpr', { p_target_uid: targetUid });
+      if (purgeError) {
+        console.error(`🚨 [MIRA RGPD] Falha na purga relacional (dados intactos): ${purgeError.message}`);
+        return res.status(500).json({
+          error: 'RGPD purge failed: ' + purgeError.message,
+          gdpr_status: 'RELATIONAL_PURGE_FAILED'
+        });
       }
 
-      console.log(`✅ [MIRA RGPD] Auto-exclusão do utilizador ${targetUid} concluída com sucesso.`);
-      return res.status(200).json({ success: true, message: 'Conta e dados pessoais eliminados com sucesso.' });
+      // Passo 2: Eliminação Auth — apenas após sucesso confirmado da purga relacional.
+      const { error: authDeleteErr } = await supabaseAdmin.auth.admin.deleteUser(targetUid);
+      if (authDeleteErr) {
+        // Falha parcial irreversível: dados relacionais já purged (COMMIT), conta Auth subsiste.
+        // NÃO banir. NÃO declarar eliminação concluída. HTTP 207 para intervenção manual do operador.
+        console.error(`🚨 [MIRA RGPD] Falha ao eliminar Auth após purga relacional (ESTADO PARCIAL): ${authDeleteErr.message}`, { uid: targetUid });
+        return res.status(207).json({
+          success: false,
+          gdpr_status: 'AUTH_DELETE_PENDING',
+          message: 'Dados pessoais eliminados da base de dados. A conta de autenticação requer intervenção manual do operador.',
+          support_reference: targetUid
+        });
+      }
+
+      console.log(`✅ [MIRA RGPD] Auto-exclusão completa do utilizador ${targetUid}.`);
+      return res.status(200).json({ success: true, gdpr_status: 'COMPLETE', message: 'Conta e dados pessoais eliminados com sucesso.' });
     }
 
     if (!authenticatedUserId && (reqUserId || userId)) {

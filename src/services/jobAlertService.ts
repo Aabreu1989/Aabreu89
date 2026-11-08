@@ -70,6 +70,7 @@ export const jobAlertService = {
           .from('user_job_alerts')
           .select('*')
           .eq('user_id', userId)
+          .is('deleted_at', null)
           .order('created_at', { ascending: false });
 
         if (!error && Array.isArray(data)) {
@@ -155,7 +156,8 @@ export const jobAlertService = {
             .from('user_job_alerts')
             .update({
               frequency: existingAlert.frequency,
-              is_active: true
+              is_active: true,
+              deleted_at: null
             })
             .eq('id', existingAlert.id)
             .eq('user_id', userId);
@@ -264,7 +266,8 @@ export const jobAlertService = {
         await supabase
           .from('user_job_alerts')
           .update({ is_active: isActive })
-          .eq('id', alertId);
+          .eq('id', alertId)
+          .is('deleted_at', null);
       } catch (e) {
         console.warn('MIRA JobAlert: Toggle status warning:', e);
       }
@@ -283,8 +286,9 @@ export const jobAlertService = {
       try {
         await supabase
           .from('user_job_alerts')
-          .delete()
-          .eq('id', alertId);
+          .update({ is_active: false, deleted_at: new Date().toISOString() })
+          .eq('id', alertId)
+          .is('deleted_at', null);
       } catch (e) {
         console.warn('MIRA JobAlert: Delete alert warning:', e);
       }
