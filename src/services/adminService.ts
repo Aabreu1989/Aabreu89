@@ -1,7 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { User, TrustLevel } from '../types';
-import { PROTECTED_SERVICES, PROTECTED_JOBS as SMALL_JOBS } from '../utils/protectedData';
-import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
+import { PROTECTED_SERVICES } from '../utils/protectedData';
 import { 
     consolidatePlatformMetrics, 
     CANONICAL_HUMAN_ACTIONS,

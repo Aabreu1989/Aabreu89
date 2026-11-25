@@ -1,28 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { persistence } from './utils/persistence';
 import { supabase } from './lib/supabase';
 import Navigation from './components/Navigation';
-import CommunityView from './components/CommunityView';
-import AssistantView from './components/AssistantView';
-import DashboardView from './components/DashboardView';
 import { HomeView } from './components/HomeView';
-import { DocumentAssistant } from './components/DocumentAssistant';
-import { GamificationProfile } from './components/GamificationProfile';
-import { JobBoard } from './components/JobBoard';
-import { LearningView } from './components/LearningView';
-import { SimulatorsView } from './components/SimulatorsView';
-import { NotificationCenter } from './components/NotificationCenter';
 import { communityService, DEFAULT_FALLBACK_POSTS } from './services/communityService';
 import { normalizeCategory } from './utils/categoryUtils';
 import { syncService } from './services/syncService';
-import { LocalServicesList } from './components/LocalServicesList';
-import { PrivacyPage } from './components/PrivacyPage';
 import { ConsentModal } from './components/ConsentModal';
 import { AuthScreen } from './components/AuthScreen';
 import { ViewType, DocumentTask, ChatSession, GeneratedDocument, User, Course, Post } from './types';
 import { analytics } from './services/analyticsService';
-import { AdminPanel } from './components/AdminPanel';
-import PremiosView from './components/PremiosView';
 import { templates, serviceGuides } from './utils/documentsDatabase';
 import { authService } from './services/authService';
 import { isUserAdmin } from './utils/adminUtils';
@@ -35,10 +22,24 @@ import { SplashScreen } from './components/SplashScreen';
 import { useNotifications } from './utils/useNotifications';
 import TopBar from './components/TopBar';
 import { initPageSDKs } from './pageSdkInit';
-import { MessagesView } from './components/MessagesView';
-import { ChatWindow } from './components/ChatWindow';
 import { presenceService } from './services/presenceService';
 import { MIRA_LOGO_URL, MIRA_PHOTO_URL } from './constants';
+
+const CommunityView = lazy(() => import('./components/CommunityView'));
+const AssistantView = lazy(() => import('./components/AssistantView'));
+const DashboardView = lazy(() => import('./components/DashboardView'));
+const PremiosView = lazy(() => import('./components/PremiosView'));
+const DocumentAssistant = lazy(() => import('./components/DocumentAssistant').then(m => ({ default: m.DocumentAssistant })));
+const GamificationProfile = lazy(() => import('./components/GamificationProfile').then(m => ({ default: m.GamificationProfile })));
+const JobBoard = lazy(() => import('./components/JobBoard').then(m => ({ default: m.JobBoard })));
+const LearningView = lazy(() => import('./components/LearningView').then(m => ({ default: m.LearningView })));
+const SimulatorsView = lazy(() => import('./components/SimulatorsView').then(m => ({ default: m.SimulatorsView })));
+const NotificationCenter = lazy(() => import('./components/NotificationCenter').then(m => ({ default: m.NotificationCenter })));
+const LocalServicesList = lazy(() => import('./components/LocalServicesList').then(m => ({ default: m.LocalServicesList })));
+const PrivacyPage = lazy(() => import('./components/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const AdminPanel = lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
+const MessagesView = lazy(() => import('./components/MessagesView').then(m => ({ default: m.MessagesView })));
+const ChatWindow = lazy(() => import('./components/ChatWindow').then(m => ({ default: m.ChatWindow })));
 
 const AppContent: React.FC = () => {
     // 🚀 MIRA v2026.GOLD — SOVEREIGN VERSION
@@ -1090,7 +1091,9 @@ const AppContent: React.FC = () => {
             // Fetch Courses from DB
             const { courseService } = await import('./services/courseService');
             const dbCourses = await courseService.fetchCourses();
-            setCourses(dbCourses);
+            if (dbCourses && dbCourses.length > 0) {
+                setCourses(dbCourses);
+            }
         } catch (e) { console.error("Refresh error:", e); }
         finally { setPullProgress(0); setIsRefreshing(false); }
     };
@@ -1792,7 +1795,11 @@ const AppContent: React.FC = () => {
                         </div>
                         <main className={`flex-1 overflow-hidden flex flex-col ${[ViewType.ADMIN, ViewType.DASHBOARD].includes(currentView) ? 'bg-[#0A0A0A]' : currentView === ViewType.COMMUNITY ? 'bg-white' : 'bg-[#F8F9FA]'} transition-colors duration-300`}>
                             <div className={`flex-1 flex flex-col ${currentView === ViewType.ASSISTANT ? 'overflow-hidden pb-0' : 'overflow-y-auto overflow-x-hidden pb-32'}`}>
-                                <div className="max-w-5xl mx-auto h-full w-full">{renderView()}</div>
+                                <div className="max-w-5xl mx-auto h-full w-full">
+                                    <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-mira-orange" size={32} /></div>}>
+                                        {renderView()}
+                                    </Suspense>
+                                </div>
                                 {currentView !== ViewType.ASSISTANT && (
                                     <div className="max-w-5xl mx-auto w-full px-6 pb-6 text-center text-[8px] text-slate-400/70 font-bold uppercase tracking-wider leading-relaxed border-t border-slate-100/50 pt-4 mt-6">
                                         {t('disclaimer_educational', language)}

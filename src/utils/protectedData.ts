@@ -3,21 +3,12 @@ import { MASSIVE_SERVICES_DATABASE } from './massiveServicesDatabase';
 import { NATIONALITY_ASSOCIATIONS_DATABASE } from './nationalityAssociationsDatabase';
 import { JOB_SOURCES_DATABASE } from './jobSourcesDatabase';
 import { HOUSING_SOURCES_DATABASE } from './housingSourcesDatabase';
-import { DGES_RECOGNIZED_DATABASE } from './dgesCoursesDatabase';
-import { IEFP_MASSIVE_DATABASE } from './iefpCoursesDatabase';
 
 export { 
     JOB_SOURCES_DATABASE, 
     HOUSING_SOURCES_DATABASE, 
-    NATIONALITY_ASSOCIATIONS_DATABASE,
-    DGES_RECOGNIZED_DATABASE,
-    IEFP_MASSIVE_DATABASE 
+    NATIONALITY_ASSOCIATIONS_DATABASE
 };
-
-export const PROTECTED_COURSES = [
-    ...DGES_RECOGNIZED_DATABASE,
-    ...IEFP_MASSIVE_DATABASE
-];
 
 export const PROTECTED_SERVICES: MapAlert[] = [
     ...MASSIVE_SERVICES_DATABASE,
@@ -1440,5 +1431,3 @@ export const PROTECTED_SERVICES: MapAlert[] = [
         description: "Centro de emprego e formação do IEFP na Península de Setúbal: inscrição e encaminhamento para ofertas de emprego, apoio ao desemprego e formação profissional."
     }
 ];
-
-export { PROTECTED_JOBS } from './massiveJobsDatabase';

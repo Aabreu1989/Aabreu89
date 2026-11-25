@@ -3,7 +3,7 @@ import { Bell, Trash2, CheckCheck, X, MessageCircle, Heart, AtSign, Shield, Info
 import { AppNotification, notificationService } from '../services/notificationService';
 import { ViewType } from '../types';
 import { t } from '../utils/translations';
-import { resolveNotificationJobUrl } from '../utils/notificationUrlHelper';
+import { resolveNotificationJobUrl, resolveNotificationJobUrlAsync } from '../utils/notificationUrlHelper';
 import { analytics } from '../services/analyticsService';
 import { jobAlertService } from '../services/jobAlertService';
 
@@ -92,10 +92,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     } catch (_) {}
   };
 
-  const handleOpenJobDirectly = (n: AppNotification, e?: React.MouseEvent) => {
+  const handleOpenJobDirectly = async (n: AppNotification, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (!n.is_read) onRead(n.id);
-    const jobUrl = resolveNotificationJobUrl(n);
+    const jobUrl = resolveNotificationJobUrl(n) || (await resolveNotificationJobUrlAsync(n));
     if (jobUrl) {
       trackJobClickFromNotification(n);
       window.open(jobUrl, '_blank', 'noopener,noreferrer');
@@ -104,11 +104,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     }
   };
 
-  const handleNotificationClick = (n: AppNotification) => {
+  const handleNotificationClick = async (n: AppNotification) => {
     if (!n.is_read) {
       onRead(n.id);
     }
-    const jobUrl = resolveNotificationJobUrl(n);
+    const jobUrl = resolveNotificationJobUrl(n) || (n.type === 'jobs' ? await resolveNotificationJobUrlAsync(n) : null);
     if (n.type === 'jobs' && jobUrl) {
       trackJobClickFromNotification(n);
       window.open(jobUrl, '_blank', 'noopener,noreferrer');

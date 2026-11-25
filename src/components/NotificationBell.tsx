@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell, CheckCheck, MessageCircle, Heart, AtSign, Shield, Info, Trash2, ArrowRight, Briefcase, FileText, ShieldAlert, ExternalLink, X, MapPin, Building2, Calendar, Sparkles } from 'lucide-react';
 import { AppNotification, notificationService } from '../services/notificationService';
-import { resolveNotificationJobUrl } from '../utils/notificationUrlHelper';
+import { resolveNotificationJobUrl, resolveNotificationJobUrlAsync } from '../utils/notificationUrlHelper';
 import { analytics } from '../services/analyticsService';
 import { jobAlertService } from '../services/jobAlertService';
 
@@ -189,10 +189,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   };
 
   // Acesso direto e imediato à vaga externa (1 clique)
-  const handleOpenJobDirectly = (n: AppNotification, e?: React.MouseEvent) => {
+  const handleOpenJobDirectly = async (n: AppNotification, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     onMarkRead(n.id);
-    const jobUrl = resolveNotificationJobUrl(n);
+    const jobUrl = resolveNotificationJobUrl(n) || (await resolveNotificationJobUrlAsync(n));
     if (jobUrl) {
       trackJobClickFromNotification(n);
       window.open(jobUrl, '_blank', 'noopener,noreferrer');
@@ -204,9 +204,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     }
   };
 
-  const handleNotificationClick = (n: AppNotification) => {
+  const handleNotificationClick = async (n: AppNotification) => {
     onMarkRead(n.id);
-    const jobUrl = resolveNotificationJobUrl(n);
+    const jobUrl = resolveNotificationJobUrl(n) || (n.type === 'jobs' ? await resolveNotificationJobUrlAsync(n) : null);
     
     // Se for notificação de vaga e tiver URL externa resolvida, abre direto sem intermediários
     if (n.type === 'jobs' && jobUrl) {

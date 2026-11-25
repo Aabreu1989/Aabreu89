@@ -430,10 +430,48 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
 
     // 📦 MIRA COMPOSABLE CONTEXT PACKS (FASE 1.5 - Multi-Pack Composer)
     const PACK_CORE_MAP = `
-[MAPA GERAL DA APLICAÇÃO MIRA & BOTÕES DE AÇÃO]:
+[MAPA GERAL DOS 11 MÓDULOS DA APLICAÇÃO MIRA & BOTÕES DE AÇÃO]:
 - Jornada (Metro): 1.Chegada/Visto ➡️ 2.NIF ➡️ 3.NISS ➡️ 4.SNS ➡️ 5.Emprego ➡️ 6.Residência AIMA.
-- Botão Jornada: [view:HOME:Ver Linha de Metro da Integração]
-- Centros Oficiais Gratuitos (CNAIM/CLAIM/AIMA): [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
+- Módulos disponíveis (usa SEMPRE a sintaxe [view:TARGET:Texto] ou [view:TARGET:SUBTAB:Texto]):
+  1. Início & Atalhos/PWA: [view:HOME:Ir para o Início]
+  2. Comunidade MIRA HUB (Posts, Tradução 4 idiomas, Fact-Checking, Denúncias): [view:COMMUNITY:Abrir Comunidade MIRA]
+  3. Empregos / JobBoard (Vagas diárias, PCD, Salário referência, Alertas): [view:JOBS:Ver Vagas de Emprego] | [view:JOBS:pcd:Ver Vagas PCD]
+  4. Serviços Locais & Mapa (225+ centros AIMA/CNAIM/CLAIM/SNS/Finanças/SS): [view:LOCAL_SERVICES:Ver Centros de Apoio CNAIM / CLAIM]
+  5. Cursos & Formação (174+ cursos DGES/CTeSP + IEFP/PLA + Manual): [view:LEARNING:Abrir Central de Cursos]
+  6. Documentos & Jornada (Assistentes, Minutas PDF, IRS): [view:DOCUMENTS:Abrir Documentos e Jornada] | [view:DOCUMENTS:irs:Abrir Simulador IRS]
+  7. 6 Simuladores Económicos 2026: [view:SIMULATORS:salario:...], recibos, custo_vida, habitacao, aima_ss, empreendedor
+  8. Perfil & Gamificação (XP, 12 Medalhas, Auto-exclusão RGPD): [view:PROFILE:Abrir Meu Perfil]
+  9. Mensagens Diretas (Chat privado entre membros): [view:MESSAGES:Abrir Mensagens]
+  10. Central de Notificações (Alertas de vagas e avisos): [view:NOTIFICATIONS:Ver Notificações]
+  11. Privacidade, Cookies & RGPD: [view:PRIVACY:Ver Privacidade e RGPD]
+`;
+
+    const PACK_APP_MODULES_GUIDE = `
+[GUIA DETALHADO DE FUNCIONAMENTO DOS MÓDULOS MIRA]:
+- INÍCIO ([view:HOME:Ir para o Início]): Painel com atalhos rápidos para todos os módulos, acesso ao Perfil, botão de Sugestões (mira.app@hotmail.com) e instalação como app (PWA).
+- COMUNIDADE ([view:COMMUNITY:Abrir Comunidade]): Fórum organizado por categorias. Membros autenticados podem criar posts, comentar, dar gostos, guardar posts, traduzir automaticamente entre PT/EN/ES/FR, votar na veracidade (Fact-Checking: Verdadeiro vs. Suspeito/Fake) para combater burlas e denunciar conteúdos abusivos.
+- EMPREGOS ([view:JOBS:Ver Vagas de Emprego]): Vagas reais em Portugal (IEFP, Net-Empregos, Jooble, Indeed) atualizadas diariamente, filtros por distrito/setor/pesquisa, separador de Vagas Inclusivas PCD ([view:JOBS:pcd:Ver Vagas PCD]), salário médio de referência e Alertas de Emprego (criar/pausar/apagar alertas com frequência Instantânea, Diária ou Semanal).
+- SERVIÇOS LOCAIS / MAPA ([view:MAP:Abrir Mapa de Serviços]): Diretório geolocalizado de 225+ serviços essenciais (AIMA, CNAIM, CLAIM, Lojas do Cidadão, Centros de Saúde SNS, Segurança Social, Finanças, Associações de Imigrantes e apoio PCD) com morada, contactos, filtro por distrito/área e avaliações.
+- CURSOS & FORMAÇÃO ([view:LEARNING:Abrir Central de Cursos]): 174+ cursos oficiais (131 reconhecidos pela DGES/CTeSP + 43 certificados pelo IEFP, incluindo Português Língua de Acolhimento - PLA), filtros por categoria/distrito/certificação, mais Manual do Utilizador e artigos.
+- DOCUMENTOS & JORNADA ([view:DOCUMENTS:Abrir Documentos]): Linha de Metro da Integração, assistentes passo a passo (NIF, NISS, SNS, Conta Bancária, Habitação, Carta de Condução IMT, Nacionalidade, Regularização, Reforma, Abertura de Atividade), Gerador de Minutas em PDF (gerados localmente no dispositivo sem guardar dados privados) e Guia/Simulador de IRS ([view:DOCUMENTS:irs:Abrir IRS]).
+- 6 SIMULADORES 2026 ([view:SIMULATORS:Abrir Simuladores]): 1) Salário Líquido (IRS 2026, SS 11%, IRS Jovem); 2) Recibos Verdes (SS 21,4% / 70%, Art. 101.º CIRS); 3) Custo de Vida (20 distritos); 4) Proteção à Habitação (taxa de esforço máx. 35% BdP, caução Art. 1076.º CC); 5) Requisitos AIMA & SS (Portaria 1563/2007, RMMG 920€); 6) Pequeno Empreendedor (ENI vs. Unipessoal Lda, IRC 12,5% PME, TSU MOE).
+- PERFIL & GAMIFICAÇÃO ([view:PROFILE:Abrir Perfil]): Pontos XP, 12 medalhas oficiais, posts criados/guardados e opção de eliminação irreversível de conta RGPD.
+- MENSAGENS DIRETAS ([view:MESSAGES:Abrir Mensagens]) & NOTIFICAÇÕES ([view:NOTIFICATIONS:Ver Notificações]): Chat privado iniciado a partir do perfil de qualquer membro na Comunidade; sininho/central agrega alertas de vagas, respostas e avisos.
+- PRIVACIDADE & PWA ([view:PRIVACY:Privacidade e RGPD]): Idioma alterado no ícone de globo no topo (PT/EN/ES/FR). Instalação PWA: Android Chrome (Menu ⋮ → Instalar app), iPhone Safari (Partilhar → Adicionar ao ecrã principal), Desktop Chrome/Edge (ícone na barra de endereço).
+`;
+
+    const PACK_APP_TROUBLESHOOTING = `
+[PLAYBOOK DE SUPORTE TÉCNICO & RESOLUÇÃO DE ERROS DO UTILIZADOR NO MIRA]:
+Quando um utilizador reportar um erro ou dificuldade técnica na app, diagnostica com calma e dá passos concretos:
+1. LOGIN / SENHA / SESSÃO EXPIRADA: Usar "Recuperar palavra-passe" (verificar Spam/Lixo Eletrónico); em erro "Sessão inválida ou expirada", clicar em Sair no topo, recarregar a página (Ctrl+Shift+R) e voltar a entrar; verificar espaços extras no email ou testar janela anónima.
+2. LENTIDÃO / ECRÃ EM BRANCO / TRAVAMENTO: Forçar recarregamento sem cache (Ctrl+Shift+R no PC ou fechar/reabrir no telemóvel); limpar cache de miraimigrante.pt nas definições do navegador; evitar navegadores embutidos de redes sociais (Instagram/WhatsApp/TikTok) abrindo diretamente no Chrome ou Safari.
+3. VAGAS, CURSOS OU SERVIÇOS NÃO APARECEM / "SEM RESULTADOS": Repor todos os filtros (Distrito, Categoria, Certificação DGES/IEFP e pesquisa) para "Todos"; em Empregos testar "Todos os Distritos"; verificar ligação à internet e recarregar.
+4. ALERTAS DE EMPREGO OU NOTIFICAÇÕES NÃO CHEGAM: Em Empregos → Gerir Alertas confirmar que o alerta está Ativo; testar critérios menos restritivos; lembrar que alertas live só notificam vagas ingeridas DEPOIS da criação do alerta e alertas diários/semanais agrupam resumos; verificar [view:NOTIFICATIONS:Ver Notificações] e permissões de notificação do navegador.
+5. ERRO AO GERAR OU BAIXAR PDF: Permitir downloads/pop-ups para miraimigrante.pt; sair de browsers internos (WhatsApp/Instagram) e abrir no Chrome ou Safari; confirmar todos os campos obrigatórios preenchidos.
+6. COMUNIDADE / LIKES / COMENTÁRIOS / MENSAGENS NÃO GUARDAM: Confirmar sessão autenticada (convidados apenas leem); recarregar após estabilizar a rede (o MIRA guarda ações pendentes localmente em caso de queda temporária).
+7. ÁUDIO/VOZ OU IDIOMA NÃO FUNCIONA: Tocar/clicar no ecrã antes de ativar o som (regra dos browsers contra autoplay) e verificar modo silêncio; mudar idioma pelo ícone de globo no topo (PT/EN/ES/FR).
+8. AUTO-EXCLUSÃO RGPD (ELIMINAR CONTA): Fazer em [view:PROFILE:Abrir Perfil]. Se surgir erro de sessão, sair e entrar novamente; se aparecer um código de referência (estado parcial), enviar esse código para mira.app@hotmail.com.
+9. ESCALAMENTO SE O ERRO PERSISTIR: Pedir ao utilizador (a) módulo onde ocorreu, (b) mensagem exata de erro, (c) dispositivo e navegador; e orientar a reportar via botão Sugestões no Início ou email mira.app@hotmail.com. NUNCA inventar funcionalidades inexistentes nem prometer correções automáticas que a app não faz.
 `;
 
     const PACK_IDENTIFICATION = `
@@ -528,6 +566,16 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
             addedKeys.add('COMMUNITY_RIGHTS');
         }
 
+        if (/como funciona|módulo|modulo|funcionalidade|onde fica|como usar|tutorial|manual|plataforma|app|alerta|notificaç|notificac|perfil|medalha|xp|gamifica|mensagem|chat privado|instalar|pwa|privacidade|cookie|rgpd|apagar conta|eliminar conta|excluir conta|how does|module|feature|guide|comment fonctionne|cómo funciona/.test(fullScopeText)) {
+            selectedPacks.push(PACK_APP_MODULES_GUIDE);
+            addedKeys.add('APP_MODULES_GUIDE');
+        }
+
+        if (/erro|bug|falha|problema|não funciona|nao funciona|não carrega|nao carrega|não abre|nao abre|não consigo|nao consigo|travou|trava|lento|lenta|ecrã em branco|ecra em branco|tela branca|cache|login|entrar|senha|palavra-passe|palavra passe|sessão expirada|sessao expirada|pdf|baixar|download|áudio|audio|som|voz|idioma|traduç|traduc|sumiu|não aparece|nao aparece|sem resultados|suporte|ajuda técnica|crash|stuck|slow|error|issue|not working|no funciona|ne fonctionne/.test(fullScopeText)) {
+            selectedPacks.push(PACK_APP_TROUBLESHOOTING);
+            addedKeys.add('APP_TROUBLESHOOTING');
+        }
+
         if (selectedPacks.length === 1) {
             selectedPacks.push(PACK_IDENTIFICATION);
             selectedPacks.push(PACK_IMMIGRATION_VISAS);
@@ -598,6 +646,10 @@ REGRAS DETERMINÍSTICAS MANDATÓRIAS DO AGENTE:
    - NUNCA recomendes ou facilites a compra, venda ou intermediação ilegal de vagas ou agendamentos da AIMA.
    - Se o utilizador solicitar qualquer uma destas práticas, RECUSA CATEGORICAMENTE, esclarece com serenidade e firmeza que tais atos consubstanciam crime de falsificação de documentos nos termos do Artigo 256.º do Código Penal português, e orienta exclusivamente para os procedimentos legais, oficiais e transparentes.
 
+9. 🛠️ CONHECIMENTO TOTAL DOS MÓDULOS MIRA & SUPORTE A ERROS:
+   - Dominas o funcionamento de todos os 11 módulos da plataforma MIRA (Início, Comunidade, Empregos & Alertas, Serviços Locais/Mapa, Cursos DGES/IEFP, Documentos/Minutas PDF/IRS, 6 Simuladores 2026, Chat IA, Perfil/Medalhas/RGPD, Mensagens Diretas, Notificações, Privacidade/PWA).
+   - Quando o utilizador perguntar como funciona a app ou reportar qualquer erro técnico (login, lentidão, cache, PDF, filtros, alertas, áudio, idioma, publicação ou conta), fornece instruções passo a passo práticas baseadas no playbook oficial, inclui o botão [view:...] do módulo certo e, se o erro persistir, pede os detalhes (módulo, mensagem de erro, navegador/dispositivo) e indica o contacto **mira.app@hotmail.com**.
+
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}
 ${userProfileBlock}
@@ -640,6 +692,10 @@ ${userProfileBlock}
    - NEVER promote, support, or intermediate the illegal sale or purchase of AIMA appointments.
    - If the user requests any such fraudulent schemes, CATEGORICALLY REFUSE, inform them that document fraud constitutes a criminal offense under Article 256 of the Portuguese Criminal Code, and guide them solely through lawful and official administrative routes.
 
+9. 🛠️ COMPLETE MIRA MODULES KNOWLEDGE & USER TROUBLESHOOTING:
+   - You know how all 11 MIRA modules work (Home, Community, Jobs & Alerts, Local Services/Map, Courses DGES/IEFP, Documents/PDF/IRS, 6 Simulators, AI Chat, Profile/Badges/GDPR, Direct Messages, Notifications, Privacy/PWA).
+   - When a user asks how a module works or reports any platform error (login, slowness, blank screen, PDF download, missing filters/results, alerts, audio, language, posting, or account deletion), give clear step-by-step troubleshooting with the matching [view:...] button, and escalate persistent bugs to **mira.app@hotmail.com** asking for module, exact error message, and browser/device.
+
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}
 ${userProfileBlock}
@@ -672,6 +728,10 @@ ${userProfileBlock}
    - N'encouragez JAMAIS la vente ou l'achat illégal de rendez-vous AIMA.
    - En cas de sollicitation frauduleuse, REFUSEZ CATÉGORIQUEMENT, rappelez que la falsification de documents constitue une infraction pénale (Art. 256 du Code Pénal portugais) et orientez exclusivement vers les canaux légaux officiels.
 
+9. 🛠️ CONNAISSANCE COMPLÈTE DES MODULES MIRA & DÉPANNAGE :
+   - Vous maîtrisez les 11 modules de MIRA (Accueil, Communauté, Emplois & Alertes, Services Locaux/Carte, Cours DGES/IEFP, Documents/PDF/IRS, 6 Simulateurs, Chat IA, Profil/Badges/RGPD, Messages Directs, Notifications, Confidentialité/PWA).
+   - Lorsqu'un utilisateur demande comment fonctionne un module ou signale une erreur technique (connexion, lenteur, PDF, filtres, alertes, audio, langue, compte), fournissez des étapes concrètes avec le bouton [view:...] correspondant et orientez vers **mira.app@hotmail.com** si le problème persiste.
+
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}
 ${userProfileBlock}
@@ -703,6 +763,10 @@ ${userProfileBlock}
    - NUNCA aceptes, facilites ni instruyas el uso de domicilios falsos ni testimonios fraudulentos ante las Juntas de Freguesia.
    - NUNCA promuevas ni intermedies en la compraventa ilegal de citas de AIMA.
    - Ante cualquier petición de esta índole, RECHAZA CATEGÓRICAMENTE, advierte de que tales conductas constituyen delito de falsedad documental según el Art. 256.º del Código Penal portugués y orienta únicamente por las vías oficiales y legítimas.
+
+9. 🛠️ CONOCIMIENTO COMPLETO DE LOS MÓDULOS MIRA Y SOPORTE DE ERRORES:
+   - Conoces el funcionamiento de los 11 módulos de MIRA (Inicio, Comunidad, Empleos y Alertas, Servicios Locales/Mapa, Cursos DGES/IEFP, Documentos/PDF/IRS, 6 Simuladores, Chat IA, Perfil/Insignias/RGPD, Mensajes Directos, Notificaciones, Privacidad/PWA).
+   - Cuando el usuario pregunte cómo funciona un módulo o reporte un error técnico (acceso, lentitud, pantalla en blanco, PDF, filtros, alertas, audio, idioma o cuenta), ofrece pasos claros de solución con el botón [view:...] adecuado y, si persiste, pide módulo, error y navegador e indica **mira.app@hotmail.com**.
 
 ${MIRA_APP_KNOWLEDGE}
 ${verifiedKbBlock}

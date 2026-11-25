@@ -633,9 +633,10 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
   }, [allCourses]);
 
   const filteredCourses = allCourses.filter(c => {
-    const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         c.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (c.description && c.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const q = searchQuery.toLowerCase();
+    const matchesSearch = (c.title || '').toLowerCase().includes(q) || 
+                         (c.category || '').toLowerCase().includes(q) ||
+                         (c.description && c.description.toLowerCase().includes(q));
     
     const normalizedCat = normalizeCategory(c.category, c.title);
     const matchesCategory = categoryFilter === 'Todos' || 
@@ -917,9 +918,10 @@ export const LearningView: React.FC<LearningViewProps> = ({ courses, onNavigateT
                         return manualTrans;
                       }
                       
+                      const desc = course.description || '';
                       return (
                         <TranslatedText 
-                          text={course.description.replace(/\*/g, '').substring(0, 150) + (course.description.length > 150 ? '...' : '')} 
+                          text={desc.replace(/\*/g, '').substring(0, 150) + (desc.length > 150 ? '...' : '')} 
                           language={language} 
                           shouldTranslate={language !== 'PT'} 
                         />

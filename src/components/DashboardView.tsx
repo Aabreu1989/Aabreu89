@@ -18,8 +18,6 @@ import { AiQueryAuditDashboard } from './AiQueryAuditDashboard';
 import { supabase } from '../lib/supabase';
 import { MIRA_LOGO, COLORS, OFFICIAL_SOURCES } from '../constants';
 import { Post, JobPost, WORK_TOPICS, UNIFIED_CATEGORIES, Course, ViewType } from '../types';
-import { IEFP_MASSIVE_DATABASE } from '../utils/iefpCoursesDatabase';
-import { PROTECTED_JOBS } from '../utils/protectedData';
 import { isPortugalOrRemoteJob } from '../utils/jobLocationHelper';
 
 interface DashboardViewProps {
@@ -328,6 +326,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
                 'Indeed': 'https://pt.indeed.com'
             };
 
+            const { PROTECTED_JOBS } = await import('../utils/massiveJobsDatabase');
             const jobsToUpsert = [];
 
             for (const job of (PROTECTED_JOBS as any[])) {
@@ -387,7 +386,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({ masterPosts, onUpdatePost
     const handleSyncCourses = async () => {
         setIsSyncingCourses(true);
         try {
-            const { courseService } = await import('../services/courseService');
+            const [{ courseService }, { IEFP_MASSIVE_DATABASE }] = await Promise.all([
+                import('../services/courseService'),
+                import('../utils/iefpCoursesDatabase')
+            ]);
             const success = await courseService.upsertCourses(IEFP_MASSIVE_DATABASE);
             
             if (success) {

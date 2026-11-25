@@ -1,4 +1,5 @@
 import { detectSemanticIntent } from '../utils/semanticIntentEngine';
+import { matchMiraAppSupport } from '../utils/miraAppSupportKb';
 import { aiQuotaService } from './aiQuotaService';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ""; 
@@ -142,7 +143,7 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'cartao de cidadao para estrangeiro': 'CARTÃO DE CIDADÃO PARA ESTRANGEIROS COM ESTATUTO DE IGUALDADE:\nEmissão no IRN para portadores do Estatuto de Igualdade com Chave Móvel Digital (CMD).\n[view:DOCUMENT_ASSISTANT:Gerar Minutas de Igualdade]',
   'carta': 'Carta de Condução em Portugal (Legislação 2026): Válida sem troca obrigatória para CPLP e OCDE (<60 anos). Troca simples no IMT por 30€.\n[view:SIMULATORS:Guia da Carta de Condução]',
   'condução': 'Carta de Condução em Portugal (Legislação 2026): Válida sem troca obrigatória para CPLP e OCDE (<60 anos). Troca simples no IMT por 30€.\n[view:SIMULATORS:Guia da Carta de Condução]',
-  'mira': 'Sou a MIRA — Assistente Inteligente de Direitos do Migrante. Conheço 100% de todo o ecossistema da aplicação MIRA: 5.326 vagas de emprego, 156 cursos IEFP/DGES, 238 serviços locais de apoio, minutas em PDF, calculadoras de IRS e regras da AIMA e NIF/NISS.\n[view:HOME:Ver Painel Principal MIRA]',
+  'mira': 'Sou a MIRA — Assistente Inteligente de Direitos do Migrante. Conheço 100% de todos os 11 módulos da plataforma MIRA (Início, Comunidade + Fact-Checking, Empregos & Alertas, 225+ Serviços Locais/Mapa, 174+ Cursos IEFP/DGES, Documentos & Minutas PDF, 6 Simuladores 2026, Perfil/Medalhas/RGPD, Mensagens Diretas, Notificações e Privacidade/PWA) e posso ajudar-te a resolver qualquer erro técnico na app.\n[view:HOME:Ver Painel Principal MIRA]',
   'olá': 'Olá! Sou a MIRA, a tua assistente para imigração e integração em Portugal. Conheço todas as funcionalidades da app: vagas de emprego, cursos, mapa de apoio, documentos PDF, IRS e fóruns. Como te posso ajudar hoje?\n[view:HOME:Explorar Módulos do MIRA]',
   'ola': 'Olá! Sou a MIRA, a tua assistente para imigração e integração em Portugal. Conheço todas as funcionalidades da app: vagas de emprego, cursos, mapa de apoio, documentos PDF, IRS e fóruns. Como te posso ajudar hoje?\n[view:HOME:Explorar Módulos do MIRA]',
   'oi': 'Oi! Sou a MIRA, a tua assistente para imigração em Portugal. Conheço 100% da aplicação MIRA (empregos, cursos, apoio local, minutas e regras AIMA). Em que posso ser útil?\n[view:HOME:Explorar Módulos do MIRA]',
@@ -157,7 +158,7 @@ export const MIRA_LOCAL_KB: Record<string, string> = {
   'empreendedor': '🏢 SIMULADOR PEQUENO EMPREENDEDOR & MICROEMPRESA:\nSimula a faturação, despesas operacionais, tributação reduzida PME em IRC (12,5% até 50.000€ lucro tributável - Art. 87.º CIRC), TSU do Sócio-Gerente (33,05% MOE) ou ENI (IRS Simplificado), margem de lucro e Ponto de Equilíbrio (Break-Even).\n\n[view:SIMULATORS:Abrir Simulador Pequeno Empreendedor]',
   'habitação': '🏠 SIMULADOR DE PROTEÇÃO À HABITAÇÃO:\nCalcula a tua Taxa de Esforço com a renda (recomendação Banco de Portugal de máx. 35%), o teto legal de Capital Inicial (caução de até 2 rendas e antecipação de até 2 rendas por acordo escrito — Art. 1076.º do Código Civil, redação Lei n.º 24-D/2022) e o Fundo de Emergência familiar (3 meses).\n\n[view:SIMULATORS:Abrir Simulador de Habitação]',
   'habitacao': '🏠 SIMULADOR DE PROTEÇÃO À HABITAÇÃO:\nCalcula a tua Taxa de Esforço com a renda (recomendação Banco de Portugal de máx. 35%), o teto legal de Capital Inicial (caução de até 2 rendas e antecipação de até 2 rendas por acordo escrito — Art. 1076.º do Código Civil, redação Lei n.º 24-D/2022) e o Fundo de Emergência familiar (3 meses).\n\n[view:SIMULATORS:Abrir Simulador de Habitação]',
-  'default': 'Sou a MIRA, assistente de apoio ao imigrante em Portugal. Tenho conhecimento total de todas as funcionalidades do aplicativo MIRA: 6 Simuladores Económicos (Salário, Recibos Verdes, Custo de Vida, Habitação, AIMA/SS, Empreendedor), 5.326 vagas de emprego, 156 cursos de formação, 238 serviços locais de apoio, gerador de minutas PDF, calculadoras de IRS e todas as regras da AIMA, NIF e NISS. Qual é a tua dúvida específica?\n[view:HOME:Ver Módulos do MIRA]'
+  'default': 'Sou a MIRA, assistente de apoio ao imigrante em Portugal. Conheço todos os 11 módulos do MIRA (6 Simuladores Económicos 2026, Empregos & Alertas, 174+ Cursos IEFP/DGES, 225+ Serviços Locais/Mapa, Comunidade + Fact-Checking, Minutas PDF, IRS, Perfil/RGPD, Mensagens e Notificações) e ajudo a resolver erros técnicos na plataforma ou dúvidas legais (AIMA, NIF, NISS, SNS). Qual é a tua dúvida específica?\n[view:HOME:Ver Módulos do MIRA]'
 };
 
 export const MIRA_LOCAL_KB_EN: Record<string, string> = {
@@ -1073,6 +1074,14 @@ export const getMiraLocalResponse = (prompt: string, language: string = 'PT', hi
       return "⚠️ AVERTISSEMENT ET NOTICE JURIDIQUE OFFICIELLE :\nMIRA est une plateforme 100% GRATUITE d'information et de tri numérique. NOUS NE FOURNISSONS PAS DE CONSEIL JURIDIQUE INDIVIDUEL ET NOUS NE VENDONS PAS DE SERVICES D'ACCOMPAGNEMENT PRIVÉ.\n\nPour un conseil juridique personnalisé, consultez un avocat inscrit à l'Ordre des Avocats Portugais (oa.pt) ou rendez-vous dans les centres d'aide officiels (CNAIM / CLAIM).\n[view:LOCAL_SERVICES:Voir les Centres d'Aide Officiels]";
     }
     return "⚠️ AVISO LEGAL E DISCLAIMER OFICIAL DA PLATAFORMA:\n\n1. O MIRA NÃO PRESTA ACONSELHAMENTO JURÍDICO INDIVIDUALIZADO NEM VENDE SERVIÇOS DE ASSESSORIA DE IMIGRAÇÃO.\n\n2. O MIRA é uma plataforma 100% gratuita de cidadania, informação e triagem digital para orientar os cidadãos sobre os seus direitos em Portugal.\n\n3. Não somos um escritório de advogados nem cobramos por qualquer serviço de regularização. Para apoio jurídico individualizado ou representação formal, deves consultar um advogado inscrito na Ordem dos Advogados (oa.pt) ou recorrer aos gabinetes de apoio oficial gratuito do CNAIM / CLAIM.\n[view:LOCAL_SERVICES:Ver Mapa de Apoio Oficial e Serviços]";
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🛠️ SUPORTE TÉCNICO & GUIA COMPLETO DOS MÓDULOS DA APP MIRA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const appSupportResp = matchMiraAppSupport(prompt, lang);
+  if (appSupportResp) {
+    return appSupportResp;
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
